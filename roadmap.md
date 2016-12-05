@@ -7,6 +7,7 @@
 - all item components should be passed an id in settings
 ## Router
 ## StateChart (EHFSM)
+- example
 ```
 StateChart({
   intents : Hash{intentIdentifier :: sources -> settings -> source},
@@ -15,6 +16,19 @@ StateChart({
     where Action :: event -> model -> sinks
 })
 ```
+- internal state : requestTokens: {[sinkName] : token}
+  - every command request must be associated to a token if an answer is 
+  expected
+  - when the sink emits a value, its token is compared to the request
+- model is a property, hence one must specify an initial value
+- action requests need to have a namespace parameter, and a get method which 
+takes a namespace as parameter
+- namespace chosen for statechart must be unique vs. action request drivers
+- when an action is requested, no other events is processed, and only on 
+receiving the expected action response, the state is changed : RTC semantics
+  - when namespace is unique, and RTC, it is guaranteed that the next 
+  response will correspond to the previous request
+
 Drivers for action must be wrapped into a higher-order function which will 
 add a unique token serving to identify the request. The response will only be
  accepted as matching a request if both have the same token.   
@@ -23,9 +37,14 @@ add a unique token serving to identify the request. The response will only be
 # Driver
 ## Store Driver - for now likely key/value store
 
+# Sinks combinators
+## Merge
+- {method: concat} is one possibly of specifying a merge function
+- could also be {method : a function} to cover the general case
+
 # Examples
 ## TODO list app
-### Funcional specifications
+### Functional specifications
 - three routes : active todos, completed todos, all todos
 - one field `what needs to be done?` to enter new todo
 - list of entered todos
@@ -84,6 +103,64 @@ App({sinks : sinks}, [
 ])
 TodoComponent=curry(flip(
   StateChart({
-    intents : 
+    sinks : [sinkNames],
+    namespace : some UNIQUE (vs. action requests) identifier for the statechart, // Ex: TODO_SC
+    intents : {ADD_ITEM, COMPLETE_ALL},
+    actions : [ADD_ITEM, COMPLETE_ALL],
+    responses : {ADD_TODO : response => ...}
+  },
+  model$ : {Store.get(namespace, null), showOnlyActive : settings.routeState},
+  transitions : [
+    INIT -> SUCCESS:INIT -> ERROR: ?? -> NO GUARD -> ADD_ITEM : 
+      (event, model$) => Merge({method: concat}, [
+        {Store: $.of({command: ADD_TODO, namespace, payload: todoText})},
+        SwitchForEach(model$, List (prepare(model), TodoItemComponent))
+      ]),
+    INIT -> SUCCESS:INIT -> ERROR: ?? -> NO GUARD -> COMPLETE_ALL :
+      (event, model$) => {Store: model$.map(childIndex => {
+        reference: childRef(childIndex, parentRef),
+        command: UPDATE, 
+        payload: refValue => setCompleted(refValue)
+        // setCompleted = refValue => (refValue.completed = true, refValue)
+      })},
+    ADD_ITEM_ERROR -> ??? -> ERROR: ?? -> NO_GUARD -> AUTO :
+      // could do multiple retry through this mechanism
+  ],
   })
 ))
+TodoItemComponent = 
+
+- Parent hold reactive COPY (i.e. property) of the state of their children
+  - Store.get(namespace, reference)
+    - reference is the root level so all children changes are propagated
+    - similar to firebase (CHECK)
+- ADD CHILD event : 
+  - modify parent state to add a new childState to [childState]
+    - SUCCESS : recompute sources = f (sources, parentState$)
+      - parentState has [childState]
+      - List({initChildStates, parentScope}, Item)
+    - FAILURE : TO DO
+- On STORE CHANGE event:
+  - get the index of child(ren) who has/have changed
+  - if the change is a deletion, recompute sources
+  - else do nothing
+  - hence communication children -> parent is coordinated through STORE
+    - communication parent -> children is done through updating children 
+    settings. This involves recomputing the children - or using an observable
+     passed through settings
+
+- Child has a DELETE event
+  - associated action is to update child state to null
+  - 
+
+- Store has following behaviour
+  - takes listener for changes
+  - listener can listen for changes on a specific path
+  - changes happening at a specific path are also emitted to listener at a 
+  higher level
+    - in that case, the reference(s) of the changes are also sent
+  - similar to firebase
+  - hence event change is both a property (new current state) and an event
+  (state change)... 
+    - Is it sound to conflate the two?? Be careful to multicast by default in
+     that case : will have subscription for property + subscription for event
