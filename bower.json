@@ -1,0 +1,21 @@
+{
+  "name": "rx-component-combinators",
+  "version": "0.1.0",
+  "authors": [
+    "Olivier Couriol <olivier.couriol@gmail.com>"
+  ],
+  "description": "Library providing combinators for reactive components",
+  "main": "dist/rxcc.js",
+  "moduleType": [
+    "node"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/brucou/rxcc",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
