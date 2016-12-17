@@ -1,5 +1,6 @@
 runTestScenario
 ====
+TODO : called combinators because https://wiki.haskell.org/Combinator_pattern, it builds complex stuff from simple stuff
 
 ## Table of content
    * [Context](#context)

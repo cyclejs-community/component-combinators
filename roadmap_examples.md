@@ -180,6 +180,7 @@ ListFactory (listSettings, component)(sources, settings) {
     valueId: 'todoItem',
     itemId: 'itemRef',
   }, component))
+}
   // TODO : I am here
   List (listSettings, component) (sources, settings) {
     settings <- merge(settings, listSettings)
