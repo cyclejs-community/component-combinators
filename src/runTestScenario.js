@@ -336,13 +336,16 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // a : '--x-x--'
   // b : '-x-x-'
   // -> maxLen = 7
-  const maxLen = Math.max.apply(null,
-    map(sourceInput => (values(sourceInput)[0]).diagram.length, inputs)
-  )
+  const maxLen = inputs.length === 0
+    ? Math.max.apply(null,
+    map(sourceInput => (values(sourceInput)[0]).diagram.length, inputs))
+    : 0;
 
   // Make an index array [0..maxLen[ for iteration purposes
   /** @type {Array<Number>} */
-  const indexRange = mapIndexed((input, index) => index, new Array(maxLen))
+  const indexRange = maxLen
+    ? mapIndexed((input, index) => index, new Array(maxLen))
+    : [];
 
   // Make a single chained observable which :
   // - waits some delay before starting to emit
@@ -444,12 +447,12 @@ function runTestScenario(inputs, expected, testFn, _settings) {
       x => console.warn('Tests completed!')
     )
   testInputs$.subscribe(
-      x => undefined,
-      function (err) {
-        console.error('An error occurred while emitting test inputs!', err);
-        _errorHandler(err);
-      },
-      x => console.warn('test inputs emitted')
+    x => undefined,
+    function (err) {
+      console.error('An error occurred while emitting test inputs!', err);
+      _errorHandler(err);
+    },
+    x => console.warn('test inputs emitted')
   )
 }
 
