@@ -40,7 +40,7 @@ come with :
     command :: Command
     payload :: Payload
   }`
-- `ActionRequest : Record {
+- `ActionRequest :: Record {
     driver :: SinkName | ZeroDriver
     request :: (FSM_Model -> EventData) -> Request
   }`
@@ -76,6 +76,7 @@ come with :
 - `FSM_Model :: Object`
 - `Payload :: *`
 - `EventData :: *`
+- `ActionResponse :: *`
 - `Command :: String`
 - `EventName :: String`
 - `SinkName :: String`
