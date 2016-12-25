@@ -119,6 +119,12 @@ function getTestResults(testInputs$, expected, settings) {
       return $.of([])
     }
 
+    let endOfTestsSampler = testInputs$.isEmpty().flatMap(isEmpty =>
+      isEmpty
+        ? $.just().delay(waitForFinishDelay)
+        : testInputs$.last().delay(waitForFinishDelay)
+    )
+
     return sink$
       .scan(function buildResults(accumulatedResults, sinkValue) {
         const transformFn = expected[sinkName].transformFn || identity
@@ -132,7 +138,7 @@ function getTestResults(testInputs$, expected, settings) {
       // That's arbitrary, keep it in mind that the testing helper
       // is not suitable for functions with large processing delay
       // between input and the corresponding output
-      .sample(testInputs$.last().delay(waitForFinishDelay))
+      .sample(endOfTestsSampler)
       .take(1)
   }
 }
@@ -320,7 +326,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
 
   // Set default values if any
   const settings = defaultTo({}, _settings);
-  const {mocks, sourceFactory, errorHandler, tickDuration} = settings;
+  const {mocks, sourceFactory, errorHandler, tickDuration, waitForFinishDelay} = settings;
   const mockedSourcesHandlers = defaultTo({}, mocks)
   // TODO: add contract: for each key in sourceFactory, there MUST be the
   // same key in `inputs` : this avoids error by omission
@@ -336,7 +342,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // a : '--x-x--'
   // b : '-x-x-'
   // -> maxLen = 7
-  const maxLen = inputs.length === 0
+  const maxLen = inputs.length !== 0
     ? Math.max.apply(null,
     map(sourceInput => (values(sourceInput)[0]).diagram.length, inputs))
     : 0;
@@ -364,45 +370,47 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // This allows to have predictable and consistent data when analyzing
   // test results. That was not the case when using the `setTimeOut`
   // scheduler to handle delays.
-  const testInputs$ = reduceR(function makeInputs$(accEmitInputs$, tickNo) {
-    return accEmitInputs$
-      .delay(_tickDuration)
-      .concat(
-        $.from(projectAtIndex(tickNo, inputs))
-          .tap(function emitInputs(sourceInput) {
-            // input :: {sourceName : {{diagram : char, values: Array<*>}}
-            const sourceName = keysR(sourceInput)[0]
-            const input = sourceInput[sourceName]
-            const c = input.diagram
-            const values = input.values || {}
-            const sourceSubject = sourcesStruct.streams[sourceName]
-            const errorVal = (values && values['#']) || '#'
+  const testInputs$ = indexRange.length === 0
+      ? $.empty()
+      : reduceR(function makeInputs$(accEmitInputs$, tickNo) {
+      return accEmitInputs$
+        .delay(_tickDuration)
+        .concat(
+          $.from(projectAtIndex(tickNo, inputs))
+            .tap(function emitInputs(sourceInput) {
+              // input :: {sourceName : {{diagram : char, values: Array<*>}}
+              const sourceName = keysR(sourceInput)[0]
+              const input = sourceInput[sourceName]
+              const c = input.diagram
+              const values = input.values || {}
+              const sourceSubject = sourcesStruct.streams[sourceName]
+              const errorVal = (values && values['#']) || '#'
 
-            if (c) {
-              // case when the diagram for that particular source is
-              // finished but other sources might still go on
-              // In any case, there is nothing to emit
-              switch (c) {
-                case '-':
-                  // do nothing
-                  break;
-                case '#':
-                  sourceSubject.onError({data: errorVal})
-                  break;
-                case '|':
-                  sourceSubject.onCompleted()
-                  break;
-                default:
-                  const val = values.hasOwnProperty(c) ? values[c] : c;
-                  console.log('emitting for source ' + sourceName + ' ' + val)
-                  sourceSubject.onNext(val)
-                  break;
+              if (c) {
+                // case when the diagram for that particular source is
+                // finished but other sources might still go on
+                // In any case, there is nothing to emit
+                switch (c) {
+                  case '-':
+                    // do nothing
+                    break;
+                  case '#':
+                    sourceSubject.onError({data: errorVal})
+                    break;
+                  case '|':
+                    sourceSubject.onCompleted()
+                    break;
+                  default:
+                    const val = values.hasOwnProperty(c) ? values[c] : c;
+                    console.log('emitting for source ' + sourceName + ' ' + val)
+                    sourceSubject.onNext(val)
+                    break;
+                }
               }
-            }
-          })
-      )
-  }, $.empty(), indexRange)
-    .share()
+            })
+        )
+    }, $.empty(), indexRange)
+      .share()
 
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects

@@ -1,6 +1,6 @@
 // let Qunit = require('qunitjs');
 import * as QUnit from 'qunitjs';
-import {map as mapR, reduce as reduceR, always, clone, __} from 'ramda';
+import {map as mapR, reduce as reduceR, always, clone, curry, __} from 'ramda';
 import * as jsonpatch from 'fast-json-patch';
 import * as Rx from 'rx';
 import h from 'snabbdom/h';
@@ -9,11 +9,11 @@ import {m} from '../src/components/m';
 import {projectSinksOn, makeDivVNode} from '../src/utils';
 import {runTestScenario} from '../src/runTestScenario';
 import {
-  EV_GUARD_NONE,
-  ACTION_REQUEST_NONE,
-  ACTION_GUARD_NONE,
-  makeFSM
-} from '../src/components/FSM'
+  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, ZERO_DRIVER,
+  EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
+  AWAITING_RESPONSE, INIT_STATE
+} from '../src/components/properties';
+import {makeFSM} from '../src/components/FSM';
 
 let $ = Rx.Observable;
 
@@ -123,8 +123,8 @@ QUnit.test(
 
     const transitions = {
       T_INIT: {
-        origin_state: 'S_INIT',
-        event: 'EV_INIT',
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
         target_states: [
           {
             event_guard: EV_GUARD_NONE,
@@ -162,7 +162,9 @@ QUnit.test(
       done()
     }
 
-    const updatedModel = jsonpatch.apply(clone(initialModel), opsOnInitialModel);
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
 
     /** @type TestResults */
     const testResults = {

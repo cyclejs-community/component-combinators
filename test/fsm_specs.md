@@ -43,7 +43,7 @@ come with :
 - `ActionRequest :: Record {
     driver :: SinkName | ZeroDriver
     request :: (FSM_Model -> EventData) -> Request
-  }`
+  } | Null`
 - `UpdateOperation :: JSON_Patch`
 - `TransitionOptions :: Record {
     origin_state :: State
@@ -81,7 +81,7 @@ come with :
 - `EventName :: String`
 - `SinkName :: String`
 - `State :: String`
-- `ZeroDriver` :: "_"
+- `ZeroDriver` :: Null
 
 # FSM specifications
 ## Contracts
@@ -106,6 +106,10 @@ user-defined state configuration
 - the state machine keeps a journal of the modification of its model (history 
 of update operations together with the transitions taken) for debugging 
 purposes or else
+- in the transition definition, only one event per origin state mapping to target states, i.e. 
+(origin_state, event, target_State)
+- all configured functions must be synchronous and not throw (event guard, action guard, event 
+functions, etc.)
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.
