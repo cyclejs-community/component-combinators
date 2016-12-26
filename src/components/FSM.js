@@ -6,7 +6,7 @@ import {
 import * as Rx from "rx";
 import * as jsonpatch from 'fast-json-patch';
 import {
-  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, ZERO_DRIVER,
+  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, AR_GUARD_NONE, ZERO_DRIVER,
   EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
   AWAITING_RESPONSE, INIT_STATE
 } from './properties';
@@ -125,7 +125,7 @@ import {
  * @typedef {AWAITING_EVENTS|AWAITING_ACTION_RESPONSE} InternalState
  */
 /**
- * @typedef {{internal_state : InternalState, external_state : State, model : FSM_Model, current_event_data : EventData, current_action_request_driver : DriverName, sinks : Sinks}} FSM_State
+ * @typedef {{internal_state : InternalState, external_state : State, model : FSM_Model, current_event_name : EventName | Null, current_event_data : EventData | Null, current_event_guard_index : Number | Null, current_action_request_driver : DriverName | Null, sinks : Sinks | Null}} FSM_State
  */
 /**
  * @typedef {String} UserEventPrefix
@@ -268,12 +268,13 @@ function computeStateEventToTransitionNameMap(transitions) {
  * @param {String} transName
  * @param {FSM_Model} model
  * @param {EventData} eventData
- * @return {{ action_request : ActionRequest | Null, transition_evaluation, noGuardSatisfied : Boolean}}
+ * @return {{ actionRequest : ActionRequest | Null, transitionEvaluation, satisfiedGuardIndex : Number | Null, noGuardSatisfied : Boolean}}
  */
 function computeTransition(transitions, transName, model, eventData) {
+  const NOT_FOUND = -1;
   const targetStates = transitions[transName].target_states;
 
-  const foundSatisfiedGuard = find(function (transition) {
+  const satisfiedGuardIndex = findIndex(function (transition) {
     /** @type {EventGuard} */
     const eventGuard = transition.event_guard;
 
@@ -286,9 +287,50 @@ function computeTransition(transitions, transName, model, eventData) {
     }
   }, targetStates);
 
+  return satisfiedGuardIndex !== NOT_FOUND
+    ? {
+    satisfiedGuardIndex,
+    actionRequest: targetStates[satisfiedGuardIndex].action_request,
+    transitionEvaluation: targetStates[satisfiedGuardIndex].transition_evaluation,
+    noGuardSatisfied: false
+  }
+    : {
+    satisfiedGuardIndex: null,
+    actionRequest: null,
+    transitionEvaluation: null,
+    noGuardSatisfied: true
+  }
+}
+
+/**
+ * Returns the action request corresponding to the first guard satisfied, as
+ * defined by the order of the target_states array
+ * @param {Transitions} transitions
+ * @param {String} transName
+ * @param {Number} current_event_guard_index
+ * @return {{ target_state : State | Null, model_update : Function, noGuardSatisfied : Boolean}}
+ */
+function computeActionResponseTransition(transitions, transName, current_event_guard_index) {
+  /** @type {Array} */
+  const actionResponseGuards =
+    transitions[transName].target_states[current_event_guard_index].transition_evaluation;
+
+  const foundSatisfiedGuard = find(function (transEval) {
+    const {action_guard, target_state, model_update}= transEval;
+
+    if (action_guard == AR_GUARD_NONE) {
+      // if no action guard is configured, it is equivalent to a passing guard
+      return true
+    }
+    else {
+      // ActionGuard :: ActionResponse -> Boolean
+      return action_guard(actionResponse)
+    }
+  }, actionResponseGuards);
+
   return foundSatisfiedGuard
-    ? pick(['action_request', 'transition_evaluation'], foundSatisfiedGuard)
-    : {action_request: null, transition_evaluation: null, noGuardSatisfied: true}
+    ? pick(['target_state', 'model_update'], foundSatisfiedGuard)
+    : {target_state: null, model_update: null, noGuardSatisfied: true}
 }
 
 function isZeroActionRequest(actionRequest) {
@@ -313,7 +355,7 @@ function applyUpdateOperations(/*OUT*/model, modelUpdateOperations) {
 function _labelEvents(sources, settings, event$Fn, eventName, _) {
   return event$Fn(sources, settings).map(prefixWith(eventName))
 }
-const labelEvents = curry(_labelEvents);
+const computeAndLabelEvents = curry(_labelEvents);
 
 function getDriverNames(transOptions, transName) {
   const {target_states} = transOptions;
@@ -351,7 +393,9 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   function _evaluateEvent(events, transitions, entryComponents, sources, settings,
                           /* OUT */fsmState, fsmEvent) {
     let {
-      internal_state, external_state, model, current_event_data, current_action_request_driver, sinks
+      internal_state, external_state, model,
+      current_event_name, current_event_data, current_event_guard_index,
+      current_action_request_driver, sinks
     } = fsmState;
 
     /**
@@ -382,7 +426,6 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
         // -- -- -- -- sinks <- execute the component defined as entry for the state transitioned to
         // -- -- -- Else :
         // -- -- -- -- sinks <- Compute action request (MUST be non empty object)
-        // TODO : add case if action request = NONE - bypass and apply directly the operations
         // -- -- -- -- internal_state <- AWAITING_RESPONSE
         // -- -- -- -- current_event_data <- event_data
         // -- -- -- -- current_action_request_driver <- the ONE key of sinks
@@ -410,7 +453,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
               const transName = stateEventToTransitionNameMap[external_state][eventName];
 
               /** @type {ActionRequest | Null} */
-              const {action_request, transition_evaluation, noGuardSatisfied} =
+              const {actionRequest, transitionEvaluation, satisfiedGuardIndex, noGuardSatisfied} =
                 computeTransition(transitions, transName, model, eventData);
 
               if (!!noGuardSatisfied) {
@@ -421,9 +464,9 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                 sinks = null;
               }
               else {
-                if (isZeroActionRequest(action_request)) {
+                if (isZeroActionRequest(actionRequest)) {
                   // TODO : check contract : only ONE action_guard which MUST be Zero
-                  const {target_state, model_update} =  transition_evaluation[0];
+                  const {target_state, model_update} =  transitionEvaluation[0];
                   const modelUpdateOperations = model_update(model, eventData, null);
                   const entryComponent = entryComponents[target_state];
 
@@ -433,13 +476,17 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   // Note : The model to be passed to the entry component is post update
                   sinks = entryComponent(model)(sources, settings);
                   internal_state = AWAITING_EVENTS;
+                  current_event_guard_index = null;
+                  current_event_name = null;
                   current_event_data = null;
                   current_action_request_driver = null;
                 }
                 else {
                   // TODO : what happens if sinks is empty object?? also MUST have only one key
-                  sinks = action_request;
+                  sinks = actionRequest;
                   internal_state = AWAITING_RESPONSE;
+                  current_event_guard_index = satisfiedGuardIndex;
+                  current_event_name = eventName;
                   current_event_data = eventData;
                   current_action_request_driver = getPrefix(sinks);
                   // model and external_state are unchanged
@@ -452,6 +499,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
               internal_state,
               external_state,
               model,
+              current_event_guard_index,
+              current_event_name,
               current_event_data,
               current_action_request_driver,
               sinks
@@ -481,7 +530,74 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
         // -- -- -- internal_state <- AWAITING_EVENTS
         // -- -- -- current_event_data <- Null
         // -- -- -- current_action_request_driver <- Null
+        switch (fsmEventOrigin) {
+          case EVENT_PREFIX :
+            console.warn('Received event from user while awaiting driver\'s action response!' +
+              ' Ignoring...');
+            sinks = null;
+            break;
+
+          case DRIVER_PREFIX :
+            const driverName = eventOrDriverName;
+            const actionResponse = eventDataOrActionResponse;
+            const transName = stateEventToTransitionNameMap[external_state][current_event_name];
+
+            if (driverName !== current_action_request_driver) {
+              console.warn(`
+              Received driver ${driverName}'s event but not from the expected 
+                 ${current_action_request_driver} driver!\n
+                 Ignoring...`);
+              sinks = null;
+            }
+            else {
+              const {target_state, model_update, noGuardSatisfied} =
+                computeActionResponseTransition(transitions, transName, current_event_guard_index);
+
+              if (noGuardSatisfied) {
+                console.error(`While processing action response from driver ${driverName},
+                 executed all configured guards and none were satisfied! 
+                  ' Throwing...`);
+                sinks = null;
+                throw 'For each action response, there MUST be a configured guard which is' +
+                ' satisfied!'
+              }
+              else {
+                const modelUpdateOperations = model_update(model, current_event_data, actionResponse);
+                const entryComponent = entryComponents[target_state];
+
+                internal_state = AWAITING_EVENTS;
+                external_state = target_state;
+                // Set new model's values for next FSM state update
+                model = applyUpdateOperations(/*OUT*/model, modelUpdateOperations);
+                // Note : The model to be passed to the entry component is post update
+                sinks = entryComponent(model)(sources, settings);
+                current_event_guard_index = null;
+                current_event_name = null;
+                current_event_data = null;
+                current_action_request_driver = null;
+              }
+
+              // Update in place fsmState
+              fsmState = {
+                internal_state,
+                external_state,
+                model,
+                current_event_guard_index,
+                current_event_name,
+                current_event_data,
+                current_action_request_driver,
+                sinks
+              };
+
+            }
+            break;
+          default :
+            throw `Received unexpected/unknown ${fsmEventOrigin} event. 
+            Can only process driver responses and user events!`
+        }
+
         break;
+
       default :
         const err = 'Unexpected internal state reached by state machine !';
         console.error(err, clone(fsmState));
@@ -513,7 +629,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     // - events from `events` parameter
     // - action responses as found in `transitions`
     /** @type {Array.<Observable.<Object.<EventName, EventData>>>} */
-    const eventsArray = values(mapObjIndexed(labelEvents(sources, settings), events));
+    const eventsArray = values(mapObjIndexed(computeAndLabelEvents(sources, settings), events));
 
     /** @type {String|ZeroDriver[][]} */
     const driverNameArrays = values(mapObjIndexed(getDriverNames, transitions));
@@ -547,7 +663,9 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
       internal_state: AWAITING_EVENTS,
       external_state: INIT_STATE,
       model: clone(initial_model),
+      current_event_name: null,
       current_event_data: null,
+      current_event_guard_index: null,
       current_action_request_driver: null
     };
 

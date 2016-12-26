@@ -1,6 +1,7 @@
 import { always} from 'ramda';
 
 export const EV_GUARD_NONE = null;
+export const AR_GUARD_NONE = null;
 export const ACTION_REQUEST_NONE = null;
 export const ACTION_GUARD_NONE = always(true);
 export const ZERO_DRIVER = null;
