@@ -33,8 +33,8 @@ come with :
    }`
 - `ActionResponses` :: [SourceName]
 - `Sources :: HashMap SourceName (Source *)`
-- `Events :: HashMap EventName Event`
-- `Event :: Sources -> Source EventData`
+- `Events :: ()HashMap EventName Event) | {}`
+- `Event :: Sources -> Settings -> Source EventData`
 - `Transitions :: HashMap TransitionName TransitionOptions`
 - `Request : Record {
     command :: Command
@@ -110,6 +110,8 @@ purposes or else
 (origin_state, event, target_State)
 - all configured functions must be synchronous and not throw (event guard, action guard, event 
 functions, etc.)
+- if action request has zero driver, then the request field MUST be null
+- there MUST be an init event and transition configured
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.
@@ -143,7 +145,7 @@ When we refer to an event, we implicitly refer to an event configured to be hand
 #### with action responses guards
 ##### passing guard
 - GIVEN : cf. Init event
-- GIVEN : FSM `Model`, transition `ev -> evG(none) -> O -> T -> Ar -> Ag(pass) -> U`, `Ts: Model -> Component(_, model)`
+- GIVEN : FSM `Model`, transition `ev -> evG(none) -> O -> T -> Ar -> Ag(pass) -> U`, `T: Model -> Component(_, model)`
   - WHEN `ev ev_data` occurs THEN 
      - `Ar.request` is called with `Model`, `ev_data`
      - FSM component emits {driver_name : `Ar.request return value`}

@@ -1,6 +1,6 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
-  map as mapR, reduce as reduceR, always, mapObjIndexed, uniq, flatten, values, find, equals, clone,
+  map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone,
   keys, filter, pick, curry, defaultTo
 } from 'ramda';
 import * as Rx from "rx";
@@ -9,7 +9,7 @@ import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, ZERO_DRIVER,
   EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
   AWAITING_RESPONSE, INIT_STATE
-} from './properties'
+} from './properties';
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
 // model object
@@ -175,7 +175,7 @@ function getPrefix(fsmEvent) {
  * @returns {UserEventPrefix|DriverEventPrefix}
  */
 function getEventOrigin(fsmEvent) {
-  return getPrefix(fsmEvent);
+  return getPrefix(fsmEvent)
 }
 
 /**
@@ -292,7 +292,7 @@ function computeTransition(transitions, transName, model, eventData) {
 }
 
 function isZeroActionRequest(actionRequest) {
-  return !actionRequest || isZeroDriver(actionRequest.driver)
+  return actionRequest == ACTION_REQUEST_NONE || isZeroDriver(actionRequest.driver)
 }
 
 function isZeroDriver(driver) {
@@ -310,9 +310,10 @@ function applyUpdateOperations(/*OUT*/model, modelUpdateOperations) {
   return model;
 }
 
-function labelEvents(event$, eventName, _) {
-  return event$.map(prefixWith(eventName))
+function _labelEvents(sources, settings, event$Fn, eventName, _) {
+  return event$Fn(sources, settings).map(prefixWith(eventName))
 }
+const labelEvents = curry(_labelEvents);
 
 function getDriverNames(transOptions, transName) {
   const {target_states} = transOptions;
@@ -493,7 +494,6 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   function _computeOutputSinks(sinks$, /* OUT */accOutputSinks, sinkName) {
     accOutputSinks[sinkName] = sinks$
       .map(fsmState => defaultTo($.never(), fsmState.sinks[sinkName]))
-      .tap(x => console.warn(`sink ${sinkName}`, x))
       .switch()
       .tap(x => console.warn(`post switch`, x))
     ;
@@ -513,7 +513,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     // - events from `events` parameter
     // - action responses as found in `transitions`
     /** @type {Array.<Observable.<Object.<EventName, EventData>>>} */
-    const eventsArray = values(mapObjIndexed(labelEvents, events));
+    const eventsArray = values(mapObjIndexed(labelEvents(sources, settings), events));
 
     /** @type {String|ZeroDriver[][]} */
     const driverNameArrays = values(mapObjIndexed(getDriverNames, transitions));
@@ -553,9 +553,10 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 
     /** @type {Observable.<FSM_State>}*/
     let eventEvaluation$ = fsmEvents
-        .scan(evaluateEvent(events, transitions, entryComponents, sources, settings)
-          , initialFSM_State)
-      ;
+      .scan(
+        evaluateEvent(events, transitions, entryComponents, sources, settings),
+        initialFSM_State
+      );
 
     // 3. Pass output sinks onto the driver
     // Important! `shareReplay` is necessary here because of varying subscription timing
@@ -563,7 +564,6 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     /** @type {Observable.<Object.<SinkName, Observable.<*>>>}*/
     let sinks$ = eventEvaluation$
       .filter(fsmState => fsmState.sinks)
-      .tap(x => console.warn('fsmState', x))
       .shareReplay(1);
 
     /** @type {Object.<SinkName, Observable.<*>>}*/

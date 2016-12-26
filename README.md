@@ -2,6 +2,9 @@ runTestScenario
 ====
 TODO : called combinators because https://wiki.haskell.org/Combinator_pattern, it builds complex stuff from simple stuff
 
+# ...
+`npm run build test ; npm run test`
+
 ## Table of content
    * [Context](#context)
    * [Dependencies](#dependencies)
