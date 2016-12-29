@@ -8,7 +8,8 @@ import * as jsonpatch from 'fast-json-patch';
 import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, AR_GUARD_NONE, ZERO_DRIVER,
   EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
-  AWAITING_RESPONSE, INIT_STATE
+  AWAITING_RESPONSE, INIT_STATE,
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
 } from './properties';
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
@@ -558,8 +559,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                  executed all configured guards and none were satisfied! 
                   ' Throwing...`);
                 sinks = null;
-                throw 'For each action response, there MUST be a configured guard which is' +
-                ' satisfied!'
+                throw CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
+
               }
               else {
                 const modelUpdateOperations = model_update(model, current_event_data, actionResponse);

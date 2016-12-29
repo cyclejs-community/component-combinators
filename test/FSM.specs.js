@@ -8,12 +8,13 @@ import * as Rx from 'rx';
 import h from 'snabbdom/h';
 import {div, span} from 'cycle-snabbdom';
 import {m} from '../src/components/m';
-import {projectSinksOn, makeDivVNode} from '../src/utils';
+import {projectSinksOn, makeDivVNode, makeErrorMessage} from '../src/utils';
 import {runTestScenario} from '../src/runTestScenario';
 import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, ZERO_DRIVER,
   EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
-  AWAITING_RESPONSE, INIT_STATE
+  AWAITING_RESPONSE, INIT_STATE,
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
 } from '../src/components/properties';
 import {makeFSM} from '../src/components/FSM';
 
@@ -473,22 +474,22 @@ QUnit.test(
     /** @type TestResults */
     const testResults = {
       sinkA: {
-        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        outputs: ['dummyComponent2_dummySinkA1', makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink sinkA produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       sinkB: {
-        outputs: dummySinkB2Values,
+        outputs: [makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       sinkModel: {
-        outputs: [updatedModel],
+        outputs: [makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink sinkModel produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       [dummyDriver]: {
-        outputs: [dummyRequest],
+        outputs: [dummyRequest, makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink dummyDriver produces the expected values',
         analyzeTestResults: analyzeTestResults,
       }

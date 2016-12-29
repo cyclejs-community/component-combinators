@@ -35,7 +35,8 @@ import {
 } from 'ramda';
 import {
   isOptSinks, removeNullsFromArray, assertSignature, assertContract,
-  isString, isFunction, isArray, isUndefined, isArrayOf, isNullableObject
+  isString, isFunction, isArray, isUndefined, isArrayOf, isNullableObject,
+  makeErrorMessage
 } from './utils';
 import * as Rx from 'rx';
 
@@ -129,7 +130,7 @@ function getTestResults(testInputs$, expected, settings) {
       .catch(function (e) {
         console.error(`error in sink ${sinkName}`, e);
 //        return Rx.Observable.throw(e);
-        return $.just('ERROR : ' + e);
+        return $.just(makeErrorMessage(e));
       })
       .scan(function buildResults(accumulatedResults, sinkValue) {
         const transformFn = expected[sinkName].transformFn || identity;

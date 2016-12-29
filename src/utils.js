@@ -2,6 +2,7 @@ import {
   mapObjIndexed, flatten, keys, always, reject, isNil, uniq,
   merge, reduce, all, either, clone, map, values, equals, concat, addIndex
 } from 'ramda';
+import {ERROR_MESSAGE_PREFIX} from './components/properties';
 import * as Rx from 'rx';
 
 const $ = Rx.Observable;
@@ -407,6 +408,10 @@ function deepFreeze (o) {
   return o;
 }
 
+function makeErrorMessage(errorMessage){
+  return ERROR_MESSAGE_PREFIX + errorMessage;
+}
+
 /**
  * Adds `tap` logging/tracing information to all sinks
  * @param {Sinks} sinks
@@ -538,5 +543,6 @@ export {
   assertSinksContracts,
   assertSettingsContracts,
   deepFreeze,
+  makeErrorMessage,
   trace
 }
