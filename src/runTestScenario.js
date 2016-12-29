@@ -31,7 +31,7 @@
 
 import {
   identity, mapObjIndexed, values, all as allR, addIndex, defaultTo,
-  reduce as reduceR, keys as keysR, drop, isNil, map, curry, __
+  reduce as reduceR, keys as keysR, drop, isNil, map, always, curry, __
 } from 'ramda';
 import {
   isOptSinks, removeNullsFromArray, assertSignature, assertContract,
@@ -120,16 +120,19 @@ function getTestResults(testInputs$, expected, settings) {
       return $.of([])
     }
 
-    const endOfTestsSampler = testInputs$.isEmpty().flatMap(isEmpty =>
+    // NOTE : as long as testInputs$ is a subject (i.e. hot) there is no need to
+    // multicast it for sharing between multiple subscribers
+    // NOTE: must emit []
+    const endOfTestsSampler$ = testInputs$.isEmpty().flatMap(isEmpty =>
       isEmpty
-        ? $.just().delay(waitForFinishDelay)
-        : testInputs$.last().delay(waitForFinishDelay)
-    );
+        ? $.just([]).delay(waitForFinishDelay)
+        : testInputs$.last().delay(waitForFinishDelay).map(always([]))
+    )
+      .share();
 
-    return sink$
+    const testAccumulatedResults$ = sink$
       .catch(function (e) {
         console.error(`error in sink ${sinkName}`, e);
-//        return Rx.Observable.throw(e);
         return $.just(makeErrorMessage(e));
       })
       .scan(function buildResults(accumulatedResults, sinkValue) {
@@ -138,13 +141,17 @@ function getTestResults(testInputs$, expected, settings) {
         accumulatedResults.push(transformedResult);
 
         return accumulatedResults;
-      }, [])
-      // Give it some time to process the inputs,
-      // after the inputs have finished being emitted
-      // That's arbitrary, keep it in mind that the testing helper
-      // is not suitable for functions with large processing delay
-      // between input and the corresponding output
-      .sample(endOfTestsSampler)
+      }, []);
+
+    // Give it some time to process the inputs,
+    // after the inputs have finished being emitted
+    // That's arbitrary, keep it in mind that the testing helper
+    // is not suitable for functions with large processing delay
+    // between input and the corresponding output
+    // Last, we also add a guard for the pathological case where one of the
+    // input observable is `never()`, so we forcefully end the testing when
+    // a given amount of time has transcurred
+    return $.amb(testAccumulatedResults$.sample(endOfTestsSampler$), endOfTestsSampler$)
       .take(1)
   }
 }

@@ -390,6 +390,11 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
    * @param {FSM_State} fsmState
    * @param {UserEvent | DriverEvent} fsmEvent
    * @returns {FSM_State}
+   * @param events
+   * @param transitions
+   * @param entryComponents
+   * @param sources
+   * @param settings
    */
   function _evaluateEvent(events, transitions, entryComponents, sources, settings,
                           /* OUT */fsmState, fsmEvent) {
@@ -623,6 +628,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   return function fsmComponent(sources, settings) {
     // 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
     //           init_event_data etc. could for instance be passed there instead of ahead
+    // 0.X TODO check remaining contracts
+    // for instance : if an action request features a driver name, that driver name MUST be found in the sources
 
     // 1. Create array of events dealt with by the FSM
     // This will include :

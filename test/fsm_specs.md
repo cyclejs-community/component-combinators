@@ -114,6 +114,8 @@ functions, etc.)
 - there MUST be an init event and transition configured
 - if action request, then it is only ONE value passed in the specified driver
 - if action request is none then transition_evaluation.action_guard MUST be Null 
+- an action request MUST have an action response associated i.e. no write-only driver
+- if an action request features a driver name, that driver name MUST be found in the sources
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.
