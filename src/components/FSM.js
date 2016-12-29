@@ -1,7 +1,7 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
   map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone,
-  keys, filter, pick, curry, defaultTo
+  keys, filter, pick, curry, defaultTo, findIndex
 } from 'ramda';
 import * as Rx from "rx";
 import * as jsonpatch from 'fast-json-patch';
@@ -310,7 +310,7 @@ function computeTransition(transitions, transName, model, eventData) {
  * @param {Number} current_event_guard_index
  * @return {{ target_state : State | Null, model_update : Function, noGuardSatisfied : Boolean}}
  */
-function computeActionResponseTransition(transitions, transName, current_event_guard_index) {
+function computeActionResponseTransition(transitions, transName, current_event_guard_index, actionResponse) {
   /** @type {Array} */
   const actionResponseGuards =
     transitions[transName].target_states[current_event_guard_index].transition_evaluation;
@@ -482,8 +482,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   current_action_request_driver = null;
                 }
                 else {
-                  // TODO : what happens if sinks is empty object?? also MUST have only one key
-                  sinks = actionRequest;
+                  // TODO : what happens if request is empty?? filtered out already
+                  sinks = computeSinkFromActionRequest(actionRequest, model, eventData);
                   internal_state = AWAITING_RESPONSE;
                   current_event_guard_index = satisfiedGuardIndex;
                   current_event_name = eventName;
@@ -551,7 +551,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
             }
             else {
               const {target_state, model_update, noGuardSatisfied} =
-                computeActionResponseTransition(transitions, transName, current_event_guard_index);
+                computeActionResponseTransition(transitions, transName, current_event_guard_index, actionResponse);
 
               if (noGuardSatisfied) {
                 console.error(`While processing action response from driver ${driverName},
@@ -645,8 +645,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     const initialEvent = prefixWith(EVENT_PREFIX)(prefixWith(INIT_EVENT_NAME)(init_event_data));
 
     const fsmEvents = $.merge(
-      $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)),
-      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX))
+      $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)).tap(x => console.warn('user event', x)),
+      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)).tap(x => console.warn('response event', x)),
     )
       .startWith(initialEvent);
 
@@ -671,6 +671,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 
     /** @type {Observable.<FSM_State>}*/
     let eventEvaluation$ = fsmEvents
+      .tap(x => console.warn('fsm events', x))
       .scan(
         evaluateEvent(events, transitions, entryComponents, sources, settings),
         initialFSM_State
@@ -682,6 +683,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     /** @type {Observable.<Object.<SinkName, Observable.<*>>>}*/
     let sinks$ = eventEvaluation$
       .filter(fsmState => fsmState.sinks)
+      .tap(x => console.warn('sinks', x.sinks))
       .shareReplay(1);
 
     /** @type {Object.<SinkName, Observable.<*>>}*/
@@ -690,3 +692,11 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     return outputSinks
   };
 }
+
+function computeSinkFromActionRequest(actionRequest, model, eventData){
+  return {
+    [actionRequest.driver] : $.just(actionRequest.request(model, eventData))
+  }
+}
+
+

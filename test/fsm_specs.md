@@ -112,6 +112,8 @@ purposes or else
 functions, etc.)
 - if action request has zero driver, then the request field MUST be null
 - there MUST be an init event and transition configured
+- if action request, then it is only ONE value passed in the specified driver
+- if action request is none then transition_evaluation.action_guard MUST be Null 
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.

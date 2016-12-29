@@ -109,26 +109,31 @@ function analyzeTestResults(testExpectedOutputs) {
 }
 
 function getTestResults(testInputs$, expected, settings) {
-  const defaultWaitForFinishDelay = 50
+  const defaultWaitForFinishDelay = 50;
   const waitForFinishDelay = settings.waitForFinishDelay
-    || defaultWaitForFinishDelay
+    || defaultWaitForFinishDelay;
 
   return function getTestResults(sink$, sinkName) {
     if (isUndefined(sink$)) {
-      console.warn('getTestResults: received an undefined sink ' + sinkName)
+      console.warn('getTestResults: received an undefined sink ' + sinkName);
       return $.of([])
     }
 
-    let endOfTestsSampler = testInputs$.isEmpty().flatMap(isEmpty =>
+    const endOfTestsSampler = testInputs$.isEmpty().flatMap(isEmpty =>
       isEmpty
         ? $.just().delay(waitForFinishDelay)
         : testInputs$.last().delay(waitForFinishDelay)
-    )
+    );
 
     return sink$
+      .catch(function (e) {
+        console.error(`error in sink ${sinkName}`, e);
+//        return Rx.Observable.throw(e);
+        return $.just('ERROR : ' + e);
+      })
       .scan(function buildResults(accumulatedResults, sinkValue) {
-        const transformFn = expected[sinkName].transformFn || identity
-        const transformedResult = transformFn(sinkValue)
+        const transformFn = expected[sinkName].transformFn || identity;
+        const transformedResult = transformFn(sinkValue);
         accumulatedResults.push(transformedResult);
 
         return accumulatedResults;
@@ -371,46 +376,46 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // test results. That was not the case when using the `setTimeOut`
   // scheduler to handle delays.
   const testInputs$ = indexRange.length === 0
-      ? $.empty()
-      : reduceR(function makeInputs$(accEmitInputs$, tickNo) {
-      return accEmitInputs$
-        .delay(_tickDuration)
-        .concat(
-          $.from(projectAtIndex(tickNo, inputs))
-            .tap(function emitInputs(sourceInput) {
-              // input :: {sourceName : {{diagram : char, values: Array<*>}}
-              const sourceName = keysR(sourceInput)[0]
-              const input = sourceInput[sourceName]
-              const c = input.diagram
-              const values = input.values || {}
-              const sourceSubject = sourcesStruct.streams[sourceName]
-              const errorVal = (values && values['#']) || '#'
+    ? $.empty()
+    : reduceR(function makeInputs$(accEmitInputs$, tickNo) {
+    return accEmitInputs$
+      .delay(_tickDuration)
+      .concat(
+        $.from(projectAtIndex(tickNo, inputs))
+          .tap(function emitInputs(sourceInput) {
+            // input :: {sourceName : {{diagram : char, values: Array<*>}}
+            const sourceName = keysR(sourceInput)[0]
+            const input = sourceInput[sourceName]
+            const c = input.diagram
+            const values = input.values || {}
+            const sourceSubject = sourcesStruct.streams[sourceName]
+            const errorVal = (values && values['#']) || '#'
 
-              if (c) {
-                // case when the diagram for that particular source is
-                // finished but other sources might still go on
-                // In any case, there is nothing to emit
-                switch (c) {
-                  case '-':
-                    // do nothing
-                    break;
-                  case '#':
-                    sourceSubject.onError({data: errorVal})
-                    break;
-                  case '|':
-                    sourceSubject.onCompleted()
-                    break;
-                  default:
-                    const val = values.hasOwnProperty(c) ? values[c] : c;
-                    console.log('emitting for source ' + sourceName + ' ' + val)
-                    sourceSubject.onNext(val)
-                    break;
-                }
+            if (c) {
+              // case when the diagram for that particular source is
+              // finished but other sources might still go on
+              // In any case, there is nothing to emit
+              switch (c) {
+                case '-':
+                  // do nothing
+                  break;
+                case '#':
+                  sourceSubject.onError({data: errorVal})
+                  break;
+                case '|':
+                  sourceSubject.onCompleted()
+                  break;
+                default:
+                  const val = values.hasOwnProperty(c) ? values[c] : c;
+                  console.log('emitting for source ' + sourceName + ' ' + val)
+                  sourceSubject.onNext(val)
+                  break;
               }
-            })
-        )
-    }, $.empty(), indexRange)
-      .share()
+            }
+          })
+      )
+  }, $.empty(), indexRange)
+    .share()
 
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects
