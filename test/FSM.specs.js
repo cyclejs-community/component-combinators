@@ -1,6 +1,6 @@
 // let Qunit = require('qunitjs');
 import * as QUnit from "qunitjs"
-import { reduce, always, clone, curry, identity, flatten, T, F, __ } from "ramda"
+import { map, reduce, always, clone, curry, identity, flatten, T, F, __ } from "ramda"
 import * as jsonpatch from "fast-json-patch"
 import * as Rx from "rx"
 import { makeErrorMessage } from "../src/utils"
@@ -75,9 +75,9 @@ function dummyComponent1Sink(sources, settings) {
   const { model } = settings;
 
   return {
-    sinkA: generateValuesWithInterval(dummySinkA3Values, 10),
-    sinkB: generateValuesWithInterval(dummySinkB2Values, 15),
-    modelSink: generateValuesWithInterval([model], 1)
+    sinkA: sources.sinkA.take(3),
+    sinkB: sources.sinkB.take(2),
+    modelSink: $.just(model)
   }
 }
 //TODO : have a source ca;;ed sampler which emits anything at regular interval so I control
@@ -89,8 +89,6 @@ function dummyComponent2Sink(sources, settings) {
   return {
     sinkA: sources.sinkA.take(1).map(x => prefix + x),
     modelSink: $.just(model),
-    // modelSink: generateValuesWithInterval([model], 1),
-    //    sinkA: $.just(prefix + dummySinkA3Values[0]).share(),
   }
 }
 
@@ -114,7 +112,7 @@ QUnit.module("makeFSM :: Events -> Transitions -> StateEntryComponents -> FSM_Se
 //   - Update U is called with right parameters (i.e. Ev.INIT is triggered)
 // - init state component factory function is called with the right parameters
 // - FSM emits component sinks as expected
-QUnit.skip(
+QUnit.test(
   "Initialization of state machine - INIT event (no event guard)",
   function exec_test(assert) {
     let done = assert.async(3);
@@ -198,7 +196,12 @@ QUnit.skip(
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
-    const inputs = [];
+    const inputs = [
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
+    ];
 
     function analyzeTestResults(actual, expected, message) {
       assert.deepEqual(actual, expected, message);
@@ -331,9 +334,10 @@ QUnit.test(
 
     const inputs = [
 //      { [dummyDriver]: { diagram: '-----------a|', values: { a: dummyDriverActionResponse } } }
-      { [dummyDriver]: { diagram: '---a|', values: { a: dummyDriverActionResponse } } },
-      { eventSource: { diagram: '-a-|', values: { a: dummyEventData } } },
-      { sinkA: { diagram: 'A--|', values: { A: dummySinkA3Values[0] } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -413,7 +417,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -471,7 +475,14 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      {
+        sinkA: {
+          diagram: 'ABC|',
+          values: { A: dummySinkA3Values[0], B: dummySinkA3Values[1], C: dummySinkA3Values[2] }
+        }
+      }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -496,7 +507,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
+        outputs: [initialModel, makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -551,7 +562,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -609,7 +620,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -634,7 +648,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [updatedModel],
+        outputs: [initialModel, updatedModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -689,7 +703,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -747,7 +761,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -827,7 +844,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -896,7 +913,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -921,7 +941,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [updatedModel],
+        outputs: [initialModel, updatedModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -976,7 +996,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -1045,7 +1065,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -1070,7 +1093,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [updatedModel],
+        outputs: [initialModel, updatedModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -1125,7 +1148,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -1194,7 +1217,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -1219,7 +1245,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [updatedModel],
+        outputs: [initialModel, updatedModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -1275,7 +1301,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -1333,8 +1359,11 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '--a|', values: { a: dummyDriverActionResponse } } },
-      { [dummyDriver + '2']: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '-----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
+      { [dummyDriver + '2']: { diagram: '----a|', values: { a: dummyDriverActionResponse } } }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -1359,7 +1388,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [updatedModel],
+        outputs: [initialModel, updatedModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -1442,7 +1471,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -1511,7 +1540,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      { [dummyDriver]: { diagram: '------a|', values: { a: dummyDriverActionResponse } } },
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '-----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
       { [dummyDriver + '2']: { diagram: '----a|', values: { a: dummyDriverActionResponse2 } } }
     ];
 
@@ -1539,7 +1571,7 @@ QUnit.test(
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
-        outputs: [initialModel, updatedModel],
+        outputs: [updatedModel, updatedTwiceModel],
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
@@ -1551,7 +1583,7 @@ QUnit.test(
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
-      tickDuration: 100,
+      tickDuration: 10,
       // We put a large value here as there is no inputs, so this allows to
       // wait for the tested component to produce all its sink values
       waitForFinishDelay: 200
