@@ -116,6 +116,7 @@ functions, etc.)
 - if action request is none then transition_evaluation.action_guard MUST be Null 
 - an action request MUST have an action response associated i.e. no write-only driver
 - if an action request features a driver name, that driver name MUST be found in the sources
+- state defined in transition array MUST exist in state definition
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.
@@ -226,6 +227,9 @@ When we refer to an event, we implicitly refer to an event configured to be hand
      - FSM component emits only 1 value from Component, and 5 values from Component2, i.e. Component is switched out, and Component3 is never instantiated
 
 TODO : If I go with that, update contracts
+# DOC
+- init-event-data is passed with fsm settings 
+- document fsm settings
 
 # Possible improvements
 - queue events while the state machine is busy processing events/or waiting for action responses

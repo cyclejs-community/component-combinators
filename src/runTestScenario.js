@@ -30,7 +30,7 @@
  */
 
 import {
-  identity, mapObjIndexed, values, all as allR, addIndex, defaultTo,
+  identity, mapObjIndexed, values, all as allR, addIndex, defaultTo, clone,
   reduce as reduceR, keys as keysR, drop, isNil, map, always, curry, __
 } from 'ramda';
 import {
@@ -77,7 +77,7 @@ function isValidSourceName(sourceName) {
 }
 
 function hasTestCaseForEachSink(testCase, sinkNames) {
-  const _sinkNames = drop(1, sinkNames)
+  const _sinkNames = drop(1, sinkNames);
   return allR(sinkName => !!testCase[sinkName], _sinkNames)
 }
 
@@ -90,15 +90,15 @@ function standardSubjectFactory() {
 
 function analyzeTestResults(testExpectedOutputs) {
   return function analyzeTestResults(sinkResults$, sinkName) {
-    const expected = testExpectedOutputs[sinkName]
+    const expected = testExpectedOutputs[sinkName];
     // Case the component returns a sink with no expected value
     // That is a legit possibility, we might not want to test for all
     // the sinks returned by a component
-    if (isNil(expected)) return null
+    if (isNil(expected)) return null;
 
-    const expectedResults = expected.outputs
-    const successMessage = expected.successMessage
-    const analyzeTestResultsFn = expected.analyzeTestResults
+    const expectedResults = expected.outputs;
+    const successMessage = expected.successMessage;
+    const analyzeTestResultsFn = expected.analyzeTestResults;
 
     return sinkResults$
     // `analyzeTestResultsFn` should include `assert` which
@@ -136,8 +136,9 @@ function getTestResults(testInputs$, expected, settings) {
         return $.just(makeErrorMessage(e));
       })
       .scan(function buildResults(accumulatedResults, sinkValue) {
+        console.log(`runTestScenario : ${sinkName} receives `, sinkValue);
         const transformFn = expected[sinkName].transformFn || identity;
-        const transformedResult = transformFn(sinkValue);
+        const transformedResult = transformFn(clone(sinkValue));
         accumulatedResults.push(transformedResult);
 
         return accumulatedResults;
@@ -335,17 +336,17 @@ function runTestScenario(inputs, expected, testFn, _settings) {
     {testCase: isExpectedRecord},
     {testFn: isFunction},
     {settings: isNullableObject},
-  ])
+  ]);
 
   // Set default values if any
   const settings = defaultTo({}, _settings);
   const {mocks, sourceFactory, errorHandler, tickDuration, waitForFinishDelay} = settings;
-  const mockedSourcesHandlers = defaultTo({}, mocks)
+  const mockedSourcesHandlers = defaultTo({}, mocks);
   // TODO: add contract: for each key in sourceFactory, there MUST be the
   // same key in `inputs` : this avoids error by omission
-  const _sourceFactory = defaultTo({}, sourceFactory)
-  const _errorHandler = defaultTo(defaultErrorHandler, errorHandler)
-  const _tickDuration = defaultTo(tickDurationDefault, tickDuration)
+  const _sourceFactory = defaultTo({}, sourceFactory);
+  const _errorHandler = defaultTo(defaultErrorHandler, errorHandler);
+  const _tickDuration = defaultTo(tickDurationDefault, tickDuration);
 
   // @type {{sources: Object.<string, *>, streams: Object.<string, Stream>}}
   let sourcesStruct = computeSources(inputs, mockedSourcesHandlers, _sourceFactory);
@@ -392,12 +393,12 @@ function runTestScenario(inputs, expected, testFn, _settings) {
         $.from(projectAtIndex(tickNo, inputs))
           .tap(function emitInputs(sourceInput) {
             // input :: {sourceName : {{diagram : char, values: Array<*>}}
-            const sourceName = keysR(sourceInput)[0]
-            const input = sourceInput[sourceName]
-            const c = input.diagram
-            const values = input.values || {}
-            const sourceSubject = sourcesStruct.streams[sourceName]
-            const errorVal = (values && values['#']) || '#'
+            const sourceName = keysR(sourceInput)[0];
+            const input = sourceInput[sourceName];
+            const c = input.diagram;
+            const values = input.values || {};
+            const sourceSubject = sourcesStruct.streams[sourceName];
+            const errorVal = (values && values['#']) || '#';
 
             if (c) {
               // case when the diagram for that particular source is
@@ -408,28 +409,28 @@ function runTestScenario(inputs, expected, testFn, _settings) {
                   // do nothing
                   break;
                 case '#':
-                  sourceSubject.onError({data: errorVal})
+                  sourceSubject.onError({data: errorVal});
                   break;
                 case '|':
-                  sourceSubject.onCompleted()
+                  sourceSubject.onCompleted();
                   break;
                 default:
                   const val = values.hasOwnProperty(c) ? values[c] : c;
-                  console.log('emitting for source ' + sourceName + ' ' + val)
-                  sourceSubject.onNext(val)
+                  console.log('emitting for source ' + sourceName + ' ' + val);
+                  sourceSubject.onNext(val);
                   break;
               }
             }
           })
       )
   }, $.empty(), indexRange)
-    .share()
+    .share();
 
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects
-  console.groupCollapsed('runTestScenario: executing test function')
-  let testSinks = testFn(sourcesStruct.sources)
-  console.groupEnd()
+  console.groupCollapsed('runTestScenario: executing test function');
+  const testSinks = testFn(sourcesStruct.sources);
+  console.groupEnd();
 
   if (!isOptSinks(testSinks)) {
     throw 'encountered a sink which is not an observable!'
@@ -440,12 +441,12 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   const sinksResults = mapObjIndexed(
     getTestResults(testInputs$, expected, settings),
     testSinks
-  )
+  );
 
   assertContract(hasTestCaseForEachSink, [expected, keysR(sinksResults)],
     'runTestScenario : in test Case, could not find expected ouputs for all' +
     ' sinks!'
-  )
+  );
 
   // Side-effect : execute `analyzeTestResults` function which
   // makes use of `assert` and can lead to program interruption
@@ -453,7 +454,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   const resultAnalysis = mapObjIndexed(
     analyzeTestResults(expected),
     sinksResults
-  )
+  );
 
   const allResults = removeNullsFromArray(values(resultAnalysis))
   // This takes care of actually starting the producers
@@ -466,7 +467,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
         _errorHandler(err);
       },
       x => console.warn('Tests completed!')
-    )
+    );
   testInputs$.subscribe(
     x => undefined,
     function (err) {

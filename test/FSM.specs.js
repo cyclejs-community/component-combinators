@@ -1,22 +1,20 @@
 // let Qunit = require('qunitjs');
-import * as QUnit from 'qunitjs';
+import * as QUnit from "qunitjs"
+import { reduce, always, clone, curry, identity, flatten, T, F, __ } from "ramda"
+import * as jsonpatch from "fast-json-patch"
+import * as Rx from "rx"
+import { makeErrorMessage } from "../src/utils"
+import { runTestScenario } from "../src/runTestScenario"
 import {
-  map as mapR, reduce, always, clone, curry, identity, flatten, T, F, __
-} from 'ramda';
-import * as jsonpatch from 'fast-json-patch';
-import * as Rx from 'rx';
-import h from 'snabbdom/h';
-import {div, span} from 'cycle-snabbdom';
-import {m} from '../src/components/m';
-import {projectSinksOn, makeDivVNode, makeErrorMessage} from '../src/utils';
-import {runTestScenario} from '../src/runTestScenario';
-import {
-  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, ZERO_DRIVER,
-  EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX, INIT_EVENT_NAME, AWAITING_EVENTS,
-  AWAITING_RESPONSE, INIT_STATE,
+  EV_GUARD_NONE,
+  ACTION_REQUEST_NONE,
+  ACTION_GUARD_NONE,
+  DRIVER_PREFIX,
+  INIT_EVENT_NAME,
+  INIT_STATE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
-} from '../src/components/properties';
-import {makeFSM} from '../src/components/FSM';
+} from "../src/components/properties"
+import { makeFSM } from "../src/components/FSM"
 
 let $ = Rx.Observable;
 
@@ -25,6 +23,7 @@ const EV_PREFIX = 'ev_';
 const INIT_TRANSITION = 'T_INIT';
 const FIRST_STATE = 'S_FIRST';
 const SECOND_STATE = 'S_SECOND';
+const THIRD_STATE = 'S_THIRD';
 const dummyValue = 'dummy';
 const dummyValue1 = 'dummy1';
 const dummyValue2 = 'dummy2';
@@ -41,10 +40,16 @@ const initialModel = {
   dummyKey2InitModel: dummyValue2,
 };
 const opsOnInitialModel = [
-  {op: "add", path: '/dummyKey3InitModel', value: dummyValue3},
-  {op: "replace", path: '/dummyKey1InitModel', value: dummyValue2},
-  {op: "remove", path: '/dummyKey2InitModel'},
+  { op: "add", path: '/dummyKey3InitModel', value: dummyValue3 },
+  { op: "replace", path: '/dummyKey1InitModel', value: dummyValue2 },
+  { op: "remove", path: '/dummyKey2InitModel' },
 ];
+const opsOnUpdatedModel = [
+  { op: "add", path: '/dummyKey1UpdatedModel', value: dummyValue1 },
+];
+let updatedModel = clone(initialModel);
+// NOTE: !! modifies in place so function does not return anything
+jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
 const initEventData = {
   dummyKeyEvInit: dummyValue
 };
@@ -58,30 +63,34 @@ const dummyEventData2 = {
   dummyKeyEv2: EV_PREFIX + dummyValue2
 };
 const dummyDriver = DRIVER_PREFIX + '_dummy';
-const dummyDriverActionResponse = {responseKey: 'responseValue'};
+const dummyDriverActionResponse = { responseKey: 'responseValue' };
+const dummyDriverActionResponse2 = { responseKey2: 'responseValue2' };
 const dummyCommand = 'dummyCommand';
-const dummyPayload = {dummyKeyPayload: 'dummyValuePayload'};
-const dummyRequest = {command: dummyCommand, payload: dummyPayload};
+const dummyPayload = { dummyKeyPayload: 'dummyValuePayload' };
+const dummyRequest = { command: dummyCommand, payload: dummyPayload };
 
-const sinkNames = ['sinkA', 'sinkB', 'sinkC', 'sinkModel', dummyDriver];
+const sinkNames = ['sinkA', 'sinkB', 'sinkC', 'modelSink', dummyDriver];
 
 function dummyComponent1Sink(sources, settings) {
-  const {model} = settings;
+  const { model } = settings;
 
   return {
     sinkA: generateValuesWithInterval(dummySinkA3Values, 10),
     sinkB: generateValuesWithInterval(dummySinkB2Values, 15),
-    sinkModel: generateValuesWithInterval([model], 1)
+    modelSink: generateValuesWithInterval([model], 1)
   }
 }
-
+//TODO : have a source ca;;ed sampler which emits anything at regular interval so I control
+// timing of emission of component sinks
 function dummyComponent2Sink(sources, settings) {
-  const {model} = settings;
-  const prefix = 'dummyComponent2_'
+  const { model } = settings;
+  const prefix = 'dummyComponent2_';
 
   return {
-    sinkA: $.just(prefix + dummySinkA3Values[0]),
-    sinkModel: generateValuesWithInterval([model], 1)
+    sinkA: sources.sinkA.take(1).map(x => prefix + x),
+    modelSink: $.just(model),
+    // modelSink: generateValuesWithInterval([model], 1),
+    //    sinkA: $.just(prefix + dummySinkA3Values[0]).share(),
   }
 }
 
@@ -91,7 +100,7 @@ function generateValuesWithInterval(arrayValues, timeInterval) {
     index => index < arrayValues.length,
     index => index + 1,
     index => arrayValues[index],
-    index => index ? timeInterval : 0 // emit first value sooner
+    index => index ? timeInterval : 1 // emit first value sooner
   )
 }
 
@@ -105,7 +114,7 @@ QUnit.module("makeFSM :: Events -> Transitions -> StateEntryComponents -> FSM_Se
 //   - Update U is called with right parameters (i.e. Ev.INIT is triggered)
 // - init state component factory function is called with the right parameters
 // - FSM emits component sinks as expected
-QUnit.test(
+QUnit.skip(
   "Initialization of state machine - INIT event (no event guard)",
   function exec_test(assert) {
     let done = assert.async(3);
@@ -177,7 +186,7 @@ QUnit.test(
 
     const entryComponents = {
       First: function (model) {
-        return curry(dummyComponent1Sink)(__, {model})
+        return curry(dummyComponent1Sink)(__, { model })
       }
     };
 
@@ -212,9 +221,9 @@ QUnit.test(
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
-      sinkModel: {
+      modelSink: {
         outputs: [updatedModel],
-        successMessage: 'sink sinkModel produces the expected values',
+        successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
     };
@@ -263,7 +272,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => $.just(dummyEventData)
+      [testEvent]: sources => sources.eventSource.take(1)
     };
 
     const transitions = {
@@ -304,11 +313,11 @@ QUnit.test(
     };
 
     const entryComponents = {
-      [FIRST_STATE]: function (model) {
-        return curry(dummyComponent2Sink)(__, {model})
+      [FIRST_STATE]: function firstState(model) {
+        return curry(dummyComponent2Sink)(__, { model })
       },
-      [SECOND_STATE]: function (model) {
-        return curry(dummyComponent1Sink)(__, {model})
+      [SECOND_STATE]: function secondState(model) {
+        return curry(dummyComponent1Sink)(__, { model })
       },
     };
 
@@ -321,7 +330,10 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      {[dummyDriver]: {diagram: '-a|', values: {a: dummyDriverActionResponse}}}
+//      { [dummyDriver]: { diagram: '-----------a|', values: { a: dummyDriverActionResponse } } }
+      { [dummyDriver]: { diagram: '---a|', values: { a: dummyDriverActionResponse } } },
+      { eventSource: { diagram: '-a-|', values: { a: dummyEventData } } },
+      { sinkA: { diagram: 'A--|', values: { A: dummySinkA3Values[0] } } }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -345,9 +357,9 @@ QUnit.test(
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
-      sinkModel: {
-        outputs: [updatedModel],
-        successMessage: 'sink sinkModel produces the expected values',
+      modelSink: {
+        outputs: [initialModel, updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       [dummyDriver]: {
@@ -358,7 +370,7 @@ QUnit.test(
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
-      tickDuration: 5,
+      tickDuration: 10,
       // We put a large value here as there is no inputs, so this allows to
       // wait for the tested component to produce all its sink values
       waitForFinishDelay: 200
@@ -443,10 +455,10 @@ QUnit.test(
 
     const entryComponents = {
       [FIRST_STATE]: function (model) {
-        return curry(dummyComponent2Sink)(__, {model})
+        return curry(dummyComponent2Sink)(__, { model })
       },
       [SECOND_STATE]: function (model) {
-        return curry(dummyComponent1Sink)(__, {model})
+        return curry(dummyComponent1Sink)(__, { model })
       },
     };
 
@@ -459,7 +471,7 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      {[dummyDriver]: {diagram: '-a|', values: {a: dummyDriverActionResponse}}}
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -483,9 +495,9 @@ QUnit.test(
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
-      sinkModel: {
+      modelSink: {
         outputs: [makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
-        successMessage: 'sink sinkModel produces the expected values',
+        successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       [dummyDriver]: {
@@ -581,10 +593,10 @@ QUnit.test(
 
     const entryComponents = {
       [FIRST_STATE]: function (model) {
-        return curry(dummyComponent2Sink)(__, {model})
+        return curry(dummyComponent2Sink)(__, { model })
       },
       [SECOND_STATE]: function (model) {
-        return curry(dummyComponent1Sink)(__, {model})
+        return curry(dummyComponent1Sink)(__, { model })
       },
     };
 
@@ -597,7 +609,7 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      {[dummyDriver]: {diagram: '-a|', values: {a: dummyDriverActionResponse}}}
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -621,9 +633,9 @@ QUnit.test(
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
-      sinkModel: {
+      modelSink: {
         outputs: [updatedModel],
-        successMessage: 'sink sinkModel produces the expected values',
+        successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       [dummyDriver]: {
@@ -719,10 +731,10 @@ QUnit.test(
 
     const entryComponents = {
       [FIRST_STATE]: function (model) {
-        return curry(dummyComponent2Sink)(__, {model})
+        return curry(dummyComponent2Sink)(__, { model })
       },
       [SECOND_STATE]: function (model) {
-        return curry(dummyComponent1Sink)(__, {model})
+        return curry(dummyComponent1Sink)(__, { model })
       },
     };
 
@@ -735,7 +747,7 @@ QUnit.test(
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
 
     const inputs = [
-      {[dummyDriver]: {diagram: '-a|', values: {a: dummyDriverActionResponse}}}
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
     ];
 
     function analyzeTestResults(actual, expected, message) {
@@ -759,9 +771,9 @@ QUnit.test(
         successMessage: 'sink sinkB produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
-      sinkModel: {
+      modelSink: {
         outputs: [initialModel],
-        successMessage: 'sink sinkModel produces the expected values',
+        successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
       [dummyDriver]: {
@@ -779,3 +791,782 @@ QUnit.test(
     })
 
   });
+
+QUnit.test(
+  "failing, and fulfilled event guard in that order - no action request guard",
+  function exec_test(assert) {
+    let done = assert.async(4);
+    const testEvent = 'dummy';
+
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `On receiving an action response, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, dummyEventData,
+        `On receiving an action response, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, dummyDriverActionResponse,
+        `On receiving an action response, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnInitialModel
+    }
+
+    const dummyActionRequest = {
+      driver: dummyDriver,
+      request: (model, eventData) => {
+        assert.deepEqual(model, initialModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+
+    const events = {
+      [testEvent]: sources => $.just(dummyEventData)
+    };
+
+    const transitions = {
+      [INIT_TRANSITION]: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: FIRST_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      },
+      T1: {
+        origin_state: FIRST_STATE,
+        event: testEvent,
+        target_states: [
+          {
+            event_guard: F,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: THIRD_STATE,
+                model_update: identity
+              }
+            ]
+          },
+          {
+            event_guard: T,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: SECOND_STATE,
+                model_update: modelUpdateInitTransition
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      [FIRST_STATE]: function (model) {
+        return curry(dummyComponent2Sink)(__, { model })
+      },
+      [SECOND_STATE]: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      },
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+
+    const inputs = [
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        successMessage: 'sink sinkA produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: dummySinkB2Values,
+        successMessage: 'sink sinkB produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [dummyRequest],
+        successMessage: 'sink dummyDriver produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      }
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent, {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 200
+    })
+
+  });
+
+QUnit.test(
+  "fulfilled, and failing event guard in that order - no action request guard",
+  function exec_test(assert) {
+    let done = assert.async(4);
+    const testEvent = 'dummy';
+
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `On receiving an action response, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, dummyEventData,
+        `On receiving an action response, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, dummyDriverActionResponse,
+        `On receiving an action response, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnInitialModel
+    }
+
+    const dummyActionRequest = {
+      driver: dummyDriver,
+      request: (model, eventData) => {
+        assert.deepEqual(model, initialModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+
+    const events = {
+      [testEvent]: sources => $.just(dummyEventData)
+    };
+
+    const transitions = {
+      [INIT_TRANSITION]: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: FIRST_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      },
+      T1: {
+        origin_state: FIRST_STATE,
+        event: testEvent,
+        target_states: [
+          {
+            event_guard: T,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: SECOND_STATE,
+                model_update: modelUpdateInitTransition
+              }
+            ]
+          },
+          {
+            event_guard: F,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: THIRD_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      [FIRST_STATE]: function (model) {
+        return curry(dummyComponent2Sink)(__, { model })
+      },
+      [SECOND_STATE]: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      },
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+
+    const inputs = [
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        successMessage: 'sink sinkA produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: dummySinkB2Values,
+        successMessage: 'sink sinkB produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [dummyRequest],
+        successMessage: 'sink dummyDriver produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      }
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent, {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 200
+    })
+
+  });
+
+QUnit.test(
+  "2 fulfilled event guards - no action request guard : first guard's transition is taken",
+  function exec_test(assert) {
+    let done = assert.async(4);
+    const testEvent = 'dummy';
+
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `On receiving an action response, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, dummyEventData,
+        `On receiving an action response, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, dummyDriverActionResponse,
+        `On receiving an action response, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnInitialModel
+    }
+
+    const dummyActionRequest = {
+      driver: dummyDriver,
+      request: (model, eventData) => {
+        assert.deepEqual(model, initialModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+
+    const events = {
+      [testEvent]: sources => $.just(dummyEventData)
+    };
+
+    const transitions = {
+      [INIT_TRANSITION]: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: FIRST_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      },
+      T1: {
+        origin_state: FIRST_STATE,
+        event: testEvent,
+        target_states: [
+          {
+            event_guard: T,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: SECOND_STATE,
+                model_update: modelUpdateInitTransition
+              }
+            ]
+          },
+          {
+            event_guard: T,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: THIRD_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      [FIRST_STATE]: function (model) {
+        return curry(dummyComponent2Sink)(__, { model })
+      },
+      [SECOND_STATE]: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      },
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+
+    const inputs = [
+      { [dummyDriver]: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        successMessage: 'sink sinkA produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: dummySinkB2Values,
+        successMessage: 'sink sinkB produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [dummyRequest],
+        successMessage: 'sink dummyDriver produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      }
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent, {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 200
+    })
+
+  });
+
+QUnit.test(
+  "Event triggers a transition with an action request - receiving response from another driver" +
+  " not mentioned in an action request : same as if no response received",
+  function exec_test(assert) {
+    let done = assert.async(4);
+    const testEvent = 'dummy';
+
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `On receiving an action response, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, dummyEventData,
+        `On receiving an action response, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, dummyDriverActionResponse,
+        `On receiving an action response, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnInitialModel
+    }
+
+    const dummyActionRequest = {
+      driver: dummyDriver,
+      request: (model, eventData) => {
+        assert.deepEqual(model, initialModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+
+    const events = {
+      [testEvent]: sources => $.just(dummyEventData)
+    };
+
+    const transitions = {
+      [INIT_TRANSITION]: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: FIRST_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      },
+      T1: {
+        origin_state: FIRST_STATE,
+        event: testEvent,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: SECOND_STATE,
+                model_update: modelUpdateInitTransition
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      [FIRST_STATE]: function (model) {
+        return curry(dummyComponent2Sink)(__, { model })
+      },
+      [SECOND_STATE]: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      },
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+
+    const inputs = [
+      { [dummyDriver]: { diagram: '--a|', values: { a: dummyDriverActionResponse } } },
+      { [dummyDriver + '2']: { diagram: '-a|', values: { a: dummyDriverActionResponse } } }
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        successMessage: 'sink sinkA produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: dummySinkB2Values,
+        successMessage: 'sink sinkB produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [dummyRequest],
+        successMessage: 'sink dummyDriver produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      }
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent, {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 200
+    })
+
+  });
+
+QUnit.test(
+  "Event triggers a transition with an action request - receiving response from another driver" +
+  " than the expected one : same as if no response received, but warning is issued",
+  function exec_test(assert) {
+    let done = assert.async(4);
+    const testEvent = 'dummy';
+
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `On receiving init event, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, initEventData,
+        `On receiving init event, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, null,
+        `On receiving init event, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnInitialModel
+    }
+
+    function modelUpdateDummyEventTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, updatedModel,
+        `On receiving an action response, the model update function is called 
+        with the model's current value as its first parameter`);
+      assert.deepEqual(eventData, dummyEventData,
+        `On receiving an action response, the model update function is called 
+        with the current triggering event's data as its second parameter`);
+      assert.deepEqual(actionResponse, dummyDriverActionResponse,
+        `On receiving an action response, the model update function is called 
+        with the action response as its third parameter`);
+
+      return opsOnUpdatedModel
+    }
+
+    const dummyActionRequest = {
+      driver: dummyDriver,
+      request: (model, eventData) => {
+        assert.deepEqual(model, updatedModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+    const dummyActionRequest2 = {
+      driver: dummyDriver + '2',
+      request: (model, eventData) => {
+        assert.deepEqual(model, initialModel,
+          `The request factory function is called with first parameter being 
+          the model's current value`);
+        assert.deepEqual(eventData, dummyEventData,
+          `The request factory function is called with second parameter being 
+          the data for the event triggering the action request`);
+
+        return dummyRequest
+      }
+    };
+
+    const events = {
+      [testEvent]: sources => $.just(dummyEventData)
+    };
+
+    const transitions = {
+      [INIT_TRANSITION]: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: FIRST_STATE,
+                model_update: modelUpdateInitTransition
+              }
+            ]
+          }
+        ]
+      },
+      T1: {
+        origin_state: FIRST_STATE,
+        event: testEvent,
+        target_states: [
+          {
+            event_guard: T,
+            action_request: dummyActionRequest,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: SECOND_STATE,
+                model_update: modelUpdateDummyEventTransition
+              }
+            ]
+          },
+          {
+            event_guard: F,
+            action_request: dummyActionRequest2,
+            transition_evaluation: [
+              {
+                action_guard: T,
+                target_state: THIRD_STATE,
+                model_update: identity
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      [FIRST_STATE]: function (model) {
+        return curry(dummyComponent2Sink)(__, { model })
+      },
+      [SECOND_STATE]: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      },
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+
+    const inputs = [
+      { [dummyDriver]: { diagram: '------a|', values: { a: dummyDriverActionResponse } } },
+      { [dummyDriver + '2']: { diagram: '----a|', values: { a: dummyDriverActionResponse2 } } }
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+    let updatedTwiceModel = clone(updatedModel);
+    jsonpatch.apply(/*OUT*/updatedTwiceModel, opsOnUpdatedModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: flatten(['dummyComponent2_dummySinkA1', dummySinkA3Values]),
+        successMessage: 'sink sinkA produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: dummySinkB2Values,
+        successMessage: 'sink sinkB produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [initialModel, updatedModel],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [dummyRequest],
+        successMessage: 'sink dummyDriver produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      }
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent, {
+      tickDuration: 100,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 200
+    })
+
+  });
+
+// Action request, and while expecting response, receiving event for which a transition is
+// configured
+
+// Awaiting event, and receiving event for which a transition is
+// NOT configured
+
+// Awaiting event, and receiving action response for which a transition is
+// NOT configured
+
+// Awaiting event, and receiving action response for which a transition is
+// configured
