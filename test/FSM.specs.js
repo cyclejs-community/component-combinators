@@ -104,14 +104,6 @@ function generateValuesWithInterval(arrayValues, timeInterval) {
 
 QUnit.module("makeFSM :: Events -> Transitions -> StateEntryComponents -> FSM_Settings -> Component", {});
 
-//// Init event
-///  - Also testing EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE
-// - GIVEN : FSM `Model, SinkNames`,  transition `Ev.INIT -> evG(none) -> S.Init -> T -> Ar(none) -> Ag(none) -> U`, `init: Model -> Component(_, model)`
-// - GIVEN : Component emits two values on two sinks in SinkNames
-// - WHEN state machine is initialized THEN :
-//   - Update U is called with right parameters (i.e. Ev.INIT is triggered)
-// - init state component factory function is called with the right parameters
-// - FSM emits component sinks as expected
 QUnit.test(
   "Initialization of state machine - INIT event (no event guard)",
   function exec_test(assert) {
@@ -1920,3 +1912,13 @@ QUnit.test(
 
 // Awaiting event, and receiving action response for which a transition is
 // configured
+
+// Add specs :
+// - cloning model
+// - error when settings are not correct or coherent
+// - basically cf. contracts
+
+// TODO : add contracts checks for all the things that cannot be checked ahead of time
+// example type of function parameters, and function return values
+// but only test the return values of the function introduced by the user in config
+// the internally used function should be tested and not needing further type checking

@@ -33,7 +33,7 @@ come with :
    }`
 - `ActionResponses` :: [SourceName]
 - `Sources :: HashMap SourceName (Source *)`
-- `Events :: ()HashMap EventName Event) | {}`
+- `Events :: (HashMap EventName Event) | {}`
 - `Event :: Sources -> Settings -> Source EventData`
 - `Transitions :: HashMap TransitionName TransitionOptions`
 - `Request : Record {
@@ -46,10 +46,10 @@ come with :
   } | Null`
 - `UpdateOperation :: JSON_Patch`
 - `TransitionOptions :: Record {
-    origin_state :: State
-    event :: EventName
-    target_states :: [Transition]
-  }`
+        origin_state :: State
+        event :: EventName
+        target_states :: [Transition]
+      }`
 - `Transition :: Record {
     event_guard :: EventGuard 
     action_request :: ActionRequest
@@ -94,22 +94,24 @@ user-defined state configuration
 - A transition MUST move the state machine to a distinct state (no internal transition)
 - A transition MAY have an action response guard
 - A transition MAY have an event guard
-- If a transition does not have an action response guard, it is equivalent to having a guard which always passes
-- If a transition does not have a event guard, it is equivalent to having a guard which always passes
-- If a transition between two states have one or several action response guards, then for any incoming events ONE (and only one) of the guards MUST pass. (cant have two components instantiated at the same time)
-- If a transition between two states have one or several event guards, then for any incoming events AT MOST ONE of the guards MAY pass. (cant have two actions triggered at the same time - all guards can also fail)
+x If a transition does not have an action response guard, it is equivalent to having a guard which always passes
+x If a transition does not have a event guard, it is equivalent to having a guard which always 
+passes
+x If a transition between two states have one or several action response guards, then for any 
+incoming events ONE (and only one) of the guards MUST pass. (cant have two components instantiated at the same time)
+x If a transition between two states have one or several event guards, then for any incoming events AT MOST ONE of the guards MAY pass. (cant have two actions triggered at the same time - all guards can also fail)
 - guard predicates MUST be pure functions - or more relaxly have side-effects which do not affect the evaluation of other guards for the same event
 - Run To Completion (RTC) semantics : a state machine completes processing of each event before it can start processing the next event
 - Additional events occurring while the state machine is busy processing an event are dropped
-- FSM configured functions MUST NOT modify the model object parameter that they receive - to prevent this the implementation could pass a clone of the model object, or use inmutable models
-- an action request MAY take a special zero value which indicates no request (zero driver)
+x FSM configured functions MUST NOT modify the model object parameter that they receive - to prevent this the implementation could pass a clone of the model object, or use inmutable models
+x an action request MAY take a special zero value which indicates no request (zero driver)
 - the state machine keeps a journal of the modification of its model (history 
 of update operations together with the transitions taken) for debugging 
 purposes or else
 - in the transition definition, only one event per origin state mapping to target states, i.e. 
 (origin_state, event, target_State)
 - all configured functions must be synchronous and not throw (event guard, action guard, event 
-functions, etc.)
+functions, etc.) :: use tryCatch??
 - if action request has zero driver, then the request field MUST be null
 - there MUST be an init event and transition configured
 - if action request, then it is only ONE value passed in the specified driver
@@ -238,6 +240,7 @@ TODO : If I go with that, update contracts
   - state re-entry (executing the entry/exit actions)
   - or not
 - automatic events
+- investigate racing conditions
 
 // event E: click on one team - these are only event CHANGING fsm state!!
 // NOT SAME
@@ -249,30 +252,3 @@ TODO : If I go with that, update contracts
 
 // fsm(events, transitions, stateVsComponentMap) : component
 // stateVsComponentMap :: state => model => component
-
-merge(labelledEvents.startWith(init))
-  .scan ((init, no pending, no action request, init model, orig. event data), (fsmInternalState, event) => {
-  if pending action :
-    if event not corresponding/expected action response (from label)
-      discard/maybe warning
-    else :
-      update internal model cf. transition success/error -MUST synchronous
-      log operations on model somewhere (external fsm driver??) - MAY async., MUST SUCCEED
-      set internal state to transition success/error target state
-      emit component configured in transition
-  else new action request :
-    if configured in transition
-      pending : YES, action request : targetDriver (label), state, model is same
-      orig event data = action request event data
-      emit : {targetDriver : ..} according to transition
-    else FATAL ERROR : must be configured in fsm
-}).
-switchMap({state, pending, action request, model, orig event data} => {
-  if pending :
-    emit : {targetDriver : ..} according to transition
-  else :
-    emit component configured in transition
-})
-!! this is a switch on component!!
-  means no more events are processed while executing actions (GOOD!)
-    - behaviours if processed with combineLatest keep their values (DOM)

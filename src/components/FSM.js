@@ -14,8 +14,14 @@ import {
   pick,
   curry,
   defaultTo,
-  findIndex
+  findIndex,
+  allPass,
+  pipe,
+  both,
+  isEmpty,
+  all,
 } from "ramda"
+import { checkSignature, assertContract, isFunction, isString, isArrayOf, isObject } from "../utils"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
 import {
@@ -398,6 +404,91 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   // function/event
 
   // 0. TODO : check signature deeply - I dont want to check for null all the time
+  /**
+   *
+   * @param {Predicate} predicateKey
+   * @param {Predicate} predicateValue
+   * @returns {Predicate}
+   * @throws when either predicate is not a function
+   */
+  function isHashMap(predicateKey, predicateValue) {
+    assertContract(isFunction, predicateKey, 'isHashMap : first argument must be a' +
+      ' predicate function!');
+    assertContract(isFunction, predicateValue, 'isHashMap : second argument must be a' +
+      ' predicate function!');
+
+    return both(
+      pipe(keys, all(predicateKey)),
+      pipe(values, all(predicateValue))
+    );
+  }
+
+  /**
+   * check that an object :
+   * - does not have any extra properties than the expected ones (strictness)
+   * - that its properties follow the defined specs
+   * Note that if a property is optional, the spec must include that case
+   * @param {Object.<String, Predicate>} recordSpec
+   * @returns {Predicate}
+   * @throws when recordSpec is not an object
+   *
+   * Example :
+   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2'}) -> true
+   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2', c:3}) -> false
+   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:2}) -> false
+   */
+  function isStrictRecord(recordSpec) {
+    assertContract(isObject, recordSpec, 'isStrictRecord : record specification argument must be' +
+      ' a valid object!');
+
+    return allPass([
+        // 1. no extra properties, i.e. all properties in obj are in recordSpec
+        // return true if recordSpec.keys - obj.keys is empty
+        pipe(keys, flip(difference)(keys(recordSpec)), isEmpty),
+        // 2. the properties in recordSpec all pass their corresponding predicate
+        // For each key, execute the corresponding predicate in recordSpec on the corresponding
+        // value in obj
+        pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
+      ]
+    )
+  }
+
+  const isEventName = isString;
+  const isTransitionName = isString;
+  const isState = isString;
+  // NOTE : cant check at this level type of arguments
+  //`Event :: Sources -> Settings -> Source EventData`
+  const isEvent = isFunction;
+  //`TransitionOptions :: Record {
+  //  origin_state :: State
+  //  event :: EventName
+  //  target_states :: [Transition]
+  //}`
+  const isTransitionOptions = isStrictRecord({
+    origin_state: isState,
+    event: isEventName,
+    target_states: isArrayOf(isTransition)
+  });
+
+  // `Events :: (HashMap EventName Event) | {}`
+  const isFsmEvents = isHashMap(isEventName, isEvent);
+  const isFsmTransitions = isHashMap(isTransitionName, isTransitionOptions);
+
+  const fsmSignature = {
+    events: isFsmEvents,
+    transitions: isFsmTransitions,
+    entryComponents: isFsmEntryComponents,
+    fsmSettings: isFsmSettings
+  };
+  const fsmSignatureErrorMessages = {
+    events: '',
+    transitions: '',
+    entryComponents: '',
+    fsmSettings: ''
+  };
+  checkSignature(
+    { events, transitions, entryComponents, fsmSettings },
+    fsmSignature, fsmSignatureErrorMessages);
 
   const { init_event_data, initial_model, sinkNames } = fsmSettings;
 
@@ -702,12 +793,12 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
       internal_state: AWAITING_EVENTS,
       external_state: INIT_STATE,
       model: clonedInitialModel,
-      clonedModel : clonedInitialModel,
+      clonedModel: clonedInitialModel,
       current_event_name: null,
       current_event_data: null,
       current_event_guard_index: null,
       current_action_request_driver: null,
-      sinks : null
+      sinks: null
     };
 
     /** @type {Observable.<FSM_State>}*/

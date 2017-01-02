@@ -156,15 +156,15 @@ function assertContract(contractFn, contractArgs, errorMessage) {
  * @returns {Boolean | Array<String>}
  */
 function checkSignature(obj, signature, signatureErrorMessages, isStrict) {
-  let arrMessages = []
-  let strict = !!isStrict
+  let arrMessages = [];
+  let strict = !!isStrict;
 
   // Check that object properties in the signature match it
   mapObjIndexed((predicate, property) => {
     if (!predicate(obj[property])) {
       arrMessages.push(signatureErrorMessages[property])
     }
-  }, signature)
+  }, signature);
 
   // Check that object properties are all in the signature if strict is set
   if (strict) {
@@ -192,23 +192,23 @@ function checkSignature(obj, signature, signatureErrorMessages, isStrict) {
  * @returns {{}}
  */
 function unfoldObjOverload(obj, overloads) {
-  let result = {}
-  let index = 0
+  let result = {};
+  let index = 0;
 
   overloads.some(overload => {
     // can only be one property
-    const property = keys(overload)[0]
-    const predicate = values(overload)[0]
-    const predicateEval = predicate(obj)
+    const property = keys(overload)[0];
+    const predicate = values(overload)[0];
+    const predicateEval = predicate(obj);
 
     if (predicateEval) {
-      result[property] = obj
+      result[property] = obj;
       result._index = index
     }
-    index++
+    index++;
 
     return predicateEval
-  })
+  });
   return result
 }
 
@@ -313,8 +313,9 @@ function isArray(obj) {
  * @returns {function():Boolean}
  */
 function isArrayOf(predicateFn) {
+  // TODO : should I throw instead of returning false?? I think I should
   if (typeof predicateFn !== 'function') {
-    console.error('isArrayOf: predicateFn is not a function!!')
+    console.error('isArrayOf: predicateFn is not a function!!');
     return always(false)
   }
 
@@ -374,22 +375,22 @@ function isArrayOptSinks(arrSinks) {
 function assertSourcesContracts(sources, sourcesContract) {
   // Check sources contracts
   assertContract(isSources, [sources],
-    'm : `sources` parameter is invalid')
+    'm : `sources` parameter is invalid');
   assertContract(sourcesContract, [sources], 'm: `sources`' +
-    ' parameter fails contract ' + sourcesContract.name)
+    ' parameter fails contract ' + sourcesContract.name);
 }
 
 function assertSinksContracts(sinks, sinksContract) {
   assertContract(isOptSinks, [sinks],
-    'mergeSinks must return a hash of observable sink')
+    'mergeSinks must return a hash of observable sink');
   assertContract(sinksContract, [sinks],
-    'fails custom contract ' + sinksContract.name)
+    'fails custom contract ' + sinksContract.name);
 }
 
 function assertSettingsContracts(mergedSettings, settingsContract) {
   // Check settings contracts
   assertContract(settingsContract, [mergedSettings], 'm: `settings`' +
-    ' parameter fails contract ' + settingsContract.name)
+    ' parameter fails contract ' + settingsContract.name);
 }
 
 // from https://github.com/substack/deep-freeze/blob/master/index.js
