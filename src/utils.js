@@ -306,6 +306,10 @@ function isArray(obj) {
   return Array.isArray(obj)
 }
 
+function isEmptyArray (obj) {
+  return all([isEmpty, isArray])(obj);
+}
+
 /**
  * Returns a function which returns true if its parameter is an array,
  * and each element of the array satisfies a given predicate
@@ -331,6 +335,54 @@ function isArrayOf(predicateFn) {
 function isVNode(obj) {
   return ["children", "data", "elm", "key", "sel", "text"]
     .every(prop => prop in obj)
+}
+
+/**
+ *
+ * @param {Predicate} predicateKey
+ * @param {Predicate} predicateValue
+ * @returns {Predicate}
+ * @throws when either predicate is not a function
+ */
+function isHashMap(predicateKey, predicateValue) {
+  assertContract(isFunction, predicateKey, 'isHashMap : first argument must be a' +
+    ' predicate function!');
+  assertContract(isFunction, predicateValue, 'isHashMap : second argument must be a' +
+    ' predicate function!');
+
+  return both(
+    pipe(keys, all(predicateKey)),
+    pipe(values, all(predicateValue))
+  );
+}
+
+/**
+ * check that an object :
+ * - does not have any extra properties than the expected ones (strictness)
+ * - that its properties follow the defined specs
+ * Note that if a property is optional, the spec must include that case
+ * @param {Object.<String, Predicate>} recordSpec
+ * @returns {Predicate}
+ * @throws when recordSpec is not an object
+ *
+ * Example :
+ * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2'}) -> true
+ * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2', c:3}) -> false
+ * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:2}) -> false
+ */
+function isStrictRecord(recordSpec) {
+  assertContract(isObject, recordSpec, 'isStrictRecord : record specification argument must be' +
+    ' a valid object!');
+
+  return allPass([
+      // 1. no extra properties, i.e. all properties in obj are in recordSpec
+      // return true if recordSpec.keys - obj.keys is empty
+      pipe(keys, flip(difference)(keys(recordSpec)), isEmpty),
+      // 2. the properties in recordSpec all pass their corresponding predicate
+      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
+      where(recordSpec)
+    ]
+  )
 }
 
 /**
@@ -526,6 +578,8 @@ export {
   emitNullIfEmpty,
   isNullableObject,
   isNullableComponentDef,
+  isHashMap,
+  isStrictRecord,
   isComponent,
   isUndefined,
   isFunction,
@@ -534,6 +588,7 @@ export {
   isBoolean,
   isString,
   isArray,
+  isEmptyArray,
   isArrayOf,
   isObservable,
   isSource,

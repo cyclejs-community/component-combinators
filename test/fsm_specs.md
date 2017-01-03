@@ -29,9 +29,9 @@ come with :
 - `FSM_Settings :: Record {
      initial_model :: FSM_Model
      init_event_data :: Event_Data 
-     sinkNames :: [SinkName]
+     sinkNames :: [SinkName] | []
    }`
-- `ActionResponses` :: [SourceName]
+- `ActionResponses :: [SourceName]`
 - `Sources :: HashMap SourceName (Source *)`
 - `Events :: (HashMap EventName Event) | {}`
 - `Event :: Sources -> Settings -> Source EventData`
@@ -41,9 +41,9 @@ come with :
     payload :: Payload
   }`
 - `ActionRequest :: Record {
-    driver :: SinkName | ZeroDriver
+    driver :: SinkName | Null
     request :: (FSM_Model -> EventData) -> Request
-  } | Null`
+  } `
 - `UpdateOperation :: JSON_Patch`
 - `TransitionOptions :: Record {
         origin_state :: State
@@ -52,11 +52,11 @@ come with :
       }`
 - `Transition :: Record {
     event_guard :: EventGuard 
-    action_request :: ActionRequest
+    action_request :: ActionRequest | Null
     transition_evaluation :: [TransEval]
   }`
 - `TransEval :: Record {
-    action_guard :: ActionGuard
+    action_guard :: ActionGuard | Null
     target_state :: State
     model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]     
   }`
@@ -64,24 +64,24 @@ come with :
 - `EventGuard :: Model -> EventData -> Boolean`
 - `StateEntryComponents :: HashMap State StateEntryComponent`
 - `StateEntryComponent :: FSM_Model -> Component`
-- `JSON_Patch :: Op_Add | Op_Remove | Op_Replace | Op_Move | Op_Copy | Op_Test`
+- `JSON_Patch :: Op_Add | Op_Remove | Op_Replace | Op_Move | Op_Copy | Op_Test | Op_None`
 - `Op_Add :: Record { op: "add", path: JSON_Pointer, value : *}`
 - `Op_Remove :: Record { op: "remove", path: JSON_Pointer}`
 - `Op_Replace :: Record { op: "replace", path: JSON_Pointer, value: *}`
 - `Op_Move :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
 - `Op_Copy :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
 - `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
+- `Op_None :: {}`
 
 ## Terminal types
 - `FSM_Model :: Object`
-- `Payload :: *`
-- `EventData :: *`
+- `Payload :: * | Null`
+- `EventData :: * | Null`
 - `ActionResponse :: *`
 - `Command :: String`
 - `EventName :: String`
 - `SinkName :: String`
 - `State :: String`
-- `ZeroDriver` :: Null
 
 # FSM specifications
 ## Contracts

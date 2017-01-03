@@ -20,8 +20,20 @@ import {
   both,
   isEmpty,
   all,
+  either,
+  isNil,
+  T
 } from "ramda"
-import { checkSignature, assertContract, isFunction, isString, isArrayOf, isObject } from "../utils"
+import {
+  checkSignature,
+  assertContract,
+  isFunction,
+  isString,
+  isArrayOf,
+  isObject,
+  isEmptyArray
+} from "../utils"
+import {isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents} from './types'
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
 import {
@@ -398,81 +410,7 @@ function getDriverNames(transOptions, transName) {
 }
 
 export function makeFSM(events, transitions, entryComponents, fsmSettings) {
-  // TODO : dont forget - clone initial model
-  // TODO : dont forget - apply patch in place inside the fsm
-  // TODO : but pass the model cloned THEN deep-frozen to any function who consumes it
-  // function/event
-
   // 0. TODO : check signature deeply - I dont want to check for null all the time
-  /**
-   *
-   * @param {Predicate} predicateKey
-   * @param {Predicate} predicateValue
-   * @returns {Predicate}
-   * @throws when either predicate is not a function
-   */
-  function isHashMap(predicateKey, predicateValue) {
-    assertContract(isFunction, predicateKey, 'isHashMap : first argument must be a' +
-      ' predicate function!');
-    assertContract(isFunction, predicateValue, 'isHashMap : second argument must be a' +
-      ' predicate function!');
-
-    return both(
-      pipe(keys, all(predicateKey)),
-      pipe(values, all(predicateValue))
-    );
-  }
-
-  /**
-   * check that an object :
-   * - does not have any extra properties than the expected ones (strictness)
-   * - that its properties follow the defined specs
-   * Note that if a property is optional, the spec must include that case
-   * @param {Object.<String, Predicate>} recordSpec
-   * @returns {Predicate}
-   * @throws when recordSpec is not an object
-   *
-   * Example :
-   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2'}) -> true
-   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2', c:3}) -> false
-   * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:2}) -> false
-   */
-  function isStrictRecord(recordSpec) {
-    assertContract(isObject, recordSpec, 'isStrictRecord : record specification argument must be' +
-      ' a valid object!');
-
-    return allPass([
-        // 1. no extra properties, i.e. all properties in obj are in recordSpec
-        // return true if recordSpec.keys - obj.keys is empty
-        pipe(keys, flip(difference)(keys(recordSpec)), isEmpty),
-        // 2. the properties in recordSpec all pass their corresponding predicate
-        // For each key, execute the corresponding predicate in recordSpec on the corresponding
-        // value in obj
-        pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
-      ]
-    )
-  }
-
-  const isEventName = isString;
-  const isTransitionName = isString;
-  const isState = isString;
-  // NOTE : cant check at this level type of arguments
-  //`Event :: Sources -> Settings -> Source EventData`
-  const isEvent = isFunction;
-  //`TransitionOptions :: Record {
-  //  origin_state :: State
-  //  event :: EventName
-  //  target_states :: [Transition]
-  //}`
-  const isTransitionOptions = isStrictRecord({
-    origin_state: isState,
-    event: isEventName,
-    target_states: isArrayOf(isTransition)
-  });
-
-  // `Events :: (HashMap EventName Event) | {}`
-  const isFsmEvents = isHashMap(isEventName, isEvent);
-  const isFsmTransitions = isHashMap(isTransitionName, isTransitionOptions);
 
   const fsmSignature = {
     events: isFsmEvents,
@@ -596,7 +534,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   // is faster
                   clonedModel = clone(model);
                   // NOTE : The model to be passed to the entry component is post update
-                  sinks = entryComponent(clonedModel)(sources, settings);
+                  sinks = entryComponent ? entryComponent(clonedModel)(sources, settings) : {};
                   internal_state = AWAITING_EVENTS;
                   current_event_guard_index = null;
                   current_event_name = null;
@@ -695,7 +633,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                 model = applyUpdateOperations(/*OUT*/model, modelUpdateOperations);
                 clonedModel = clone(model);
                 // Note : The model to be passed to the entry component is post update
-                sinks = entryComponent(model)(sources, settings);
+                sinks = entryComponent ? entryComponent(clonedModel)(sources, settings) : {};
                 current_event_guard_index = null;
                 current_event_name = null;
                 current_event_data = null;

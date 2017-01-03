@@ -1922,3 +1922,8 @@ QUnit.test(
 // example type of function parameters, and function return values
 // but only test the return values of the function introduced by the user in config
 // the internally used function should be tested and not needing further type checking
+
+// TODO : What happen for states without an entry component! Add test
+// TODO : add test where zero entry components and a -> b -> c, with action request/response
+// TODO : investigate null for update model operations - test json patch work in that case too
+// TODO : impplement Op_None and update opereation can be empty array too
