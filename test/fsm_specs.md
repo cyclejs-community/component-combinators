@@ -46,8 +46,8 @@ come with :
   } `
 - `UpdateOperation :: JSON_Patch`
 - `TransitionOptions :: Record {
-        origin_state :: State
-        event :: EventName
+        origin_state :: State // Must exist in StateEntryComponents
+        event :: EventName // Must exist in Events
         target_states :: [Transition]
       }`
 - `Transition :: Record {
@@ -57,13 +57,13 @@ come with :
   }`
 - `TransEval :: Record {
     action_guard :: ActionGuard | Null
-    target_state :: State
+    target_state :: State // Must exist in StateEntryComponents
     model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]     
   }`
 - `ActionGuard :: ActionResponse -> Boolean`
 - `EventGuard :: Model -> EventData -> Boolean`
 - `StateEntryComponents :: HashMap State StateEntryComponent`
-- `StateEntryComponent :: FSM_Model -> Component`
+- `StateEntryComponent :: FSM_Model -> Component | Null`
 - `JSON_Patch :: Op_Add | Op_Remove | Op_Replace | Op_Move | Op_Copy | Op_Test | Op_None`
 - `Op_Add :: Record { op: "add", path: JSON_Pointer, value : *}`
 - `Op_Remove :: Record { op: "remove", path: JSON_Pointer}`
@@ -71,7 +71,7 @@ come with :
 - `Op_Move :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
 - `Op_Copy :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
 - `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
-- `Op_None :: {}`
+- `Op_None :: {} | Null`
 
 ## Terminal types
 - `FSM_Model :: Object`
@@ -119,6 +119,10 @@ functions, etc.) :: use tryCatch??
 - an action request MUST have an action response associated i.e. no write-only driver
 - if an action request features a driver name, that driver name MUST be found in the sources
 - state defined in transition array MUST exist in state definition
+- the Init state MUST be associated ONLY with transition featuring INIT events
+NOTE THAT AN FSM WITH EVENT GUARD SUCH THAT INIT EVENT FAILS WILL REMAIN IN LIMBO (INIT_STATE) AS
+ INIT EVENT WILL NOT BE REPEATED
+ - In states definition, the init state MUST NOT be used
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.

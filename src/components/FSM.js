@@ -621,7 +621,6 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   ' Throwing...`);
                 sinks = null;
                 throw CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
-
               }
               else {
                 const modelUpdateOperations = model_update(model, current_event_data, actionResponse);
@@ -676,7 +675,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
       .map(fsmState => defaultTo($.empty(), fsmState.sinks[sinkName]))
       .switch()
       .tap(x =>
-        console.warn(`post switch  ${sinkName}`, x))
+        console.warn(`post switch  ${sinkName}`, x));
 
     return accOutputSinks
   }

@@ -1,6 +1,7 @@
 import {
-  mapObjIndexed, flatten, keys, always, reject, isNil, uniq,
-  merge, reduce, all, either, clone, map, values, equals, concat, addIndex
+  mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe,
+  merge, reduce, all, either, clone, map, values, equals, concat, addIndex,
+  flip, difference, isEmpty, where, both
 } from 'ramda';
 import {ERROR_MESSAGE_PREFIX} from './components/properties';
 import * as Rx from 'rx';
@@ -307,7 +308,7 @@ function isArray(obj) {
 }
 
 function isEmptyArray (obj) {
-  return all([isEmpty, isArray])(obj);
+  return allPass([isEmpty, isArray])(obj);
 }
 
 /**
