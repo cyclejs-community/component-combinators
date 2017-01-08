@@ -51,7 +51,7 @@ come with :
         target_states :: [Transition]
       }`
 - `Transition :: Record {
-    event_guard :: EventGuard 
+    event_guard :: EventGuard  | Null
     action_request :: ActionRequest | Null
     transition_evaluation :: [TransEval]
   }`

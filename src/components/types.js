@@ -1,24 +1,19 @@
 import {
-  either,
-  isNil,
-  T
+  either, isNil, allPass, complement, isEmpty, where, pipe, values, any, propEq, tap, both, flatten,
+  map, prop, flip, all, identity, T
 } from "ramda"
 import {
-  isHashMap,
-  isStrictRecord,
-  isFunction,
-  isString,
-  isArrayOf,
-  isObject,
-  isEmptyArray
+  isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray
 } from "../utils"
+import { INIT_EVENT_NAME } from "./properties"
 
 ////////
 // Types FSM
-const isEventName = isString;
-const isTransitionName = isString;
-const isSinkName = isString;
-const isState = isString;
+const isNotEmpty = complement(isEmpty);
+const isEventName = both(isString, isNotEmpty);
+const isTransitionName = both(isString, isNotEmpty);
+const isSinkName = both(isString, isNotEmpty);
+const isState = both(isString, isNotEmpty);
 // NOTE : cant check at this level type of arguments
 //`Event :: Sources -> Settings -> Source EventData`
 const isEvent = isFunction;
@@ -28,7 +23,7 @@ const isEventData = T;
 const isFsmModel = isObject;
 
 // `EventGuard :: Model -> EventData -> Boolean`
-const isEventGuard = isFunction;
+const isEventGuard = either(isFunction, isNil);
 // `ActionRequest :: Record {
 //   driver :: SinkName | Null
 //   request :: (FSM_Model -> EventData) -> Request | Null
@@ -60,7 +55,7 @@ const isTransEval = isStrictRecord({
 const isTransition = isStrictRecord({
   event_guard: isEventGuard,
   action_request: either(isNil, isActionRequest),
-  transition_evaluation: isArrayOf(isTransEval)
+  transition_evaluation: isArrayOf(isTransEval),
 });
 
 //`TransitionOptions :: Record {
@@ -71,13 +66,13 @@ const isTransition = isStrictRecord({
 const isTransitionOptions = isStrictRecord({
   origin_state: isState,
   event: isEventName,
-  target_states: isArrayOf(isTransition)
+  target_states: both(isArrayOf(isTransition), isNotEmpty)
 });
 
 // `StateEntryComponent :: FSM_Model -> Component`
 const isStateEntryComponent = isFunction;
 // `StateEntryComponents :: HashMap State StateEntryComponent`
-export const isFsmEntryComponents = isHashMap(isState, isStateEntryComponent);
+export const isFsmEntryComponents = both(isHashMap(isState, isStateEntryComponent), isNotEmpty);
 
 // FSM_Settings :: Record {
 //   initial_model :: FSM_Model
@@ -92,4 +87,24 @@ export const isFsmSettings = isStrictRecord({
 
 // `Events :: (HashMap EventName Event) | {}`
 export const isFsmEvents = isHashMap(isEventName, isEvent);
-export const isFsmTransitions = isHashMap(isTransitionName, isTransitionOptions);
+export const isFsmTransitions = allPass([
+  isHashMap(isTransitionName, isTransitionOptions), tap(x => console.log('isHashmap', x)),
+  complement(isEmpty),
+  pipe(values, any(propEq('event', INIT_EVENT_NAME)))
+  // go through all values and check for an event property which INIT_EVENT_NAME
+  // TODO has an init event configured
+]);
+
+export function checkStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
+                                                                       entryComponents,
+                                                                       fsmSettings) {
+  const check =  pipe(
+    values, map(prop('target_states')), flatten,
+    map(prop('transition_evaluation')), flatten,
+    map(prop('target_state')),
+    map(flip(prop)(entryComponents)),
+    all(identity))
+  (transitions);
+
+  return check ;
+}

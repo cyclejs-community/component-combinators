@@ -6,12 +6,7 @@ import * as Rx from "rx"
 import { makeErrorMessage } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import {
-  EV_GUARD_NONE,
-  ACTION_REQUEST_NONE,
-  ACTION_GUARD_NONE,
-  DRIVER_PREFIX,
-  INIT_EVENT_NAME,
-  INIT_STATE,
+  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, DRIVER_PREFIX, INIT_EVENT_NAME, INIT_STATE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
 } from "../src/components/properties"
 import { makeFSM } from "../src/components/FSM"
@@ -24,6 +19,7 @@ const INIT_TRANSITION = 'T_INIT';
 const FIRST_STATE = 'S_FIRST';
 const SECOND_STATE = 'S_SECOND';
 const THIRD_STATE = 'S_THIRD';
+const testEvent = 'dummyEvent';
 const dummyValue = 'dummy';
 const dummyValue1 = 'dummy1';
 const dummyValue2 = 'dummy2';
@@ -107,7 +103,7 @@ QUnit.module("makeFSM :: Events -> Transitions -> StateEntryComponents -> FSM_Se
 QUnit.test(
   "Initialization of state machine - INIT event (no event guard)",
   function exec_test(assert) {
-    let done = assert.async(3);
+    let done = assert.async(5);
 
     function modelUpdateInitTransition(model, eventData, actionResponse) {
       assert.deepEqual(model, initialModel,
@@ -195,6 +191,16 @@ QUnit.test(
         successMessage: 'sink modelSink produces the expected values',
         analyzeTestResults: analyzeTestResults,
       },
+      drivers_dummy: {
+        outputs: [],
+        successMessage: 'sink drivers_dummy produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkC: {
+        outputs: [],
+        successMessage: 'sink sinkC produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
@@ -210,7 +216,7 @@ QUnit.test(
   "Event triggers a transition with an action request - default passing event guard - " +
   " passing action guard",
   function exec_test(assert) {
-    let done = assert.async(4);
+    let done = assert.async(5);
     const testEvent = 'dummy';
 
     function modelUpdateInitTransition(model, eventData, actionResponse) {
@@ -337,7 +343,12 @@ QUnit.test(
         outputs: [dummyRequest],
         successMessage: 'sink dummyDriver produces the expected values',
         analyzeTestResults: analyzeTestResults,
-      }
+      },
+      sinkC: {
+        outputs: [],
+        successMessage: 'sink sinkC produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
@@ -353,7 +364,7 @@ QUnit.test(
   "Event triggers a transition with an action request - default passing event guard -" +
   " failing action guard : ERROR!",
   function exec_test(assert) {
-    let done = assert.async(4);
+    let done = assert.async(5);
     const testEvent = 'dummy';
 
     function modelUpdateInitTransition(model, eventData, actionResponse) {
@@ -483,7 +494,12 @@ QUnit.test(
         outputs: [dummyRequest, makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
         successMessage: 'sink dummyDriver produces the expected values',
         analyzeTestResults: analyzeTestResults,
-      }
+      },
+      sinkC: {
+        outputs: [makeErrorMessage(CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE)],
+        successMessage: 'sink sinkC produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
@@ -499,7 +515,7 @@ QUnit.test(
   "Event triggers a transition with an action request - fulfilled event guard - default passing" +
   " action guard",
   function exec_test(assert) {
-    let done = assert.async(4);
+    let done = assert.async(5);
     const testEvent = 'dummy';
 
     function modelUpdateInitTransition(model, eventData, actionResponse) {
@@ -625,7 +641,12 @@ QUnit.test(
         outputs: [dummyRequest],
         successMessage: 'sink dummyDriver produces the expected values',
         analyzeTestResults: analyzeTestResults,
-      }
+      },
+      sinkC: {
+        outputs: [],
+        successMessage: 'sink sinkC produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
     };
 
     runTestScenario(inputs, testResults, fsmComponent, {
@@ -1976,94 +1997,40 @@ QUnit.test(
   "Empty transition object : Error! There has to be at least one configured transition which" +
   " involves the initial event",
   function exec_test(assert) {
-    let done = assert.async(3);
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose first parameter is the initial' +
+        ' model');
+      assert.deepEqual(eventData, initEventData,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose second parameter is the ' +
+        ' event data for the INIT event');
+      assert.deepEqual(actionResponse, null,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose third parameter is the ' +
+        ' response for the action corresponding to the transition');
 
-    const events = {
-      [testEvent]: sources => sources.eventSource.take(1)
-    };
-
-    const transitions = {};
-
-    const entryComponents = {
-      First: function (model) {
-        return curry(dummyComponent1Sink)(__, { model })
-      }
-    };
-
-    const fsmSettings = {
-      initial_model: initialModel,
-      init_event_data: initEventData,
-      sinkNames: sinkNames
-    };
-
-    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
-
-    const inputs = [
-      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
-      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
-      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
-      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
-    ];
-
-    function analyzeTestResults(actual, expected, message) {
-      assert.deepEqual(actual, expected, message);
-      done()
+      return opsOnInitialModel
     }
 
-    let updatedModel = clone(initialModel);
-    // NOTE: !! modifies in place so function does not return anything
-    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
-
-    /** @type TestResults */
-    const testResults = {
-      sinkA: {
-        outputs: dummySinkA3Values,
-        successMessage: 'sink sinkA produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      sinkB: {
-        outputs: dummySinkB2Values,
-        successMessage: 'sink sinkB produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      modelSink: {
-        outputs: [updatedModel],
-        successMessage: 'sink modelSink produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-    };
-
-    runTestScenario(inputs, testResults, fsmComponent, {
-      tickDuration: 5,
-      // We put a large value here as there is no inputs, so this allows to
-      // wait for the tested component to produce all its sink values
-      waitForFinishDelay: 200
-    })
-
-  });
-
-QUnit.test(
-  "Transition object not defining init event : Error! There has to be at least one configured" +
-  " transition which involves the initial event",
-  function exec_test(assert) {
-    let done = assert.async(3);
-
     const events = {
       [testEvent]: sources => sources.eventSource.take(1)
     };
 
-    const transitions = {
-      T1: {
-        origin_state: FIRST_STATE,
-        event: testEvent,
+    const transitions1 = {};
+    const transitions2 = {
+      T_INIT: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME + 'dummy',
         target_states: [
           {
             event_guard: EV_GUARD_NONE,
-            action_request: dummyActionRequest,
+            action_request: ACTION_REQUEST_NONE,
             transition_evaluation: [
               {
-                action_guard: F,
-                target_state: SECOND_STATE,
+                action_guard: ACTION_GUARD_NONE,
+                target_state: 'First',
                 model_update: modelUpdateInitTransition
               }
             ]
@@ -2084,57 +2051,38 @@ QUnit.test(
       sinkNames: sinkNames
     };
 
-    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+    assert.throws(
+      () => makeFSM(events, transitions1, entryComponents, fsmSettings),
+      "Error! There has to be at least one configured transition!"
+    );
 
-    const inputs = [
-      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
-      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
-      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
-      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
-    ];
-
-    function analyzeTestResults(actual, expected, message) {
-      assert.deepEqual(actual, expected, message);
-      done()
-    }
-
-    let updatedModel = clone(initialModel);
-    // NOTE: !! modifies in place so function does not return anything
-    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
-
-    /** @type TestResults */
-    const testResults = {
-      sinkA: {
-        outputs: dummySinkA3Values,
-        successMessage: 'sink sinkA produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      sinkB: {
-        outputs: dummySinkB2Values,
-        successMessage: 'sink sinkB produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      modelSink: {
-        outputs: [updatedModel],
-        successMessage: 'sink modelSink produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-    };
-
-    runTestScenario(inputs, testResults, fsmComponent, {
-      tickDuration: 5,
-      // We put a large value here as there is no inputs, so this allows to
-      // wait for the tested component to produce all its sink values
-      waitForFinishDelay: 200
-    })
+    assert.throws(
+      () => makeFSM(events, transitions2, entryComponents, fsmSettings),
+      "Error! There has to be at least one configured transition including the initial event!"
+    );
 
   });
 
 QUnit.test(
-  "Empty state object : Error! There has to be at least one state to which the state machine can" +
-  " transition from the init event",
+  "Invalid state object : Error! 1. Mapping state-component cannot be empty \n 2. All target" +
+  " states of configured transitions must be mapped to a component function",
   function exec_test(assert) {
-    let done = assert.async(3);
+    function modelUpdateInitTransition(model, eventData, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose first parameter is the initial' +
+        ' model');
+      assert.deepEqual(eventData, initEventData,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose second parameter is the ' +
+        ' event data for the INIT event');
+      assert.deepEqual(actionResponse, null,
+        'The INIT event triggers a call to the configured update' +
+        ' model function, whose third parameter is the ' +
+        ' response for the action corresponding to the transition');
+
+      return opsOnInitialModel
+    }
 
     const events = {
       [testEvent]: sources => sources.eventSource.take(1)
@@ -2160,7 +2108,12 @@ QUnit.test(
       }
     };
 
-    const entryComponents = {};
+    const entryComponents1 = {};
+    const entryComponents2 = {
+      Second: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      }
+    };
 
     const fsmSettings = {
       initial_model: initialModel,
@@ -2168,49 +2121,17 @@ QUnit.test(
       sinkNames: sinkNames
     };
 
-    const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
+    assert.throws(
+      () => makeFSM(events, transitions, entryComponents1, fsmSettings),
+      /empty/,
+      "Error! entryComponents cannot be empty!"
+    );
 
-    const inputs = [
-      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
-      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
-      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
-      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
-    ];
-
-    function analyzeTestResults(actual, expected, message) {
-      assert.deepEqual(actual, expected, message);
-      done()
-    }
-
-    let updatedModel = clone(initialModel);
-    // NOTE: !! modifies in place so function does not return anything
-    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
-
-    /** @type TestResults */
-    const testResults = {
-      sinkA: {
-        outputs: dummySinkA3Values,
-        successMessage: 'sink sinkA produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      sinkB: {
-        outputs: dummySinkB2Values,
-        successMessage: 'sink sinkB produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-      modelSink: {
-        outputs: [updatedModel],
-        successMessage: 'sink modelSink produces the expected values',
-        analyzeTestResults: analyzeTestResults,
-      },
-    };
-
-    runTestScenario(inputs, testResults, fsmComponent, {
-      tickDuration: 5,
-      // We put a large value here as there is no inputs, so this allows to
-      // wait for the tested component to produce all its sink values
-      waitForFinishDelay: 200
-    })
+    assert.throws(
+      () => makeFSM(events, transitions, entryComponents2, fsmSettings),
+      /state/,
+      "Error! entryComponents must define any state involved in a possible transition!"
+    );
 
   });
 

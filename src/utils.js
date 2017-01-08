@@ -1,7 +1,7 @@
 import {
   mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe,
   merge, reduce, all, either, clone, map, values, equals, concat, addIndex,
-  flip, difference, isEmpty, where, both
+  flip, difference, isEmpty, where, both,
 } from 'ramda';
 import {ERROR_MESSAGE_PREFIX} from './components/properties';
 import * as Rx from 'rx';
@@ -136,7 +136,7 @@ function assertSignature(fnName, _arguments, vRules) {
  */
 function assertContract(contractFn, contractArgs, errorMessage) {
   const boolOrError = contractFn.apply(null, contractArgs)
-  const isPredicateSatisfied = isBoolean(boolOrError)
+  const isPredicateSatisfied = isBoolean(boolOrError) && boolOrError;
 
   if (!isPredicateSatisfied) {
     throw `assertContract: fails contract ${contractFn.name}\n${errorMessage}\n ${boolOrError}`
@@ -176,7 +176,7 @@ function checkSignature(obj, signature, signatureErrorMessages, isStrict) {
     }, obj)
   }
 
-  return arrMessages.join("").length === 0 ? true : arrMessages
+  return isEmpty(arrMessages) ? true : arrMessages
 }
 
 /**
@@ -346,9 +346,9 @@ function isVNode(obj) {
  * @throws when either predicate is not a function
  */
 function isHashMap(predicateKey, predicateValue) {
-  assertContract(isFunction, predicateKey, 'isHashMap : first argument must be a' +
+  assertContract(isFunction, [predicateKey], 'isHashMap : first argument must be a' +
     ' predicate function!');
-  assertContract(isFunction, predicateValue, 'isHashMap : second argument must be a' +
+  assertContract(isFunction, [predicateValue], 'isHashMap : second argument must be a' +
     ' predicate function!');
 
   return both(
@@ -372,7 +372,7 @@ function isHashMap(predicateKey, predicateValue) {
  * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:2}) -> false
  */
 function isStrictRecord(recordSpec) {
-  assertContract(isObject, recordSpec, 'isStrictRecord : record specification argument must be' +
+  assertContract(isObject, [recordSpec], 'isStrictRecord : record specification argument must be' +
     ' a valid object!');
 
   return allPass([

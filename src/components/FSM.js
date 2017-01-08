@@ -1,52 +1,18 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
-  map as mapR,
-  reduce as reduceR,
-  mapObjIndexed,
-  uniq,
-  flatten,
-  values,
-  find,
-  equals,
-  clone,
-  keys,
-  filter,
-  pick,
-  curry,
-  defaultTo,
-  findIndex,
-  allPass,
-  pipe,
-  both,
-  isEmpty,
-  all,
-  either,
-  isNil,
-  T
+  map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone, keys,
+  filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil, T
 } from "ramda"
+import { checkSignature, assertContract } from "../utils"
 import {
-  checkSignature,
-  assertContract,
-  isFunction,
-  isString,
-  isArrayOf,
-  isObject,
-  isEmptyArray
-} from "../utils"
-import {isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents} from './types'
+  isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents,
+  checkStatesDefinedInTransitionsMustBeMappedToComponent
+} from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
 import {
-  EV_GUARD_NONE,
-  ACTION_REQUEST_NONE,
-  AR_GUARD_NONE,
-  ZERO_DRIVER,
-  EVENT_PREFIX,
-  DRIVER_PREFIX,
-  INIT_EVENT_NAME,
-  AWAITING_EVENTS,
-  AWAITING_RESPONSE,
-  INIT_STATE,
+  EV_GUARD_NONE, ACTION_REQUEST_NONE, AR_GUARD_NONE, ZERO_DRIVER, EVENT_PREFIX, DRIVER_PREFIX,
+  INIT_EVENT_NAME, AWAITING_EVENTS, AWAITING_RESPONSE, INIT_STATE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
 } from "./properties"
 // NOTE1 : dont use observe functionality for generating patches
@@ -73,8 +39,8 @@ import {
  * The ABNF syntax of a JSON Pointer is:
  *  json-pointer    = *( "/" reference-token )
  *  reference-token = *( unescaped / escaped )
- *  unescaped       = %x00-2E / %x30-7D / %x7F-10FFFF ; %x2F ('/') and %x7E ('~') are excluded from 'unescaped'
- *  escaped         = "~" ( "0" / "1" ) ; representing '~' and '/', respectively
+ *  unescaped       = %x00-2E / %x30-7D / %x7F-10FFFF ; %x2F ('/') and %x7E ('~') are excluded from
+ *   'unescaped' escaped         = "~" ( "0" / "1" ) ; representing '~' and '/', respectively
  */
 /**
  * @typedef {String} TransitionName
@@ -146,10 +112,12 @@ import {
  * @typedef {{action_guard : ActionGuard, target_state : State, model_update : UpdateFn}} TransEval
  */
 /**
- * @typedef {{event_guard : EventGuard, action_request : ActionRequest, transition_evaluation : TransEval[]}} Transition
+ * @typedef {{event_guard : EventGuard, action_request : ActionRequest, transition_evaluation :
+ *   TransEval[]}} Transition
  */
 /**
- * @typedef {{origin_state : State, event : EventName, target_states : Transition[]}} TransitionOptions
+ * @typedef {{origin_state : State, event : EventName, target_states : Transition[]}}
+ *   TransitionOptions
  */
 /**
  * @typedef {Object.<TransitionName, TransitionOptions>} Transitions
@@ -164,7 +132,10 @@ import {
  * @typedef {AWAITING_EVENTS|AWAITING_ACTION_RESPONSE} InternalState
  */
 /**
- * @typedef {{internal_state : InternalState, external_state : State, model : FSM_Model, current_event_name : EventName | Null, current_event_data : EventData | Null, current_event_guard_index : Number | Null, current_action_request_driver : DriverName | Null, sinks : Sinks | Null}} FSM_State
+ * @typedef {{internal_state : InternalState, external_state : State, model : FSM_Model,
+ *   current_event_name : EventName | Null, current_event_data : EventData | Null,
+ *   current_event_guard_index : Number | Null, current_action_request_driver : DriverName | Null,
+ *   sinks : Sinks | Null}} FSM_State
  */
 /**
  * @typedef {String} UserEventPrefix
@@ -240,7 +211,8 @@ function getEventDataOrActionResponse(eventOrDriverName, fsmEventValue) {
 /**
  *
  * @param fsmEvent
- * @returns {{fsmEventOrigin: (UserEventPrefix|DriverEventPrefix), fsmEventValue: (LabelledUserEvent|LabelledDriverEvent)}}
+ * @returns {{fsmEventOrigin: (UserEventPrefix|DriverEventPrefix), fsmEventValue:
+ *   (LabelledUserEvent|LabelledDriverEvent)}}
  */
 function destructureFsmEvent(fsmEvent) {
   const prefix = getEventOrigin(fsmEvent);
@@ -307,7 +279,8 @@ function computeStateEventToTransitionNameMap(transitions) {
  * @param {String} transName
  * @param {FSM_Model} model
  * @param {EventData} eventData
- * @return {{ actionRequest : ActionRequest | Null, transitionEvaluation, satisfiedGuardIndex : Number | Null, noGuardSatisfied : Boolean}}
+ * @return {{ actionRequest : ActionRequest | Null, transitionEvaluation, satisfiedGuardIndex :
+ *   Number | Null, noGuardSatisfied : Boolean}}
  */
 function computeTransition(transitions, transName, model, eventData) {
   const NOT_FOUND = -1;
@@ -349,7 +322,8 @@ function computeTransition(transitions, transName, model, eventData) {
  * @param {Number} current_event_guard_index
  * @return {{ target_state : State | Null, model_update : Function, noGuardSatisfied : Boolean}}
  */
-function computeActionResponseTransition(transitions, transName, current_event_guard_index, actionResponse) {
+function computeActionResponseTransition(transitions, transName, current_event_guard_index,
+                                         actionResponse) {
   /** @type {Array} */
   const actionResponseGuards =
     transitions[transName].target_states[current_event_guard_index].transition_evaluation;
@@ -420,13 +394,20 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   };
   const fsmSignatureErrorMessages = {
     events: '',
-    transitions: '',
-    entryComponents: '',
+    transitions: 'Invalid value for transitions parameter : must be non-empty object and must' +
+    ' have at least one transition defined which involves the INIT event!',
+    entryComponents: 'Invalid value for entryComponents parameter : must be non-empty object!',
     fsmSettings: ''
   };
-  checkSignature(
+  assertContract(checkSignature, [
     { events, transitions, entryComponents, fsmSettings },
-    fsmSignature, fsmSignatureErrorMessages);
+    fsmSignature,
+    fsmSignatureErrorMessages
+  ], '');
+  assertContract(checkStatesDefinedInTransitionsMustBeMappedToComponent, arguments,
+    'makeFSM : Any state which is referred to in the transitions parameter must be associated to a' +
+    ' component via the entryComponents parameter!');
+
 
   const { init_event_data, initial_model, sinkNames } = fsmSettings;
 
@@ -687,7 +668,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     // 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
     //           init_event_data etc. could for instance be passed there instead of ahead
     // 0.X TODO check remaining contracts
-    // for instance : if an action request features a driver name, that driver name MUST be found in the sources
+    // for instance : if an action request features a driver name, that driver name MUST be found
+    // in the sources
 
     // 1. Create array of events dealt with by the FSM
     // This will include :
@@ -712,7 +694,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 
     const fsmEvents = $.merge(
       $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)).tap(x => console.warn('user event', x)),
-      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)).tap(x => console.warn('response event', x)),
+      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)).tap(
+        x => console.warn('response event', x)),
     )
       .startWith(initialEvent)
 

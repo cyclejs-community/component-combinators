@@ -13,6 +13,7 @@
   "scripts": {
     "build-node": "babel src --out-dir dist-node",
     "build-node-test": "babel test --source-maps --out-dir dist-node-test",
+    "build-node-test2": "cp test dist-node-test",
     "build-browser": "npm run browserify && npm run uglify",
     "browserify": "browserify -d --standalone rxcc dist-node | derequire > dist/rxcc.js",
     "uglify": "uglifyjs -mc < dist/rxcc.js > dist/rxcc.min.js",
@@ -21,7 +22,7 @@
     "build": "npm run clean && npm run build-node && npm run build-browser",
     "prepublish": "npm run build",
     "build-test2": "npm run clean-test && npm run build-node-test && npm run test",
-    "build-test": "npm run build-node-test && npm run test",
+    "build-test": "npm run build-node-test2 && npm run test",
     "test-no-watch": "browserify -d --transform babelify dist-node-test | derequire > test/test-bundle.js",
     "test": "watchify -d --transform babelify dist-node-test -o test/test-bundle.js -v"
   },
