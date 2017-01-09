@@ -88,7 +88,7 @@ export const isFsmSettings = isStrictRecord({
 // `Events :: (HashMap EventName Event) | {}`
 export const isFsmEvents = isHashMap(isEventName, isEvent);
 export const isFsmTransitions = allPass([
-  isHashMap(isTransitionName, isTransitionOptions), tap(x => console.log('isHashmap', x)),
+  isHashMap(isTransitionName, isTransitionOptions),
   complement(isEmpty),
   pipe(values, any(propEq('event', INIT_EVENT_NAME)))
   // go through all values and check for an event property which INIT_EVENT_NAME
@@ -107,4 +107,8 @@ export function checkStatesDefinedInTransitionsMustBeMappedToComponent(events, t
   (transitions);
 
   return check ;
+}
+
+export function checkIsObservable(obj){
+  return !!obj.subscribe
 }

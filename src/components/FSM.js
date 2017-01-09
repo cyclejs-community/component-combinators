@@ -6,7 +6,7 @@ import {
 import { checkSignature, assertContract } from "../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents,
-  checkStatesDefinedInTransitionsMustBeMappedToComponent
+  checkStatesDefinedInTransitionsMustBeMappedToComponent, checkIsObservable
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -365,8 +365,21 @@ function applyUpdateOperations(/*OUT*/model, modelUpdateOperations) {
   return model;
 }
 
+/**
+ *
+ * @param sources
+ * @param settings
+ * @param {Event} event$Fn Event factory function
+ * @param {EventName} eventName
+ * @returns {Observable}
+ * @throws
+ */
 function _labelEvents(sources, settings, event$Fn, eventName, _) {
-  return event$Fn(sources, settings).map(prefixWith(eventName))
+  const event$Fn$ = event$Fn(sources, settings);
+  assertContract(checkIsObservable, [event$Fn$],
+    `event factory function for event ${eventName} must return an observable!`);
+
+  return event$Fn$.map(prefixWith(eventName))
 }
 const computeAndLabelEvents = curry(_labelEvents);
 
@@ -397,7 +410,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     transitions: 'Invalid value for transitions parameter : must be non-empty object and must' +
     ' have at least one transition defined which involves the INIT event!',
     entryComponents: 'Invalid value for entryComponents parameter : must be non-empty object!',
-    fsmSettings: ''
+    fsmSettings: `Invalid settings : some parameters are mandatory - check documentation!`
   };
   assertContract(checkSignature, [
     { events, transitions, entryComponents, fsmSettings },

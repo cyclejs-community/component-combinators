@@ -31,7 +31,8 @@
 
 import {
   identity, mapObjIndexed, values, all as allR, addIndex, defaultTo, clone,
-  reduce as reduceR, keys as keysR, drop, isNil, map, always, curry, __
+  reduce as reduceR, keys as keysR, drop, isNil, map, always, curry, isEmpty,
+  tryCatch, __
 } from 'ramda';
 import {
   isOptSinks, removeNullsFromArray, assertSignature, assertContract,
@@ -429,7 +430,15 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects
   console.groupCollapsed('runTestScenario: executing test function');
-  const testSinks = testFn(sourcesStruct.sources);
+  // const testSinks = testFn(sourcesStruct.sources);
+  const testSinks = tryCatch(testFn, function testSinksErrorHandler(e, sources) {
+    console.error('Tested function exited with an exception :', e);
+    throw e;
+  })(sourcesStruct.sources);
+  if (isEmpty(testSinks)) {
+    throw 'Tested component function did not return any sinks. There is no output to test if the' +
+    ' component does not produce any sinks!'
+  }
   console.groupEnd();
 
   if (!isOptSinks(testSinks)) {
