@@ -6,7 +6,10 @@ import {
 import { checkSignature, assertContract } from "../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents,
-  checkStatesDefinedInTransitionsMustBeMappedToComponent, checkIsObservable
+  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
+  checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
+  checkEventDefinedInTransitionsMustBeMappedToEventFactory,
+  checkIsObservable
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -417,10 +420,16 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     fsmSignature,
     fsmSignatureErrorMessages
   ], '');
-  assertContract(checkStatesDefinedInTransitionsMustBeMappedToComponent, arguments,
-    'makeFSM : Any state which is referred to in the transitions parameter must be associated to a' +
-    ' component via the entryComponents parameter!');
-
+  assertContract(checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, arguments,
+    'makeFSM : Any target state which is referred to in the transitions parameter must be' +
+    ' associated to a component via the entryComponents parameter!');
+  assertContract(checkOriginStatesDefinedInTransitionsMustBeMappedToComponent, arguments,
+    'makeFSM : Any origin state (except the initial state) which is referred to in the' +
+    ' transitions parameter must be associated to a component via the entryComponents parameter!');
+  assertContract(checkEventDefinedInTransitionsMustBeMappedToEventFactory, arguments,
+    'makeFSM : Any event (except the initial event) which is referred to in the' +
+    ' transitions parameter must be associated to a event factory function via the' +
+    ' events parameter!');
 
   const { init_event_data, initial_model, sinkNames } = fsmSettings;
 

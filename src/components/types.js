@@ -1,11 +1,11 @@
 import {
   either, isNil, allPass, complement, isEmpty, where, pipe, values, any, propEq, tap, both, flatten,
-  map, prop, flip, all, identity, T
+  map, prop, flip, all, identity, filter, equals, T
 } from "ramda"
 import {
   isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray
 } from "../utils"
-import { INIT_EVENT_NAME } from "./properties"
+import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 
 ////////
 // Types FSM
@@ -95,20 +95,42 @@ export const isFsmTransitions = allPass([
   // TODO has an init event configured
 ]);
 
-export function checkStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
-                                                                       entryComponents,
-                                                                       fsmSettings) {
-  const check =  pipe(
+export function checkTargetStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
+                                                                             entryComponents,
+                                                                             fsmSettings) {
+  return pipe(
     values, map(prop('target_states')), flatten,
     map(prop('transition_evaluation')), flatten,
     map(prop('target_state')),
     map(flip(prop)(entryComponents)),
     all(identity))
   (transitions);
-
-  return check ;
 }
 
-export function checkIsObservable(obj){
+export function checkOriginStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
+                                                                             entryComponents,
+                                                                             fsmSettings) {
+  return pipe(
+    values, map(prop('origin_state')),
+    filter(complement(equals(INIT_STATE))),
+    map(flip(prop)(entryComponents)),
+    all(identity))
+  (transitions);
+}
+
+export function checkEventDefinedInTransitionsMustBeMappedToEventFactory(events, transitions,
+                                                                         entryComponents,
+                                                                         fsmSettings) {
+  const check = pipe(
+    values, map(prop('event')),
+    filter(complement(equals(INIT_EVENT_NAME))),
+    map(flip(prop)(events)),
+    all(identity))
+  (transitions);
+
+  return check;
+}
+
+export function checkIsObservable(obj) {
   return !!obj.subscribe
 }
