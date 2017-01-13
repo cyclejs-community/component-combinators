@@ -1,22 +1,26 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
   map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone, keys,
-  filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil, T
+  filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
+  tryCatch, T
 } from "ramda"
-import { checkSignature, assertContract } from "../utils"
+import { checkSignature, assertContract, handleError, isBoolean } from "../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents,
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
-  checkEventDefinedInTransitionsMustBeMappedToEventFactory,
-  checkIsObservable
+  checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
+  isArrayUpdateOperations
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
 import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, AR_GUARD_NONE, ZERO_DRIVER, EVENT_PREFIX, DRIVER_PREFIX,
   INIT_EVENT_NAME, AWAITING_EVENTS, AWAITING_RESPONSE, INIT_STATE,
-  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
+  CONTRACT_EVENT_GUARD_FN_RETURN_VALUE, CONTRACT_EVENT_GUARD_CANNOT_FAIL,
+  CONTRACT_ACTION_GUARD_CANNOT_FAIL, CONTRACT_ACTION_GUARD_FN_RETURN_VALUE,
+  CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL
 } from "./properties"
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
@@ -298,7 +302,12 @@ function computeTransition(transitions, transName, model, eventData) {
     }
     else {
       // EventGuard :: Model -> EventData -> Boolean
-      return eventGuard(model, eventData)
+      const wrappedEventGuard = tryCatch(eventGuard, handleError(CONTRACT_EVENT_GUARD_CANNOT_FAIL));
+      const guardValue = wrappedEventGuard(model, eventData);
+      assertContract(isBoolean, [guardValue],
+        `computeTransition: ${CONTRACT_EVENT_GUARD_FN_RETURN_VALUE}`);
+
+      return guardValue
     }
   }, targetStates);
 
@@ -340,7 +349,12 @@ function computeActionResponseTransition(transitions, transName, current_event_g
     }
     else {
       // ActionGuard :: ActionResponse -> Boolean
-      return action_guard(actionResponse)
+      const wrappedActionGuard = tryCatch(action_guard, handleError(CONTRACT_ACTION_GUARD_CANNOT_FAIL));
+      const guardValue = wrappedActionGuard(actionResponse);
+      assertContract(isBoolean, [guardValue],
+        `computeTransition: ${CONTRACT_ACTION_GUARD_FN_RETURN_VALUE}`);
+
+      return guardValue;
     }
   }, actionResponseGuards);
 
@@ -364,6 +378,9 @@ function isZeroDriver(driver) {
  * @returns {FSM_Model}
  */
 function applyUpdateOperations(/*OUT*/model, modelUpdateOperations) {
+  assertContract(isArrayUpdateOperations, [modelUpdateOperations],
+    `applyUpdateOperations : ${CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE}`);
+
   jsonpatch.apply(model, modelUpdateOperations);
   return model;
 }
@@ -527,7 +544,10 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                 if (isZeroActionRequest(actionRequest)) {
                   // TODO : check contract : only ONE action_guard which MUST be Zero
                   const { target_state, model_update } =  transitionEvaluation[0];
-                  const modelUpdateOperations = model_update(clonedModel, eventData, null);
+                  // TODO : seek the second reference to it
+                  const wrappedModelUpdate = tryCatch(model_update,
+                    handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
+                  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null);
                   const entryComponent = entryComponents[target_state];
 
                   // Set values for next FSM state update
@@ -626,7 +646,9 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                 throw CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
               }
               else {
-                const modelUpdateOperations = model_update(model, current_event_data, actionResponse);
+                const wrappedModelUpdate = tryCatch(model_update,
+                  handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
+                const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse);
                 const entryComponent = entryComponents[target_state];
 
                 internal_state = AWAITING_EVENTS;
@@ -712,6 +734,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     }, driverNameArray);
 
     /** @type {Object.<EventName, EventData>} */
+      // TODO : use R.pipe
     const initialEvent = prefixWith(EVENT_PREFIX)(prefixWith(INIT_EVENT_NAME)(init_event_data));
 
     const fsmEvents = $.merge(
@@ -719,7 +742,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
       $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)).tap(
         x => console.warn('response event', x)),
     )
-      .startWith(initialEvent)
+      .startWith(initialEvent);
 
     // 2. Update the state of the state machine in function of the event
     // State machine state is represented by the following properties :

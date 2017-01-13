@@ -69,7 +69,7 @@ come with :
 - `Op_Remove :: Record { op: "remove", path: JSON_Pointer}`
 - `Op_Replace :: Record { op: "replace", path: JSON_Pointer, value: *}`
 - `Op_Move :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
-- `Op_Copy :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
+- `Op_Copy :: Record { op: "copy", from: JSON_Pointer, path: JSON_Pointer}`
 - `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
 - `Op_None :: {} | Null`
 

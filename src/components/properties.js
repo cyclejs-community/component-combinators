@@ -15,3 +15,15 @@ export const INIT_STATE = 'INIT';
 export const ERROR_MESSAGE_PREFIX = 'ERROR : '
 export const CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE =
   `For each action response, there MUST be a configured guard which is satisfied!`;
+export const CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE =
+  `Model update function must return valid update operations!`;
+export const CONTRACT_EVENT_GUARD_FN_RETURN_VALUE =
+  `Event guards functions must return a boolean!`;
+export const CONTRACT_ACTION_GUARD_FN_RETURN_VALUE =
+  `Action guards functions must return a boolean!`;
+export const CONTRACT_EVENT_GUARD_CANNOT_FAIL =
+  `Event guards functions cannot throw exceptions!`;
+export const CONTRACT_ACTION_GUARD_CANNOT_FAIL =
+  `Action guards functions cannot throw exceptions!`;
+export const CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL =
+  `Model update functions cannot throw exceptions!`;

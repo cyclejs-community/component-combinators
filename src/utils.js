@@ -1,7 +1,7 @@
 import {
   mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe,
   merge, reduce, all, either, clone, map, values, equals, concat, addIndex,
-  flip, difference, isEmpty, where, both,
+  flip, difference, isEmpty, where, both, curry
 } from 'ramda';
 import {ERROR_MESSAGE_PREFIX} from './components/properties';
 import * as Rx from 'rx';
@@ -566,8 +566,16 @@ function makeDivVNode(x) {
   }
 }
 
+function _handleError(msg, e) {
+  console.error(`${msg}`, e);
+  throw e;
+}
+
+const handleError = curry(_handleError);
+
 export {
   makeDivVNode,
+  handleError,
   assertSignature,
   assertContract,
   checkSignature,

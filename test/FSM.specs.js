@@ -1,13 +1,13 @@
 // let Qunit = require('qunitjs');
 import * as QUnit from "qunitjs"
-import { map, reduce, always, clone, curry, identity, flatten, T, F, __ } from "ramda"
+import { map, reduce, always, clone, curry, identity, flatten, match, T, F, __ } from "ramda"
 import * as jsonpatch from "fast-json-patch"
 import * as Rx from "rx"
 import { makeErrorMessage } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, DRIVER_PREFIX, INIT_EVENT_NAME, INIT_STATE,
-  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE
 } from "../src/components/properties"
 import { makeFSM } from "../src/components/FSM"
 
@@ -66,6 +66,10 @@ const dummyPayload = { dummyKeyPayload: 'dummyValuePayload' };
 const dummyRequest = { command: dummyCommand, payload: dummyPayload };
 
 const sinkNames = ['sinkA', 'sinkB', 'sinkC', 'modelSink', dummyDriver];
+
+function modelUpdateIdentity(x){
+  return [];
+}
 
 function dummyComponent1Sink(sources, settings) {
   const { model } = settings;
@@ -207,7 +211,7 @@ QUnit.test(
       tickDuration: 5,
       // We put a large value here as there is no inputs, so this allows to
       // wait for the tested component to produce all its sink values
-      waitForFinishDelay: 200
+      waitForFinishDelay: 50
     })
 
   });
@@ -263,7 +267,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -411,7 +415,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -562,7 +566,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -709,7 +713,7 @@ QUnit.test(
               {
                 action_guard: F,
                 target_state: FIRST_STATE,
-                model_update: identity,
+                model_update: modelUpdateIdentity,
               },
             ]
           }
@@ -869,7 +873,7 @@ QUnit.test(
               {
                 action_guard: F,
                 target_state: FIRST_STATE,
-                model_update: identity,
+                model_update: modelUpdateIdentity,
               },
             ]
           }
@@ -1024,7 +1028,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -1171,7 +1175,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -1332,7 +1336,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -1493,7 +1497,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -1654,7 +1658,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -1860,7 +1864,7 @@ QUnit.test(
               {
                 action_guard: T,
                 target_state: THIRD_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -2349,7 +2353,7 @@ QUnit.test(
               {
                 action_guard: ACTION_GUARD_NONE,
                 target_state: FIRST_STATE,
-                model_update: identity
+                model_update: modelUpdateIdentity
               }
             ]
           }
@@ -2843,7 +2847,7 @@ QUnit.test(
   "transitions with transition whose origin state is not defined in StateEntryComponents" +
   " parameter  - ERROR!",
   function exec_test(assert) {
-        const testEvent = 'dummy';
+    const testEvent = 'dummy';
 
     function modelUpdateInitTransition(model, eventData, actionResponse) {
       assert.deepEqual(model, initialModel,
@@ -3033,9 +3037,167 @@ QUnit.test(
     );
   });
 
-// model update does not return array of updates - error
-// model update return empty array of updates - unchanged model
-// model update return array [{}] - OK - unchanged model
+QUnit.test(
+  "transitions with  model update does not return array of updates : error",
+  function exec_test(assert) {
+    function modelUpdateReturnsNotArrayUpdates1(model, eventData, actionResponse) {
+      return { key: 'value' }
+    }
+
+    function modelUpdateReturnsNotArrayUpdates2(model, eventData, actionResponse) {
+      return undefined
+    }
+
+    function modelUpdateReturnsNotArrayUpdates3(model, eventData, actionResponse) {
+      return []
+    }
+
+    function modelUpdateReturnsNotArrayUpdates4(model, eventData, actionResponse) {
+      return [{key : 'value'}]
+    }
+
+    const events = {};
+
+    const transitions1 = {
+      T_INIT: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: 'First',
+                model_update: modelUpdateReturnsNotArrayUpdates1
+              }
+            ]
+          }
+        ]
+      }
+    };
+    const transitions2 = {
+      T_INIT: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: 'First',
+                model_update: modelUpdateReturnsNotArrayUpdates2
+              }
+            ]
+          }
+        ]
+      }
+    };
+    const transitions4 = {
+      T_INIT: {
+        origin_state: INIT_STATE,
+        event: INIT_EVENT_NAME,
+        target_states: [
+          {
+            event_guard: EV_GUARD_NONE,
+            action_request: ACTION_REQUEST_NONE,
+            transition_evaluation: [
+              {
+                action_guard: ACTION_GUARD_NONE,
+                target_state: 'First',
+                model_update: modelUpdateReturnsNotArrayUpdates4
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const entryComponents = {
+      First: function (model) {
+        return curry(dummyComponent1Sink)(__, { model })
+      }
+    };
+
+    const fsmSettings = {
+      initial_model: initialModel,
+      init_event_data: initEventData,
+      sinkNames: sinkNames
+    };
+
+    const fsmComponent = curry(makeFSM)(events, __, entryComponents, fsmSettings);
+
+    const inputs = [
+      { eventSource: { diagram: '---a-|', values: { a: dummyEventData } } },
+      { [dummyDriver]: { diagram: '----a|', values: { a: dummyDriverActionResponse } } },
+      { sinkA: { diagram: '012---012|', values: dummySinkA3Values } },
+      { sinkB: { diagram: '01----01-|', values: dummySinkB2Values } },
+    ];
+
+    function analyzeTestResults(actual, expected, message) {
+      assert.deepEqual(actual, expected, message);
+      done()
+    }
+
+    let updatedModel = clone(initialModel);
+    // NOTE: !! modifies in place so function does not return anything
+    jsonpatch.apply(/*OUT*/updatedModel, opsOnInitialModel);
+
+    /** @type TestResults */
+    const testResults = {
+      sinkA: {
+        outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
+        successMessage: 'Error! Model update functions must return an array of valid update operations!',
+        transformFn : match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkB: {
+        outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
+        successMessage: 'sink sinkB produces the expected values',
+        transformFn : match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
+        analyzeTestResults: analyzeTestResults,
+      },
+      modelSink: {
+        outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
+        successMessage: 'sink modelSink produces the expected values',
+        analyzeTestResults: analyzeTestResults,
+      },
+      [dummyDriver]: {
+        outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
+        successMessage: 'sink drivers_dummy produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
+      sinkC: {
+        outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
+        successMessage: 'sink sinkC produces no values as expected',
+        analyzeTestResults: analyzeTestResults,
+      },
+    };
+
+    runTestScenario(inputs, testResults, fsmComponent(transitions1), {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 50
+    });
+    runTestScenario(inputs, testResults, fsmComponent(transitions2), {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 50
+    });
+    runTestScenario(inputs, testResults, fsmComponent(transitions4), {
+      tickDuration: 5,
+      // We put a large value here as there is no inputs, so this allows to
+      // wait for the tested component to produce all its sink values
+      waitForFinishDelay: 50
+    });
+
+    assert.expect(0);
+  });
 
 // Event guard, action guards also CHECK must return boolean (synchronous) AND NOT throw
 // TODO : tryCatch them and have ad-hoc error message
@@ -3045,7 +3207,8 @@ QUnit.test(
 // not object -> Error
 // is empty object -> Error : must have at least one state - >DONE BEFORE
 // has entry which is no a function -> Error
-// has entry which is a function which does not return component or null -> Error
+// TODO : has entry which is a function which does not return component or null -> Error
+// TODO : also - cannot throw
 
 // TODO: write the cases :
 // INIT
@@ -3078,7 +3241,10 @@ QUnit.test(
 // but only test the return values of the function introduced by the user in config
 // the internally used function should be tested and not needing further type checking
 
-// TODO : What happen for states without an entry component! Add test
-// TODO : add test where zero entry components and a -> b -> c, with action request/response
-// TODO : investigate null for update model operations - test json patch work in that case too
-// TODO : impplement Op_None and update opereation can be empty array too
+// TODO : impplement Op_None (i.e. test json patch on it)
+
+// TODO : automatic events i.e. event for which there is no guard, will have to be defined in
+// auto property of event object -> change all relevant types, and maybe mapping?
+
+// TODO : runTestScenario bug, if an error occur, then it does not seem to check the other sinks
+// cf. transitions with  model update does not return array of updates : error

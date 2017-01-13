@@ -1,6 +1,6 @@
 import {
   either, isNil, allPass, complement, isEmpty, where, pipe, values, any, propEq, tap, both, flatten,
-  map, prop, flip, all, identity, filter, equals, T
+  map, prop, flip, all, identity, filter, equals, cond, T
 } from "ramda"
 import {
   isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray
@@ -23,7 +23,7 @@ const isEventData = T;
 const isFsmModel = isObject;
 
 // `EventGuard :: Model -> EventData -> Boolean`
-const isEventGuard = either(isFunction, isNil);
+const isEventGuard = either(isNil, isFunction);
 // `ActionRequest :: Record {
 //   driver :: SinkName | Null
 //   request :: (FSM_Model -> EventData) -> Request | Null
@@ -134,3 +134,55 @@ export function checkEventDefinedInTransitionsMustBeMappedToEventFactory(events,
 export function checkIsObservable(obj) {
   return !!obj.subscribe
 }
+
+// `JSON_Patch :: Op_Add | Op_Remove | Op_Replace | Op_Move | Op_Copy | Op_Test | Op_None`
+// `Op_Add :: Record { op: "add", path: JSON_Pointer, value : *}`
+// `Op_Remove :: Record { op: "remove", path: JSON_Pointer}`
+// `Op_Replace :: Record { op: "replace", path: JSON_Pointer, value: *}`
+// `Op_Move :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
+// `Op_Copy :: Record { op: "copy", from: JSON_Pointer, path: JSON_Pointer}`
+// `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
+// `Op_None :: {} | Null`
+
+export const isJsonPointer = isString;
+export const isOpNone = both(isObject, isEmpty);
+export const isOpAdd = isStrictRecord({
+  op: both(isString, equals('add')),
+  path: isJsonPointer,
+  value: T
+});
+export const isOpRemove = isStrictRecord({
+  op: both(isString, equals('remove')),
+  path: isJsonPointer,
+});
+export const isOpReplace = isStrictRecord({
+  op: both(isString, equals('replace')),
+  path: isJsonPointer,
+  value: T
+});
+export const isOpMove = isStrictRecord({
+  op: both(isString, equals('move')),
+  path: isJsonPointer,
+});
+export const isOpCopy = isStrictRecord({
+  op: both(isString, equals('copy')),
+  path: isJsonPointer,
+});
+export const isOpTest = isStrictRecord({
+  op: both(isString, equals('test')),
+  path: isJsonPointer,
+  value: T
+});
+// Works but evaluates all the functions...
+// export const isUpdateOperation = converge(any(identity), isOpAdd, isOpRemove, isOpReplace,
+// isOpMove, isOpCopy, isOpTest, isOpNone)
+export const isUpdateOperation = cond([
+  [isOpNone, T],
+  [isOpAdd, T],
+  [isOpRemove, T],
+  [isOpReplace, T],
+  [isOpMove, T],
+  [isOpCopy, T],
+  [isOpTest, T],
+]);
+export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
