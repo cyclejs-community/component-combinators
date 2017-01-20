@@ -10,6 +10,7 @@ import {
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
+  checkStateEntryComponentFnMustReturnComponent,
   isArrayUpdateOperations
 } from "./types"
 import * as Rx from "rx"
@@ -332,6 +333,7 @@ function computeTransition(transitions, transName, model, eventData) {
  * @param {Transitions} transitions
  * @param {String} transName
  * @param {Number} current_event_guard_index
+ * @param {ActionResponse} actionResponse
  * @return {{ target_state : State | Null, model_update : Function, noGuardSatisfied : Boolean}}
  */
 function computeActionResponseTransition(transitions, transName, current_event_guard_index,
@@ -557,6 +559,13 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   // is faster
                   clonedModel = clone(model);
                   // NOTE : The model to be passed to the entry component is post update
+                  const stateEntryComponent = entryComponent ? entryComponent(clonedModel) : null;
+                  assertContract(either(isNil, checkStateEntryComponentFnMustReturnComponent),
+                    [stateEntryComponent],
+                    `state entry component function ${entryComponent.name} 
+                    for state ${target_state} MUST return a component or be null`
+                  );
+
                   sinks = entryComponent ? entryComponent(clonedModel)(sources, settings) : {};
                   internal_state = AWAITING_EVENTS;
                   current_event_guard_index = null;

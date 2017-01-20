@@ -9,6 +9,7 @@ import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 
 ////////
 // Types FSM
+const isComponent = isFunction;
 const isNotEmpty = complement(isEmpty);
 const isEventName = both(isString, isNotEmpty);
 const isTransitionName = both(isString, isNotEmpty);
@@ -186,3 +187,5 @@ export const isUpdateOperation = cond([
   [isOpTest, T],
 ]);
 export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
+
+export const checkStateEntryComponentFnMustReturnComponent = isComponent;
