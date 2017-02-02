@@ -1,10 +1,13 @@
 import {
-  mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe,
-  merge, reduce, all, either, clone, map, values, equals, concat, addIndex,
-  flip, difference, isEmpty, where, both, curry
-} from 'ramda';
-import {ERROR_MESSAGE_PREFIX} from './components/properties';
-import * as Rx from 'rx';
+  mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge, reduce, all,
+  either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty, where, both,
+  curry
+} from "ramda"
+import { ERROR_MESSAGE_PREFIX } from "./components/properties"
+import * as Rx from "rx"
+// TODO https://github.com/moll/js-standard-error
+// TODO : define custom error types
+import { StandardError } from "standard-error"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map);
@@ -307,7 +310,7 @@ function isArray(obj) {
   return Array.isArray(obj)
 }
 
-function isEmptyArray (obj) {
+function isEmptyArray(obj) {
   return allPass([isEmpty, isArray])(obj);
 }
 
@@ -447,7 +450,7 @@ function assertSettingsContracts(mergedSettings, settingsContract) {
 }
 
 // from https://github.com/substack/deep-freeze/blob/master/index.js
-function deepFreeze (o) {
+function deepFreeze(o) {
   Object.freeze(o);
 
   Object.getOwnPropertyNames(o).forEach(function (prop) {
@@ -462,7 +465,7 @@ function deepFreeze (o) {
   return o;
 }
 
-function makeErrorMessage(errorMessage){
+function makeErrorMessage(errorMessage) {
   return ERROR_MESSAGE_PREFIX + errorMessage;
 }
 

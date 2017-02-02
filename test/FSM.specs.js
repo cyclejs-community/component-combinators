@@ -59,11 +59,11 @@ const dummyEventData2 = {
   dummyKeyEv2: EV_PREFIX + dummyValue2
 };
 const dummyDriver = DRIVER_PREFIX + '_dummy';
-const dummyDriverActionResponse = { responseKey: 'responseValue' };
-const dummyDriverActionResponse2 = { responseKey2: 'responseValue2' };
 const dummyCommand = 'dummyCommand';
 const dummyPayload = { dummyKeyPayload: 'dummyValuePayload' };
 const dummyRequest = { command: dummyCommand, payload: dummyPayload };
+const dummyDriverActionResponse = { request: dummyRequest, responseKey: 'responseValue' };
+const dummyDriverActionResponse2 = { request: dummyRequest, responseKey2: 'responseValue2' };
 
 const sinkNames = ['sinkA', 'sinkB', 'sinkC', 'modelSink', dummyDriver];
 
@@ -237,6 +237,17 @@ QUnit.test(
       return opsOnInitialModel
     }
 
+    function actionGuardPasses (model, actionResponse) {
+      assert.deepEqual(model, initialModel,
+        `The action guard is called with first parameter being 
+          the model's current value i.e. before any update`);
+      assert.deepEqual(actionResponse.request , dummyRequest,
+        `The action guard is called with second parameter being 
+          the action response returned by the action driver`);
+
+      return true;
+    }
+
     const dummyActionRequest = {
       driver: dummyDriver,
       request: (model, eventData) => {
@@ -282,7 +293,7 @@ QUnit.test(
             action_request: dummyActionRequest,
             transition_evaluation: [
               {
-                action_guard: T,
+                action_guard: actionGuardPasses,
                 target_state: SECOND_STATE,
                 model_update: modelUpdateInitTransition
               }
@@ -554,6 +565,13 @@ QUnit.test(
       [testEvent]: sources => sources.eventSource.take(1)
     };
 
+    function actionGuard (model, actionResponse) {
+      assert.ok(false, 'action guard should not be called when inside a transition evaluation' +
+        ' record corresponding to an absence of action request (action_request = null)')
+
+      return true;
+    }
+
     const transitions = {
       [INIT_TRANSITION]: {
         origin_state: INIT_STATE,
@@ -564,7 +582,7 @@ QUnit.test(
             action_request: ACTION_REQUEST_NONE,
             transition_evaluation: [
               {
-                action_guard: ACTION_GUARD_NONE,
+                action_guard: actionGuard,
                 target_state: FIRST_STATE,
                 model_update: modelUpdateIdentity
               }

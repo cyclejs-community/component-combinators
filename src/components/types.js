@@ -92,8 +92,6 @@ export const isFsmTransitions = allPass([
   isHashMap(isTransitionName, isTransitionOptions),
   complement(isEmpty),
   pipe(values, any(propEq('event', INIT_EVENT_NAME)))
-  // go through all values and check for an event property which INIT_EVENT_NAME
-  // TODO has an init event configured
 ]);
 
 export function checkTargetStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,

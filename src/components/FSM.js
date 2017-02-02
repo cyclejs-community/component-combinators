@@ -10,8 +10,7 @@ import {
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
-  checkStateEntryComponentFnMustReturnComponent,
-  isArrayUpdateOperations
+  checkStateEntryComponentFnMustReturnComponent, isArrayUpdateOperations
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -232,7 +231,6 @@ function destructureFsmEvent(fsmEvent) {
   }
 }
 
-// Note that types do not match! TODO : fix that or duplicate functions :-(
 /**
  *
  * @param fsmEventValue
@@ -333,11 +331,12 @@ function computeTransition(transitions, transName, model, eventData) {
  * @param {Transitions} transitions
  * @param {String} transName
  * @param {Number} current_event_guard_index
+ * @param model
  * @param {ActionResponse} actionResponse
- * @return {{ target_state : State | Null, model_update : Function, noGuardSatisfied : Boolean}}
+ * @return {{target_state: null, model_update: null, noGuardSatisfied: boolean}}
  */
 function computeActionResponseTransition(transitions, transName, current_event_guard_index,
-                                         actionResponse) {
+                                         model, actionResponse) {
   /** @type {Array} */
   const actionResponseGuards =
     transitions[transName].target_states[current_event_guard_index].transition_evaluation;
@@ -352,7 +351,7 @@ function computeActionResponseTransition(transitions, transName, current_event_g
     else {
       // ActionGuard :: ActionResponse -> Boolean
       const wrappedActionGuard = tryCatch(action_guard, handleError(CONTRACT_ACTION_GUARD_CANNOT_FAIL));
-      const guardValue = wrappedActionGuard(actionResponse);
+      const guardValue = wrappedActionGuard(model, actionResponse);
       assertContract(isBoolean, [guardValue],
         `computeTransition: ${CONTRACT_ACTION_GUARD_FN_RETURN_VALUE}`);
 
@@ -419,8 +418,6 @@ function getDriverNames(transOptions, transName) {
 }
 
 export function makeFSM(events, transitions, entryComponents, fsmSettings) {
-  // 0. TODO : check signature deeply - I dont want to check for null all the time
-
   const fsmSignature = {
     events: isFsmEvents,
     transitions: isFsmTransitions,
@@ -460,12 +457,12 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
    *
    * @param {FSM_State} fsmState
    * @param {UserEvent | DriverEvent} fsmEvent
-   * @returns {FSM_State}
    * @param events
    * @param transitions
    * @param entryComponents
    * @param sources
    * @param settings
+   * @returns {FSM_State}
    */
   function _evaluateEvent(events, transitions, entryComponents, sources, settings,
                           /* OUT */fsmState, fsmEvent) {
@@ -474,13 +471,10 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     let {
       internal_state, external_state, model, clonedModel,
       current_event_name, current_event_data, current_event_guard_index,
-      current_action_request_driver, sinks
+      current_action_request_driver, current_action_request, sinks
     } = fsmState;
 
-    /**
-     * NOTE : fsmEvent MUST only have one key
-     * TODO : add contract somewhere, maybe not here
-     */
+    // NOTE : fsmEvent only has one key by construction
     const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
     const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
 
@@ -572,15 +566,17 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   current_event_name = null;
                   current_event_data = null;
                   current_action_request_driver = null;
+                  current_action_request = null;
                 }
                 else {
-                  // TODO : what happens if request is empty?? filtered out already
-                  sinks = computeSinkFromActionRequest(actionRequest, model, eventData);
+                  const { request, driver, sink } = computeSinkFromActionRequest(actionRequest, model, eventData);
+                  sinks = sink;
                   internal_state = AWAITING_RESPONSE;
                   current_event_guard_index = satisfiedGuardIndex;
                   current_event_name = eventName;
                   current_event_data = eventData;
-                  current_action_request_driver = getPrefix(sinks);
+                  current_action_request_driver = driver;
+                  current_action_request = request;
                   // model and external_state are unchanged
                 }
               }
@@ -602,6 +598,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
           current_event_name,
           current_event_data,
           current_action_request_driver,
+          current_action_request,
           sinks
         };
 
@@ -634,6 +631,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
           case DRIVER_PREFIX :
             const driverName = eventOrDriverName;
             const actionResponse = eventDataOrActionResponse;
+            const { request } = actionResponse;
             const transName = stateEventToTransitionNameMap[external_state][current_event_name];
 
             if (driverName !== current_action_request_driver) {
@@ -643,9 +641,17 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                  Ignoring...`);
               sinks = null;
             }
+            else if (request != current_action_request || !equals(request, current_action_request)) {
+              console.warn(`
+              Received action response through driver ${driverName} and ignored it as that
+                 response does not match the request sent...`);
+              sinks = null;
+              // TODO : document the fact that driver must return the request in the response
+            }
             else {
               const { target_state, model_update, noGuardSatisfied } =
-                computeActionResponseTransition(transitions, transName, current_event_guard_index, actionResponse);
+                computeActionResponseTransition(transitions, transName, current_event_guard_index,
+                  model, actionResponse);
 
               if (noGuardSatisfied) {
                 console.error(`While processing action response from driver ${driverName},
@@ -671,10 +677,11 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                 current_event_name = null;
                 current_event_data = null;
                 current_action_request_driver = null;
+                current_action_request = null;
               }
-
             }
             break;
+
           default :
             throw `Received unexpected/unknown ${fsmEventOrigin} event. 
             Can only process driver responses and user events!`
@@ -690,6 +697,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
           current_event_name,
           current_event_data,
           current_action_request_driver,
+          current_action_request,
           sinks
         };
 
@@ -743,8 +751,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     }, driverNameArray);
 
     /** @type {Object.<EventName, EventData>} */
-      // TODO : use R.pipe
-    const initialEvent = prefixWith(EVENT_PREFIX)(prefixWith(INIT_EVENT_NAME)(init_event_data));
+    const initialEvent = pipe(prefixWith(INIT_EVENT_NAME), prefixWith(EVENT_PREFIX))(init_event_data);
 
     const fsmEvents = $.merge(
       $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)).tap(x => console.warn('user event', x)),
@@ -772,6 +779,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
       current_event_data: null,
       current_event_guard_index: null,
       current_action_request_driver: null,
+      current_action_request: null,
       sinks: null
     };
 
@@ -801,8 +809,13 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 }
 
 function computeSinkFromActionRequest(actionRequest, model, eventData) {
+  const request = actionRequest.request(model, eventData);
+  const driver = actionRequest.driver;
+
   return {
-    [actionRequest.driver]: $.just(actionRequest.request(model, eventData))
+    request: request,
+    driver: driver,
+    sink: { [driver]: $.just(request) }
   }
 }
 

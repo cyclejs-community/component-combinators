@@ -60,7 +60,7 @@ come with :
     target_state :: State // Must exist in StateEntryComponents
     model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]     
   }`
-- `ActionGuard :: ActionResponse -> Boolean`
+- `ActionGuard :: Model -> ActionResponse -> Boolean`
 - `EventGuard :: Model -> EventData -> Boolean`
 - `StateEntryComponents :: HashMap State StateEntryComponent`
 - `StateEntryComponent :: FSM_Model -> Component | Null`
