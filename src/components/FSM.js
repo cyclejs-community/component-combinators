@@ -516,7 +516,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
             /** @type {EventData} */
             const eventData = eventDataOrActionResponse;
 
-            if (!find(equals(eventName), configuredEvents)) {
+            if (!configuredEvents || !find(equals(eventName), configuredEvents)) {
               console.warn('Received event for which there is no transition defined!' +
                 ' Ignoring...');
               sinks = null;
@@ -543,7 +543,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
                   // TODO : seek the second reference to it
                   const wrappedModelUpdate = tryCatch(model_update,
                     handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
-                  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null);
+                  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null, settings);
                   const entryComponent = entryComponents[target_state];
 
                   // Set values for next FSM state update
@@ -663,7 +663,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
               else {
                 const wrappedModelUpdate = tryCatch(model_update,
                   handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
-                const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse);
+                const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse, settings);
                 const entryComponent = entryComponents[target_state];
 
                 internal_state = AWAITING_EVENTS;
@@ -819,4 +819,7 @@ function computeSinkFromActionRequest(actionRequest, model, eventData) {
   }
 }
 
-
+// TODO : automatic actions through extra subject merged with the rest of event
+//        automatic action are specified with the entry actions,
+// TODO : re-entry transition with or without re-executing entry action
+//        configured in the Transition, between event_guard and action_request

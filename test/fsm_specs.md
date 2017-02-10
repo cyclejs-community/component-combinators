@@ -58,7 +58,7 @@ come with :
 - `TransEval :: Record {
     action_guard :: ActionGuard | Null
     target_state :: State // Must exist in StateEntryComponents
-    model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]     
+    model_update :: FSM_Model -> EventData -> ActionResponse -> Settings -> [UpdateOperation]     
   }`
 - `ActionGuard :: Model -> ActionResponse -> Boolean`
 - `EventGuard :: Model -> EventData -> Boolean`
