@@ -3,7 +3,7 @@ import {
   map, prop, flip, all, identity, filter, equals, cond, T
 } from "ramda"
 import {
-  isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray
+  isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray, isBoolean
 } from "../utils"
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 
@@ -51,10 +51,12 @@ const isTransEval = isStrictRecord({
 // `Transition :: Record {
 //   event_guard :: EventGuard
 //   action_request :: ActionRequest
+//   re_entry :: Boolean | Null
 //   transition_evaluation :: [TransEval]
 // }`
 const isTransition = isStrictRecord({
   event_guard: isEventGuard,
+  re_entry: either(isNil, isBoolean),
   action_request: either(isNil, isActionRequest),
   transition_evaluation: isArrayOf(isTransEval),
 });
@@ -187,3 +189,6 @@ export const isUpdateOperation = cond([
 export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
 
 export const checkStateEntryComponentFnMustReturnComponent = isComponent;
+
+export const isEntryComponentFactory = either(isNil, isFunction);
+export const isEntryComponent = either(isNil, isFunction);

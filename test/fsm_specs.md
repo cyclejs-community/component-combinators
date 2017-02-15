@@ -52,6 +52,7 @@ come with :
       }`
 - `Transition :: Record {
     event_guard :: EventGuard  | Null
+    re_entry :: Boolean | Null
     action_request :: ActionRequest | Null
     transition_evaluation :: [TransEval]
   }`

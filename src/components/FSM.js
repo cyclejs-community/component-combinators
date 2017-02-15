@@ -10,7 +10,8 @@ import {
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
-  checkStateEntryComponentFnMustReturnComponent, isArrayUpdateOperations
+  isArrayUpdateOperations, checkStateEntryComponentFnMustReturnComponent, isEntryComponentFactory,
+  isEntryComponent
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -119,8 +120,8 @@ import {
  * @typedef {{action_guard : ActionGuard, target_state : State, model_update : UpdateFn}} TransEval
  */
 /**
- * @typedef {{event_guard : EventGuard, action_request : ActionRequest, transition_evaluation :
- *   TransEval[]}} Transition
+ * @typedef {{event_guard : EventGuard, re_entry: Boolean, action_request : ActionRequest,
+ *   transition_evaluation : TransEval[]}} Transition
  */
 /**
  * @typedef {{origin_state : State, event : EventName, target_states : Transition[]}}
@@ -286,7 +287,7 @@ function computeStateEventToTransitionNameMap(transitions) {
  * @param {FSM_Model} model
  * @param {EventData} eventData
  * @return {{ actionRequest : ActionRequest | Null, transitionEvaluation, satisfiedGuardIndex :
- *   Number | Null, noGuardSatisfied : Boolean}}
+ *   Number | Null, reEntry: Boolean, noGuardSatisfied : Boolean}}
  */
 function computeTransition(transitions, transName, model, eventData) {
   const NOT_FOUND = -1;
@@ -312,17 +313,19 @@ function computeTransition(transitions, transName, model, eventData) {
 
   return satisfiedGuardIndex !== NOT_FOUND
     ? {
-    satisfiedGuardIndex,
-    actionRequest: targetStates[satisfiedGuardIndex].action_request,
-    transitionEvaluation: targetStates[satisfiedGuardIndex].transition_evaluation,
-    noGuardSatisfied: false
-  }
+      satisfiedGuardIndex,
+      actionRequest: targetStates[satisfiedGuardIndex].action_request,
+      reEntry: targetStates[satisfiedGuardIndex].re_entry,
+      transitionEvaluation: targetStates[satisfiedGuardIndex].transition_evaluation,
+      noGuardSatisfied: false
+    }
     : {
-    satisfiedGuardIndex: null,
-    actionRequest: null,
-    transitionEvaluation: null,
-    noGuardSatisfied: true
-  }
+      satisfiedGuardIndex: null,
+      actionRequest: null,
+      reEntry: null,
+      transitionEvaluation: null,
+      noGuardSatisfied: true
+    }
 }
 
 /**
@@ -333,13 +336,15 @@ function computeTransition(transitions, transName, model, eventData) {
  * @param {Number} current_event_guard_index
  * @param model
  * @param {ActionResponse} actionResponse
- * @return {{target_state: null, model_update: null, noGuardSatisfied: boolean}}
+ * @return {{target_state: null, re_entry: boolean, model_update: null, noGuardSatisfied: boolean}}
  */
-function computeActionResponseTransition(transitions, transName, current_event_guard_index,
-                                         model, actionResponse) {
+function evaluateTransitionWhenActionResponse(transitions, transName, current_event_guard_index,
+                                             model, actionResponse) {
+  /** @type {Transition} */
+  const transition = transitions[transName].target_states[current_event_guard_index];
   /** @type {Array} */
-  const actionResponseGuards =
-    transitions[transName].target_states[current_event_guard_index].transition_evaluation;
+  const actionResponseGuards = transition.transition_evaluation;
+  const reEntry = transition.re_entry;
 
   const foundSatisfiedGuard = find(function (transEval) {
     const { action_guard, target_state, model_update }= transEval;
@@ -360,8 +365,12 @@ function computeActionResponseTransition(transitions, transName, current_event_g
   }, actionResponseGuards);
 
   return foundSatisfiedGuard
-    ? pick(['target_state', 'model_update'], foundSatisfiedGuard)
-    : { target_state: null, model_update: null, noGuardSatisfied: true }
+    ? {
+      target_state: foundSatisfiedGuard.target_state,
+      model_update: foundSatisfiedGuard.model_update,
+      re_entry: reEntry
+    }
+    : { target_state: null, re_entry: null, model_update: null, noGuardSatisfied: true }
 }
 
 function isZeroActionRequest(actionRequest) {
@@ -417,6 +426,320 @@ function getDriverNames(transOptions, transName) {
   return driverNames;
 }
 
+function setFsmStateSinksToNull(fsmState) {
+  let {
+    internal_state, external_state, model, clonedModel,
+    current_event_name, current_event_data, current_event_guard_index,
+    current_action_request_driver, current_action_request, sinks
+  } = fsmState;
+
+  return {
+    sinks: null,
+    internal_state, external_state, model, clonedModel,
+    current_event_name, current_event_data, current_event_guard_index,
+    current_action_request_driver, current_action_request
+  };
+}
+
+function performTransitionWhenNoActionRequest(reEntry, entryComponents, external_state, model,
+                                              clonedModel, eventData,
+                                              transitionEvaluation, sources, settings) {
+  // TODO : check contract : when no action requests, only ONE action_guard which MUST be Zero
+  const { target_state, model_update } = transitionEvaluation[0];
+  const wrappedModelUpdate = tryCatch(model_update,
+    handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
+  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null, settings);
+  const entryComponent = entryComponents[target_state];
+
+  let newSinks;
+
+  // Set values for next FSM state update
+  const newModel = applyUpdateOperations(model, modelUpdateOperations);
+  // NOTE: could also be applyUpdateOperations(clonedModel,...) dont know which
+  // is faster
+  const newClonedModel = clone(newModel);
+  // NOTE : The model to be passed to the entry component is post update
+  // NOTE2 : {} because we still want to terminate, i.e. LEAVE previous state. This would be
+  // done with the switchMap. Reminder : null means filter i.e. do nothing
+  const stateEntryComponent = entryComponent ? entryComponent(newClonedModel) : always({});
+  assertContract(either(isNil, checkStateEntryComponentFnMustReturnComponent),
+    [stateEntryComponent],
+    `state entry component function ${entryComponent.name} 
+                    for state ${target_state} MUST return a component or be null`
+  );
+
+  if (reEntry && target_state === external_state || target_state !== external_state) {
+    // When reentry flag is set, and target state is the origin state, then re-enter that state by
+    // re-executing the state entry action
+    newSinks = stateEntryComponent(sources, settings);
+  }
+  else {
+    // When no reentry, dont do no action
+    newSinks = null;
+  }
+
+  return {
+    external_state: target_state,
+    model: newModel,
+    clonedModel: newClonedModel,
+    sinks: newSinks,
+    internal_state: AWAITING_EVENTS,
+    current_event_guard_index: null,
+    current_event_name: null,
+    current_event_data: null,
+    current_action_request_driver: null,
+    current_action_request: null
+  }
+}
+
+function performTransitionWhenActionResponse(fsmState, transition, fsmCompiled, actionResponse,
+                                             sources, settings) {
+  const { target_state, re_entry, model_update } = transition;
+  const { external_state, model, clonedModel, current_event_data } = fsmState;
+  const { entryComponents } = fsmCompiled;
+  let newSinks;
+
+  const wrappedModelUpdate = tryCatch(model_update,
+    handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
+  const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse, settings);
+
+  const entryComponentFactory = entryComponents[target_state];
+  assertContract(isEntryComponentFactory, [entryComponentFactory],
+    `Error while trying to get entry component factory for state ${target_state} : 
+            component configured in fsm must be null or a function!`);
+
+  // Set new model's values for next FSM state update
+  const newModel = applyUpdateOperations(/*OUT*/model, modelUpdateOperations);
+  const newClonedModel = clone(newModel);
+  const entryComponent = entryComponentFactory ? entryComponentFactory(newClonedModel) : null;
+  assertContract(isEntryComponent, [entryComponent],
+    `Error while trying to get entry component for state ${target_state} : 
+            configured factory must return null or a component function :: sources -> settings -> Sinks!`);
+
+  if (re_entry && target_state === external_state || target_state !== external_state) {
+    // When reentry flag is set, and target state is the origin state, then re-enter that
+    // state by re-executing the state entry action
+    newSinks = entryComponent ? entryComponent(sources, settings) : {};
+  }
+  else {
+    // we re-enter the same state, but re-entry flag is not set -> dont do nothing
+    newSinks = null;
+  }
+
+  return {
+    internal_state: AWAITING_EVENTS,
+    external_state: target_state,
+    // Note : The model to be passed to the entry component is post update
+    model: newModel,
+    clonedModel: newClonedModel,
+    sinks: newSinks,
+    current_event_guard_index: null,
+    current_event_name: null,
+    current_event_data: null,
+    current_action_request_driver: null,
+    current_action_request: null,
+  };
+
+}
+
+function processEventWhenAwaitingUserEvents(fsmCompiled, sources, settings, fsmState, fsmEvent) {
+  // If received DriverEvent
+  // -- Log warning, Ignore, no state modification, sinks = Null
+  // Else If received UserEvent
+  // -- If userEvent is NOT among the configured events for the FSM's external state
+  // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
+  // -- Else If no guards is passed :
+  // -- -- no state modification (could also queue??), sinks = Null
+  // -- -- Else a guard is passed, get the action request from it :
+  // -- -- -- If ActionRequest is Zero
+  // -- -- -- -- no need to wait for a response, change the fsm state directly
+  // -- -- -- -- check contract : action_guard MUST be Zero
+  // -- -- -- -- If re-entry YES && external_state == target_state:
+  // -- -- -- -- -- sinks <- execute the component defined as entry for the state transitioned to
+  // -- -- -- -- Else
+  // -- -- -- -- -- sinks <- null, i.e. do nothing
+  // -- -- -- -- internal_state <- AWAITING_EVENTS
+  // -- -- -- -- current_event_data <- Null
+  // -- -- -- -- current_action_request_driver <- Null
+  // -- -- -- -- external_state <- target_state
+  // -- -- -- -- model <- apply update operations
+  // -- -- -- Else :
+  // -- -- -- -- sinks <- Compute action request (MUST be non empty object)
+  // -- -- -- -- internal_state <- AWAITING_RESPONSE
+  // -- -- -- -- current_event_data <- event_data
+  // -- -- -- -- current_action_request_driver <- the ONE key of sinks
+  // -- -- -- -- external_state, model <- unmodified
+  const { events, transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
+    = fsmCompiled;
+
+  // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
+  // inadvertently modifying the model
+  let {
+    internal_state, external_state, model, clonedModel,
+    current_event_name, current_event_data, current_event_guard_index,
+    current_action_request_driver, current_action_request, sinks
+  } = fsmState;
+  let newFsmState;
+
+  // NOTE : fsmEvent only has one key by construction
+  const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
+  const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
+
+  switch (fsmEventOrigin) {
+    case DRIVER_PREFIX :
+      console.warn('Received event from driver while awaiting user events! Ignoring...');
+      newFsmState = setFsmStateSinksToNull(fsmState);
+      break;
+
+    case EVENT_PREFIX :
+      /** @type {EventName[]} */
+      const configuredEvents = stateEventsMap[external_state];
+      const eventName = eventOrDriverName;
+      /** @type {EventData} */
+      const eventData = eventDataOrActionResponse;
+
+      if (!configuredEvents || !find(equals(eventName), configuredEvents)) {
+        console.warn('Received event for which there is no transition defined!' +
+          ' Ignoring...');
+        newFsmState = setFsmStateSinksToNull(fsmState);
+      }
+      else {
+        // Compute action request triggered by event, if any
+        const transName = stateEventToTransitionNameMap[external_state][eventName];
+
+        /** @type {ActionRequest | Null} */
+        const { actionRequest, reEntry, transitionEvaluation, satisfiedGuardIndex, noGuardSatisfied } =
+          computeTransition(transitions, transName, clonedModel, eventData);
+
+        if (!!noGuardSatisfied) {
+          // no guards is satisfied
+          console.warn('Received event for which there is a transition defined but none' +
+            ' of the defined guards were satisfied!' +
+            ' Ignoring...');
+          newFsmState = setFsmStateSinksToNull(fsmState);
+        }
+        else {
+          if (isZeroActionRequest(actionRequest)) {
+            newFsmState =
+              performTransitionWhenNoActionRequest(reEntry, entryComponents,
+                external_state, model, clonedModel, eventData, transitionEvaluation,
+                sources, settings);
+          }
+          else {
+            const { request, driver, sink } = computeSinkFromActionRequest(actionRequest, model, eventData);
+            // model and external_state are unchanged
+            newFsmState = {
+              sinks: sink,
+              internal_state: AWAITING_RESPONSE,
+              current_event_guard_index: satisfiedGuardIndex,
+              current_event_name: eventName,
+              current_event_data: eventData,
+              current_action_request_driver: driver,
+              current_action_request: request,
+              model, clonedModel, external_state
+            }
+          }
+        }
+      }
+      break;
+
+    default :
+      throw 'evaluateEvent > case AWAITING_EVENTS : unknown fsmEventOrigin!'
+  }
+
+  return newFsmState
+}
+
+function processEventWhenAwaitingResponseEvent(fsmCompiled, sources, settings, fsmState, fsmEvent) {
+  // If received UserEvent
+  // -- Log warning, Ignore, no state modification, sinks = Null
+  // Else If received DriverEvent
+  // -- If driverEvent is NOT from the expected driver (as to current_action_request_driver)
+  // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
+  // -- Else If action response fails all action guards :
+  // -- -- Log Error, THROW, sinks = Null
+  // -- -- Else action response pass the first action guard
+  // -- -- -- external_state <- as defined by the transition for the successful action guard
+  // -- -- -- sinks <- execute the component defined as entry for the state transitioned to
+  // ?? with which sources and settings??
+  // -- -- -- update operations <- compute model update
+  // -- -- -- model <- apply update operations
+  // -- -- -- internal_state <- AWAITING_EVENTS
+  // -- -- -- current_event_data <- Null
+  // -- -- -- current_action_request_driver <- Null
+  // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
+  // inadvertently modifying the model
+  const { events, transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
+    = fsmCompiled;
+  const {
+    internal_state, external_state, model, clonedModel,
+    current_event_name, current_event_data, current_event_guard_index,
+    current_action_request_driver, current_action_request, sinks
+  } = fsmState;
+  let newFsmState;
+
+  // NOTE : fsmEvent only has one key by construction
+  const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
+  const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
+
+  switch (fsmEventOrigin) {
+    case EVENT_PREFIX :
+      console.warn('Received event from user while awaiting driver\'s action response!' +
+        ' Ignoring...');
+      newFsmState = setFsmStateSinksToNull(fsmState);
+      break;
+
+    case DRIVER_PREFIX :
+      const driverName = eventOrDriverName;
+      const actionResponse = eventDataOrActionResponse;
+      const { request } = actionResponse;
+      const transName = stateEventToTransitionNameMap[external_state][current_event_name];
+
+      if (driverName !== current_action_request_driver) {
+        console.warn(`
+              Received driver ${driverName}'s event but not from the expected 
+                 ${current_action_request_driver} driver!\n
+                 Ignoring...`);
+        newFsmState = setFsmStateSinksToNull(fsmState);
+      }
+      else if (request != current_action_request || !equals(request, current_action_request)) {
+        console.warn(`
+              Received action response through driver ${driverName} and ignored it as that
+                 response does not match the request sent...`);
+        newFsmState = setFsmStateSinksToNull(fsmState);
+        // TODO : document the fact that driver must return the request in the response
+      }
+      else {
+        const evaluatedTransition =
+          evaluateTransitionWhenActionResponse(
+            transitions, transName, current_event_guard_index,
+            model, actionResponse
+          );
+
+        if (evaluatedTransition.noGuardSatisfied) {
+          console.error(`While processing action response from driver ${driverName},
+                 executed all configured guards and none were satisfied! 
+                  ' Throwing...`);
+          newFsmState = setFsmStateSinksToNull(fsmState);
+          throw CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
+        }
+        else {
+          newFsmState = performTransitionWhenActionResponse(
+            fsmState, evaluatedTransition, fsmCompiled, actionResponse,
+            sources, settings
+          );
+        }
+      }
+      break;
+
+    default :
+      throw `Received unexpected/unknown ${fsmEventOrigin} event. 
+            Can only process driver responses and user events!`
+  }
+
+  return newFsmState
+}
+
 export function makeFSM(events, transitions, entryComponents, fsmSettings) {
   const fsmSignature = {
     events: isFsmEvents,
@@ -466,241 +789,23 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
    */
   function _evaluateEvent(events, transitions, entryComponents, sources, settings,
                           /* OUT */fsmState, fsmEvent) {
-    // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
-    // inadvertently modifying the model
-    let {
-      internal_state, external_state, model, clonedModel,
-      current_event_name, current_event_data, current_event_guard_index,
-      current_action_request_driver, current_action_request, sinks
-    } = fsmState;
-
-    // NOTE : fsmEvent only has one key by construction
-    const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
-    const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
+    let newFsmState;
+    const fsmCompiled = {
+      events,
+      transitions,
+      entryComponents,
+      stateEventsMap,
+      stateEventToTransitionNameMap
+    };
+    let { internal_state } = fsmState;
 
     switch (internal_state) {
       case AWAITING_EVENTS :
-        // If received DriverEvent
-        // -- Log warning, Ignore, no state modification, sinks = Null
-        // Else If received UserEvent
-        // -- If userEvent is NOT among the configured events for the FSM's external state
-        // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
-        // -- Else If no guards is passed :
-        // -- -- no state modification (could also queue??), sinks = Null
-        // -- -- Else a guard is passed, get the action request from it :
-        // -- -- -- If ActionRequest is Zero
-        // -- -- -- -- no need to wait for a response, change the fsm state directly
-        // -- -- -- -- check contract : action_guard MUST be Zero
-        // -- -- -- -- internal_state <- AWAITING_EVENTS
-        // -- -- -- -- current_event_data <- Null
-        // -- -- -- -- current_action_request_driver <- Null
-        // -- -- -- -- external_state <- target_state
-        // -- -- -- -- model <- apply update operations
-        // -- -- -- -- sinks <- execute the component defined as entry for the state transitioned to
-        // -- -- -- Else :
-        // -- -- -- -- sinks <- Compute action request (MUST be non empty object)
-        // -- -- -- -- internal_state <- AWAITING_RESPONSE
-        // -- -- -- -- current_event_data <- event_data
-        // -- -- -- -- current_action_request_driver <- the ONE key of sinks
-        // -- -- -- -- external_state, model <- unmodified
-        switch (fsmEventOrigin) {
-          case DRIVER_PREFIX :
-            console.warn('Received event from driver while awaiting user events! Ignoring...');
-            sinks = null;
-            break;
-
-          case EVENT_PREFIX :
-            /** @type {EventName[]} */
-            const configuredEvents = stateEventsMap[external_state];
-            const eventName = eventOrDriverName;
-            /** @type {EventData} */
-            const eventData = eventDataOrActionResponse;
-
-            if (!configuredEvents || !find(equals(eventName), configuredEvents)) {
-              console.warn('Received event for which there is no transition defined!' +
-                ' Ignoring...');
-              sinks = null;
-            }
-            else {
-              // Compute action request triggered by event, if any
-              const transName = stateEventToTransitionNameMap[external_state][eventName];
-
-              /** @type {ActionRequest | Null} */
-              const { actionRequest, transitionEvaluation, satisfiedGuardIndex, noGuardSatisfied } =
-                computeTransition(transitions, transName, clonedModel, eventData);
-
-              if (!!noGuardSatisfied) {
-                // no guards is satisfied
-                console.warn('Received event for which there is a transition defined but none' +
-                  ' of the defined guards were satisfied!' +
-                  ' Ignoring...');
-                sinks = null;
-              }
-              else {
-                if (isZeroActionRequest(actionRequest)) {
-                  // TODO : check contract : only ONE action_guard which MUST be Zero
-                  const { target_state, model_update } =  transitionEvaluation[0];
-                  // TODO : seek the second reference to it
-                  const wrappedModelUpdate = tryCatch(model_update,
-                    handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
-                  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null, settings);
-                  const entryComponent = entryComponents[target_state];
-
-                  // Set values for next FSM state update
-                  external_state = target_state;
-                  model = applyUpdateOperations(model, modelUpdateOperations);
-                  // NOTE: could also be applyUpdateOperations(clonedModel,...) dont know which
-                  // is faster
-                  clonedModel = clone(model);
-                  // NOTE : The model to be passed to the entry component is post update
-                  const stateEntryComponent = entryComponent ? entryComponent(clonedModel) : null;
-                  assertContract(either(isNil, checkStateEntryComponentFnMustReturnComponent),
-                    [stateEntryComponent],
-                    `state entry component function ${entryComponent.name} 
-                    for state ${target_state} MUST return a component or be null`
-                  );
-
-                  sinks = entryComponent ? entryComponent(clonedModel)(sources, settings) : {};
-                  internal_state = AWAITING_EVENTS;
-                  current_event_guard_index = null;
-                  current_event_name = null;
-                  current_event_data = null;
-                  current_action_request_driver = null;
-                  current_action_request = null;
-                }
-                else {
-                  const { request, driver, sink } = computeSinkFromActionRequest(actionRequest, model, eventData);
-                  sinks = sink;
-                  internal_state = AWAITING_RESPONSE;
-                  current_event_guard_index = satisfiedGuardIndex;
-                  current_event_name = eventName;
-                  current_event_data = eventData;
-                  current_action_request_driver = driver;
-                  current_action_request = request;
-                  // model and external_state are unchanged
-                }
-              }
-            }
-
-            break;
-
-          default :
-            throw 'evaluateEvent > case AWAITING_EVENTS : unknown fsmEventOrigin!'
-        }
-
-        // Update in place fsmState
-        fsmState = {
-          internal_state,
-          external_state,
-          model,
-          clonedModel,
-          current_event_guard_index,
-          current_event_name,
-          current_event_data,
-          current_action_request_driver,
-          current_action_request,
-          sinks
-        };
-
+        newFsmState = processEventWhenAwaitingUserEvents(fsmCompiled, sources, settings, fsmState, fsmEvent);
         break;
 
       case AWAITING_RESPONSE :
-        // If received UserEvent
-        // -- Log warning, Ignore, no state modification, sinks = Null
-        // Else If received DriverEvent
-        // -- If driverEvent is NOT from the expected driver (as to current_action_request_driver)
-        // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
-        // -- Else If action response fails all action guards :
-        // -- -- Log Error, THROW, sinks = Null
-        // -- -- Else action response pass the first action guard
-        // -- -- -- external_state <- as defined by the transition for the successful action guard
-        // -- -- -- sinks <- execute the component defined as entry for the state transitioned to
-        // ?? with which sources and settings??
-        // -- -- -- update operations <- compute model update
-        // -- -- -- model <- apply update operations
-        // -- -- -- internal_state <- AWAITING_EVENTS
-        // -- -- -- current_event_data <- Null
-        // -- -- -- current_action_request_driver <- Null
-        switch (fsmEventOrigin) {
-          case EVENT_PREFIX :
-            console.warn('Received event from user while awaiting driver\'s action response!' +
-              ' Ignoring...');
-            sinks = null;
-            break;
-
-          case DRIVER_PREFIX :
-            const driverName = eventOrDriverName;
-            const actionResponse = eventDataOrActionResponse;
-            const { request } = actionResponse;
-            const transName = stateEventToTransitionNameMap[external_state][current_event_name];
-
-            if (driverName !== current_action_request_driver) {
-              console.warn(`
-              Received driver ${driverName}'s event but not from the expected 
-                 ${current_action_request_driver} driver!\n
-                 Ignoring...`);
-              sinks = null;
-            }
-            else if (request != current_action_request || !equals(request, current_action_request)) {
-              console.warn(`
-              Received action response through driver ${driverName} and ignored it as that
-                 response does not match the request sent...`);
-              sinks = null;
-              // TODO : document the fact that driver must return the request in the response
-            }
-            else {
-              const { target_state, model_update, noGuardSatisfied } =
-                computeActionResponseTransition(transitions, transName, current_event_guard_index,
-                  model, actionResponse);
-
-              if (noGuardSatisfied) {
-                console.error(`While processing action response from driver ${driverName},
-                 executed all configured guards and none were satisfied! 
-                  ' Throwing...`);
-                sinks = null;
-                throw CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE
-              }
-              else {
-                const wrappedModelUpdate = tryCatch(model_update,
-                  handleError(CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL));
-                const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse, settings);
-                const entryComponent = entryComponents[target_state];
-
-                internal_state = AWAITING_EVENTS;
-                external_state = target_state;
-                // Set new model's values for next FSM state update
-                model = applyUpdateOperations(/*OUT*/model, modelUpdateOperations);
-                clonedModel = clone(model);
-                // Note : The model to be passed to the entry component is post update
-                sinks = entryComponent ? entryComponent(clonedModel)(sources, settings) : {};
-                current_event_guard_index = null;
-                current_event_name = null;
-                current_event_data = null;
-                current_action_request_driver = null;
-                current_action_request = null;
-              }
-            }
-            break;
-
-          default :
-            throw `Received unexpected/unknown ${fsmEventOrigin} event. 
-            Can only process driver responses and user events!`
-        }
-
-        // Update in place fsmState
-        fsmState = {
-          internal_state,
-          external_state,
-          model,
-          clonedModel,
-          current_event_guard_index,
-          current_event_name,
-          current_event_data,
-          current_action_request_driver,
-          current_action_request,
-          sinks
-        };
-
+        newFsmState = processEventWhenAwaitingResponseEvent(fsmCompiled, sources, settings, fsmState, fsmEvent);
         break;
 
       default :
@@ -709,7 +814,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
         throw err;
     }
 
-    return fsmState
+    return newFsmState
   }
 
   function _computeOutputSinks(sinks$, /* OUT */accOutputSinks, sinkName) {
