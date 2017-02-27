@@ -6,12 +6,12 @@ import {
 } from "ramda"
 import { checkSignature, assertContract, handleError, isBoolean } from "../utils"
 import {
-  isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents,
+  isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents, isArrayUpdateOperations,
+  isEntryComponentFactory, isEntryComponent, checkStateEntryComponentFnMustReturnComponent,
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
-  isArrayUpdateOperations, checkStateEntryComponentFnMustReturnComponent, isEntryComponentFactory,
-  isEntryComponent
+  isDefaultActionResponseHandlerConfig
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -328,51 +328,6 @@ function computeTransition(transitions, transName, model, eventData) {
     }
 }
 
-/**
- * Returns the action request corresponding to the first guard satisfied, as
- * defined by the order of the target_states array
- * @param {Transitions} transitions
- * @param {String} transName
- * @param {Number} current_event_guard_index
- * @param model
- * @param {ActionResponse} actionResponse
- * @return {{target_state: null, re_entry: boolean, model_update: null, noGuardSatisfied: boolean}}
- */
-function evaluateTransitionWhenActionResponse(transitions, transName, current_event_guard_index,
-                                             model, actionResponse) {
-  /** @type {Transition} */
-  const transition = transitions[transName].target_states[current_event_guard_index];
-  /** @type {Array} */
-  const actionResponseGuards = transition.transition_evaluation;
-  const reEntry = transition.re_entry;
-
-  const foundSatisfiedGuard = find(function (transEval) {
-    const { action_guard, target_state, model_update }= transEval;
-
-    if (action_guard == AR_GUARD_NONE) {
-      // if no action guard is configured, it is equivalent to a passing guard
-      return true
-    }
-    else {
-      // ActionGuard :: ActionResponse -> Boolean
-      const wrappedActionGuard = tryCatch(action_guard, handleError(CONTRACT_ACTION_GUARD_CANNOT_FAIL));
-      const guardValue = wrappedActionGuard(model, actionResponse);
-      assertContract(isBoolean, [guardValue],
-        `computeTransition: ${CONTRACT_ACTION_GUARD_FN_RETURN_VALUE}`);
-
-      return guardValue;
-    }
-  }, actionResponseGuards);
-
-  return foundSatisfiedGuard
-    ? {
-      target_state: foundSatisfiedGuard.target_state,
-      model_update: foundSatisfiedGuard.model_update,
-      re_entry: reEntry
-    }
-    : { target_state: null, re_entry: null, model_update: null, noGuardSatisfied: true }
-}
-
 function isZeroActionRequest(actionRequest) {
   return actionRequest == ACTION_REQUEST_NONE || isZeroDriver(actionRequest.driver)
 }
@@ -439,6 +394,51 @@ function setFsmStateSinksToNull(fsmState) {
     current_event_name, current_event_data, current_event_guard_index,
     current_action_request_driver, current_action_request
   };
+}
+
+/**
+ * Returns the action request corresponding to the first guard satisfied, as
+ * defined by the order of the target_states array
+ * @param {Transitions} transitions
+ * @param {String} transName
+ * @param {Number} current_event_guard_index
+ * @param model
+ * @param {ActionResponse} actionResponse
+ * @return {{target_state: null, re_entry: boolean, model_update: null, noGuardSatisfied: boolean}}
+ */
+function evaluateTransitionWhenActionResponse(transitions, transName, current_event_guard_index,
+                                              model, actionResponse) {
+  /** @type {Transition} */
+  const transition = transitions[transName].target_states[current_event_guard_index];
+  /** @type {Array} */
+  const actionResponseGuards = transition.transition_evaluation;
+  const reEntry = transition.re_entry;
+
+  const foundSatisfiedGuard = find(function (transEval) {
+    const { action_guard, target_state, model_update }= transEval;
+
+    if (action_guard == AR_GUARD_NONE) {
+      // if no action guard is configured, it is equivalent to a passing guard
+      return true
+    }
+    else {
+      // ActionGuard :: ActionResponse -> Boolean
+      const wrappedActionGuard = tryCatch(action_guard, handleError(CONTRACT_ACTION_GUARD_CANNOT_FAIL));
+      const guardValue = wrappedActionGuard(model, actionResponse);
+      assertContract(isBoolean, [guardValue],
+        `computeTransition: ${CONTRACT_ACTION_GUARD_FN_RETURN_VALUE}`);
+
+      return guardValue;
+    }
+  }, actionResponseGuards);
+
+  return foundSatisfiedGuard
+    ? {
+      target_state: foundSatisfiedGuard.target_state,
+      model_update: foundSatisfiedGuard.model_update,
+      re_entry: reEntry
+    }
+    : { target_state: null, re_entry: null, model_update: null, noGuardSatisfied: true }
 }
 
 function performTransitionWhenNoActionRequest(reEntry, entryComponents, external_state, model,
@@ -569,16 +569,12 @@ function processEventWhenAwaitingUserEvents(fsmCompiled, sources, settings, fsmS
   // -- -- -- -- current_event_data <- event_data
   // -- -- -- -- current_action_request_driver <- the ONE key of sinks
   // -- -- -- -- external_state, model <- unmodified
-  const { events, transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
+  const { transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
     = fsmCompiled;
 
   // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
   // inadvertently modifying the model
-  let {
-    internal_state, external_state, model, clonedModel,
-    current_event_name, current_event_data, current_event_guard_index,
-    current_action_request_driver, current_action_request, sinks
-  } = fsmState;
+  let { external_state, model, clonedModel, } = fsmState;
   let newFsmState;
 
   // NOTE : fsmEvent only has one key by construction
@@ -859,9 +855,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     const initialEvent = pipe(prefixWith(INIT_EVENT_NAME), prefixWith(EVENT_PREFIX))(init_event_data);
 
     const fsmEvents = $.merge(
-      $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)).tap(x => console.warn('user event', x)),
-      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)).tap(
-        x => console.warn('response event', x)),
+      $.merge(eventsArray).tap(x => console.warn('user event', x)).map(prefixWith(EVENT_PREFIX)),
+      $.merge(actionResponseObsArray).tap(x => console.warn('response event', x)).map(prefixWith(DRIVER_PREFIX)),
     )
       .startWith(initialEvent);
 
@@ -890,8 +885,6 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 
     /** @type {Observable.<FSM_State>}*/
     let eventEvaluation$ = fsmEvents
-      .tap(x =>
-        console.warn('fsm events', x))
       .scan(
         evaluateEvent(events, transitions, entryComponents, sources, settings),
         initialFSM_State
@@ -924,7 +917,88 @@ function computeSinkFromActionRequest(actionRequest, model, eventData) {
   }
 }
 
+// TODO : 1. study debugging/tracing facility (internal change of state, event guards results etc.)
+// preferably by preprocessing the fsm def : cleanest way
+// TODO : define my own errors with nice contextual messages and parameters
 // TODO : automatic actions through extra subject merged with the rest of event
 //        automatic action are specified with the entry actions,
-// TODO : re-entry transition with or without re-executing entry action
-//        configured in the Transition, between event_guard and action_request
+// attention to add the event at the end of the current tick (use cycle ordering of drivers?)
+// TODO Doc : for init transition, set re_entry to true if one wants to have initial component
+// display : this is due to INIT state being both target and current state at start-up
+// doc that re-entry is useless if there is no transition defined with target=current state
+// we could develop a contract that re-entry MUST not be there if no reentry, and MUST be
+// defined if there is
+// TODO : some action requests have no responses! feature: configuration property, can
+// also be useful to implement pre-emptive event : no, pre-emptive are events of the same state,
+// not the next event, hence to implement non RTC semantics
+// TODO : 6. FSM re_entry should be lower, at action guard level when I put the target state
+// DOC : the action responses will be obtained on the sources of the same name than the action sink
+// NTH : change cycle dom driver to inject document, which would allow testing by mocking
+// NTH : change cycle dom driver to use a real DOM vs. virtual DOM diff
+// -> add event in team detail to update the model and re-entry
+// ---- cf. https://github.com/patrick-steele-idem/morphdom,
+// ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
+// -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
+// TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
+// - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
+// - - allows to have more than flowchart, more kind of diagrams
+// - - use specific text format (dagre-d3)
+// - - css seems to be easy to modify, but little interactivity (tooltip etc.)
+// - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
+// - - use graphLib for inputting graph data :
+// https://github.com/cpettitt/graphlib/wiki/API-Reference viz.js :
+// https://github.com/mdaines/viz.js/ - - use graphviz/DOT language - - - howto :
+// http://graphs.grevian.org/example - - - formal def :
+// http://www.graphviz.org/content/dot-language vis.js : https://github.com/almende/vis, cf.
+// network - - examples to look directly in the examples folder - - rich API, but hard to fathom -
+// - uses simple format, but does not seem to be easy to have subgraphs with this format - - uses
+// GEPHI https://marketplace.gephi.org/plugin/json-exporter/ - - looks quite complex but also lots
+// of doc, not sure how to make it interactive RECOMMENDATION : 1. use viz/graphviz : graphviz is
+// pretty neat, pretty standard format, can map to others 2. use dagre-d3 : it is a library, can
+// customize anything with D3 BUT graphlib not exportable Conversion http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE - graphML is used by yed but also http://igraph.org/redirect.html
+
+
+//////
+// Helpers
+export function makeDefaultActionResponseProcessing(config) {
+  assertContract(isDefaultActionResponseHandlerConfig, [config],
+    'Configuration for action response handling must be of the shape :: {' +
+    '  success : {target_state : <state>, udpate_model : <model update fn>,' +
+    '  error : {target_state : <state>, udpate_model : <model update fn>}'
+  );
+
+  const {
+    success : { target_state : successTargetState, model_update : successModelUpdate },
+    error: { target_state: errorTargetState, model_update: errorModelUpdate }
+  } = config;
+
+  return [
+    {
+      action_guard: checkActionResponseIsSuccess,
+      target_state: successTargetState,
+      model_update: successModelUpdate
+    },
+    {
+      action_guard: T,
+      target_state: errorTargetState,
+      model_update: errorModelUpdate
+    }
+  ]
+}
+
+///////
+// Action guards
+export function checkActionResponseIsSuccess(model, actionResponse) {
+  void model;
+  const { err } = actionResponse;
+  return !err;
+}
+
+export function chainModelUpdates(arrayModelUpdateFn) {
+  return function chainedModelUpdates(model, eventData, actionResponse) {
+    return flatten(mapR(
+      modelUpdateFn => modelUpdateFn(model, eventData, actionResponse),
+      arrayModelUpdateFn)
+    )
+  }
+}

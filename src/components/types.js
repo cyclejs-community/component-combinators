@@ -42,6 +42,7 @@ const isActionGuard = isFunction;
 //   target_state :: State
 //   model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]
 // }`
+const isModelUpdate = isFunction;
 const isTransEval = isStrictRecord({
   action_guard: isActionGuard,
   target_state: isState,
@@ -192,3 +193,8 @@ export const checkStateEntryComponentFnMustReturnComponent = isComponent;
 
 export const isEntryComponentFactory = either(isNil, isFunction);
 export const isEntryComponent = either(isNil, isFunction);
+
+export const isDefaultActionResponseHandlerConfig = isStrictRecord({
+  success: isStrictRecord({ target_state: isState, model_update: isModelUpdate }),
+  error: isStrictRecord({ target_state: isState, model_update: isModelUpdate }),
+});
