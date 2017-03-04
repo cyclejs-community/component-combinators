@@ -4,7 +4,10 @@ import {
   filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
   tryCatch, T
 } from "ramda"
-import { checkSignature, assertContract, handleError, isBoolean } from "../utils"
+import {
+  checkSignature, assertContract, handleError, isBoolean, decorateWith, getFunctionName,
+  makeFunctionDecorator
+} from "../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents, isArrayUpdateOperations,
   isEntryComponentFactory, isEntryComponent, checkStateEntryComponentFnMustReturnComponent,
@@ -736,7 +739,7 @@ function processEventWhenAwaitingResponseEvent(fsmCompiled, sources, settings, f
   return newFsmState
 }
 
-export function makeFSM(events, transitions, entryComponents, fsmSettings) {
+export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
   const fsmSignature = {
     events: isFsmEvents,
     transitions: isFsmTransitions,
@@ -751,7 +754,7 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     fsmSettings: `Invalid settings : some parameters are mandatory - check documentation!`
   };
   assertContract(checkSignature, [
-    { events, transitions, entryComponents, fsmSettings },
+    { events: _events, transitions: _transitions, entryComponents: _entryComponents, fsmSettings },
     fsmSignature,
     fsmSignatureErrorMessages
   ], '');
@@ -766,7 +769,16 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
     ' transitions parameter must be associated to a event factory function via the' +
     ' events parameter!');
 
-  const { init_event_data, initial_model, sinkNames } = fsmSettings;
+  const { init_event_data, initial_model, sinkNames, debug } = fsmSettings;
+
+  // If debug, wrap functions to output log messages
+  // TODO : I am here
+  const { events, transitions, entryComponents } = wrapIfDebug({
+    debug,
+    events: _events,
+    transitions: _transitions,
+    entryComponents: _entryComponents
+  });
 
   // 0.1 Pre-process the state machine configuration
   const stateEventsMap = computeStateEventMap(transitions);
@@ -856,7 +868,8 @@ export function makeFSM(events, transitions, entryComponents, fsmSettings) {
 
     const fsmEvents = $.merge(
       $.merge(eventsArray).tap(x => console.warn('user event', x)).map(prefixWith(EVENT_PREFIX)),
-      $.merge(actionResponseObsArray).tap(x => console.warn('response event', x)).map(prefixWith(DRIVER_PREFIX)),
+      $.merge(actionResponseObsArray).tap(
+        x => console.warn('response event', x)).map(prefixWith(DRIVER_PREFIX)),
     )
       .startWith(initialEvent);
 
@@ -917,46 +930,6 @@ function computeSinkFromActionRequest(actionRequest, model, eventData) {
   }
 }
 
-// TODO : 1. study debugging/tracing facility (internal change of state, event guards results etc.)
-// preferably by preprocessing the fsm def : cleanest way
-// TODO : define my own errors with nice contextual messages and parameters
-// TODO : automatic actions through extra subject merged with the rest of event
-//        automatic action are specified with the entry actions,
-// attention to add the event at the end of the current tick (use cycle ordering of drivers?)
-// TODO Doc : for init transition, set re_entry to true if one wants to have initial component
-// display : this is due to INIT state being both target and current state at start-up
-// doc that re-entry is useless if there is no transition defined with target=current state
-// we could develop a contract that re-entry MUST not be there if no reentry, and MUST be
-// defined if there is
-// TODO : some action requests have no responses! feature: configuration property, can
-// also be useful to implement pre-emptive event : no, pre-emptive are events of the same state,
-// not the next event, hence to implement non RTC semantics
-// TODO : 6. FSM re_entry should be lower, at action guard level when I put the target state
-// DOC : the action responses will be obtained on the sources of the same name than the action sink
-// NTH : change cycle dom driver to inject document, which would allow testing by mocking
-// NTH : change cycle dom driver to use a real DOM vs. virtual DOM diff
-// -> add event in team detail to update the model and re-entry
-// ---- cf. https://github.com/patrick-steele-idem/morphdom,
-// ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
-// -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
-// TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
-// - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
-// - - allows to have more than flowchart, more kind of diagrams
-// - - use specific text format (dagre-d3)
-// - - css seems to be easy to modify, but little interactivity (tooltip etc.)
-// - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
-// - - use graphLib for inputting graph data :
-// https://github.com/cpettitt/graphlib/wiki/API-Reference viz.js :
-// https://github.com/mdaines/viz.js/ - - use graphviz/DOT language - - - howto :
-// http://graphs.grevian.org/example - - - formal def :
-// http://www.graphviz.org/content/dot-language vis.js : https://github.com/almende/vis, cf.
-// network - - examples to look directly in the examples folder - - rich API, but hard to fathom -
-// - uses simple format, but does not seem to be easy to have subgraphs with this format - - uses
-// GEPHI https://marketplace.gephi.org/plugin/json-exporter/ - - looks quite complex but also lots
-// of doc, not sure how to make it interactive RECOMMENDATION : 1. use viz/graphviz : graphviz is
-// pretty neat, pretty standard format, can map to others 2. use dagre-d3 : it is a library, can
-// customize anything with D3 BUT graphlib not exportable Conversion http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE - graphML is used by yed but also http://igraph.org/redirect.html
-
 
 //////
 // Helpers
@@ -1002,3 +975,105 @@ export function chainModelUpdates(arrayModelUpdateFn) {
     )
   }
 }
+
+export function logFnTrace(paramSpecs) {
+  // Note : I could also ramda curry but I prefer to avoid yet another indirection(call stack)
+  // level
+  return function _logFnTrace(args, fnToDecorateName, fnToDecorate) {
+    console.log(`==> ${fnToDecorateName}(${paramSpecs.join(' ')}): `, args);
+    const result = fnToDecorate(...args);
+    // NTH : could also clone the input args and repeat them here
+    console.log(`<== ${fnToDecorateName} <- `, result);
+    return result
+  }
+}
+
+
+// TODO : I am here, move wrapIfDebug back to FSM.js when finished
+export function wrapIfDebug({ debug, events, transitions, entryComponents }) {
+  if (!debug) {
+    return { events, transitions, entryComponents }
+  }
+  else {
+    return {
+      events: decorateEventsWithLog(events, transitions),
+      // transitions: decorateTransitionsWithLog(events, transitions), TODO
+      // entryComponents: decorateStateEntryWithLog(entryComponents)
+    }
+  }
+}
+
+export function decorateEventsWithLog(events, transitions) {
+  // TODO : note what I want, I also want to add something to the result (.tap etc.)
+  return mapObjIndexed(function decorateEventFactory(eventFactory, eventName) {
+    return decorateWith([
+      // checkEventFactoryContract,
+      logFnTrace(['sources', 'settings']),
+      tapStreamOutput(eventName)
+    ], eventFactory)
+  }, events);
+}
+
+export function tapEventSource(eventName){
+  return result => result.tap(console.log.bind(console, `Incoming event ${eventName}: `))
+}
+
+export function tapStreamOutput(eventName) {
+  return makeFunctionDecorator({after: tapEventSource(eventName), name: 'tapStreamOutput'})
+}
+
+// TODO : crate a directory FSM and split the source ccode in several files
+
+// TODO : 0. docuemnting features,
+// TODO : 0. docuemnting with examples and graphs
+// TODO : 1. convert a fsm data structure to a graphml or dot or tgf format
+// TODO : 1. study debugging/tracing facility (internal change of state, event guards results etc.)
+// preferably by preprocessing the fsm def : cleanest way
+// TODO : define my own errors with nice contextual messages and parameters
+// TODO : automatic actions through extra subject merged with the rest of event
+//        automatic action are specified with the entry actions,
+// attention to add the event at the end of the current tick (use cycle ordering of drivers?)
+// TODO Doc : for init transition, set re_entry to true if one wants to have initial component
+// display : this is due to INIT state being both target and current state at start-up
+// doc that re-entry is useless if there is no transition defined with target=current state
+// we could develop a contract that re-entry MUST not be there if no reentry, and MUST be
+// defined if there is
+// TODO : some action requests have no responses! feature: configuration property, can
+// also be useful to implement pre-emptive event : no, pre-emptive are events of the same state,
+// not the next event, hence to implement non RTC semantics
+// TODO : 6. FSM re_entry should be lower, at action guard level when I put the target state
+// DOC : the action responses will be obtained on the sources of the same name than the action sink
+// NTH : change cycle dom driver to inject document, which would allow testing by mocking
+// NTH : change cycle dom driver to use a real DOM vs. virtual DOM diff
+// -> add event in team detail to update the model and re-entry
+// ---- cf. https://github.com/patrick-steele-idem/morphdom,
+// ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
+// -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
+// TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
+// - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
+// - - allows to have more than flowchart, more kind of diagrams
+// - - use specific text format (dagre-d3)
+// - - css seems to be easy to modify, but little interactivity (tooltip etc.)
+// - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
+// - - use graphLib for inputting graph data :
+// https://github.com/cpettitt/graphlib/wiki/API-Reference viz.js :
+// https://github.com/mdaines/viz.js/ - - use graphviz/DOT language - - - howto :
+// http://graphs.grevian.org/example - - - formal def :
+// http://www.graphviz.org/content/dot-language vis.js : https://github.com/almende/vis, cf.
+// network - - examples to look directly in the examples folder - - rich API, but hard to fathom -
+// - uses simple format, but does not seem to be easy to have subgraphs with this format - - uses
+// GEPHI https://marketplace.gephi.org/plugin/json-exporter/ - - looks quite complex but also lots
+// of doc, not sure how to make it interactive RECOMMENDATION : 1. use viz/graphviz : graphviz is
+// pretty neat, pretty standard format, can map to others 2. use dagre-d3 : it is a library, can
+// customize anything with D3 BUT graphlib not exportable Conversion
+// http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
+// - graphML is used by yed but also http://igraph.org/redirect.html
+// TODO : intercept aop library : some example
+// CERNY.configure = function() {
+//   var interceptors = CERNY.Configuration.Interception.active;
+//   interceptors.push(CERNY.Interceptors.LogIndenter);
+//   interceptors.push(CERNY.Interceptors.Tracer);
+//   // interceptors.push(CERNY.Interceptors.TypeChecker);
+//   // interceptors.push(CERNY.Interceptors.ContractChecker);
+//   interceptors.push(CERNY.Interceptors.Profiler);
+// }

@@ -1,5 +1,5 @@
 import {
-  mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge, reduce, all,
+  defaultTo, mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge, reduce, all,
   either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty, where, both,
   curry
 } from "ramda"
@@ -573,8 +573,72 @@ function _handleError(msg, e) {
   console.error(`${msg}`, e);
   throw e;
 }
-
 const handleError = curry(_handleError);
+
+//IE workaround for lack of function name property on Functions
+//getFunctionName :: (* -> *) -> String
+const getFunctionName = (r => fn => {
+  return fn.name || ((('' + fn).match(r) || [])[1] || 'Anonymous');
+})(/^\s*function\s*(\S*)\s*\(/);
+
+// decorateWith(decoratingFn, fnToDecorate), where log :: fn -> fn such as both have same name
+// and possibly throw exception if that make sense to decoratingFn
+function decorateWithOne(decoratorSpec, fnToDecorate) {
+  const fnToDecorateName = getFunctionName(fnToDecorate);
+
+  // trick to get the same name for the returned function
+  // cf.
+  // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
+  const obj = {
+    [fnToDecorateName ](...args) {
+      const decoratingFn = makeFunctionDecorator(decoratorSpec);
+
+      return decoratingFn(args, fnToDecorateName, fnToDecorate);
+    }
+  };
+
+  return obj[fnToDecorateName];
+}
+
+function decorateWith(decoratingFnsSpecs, fnToDecorate) {
+  return decoratingFnsSpecs.reduce((acc, decoratingFn) => {
+    return decorateWithOne(decoratingFn, acc)
+  }, fnToDecorate)
+}
+
+/**
+ * NOTE : incorrect declaration... TODO : correct one day
+ * before(fnToDecorate, fnToDecorateName, args) or nil
+ * after(fnToDecorate, fnToDecorateName, result) or nil
+ * but not both nil
+ * @returns {function(fnToDecorate: Function, fnToDecorateName:String, args:Array<*>)}
+ */
+function makeFunctionDecorator({ before, after, name }) {
+  // we can have one of the two not specified, but if we have none, there is no decorator to make
+  if ((typeof before !== 'function') && (typeof after !== 'function')) {
+    throw `makeFunctionDecorator: you need to specify 'before' OR 'after' as decorating functions. You passed falsy values for both!`
+  }
+
+  const decoratorFnName = defaultTo('anonymousDecorator', name);
+
+  // trick to get the same name for the returned function
+  // cf.
+  // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
+  const obj = {
+    [decoratorFnName](args, fnToDecorateName, fnToDecorate) {
+      before && before(args, fnToDecorateName, fnToDecorate);
+
+      const result = fnToDecorate(...args);
+
+      return after
+        ? after(result, fnToDecorateName, fnToDecorate)
+        : result;
+    }
+  };
+
+  return obj[decoratorFnName];
+}
+
 
 export {
   makeDivVNode,
@@ -612,5 +676,9 @@ export {
   assertSettingsContracts,
   deepFreeze,
   makeErrorMessage,
-  trace
+  trace,
+  getFunctionName,
+  decorateWithOne,
+  decorateWith,
+  makeFunctionDecorator
 }
