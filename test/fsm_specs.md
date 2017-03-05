@@ -37,8 +37,8 @@ come with :
 - `Event :: Sources -> Settings -> Source EventData`
 - `Transitions :: HashMap TransitionName TransitionOptions`
 - `Request : Record {
-    command :: Command
-    payload :: Payload
+    command :: Command // mandatory
+    payload :: Payload // not mandatory
   }`
 - `ActionRequest :: Record {
     driver :: SinkName | Null

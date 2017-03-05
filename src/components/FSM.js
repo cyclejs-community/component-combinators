@@ -2,11 +2,11 @@
 import {
   map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone, keys,
   filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
-  tryCatch, T
+  tryCatch, T, flip
 } from "ramda"
 import {
-  checkSignature, assertContract, handleError, isBoolean, decorateWith, getFunctionName,
-  makeFunctionDecorator
+  checkSignature, assertContract, handleError, isBoolean, decorateWith,
+  assertFunctionContractDecoratorSpecs, logFnTrace, isFunction
 } from "../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents, isArrayUpdateOperations,
@@ -14,7 +14,10 @@ import {
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
-  isDefaultActionResponseHandlerConfig
+  isDefaultActionResponseHandlerConfig, isActionGuardDomain, isActionGuardCodomain,
+  isModelUpdateDomain, isModelUpdateCodomain, isEventGuardDomain, isEventGuardCodomain,
+  isActionRequestDomain, isActionRequestCodomain, isEventFactoryDomain, isEventFactoryCodomain,
+  isFsmModel
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -167,6 +170,61 @@ import {
  * @typedef {Object.<DriverEventPrefix, LabelledDriverEvent>} DriverEvent
  */
 
+const decorateActionGuard = decorateWith([
+  assertFunctionContractDecoratorSpecs({
+    checkDomain: isActionGuardDomain,
+    checkCodomain: isActionGuardCodomain
+  }),
+  logFnTrace(['model', 'actionResponse']),
+]);
+
+const decorateModelUpdate = decorateWith([
+  assertFunctionContractDecoratorSpecs({
+    checkDomain: isModelUpdateDomain,
+    checkCodomain: isModelUpdateCodomain
+  }),
+  logFnTrace(['FSM_Model', 'EventData', 'ActionResponse', 'Settings']),
+]);
+
+const decorateEventGuard = decorateWith([
+  assertFunctionContractDecoratorSpecs({
+    checkDomain: isEventGuardDomain,
+    checkCodomain: isEventGuardCodomain
+  }),
+  logFnTrace(['FSM_Model', 'EventData']),
+]);
+
+const decorateActionRequest = decorateWith([
+  assertFunctionContractDecoratorSpecs({
+    checkDomain: isActionRequestDomain,
+    checkCodomain: isActionRequestCodomain
+  }),
+  logFnTrace(['FSM_Model', 'EventData']),
+]);
+
+function decorateActionRequestStruct(action_request) {
+  const { driver, request } = action_request;
+
+  return {
+    driver,
+    request: decorateActionRequest(request)
+  }
+}
+
+
+/**
+ *
+ * @param {TransEval} transEval
+ */
+const decorateTransEval = function decorateTransEval(transEval) {
+  const { action_guard, target_state, model_update } = transEval;
+
+  return {
+    target_state,
+    action_guard: action_guard ? decorateActionGuard(action_guard) : null,
+    model_update: decorateModelUpdate(model_update)
+  }
+};
 
 let $ = Rx.Observable;
 
@@ -772,7 +830,6 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
   const { init_event_data, initial_model, sinkNames, debug } = fsmSettings;
 
   // If debug, wrap functions to output log messages
-  // TODO : I am here
   const { events, transitions, entryComponents } = wrapIfDebug({
     debug,
     events: _events,
@@ -867,7 +924,7 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
     const initialEvent = pipe(prefixWith(INIT_EVENT_NAME), prefixWith(EVENT_PREFIX))(init_event_data);
 
     const fsmEvents = $.merge(
-      $.merge(eventsArray).tap(x => console.warn('user event', x)).map(prefixWith(EVENT_PREFIX)),
+      $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)),
       $.merge(actionResponseObsArray).tap(
         x => console.warn('response event', x)).map(prefixWith(DRIVER_PREFIX)),
     )
@@ -976,51 +1033,91 @@ export function chainModelUpdates(arrayModelUpdateFn) {
   }
 }
 
-export function logFnTrace(paramSpecs) {
-  // Note : I could also ramda curry but I prefer to avoid yet another indirection(call stack)
-  // level
-  return function _logFnTrace(args, fnToDecorateName, fnToDecorate) {
-    console.log(`==> ${fnToDecorateName}(${paramSpecs.join(' ')}): `, args);
-    const result = fnToDecorate(...args);
-    // NTH : could also clone the input args and repeat them here
-    console.log(`<== ${fnToDecorateName} <- `, result);
-    return result
-  }
-}
+const tapEventStreamOutput = eventName => ({
+  after: result => result.tap(console.warn.bind(console, `Incoming user event! ${eventName}: `))
+});
 
-
-// TODO : I am here, move wrapIfDebug back to FSM.js when finished
-export function wrapIfDebug({ debug, events, transitions, entryComponents }) {
+function wrapIfDebug({ debug, events, transitions, entryComponents }) {
   if (!debug) {
     return { events, transitions, entryComponents }
   }
   else {
     return {
       events: decorateEventsWithLog(events, transitions),
-      // transitions: decorateTransitionsWithLog(events, transitions), TODO
-      // entryComponents: decorateStateEntryWithLog(entryComponents)
+      transitions: decorateTransitionsWithLog(events, transitions),
+      entryComponents: decorateStateEntryWithLog(entryComponents)
     }
   }
 }
 
-export function decorateEventsWithLog(events, transitions) {
-  // TODO : note what I want, I also want to add something to the result (.tap etc.)
+function decorateStateEntryWithLog(entryComponents) {
+  //- `StateEntryComponents :: HashMap State StateEntryComponent`
+  //- `StateEntryComponent :: FSM_Model -> Component | Null`
+  return mapObjIndexed(function (stateEntryComponent) {
+    return decorateWith([
+      assertFunctionContractDecoratorSpecs({
+        checkDomain: isEntryComponentDomain,
+        checkCodomain: isEntryComponentCodomain
+      }),
+      logFnTrace(['model']),
+    ], stateEntryComponent)
+  }, entryComponents)
+}
+
+const isEntryComponentDomain = isFsmModel;
+const isEntryComponentCodomain = isFunction;
+
+function decorateEventsWithLog(events, transitions) {
   return mapObjIndexed(function decorateEventFactory(eventFactory, eventName) {
     return decorateWith([
-      // checkEventFactoryContract,
+      assertFunctionContractDecoratorSpecs({
+        checkDomain: isEventFactoryDomain,
+        checkCodomain: isEventFactoryCodomain
+      }),
       logFnTrace(['sources', 'settings']),
-      tapStreamOutput(eventName)
+      tapEventStreamOutput(eventName)
     ], eventFactory)
   }, events);
 }
 
-export function tapEventSource(eventName){
-  return result => result.tap(console.log.bind(console, `Incoming event ${eventName}: `))
+/**
+ *
+ * @param events
+ * @param {Transitions} transitions
+ * @returns {*}
+ */
+function decorateTransitionsWithLog(events, transitions) {
+  return mapObjIndexed((transitionOption) => {
+    const { origin_state, event, target_states } = transitionOption;
+
+    return {
+      origin_state,
+      event,
+      target_states: mapR(decorateTransition, target_states)
+    }
+  }, transitions)
 }
 
-export function tapStreamOutput(eventName) {
-  return makeFunctionDecorator({after: tapEventSource(eventName), name: 'tapStreamOutput'})
+/**
+ *
+ * @param {Transition} transition
+ */
+function decorateTransition(transition) {
+  const { event_guard, action_request, transition_evaluation, re_entry } = transition;
+
+  return {
+    re_entry,
+    transition_evaluation: mapR(decorateTransEval, transition_evaluation),
+    event_guard: event_guard ? decorateEventGuard(event_guard) : null,
+    action_request: action_request ? decorateActionRequestStruct(action_request) : null
+  }
 }
+
+// TODO : I am here NOOOOO different structure
+// TODO : also could be factored with R.evolve : NO
+// decorateTransition = evolve({
+// re_entry: identity, transition_evaluation: mapR(decorateTransEval), etc.})
+
 
 // TODO : crate a directory FSM and split the source ccode in several files
 

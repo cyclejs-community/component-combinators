@@ -147,7 +147,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -305,7 +306,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -453,7 +455,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -611,7 +614,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -763,7 +767,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -866,7 +871,7 @@ QUnit.test(
     };
 
     const events = {
-      [testEvent]: sources => sources.eventSource.take(1)
+      [testEvent]: function testEv(sources) {return sources.eventSource.take(1)}
     };
 
     const transitions = {
@@ -926,7 +931,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);

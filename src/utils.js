@@ -1,7 +1,7 @@
 import {
-  defaultTo, mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge, reduce, all,
-  either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty, where, both,
-  curry
+  defaultTo, mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge,
+  reduce, all, either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty,
+  where, both, curry
 } from "ramda"
 import { ERROR_MESSAGE_PREFIX } from "./components/properties"
 import * as Rx from "rx"
@@ -581,30 +581,42 @@ const getFunctionName = (r => fn => {
   return fn.name || ((('' + fn).match(r) || [])[1] || 'Anonymous');
 })(/^\s*function\s*(\S*)\s*\(/);
 
+// cf.
+// http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
+function NamedFunction(name, args, body, scope, values) {
+  if (typeof args == "string")
+    values = scope, scope = body, body = args, args = [];
+  if (!Array.isArray(scope) || !Array.isArray(values)) {
+    if (typeof scope == "object") {
+      var keys = Object.keys(scope);
+      values = keys.map(function(p) { return scope[p]; });
+      scope = keys;
+    } else {
+      values = [];
+      scope = [];
+    }
+  }
+  return Function(scope, "function "+name+"("+args.join(", ")+") {\n"+body+"\n}\nreturn "+name+";").apply(null, values);
+}
+
 // decorateWith(decoratingFn, fnToDecorate), where log :: fn -> fn such as both have same name
 // and possibly throw exception if that make sense to decoratingFn
 function decorateWithOne(decoratorSpec, fnToDecorate) {
   const fnToDecorateName = getFunctionName(fnToDecorate);
 
-  // trick to get the same name for the returned function
-  // cf.
-  // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
-  const obj = {
-    [fnToDecorateName ](...args) {
+  return NamedFunction(fnToDecorateName, [], `
+      const args = [].slice.call(arguments);
       const decoratingFn = makeFunctionDecorator(decoratorSpec);
-
       return decoratingFn(args, fnToDecorateName, fnToDecorate);
-    }
-  };
-
-  return obj[fnToDecorateName];
+`,
+    {makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName});
 }
 
-function decorateWith(decoratingFnsSpecs, fnToDecorate) {
+const decorateWith = curry(function decorateWith(decoratingFnsSpecs, fnToDecorate) {
   return decoratingFnsSpecs.reduce((acc, decoratingFn) => {
     return decorateWithOne(decoratingFn, acc)
   }, fnToDecorate)
-}
+});
 
 /**
  * NOTE : incorrect declaration... TODO : correct one day
@@ -639,6 +651,43 @@ function makeFunctionDecorator({ before, after, name }) {
   return obj[decoratorFnName];
 }
 
+const assertFunctionContractDecoratorSpecs = fnContract => ({
+  before: (args, fnToDecorateName) => {
+    const checkDomain = fnContract.checkDomain;
+    const contractFnName = getFunctionName(checkDomain);
+    const passed = checkDomain(...args);
+
+    if (!isBoolean(passed) || (isBoolean(passed) && !passed)) {
+      // contract is failed
+      console.error(`assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName} \n
+${isString(passed) ? passed : ''}`);
+      throw `assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName}`
+    }
+  },
+  after: (result, fnToDecorateName) => {
+    const checkCodomain = fnContract.checkCodomain;
+    const contractFnName = getFunctionName(checkCodomain);
+    const passed = checkCodomain(result);
+
+    if (!isBoolean(passed) || (isBoolean(passed) && !passed)) {
+      // contract is failed
+      console.error(`assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName} \n
+${isString(passed) ? passed : ''}`);
+      throw `assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName}`
+    }
+
+    return result;
+  }
+});
+
+const logFnTrace = paramSpecs => ({
+  before: (args, fnToDecorateName) =>
+    console.info(`==> ${fnToDecorateName}(${paramSpecs.join(', ')}): `, args),
+  after: (result, fnToDecorateName) => {
+    console.info(`<== ${fnToDecorateName} <- `, result);
+    return result
+  },
+});
 
 export {
   makeDivVNode,
@@ -680,5 +729,7 @@ export {
   getFunctionName,
   decorateWithOne,
   decorateWith,
-  makeFunctionDecorator
+  makeFunctionDecorator,
+  assertFunctionContractDecoratorSpecs,
+  logFnTrace
 }
