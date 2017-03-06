@@ -1,23 +1,16 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
-  map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone, keys,
-  filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
-  tryCatch, T, flip
+  evolve, map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone,
+  keys, filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
+  tryCatch, T, flip, identity, cond, always, prop
 } from "ramda"
-import {
-  checkSignature, assertContract, handleError, isBoolean, decorateWith,
-  assertFunctionContractDecoratorSpecs, logFnTrace, isFunction
-} from "../utils"
+import { checkSignature, assertContract, handleError, isBoolean } from "../../utils"
 import {
   isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents, isArrayUpdateOperations,
   isEntryComponentFactory, isEntryComponent, checkStateEntryComponentFnMustReturnComponent,
   checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
-  checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
-  isDefaultActionResponseHandlerConfig, isActionGuardDomain, isActionGuardCodomain,
-  isModelUpdateDomain, isModelUpdateCodomain, isEventGuardDomain, isEventGuardCodomain,
-  isActionRequestDomain, isActionRequestCodomain, isEventFactoryDomain, isEventFactoryCodomain,
-  isFsmModel
+  checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
@@ -28,7 +21,10 @@ import {
   CONTRACT_EVENT_GUARD_FN_RETURN_VALUE, CONTRACT_EVENT_GUARD_CANNOT_FAIL,
   CONTRACT_ACTION_GUARD_CANNOT_FAIL, CONTRACT_ACTION_GUARD_FN_RETURN_VALUE,
   CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL
-} from "./properties"
+} from "../properties"
+import {
+  decorateEventsWithLog, decorateTransitionsWithLog, decorateStateEntryWithLog
+} from "./utils"
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
 // model object
@@ -169,62 +165,6 @@ import {
 /**
  * @typedef {Object.<DriverEventPrefix, LabelledDriverEvent>} DriverEvent
  */
-
-const decorateActionGuard = decorateWith([
-  assertFunctionContractDecoratorSpecs({
-    checkDomain: isActionGuardDomain,
-    checkCodomain: isActionGuardCodomain
-  }),
-  logFnTrace(['model', 'actionResponse']),
-]);
-
-const decorateModelUpdate = decorateWith([
-  assertFunctionContractDecoratorSpecs({
-    checkDomain: isModelUpdateDomain,
-    checkCodomain: isModelUpdateCodomain
-  }),
-  logFnTrace(['FSM_Model', 'EventData', 'ActionResponse', 'Settings']),
-]);
-
-const decorateEventGuard = decorateWith([
-  assertFunctionContractDecoratorSpecs({
-    checkDomain: isEventGuardDomain,
-    checkCodomain: isEventGuardCodomain
-  }),
-  logFnTrace(['FSM_Model', 'EventData']),
-]);
-
-const decorateActionRequest = decorateWith([
-  assertFunctionContractDecoratorSpecs({
-    checkDomain: isActionRequestDomain,
-    checkCodomain: isActionRequestCodomain
-  }),
-  logFnTrace(['FSM_Model', 'EventData']),
-]);
-
-function decorateActionRequestStruct(action_request) {
-  const { driver, request } = action_request;
-
-  return {
-    driver,
-    request: decorateActionRequest(request)
-  }
-}
-
-
-/**
- *
- * @param {TransEval} transEval
- */
-const decorateTransEval = function decorateTransEval(transEval) {
-  const { action_guard, target_state, model_update } = transEval;
-
-  return {
-    target_state,
-    action_guard: action_guard ? decorateActionGuard(action_guard) : null,
-    model_update: decorateModelUpdate(model_update)
-  }
-};
 
 let $ = Rx.Observable;
 
@@ -887,7 +827,7 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
       .map(fsmState => defaultTo($.empty(), fsmState.sinks[sinkName]))
       .switch()
       .tap(x =>
-        console.warn(`post switch  ${sinkName}`, x));
+        console.warn(`FSM's ${sinkName} -> ->`, x));
 
     return accOutputSinks
   }
@@ -896,12 +836,6 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
   const computeOutputSinks = curry(_computeOutputSinks);
 
   return function fsmComponent(sources, settings) {
-    // 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
-    //           init_event_data etc. could for instance be passed there instead of ahead
-    // 0.X TODO check remaining contracts
-    // for instance : if an action request features a driver name, that driver name MUST be found
-    // in the sources
-
     // 1. Create array of events dealt with by the FSM
     // This will include :
     // - initial event
@@ -917,7 +851,10 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
     const driverNameArray = removeZeroDriver(uniq(flatten(driverNameArrays)));
     /** @type {Array.<Observable.<Object.<SinkName, ActionResponse>>>} */
     const actionResponseObsArray = mapR(function getActionResponseObs(driverName) {
-      return sources[driverName].map(prefixWith(driverName))
+      const prefixedActionResponse$ = sources[driverName].map(prefixWith(driverName));
+      return debug
+        ? prefixedActionResponse$.tap(x => console.warn('response event', x))
+        : prefixedActionResponse$
     }, driverNameArray);
 
     /** @type {Object.<EventName, EventData>} */
@@ -925,8 +862,7 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
 
     const fsmEvents = $.merge(
       $.merge(eventsArray).map(prefixWith(EVENT_PREFIX)),
-      $.merge(actionResponseObsArray).tap(
-        x => console.warn('response event', x)).map(prefixWith(DRIVER_PREFIX)),
+      $.merge(actionResponseObsArray).map(prefixWith(DRIVER_PREFIX)),
     )
       .startWith(initialEvent);
 
@@ -966,7 +902,7 @@ export function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
     /** @type {Observable.<Object.<SinkName, Observable.<*>>>}*/
     let sinks$ = eventEvaluation$
       .filter(fsmState => fsmState.sinks)
-      .tap(x => console.warn('sinks', x.sinks))
+      .tap(x => fsmSettings.debug && console.debug('new sinks to merge | ', x.sinks))
       .shareReplay(1);
 
     /** @type {Object.<SinkName, Observable.<*>>}*/
@@ -987,146 +923,24 @@ function computeSinkFromActionRequest(actionRequest, model, eventData) {
   }
 }
 
+const wrapIfDebug = cond([
+  [prop('debug'), evolve({
+    events: decorateEventsWithLog,
+    transitions: decorateTransitionsWithLog,
+    entryComponents: decorateStateEntryWithLog
+  })],
+  [T, identity]]);
 
-//////
-// Helpers
-export function makeDefaultActionResponseProcessing(config) {
-  assertContract(isDefaultActionResponseHandlerConfig, [config],
-    'Configuration for action response handling must be of the shape :: {' +
-    '  success : {target_state : <state>, udpate_model : <model update fn>,' +
-    '  error : {target_state : <state>, udpate_model : <model update fn>}'
-  );
-
-  const {
-    success : { target_state : successTargetState, model_update : successModelUpdate },
-    error: { target_state: errorTargetState, model_update: errorModelUpdate }
-  } = config;
-
-  return [
-    {
-      action_guard: checkActionResponseIsSuccess,
-      target_state: successTargetState,
-      model_update: successModelUpdate
-    },
-    {
-      action_guard: T,
-      target_state: errorTargetState,
-      model_update: errorModelUpdate
-    }
-  ]
-}
-
-///////
-// Action guards
-export function checkActionResponseIsSuccess(model, actionResponse) {
-  void model;
-  const { err } = actionResponse;
-  return !err;
-}
-
-export function chainModelUpdates(arrayModelUpdateFn) {
-  return function chainedModelUpdates(model, eventData, actionResponse) {
-    return flatten(mapR(
-      modelUpdateFn => modelUpdateFn(model, eventData, actionResponse),
-      arrayModelUpdateFn)
-    )
-  }
-}
-
-const tapEventStreamOutput = eventName => ({
-  after: result => result.tap(console.warn.bind(console, `Incoming user event! ${eventName}: `))
-});
-
-function wrapIfDebug({ debug, events, transitions, entryComponents }) {
-  if (!debug) {
-    return { events, transitions, entryComponents }
-  }
-  else {
-    return {
-      events: decorateEventsWithLog(events, transitions),
-      transitions: decorateTransitionsWithLog(events, transitions),
-      entryComponents: decorateStateEntryWithLog(entryComponents)
-    }
-  }
-}
-
-function decorateStateEntryWithLog(entryComponents) {
-  return mapObjIndexed(function (stateEntryComponent) {
-    return stateEntryComponent
-      ? decorateWith([
-      assertFunctionContractDecoratorSpecs({
-        checkDomain: isEntryComponentDomain,
-        checkCodomain: isEntryComponentCodomain
-      }),
-      logFnTrace(['model']),
-    ], stateEntryComponent)
-      : null
-  }, entryComponents)
-}
-
-const isEntryComponentDomain = isFsmModel;
-const isEntryComponentCodomain = isFunction;
-
-function decorateEventsWithLog(events, transitions) {
-  return mapObjIndexed(function decorateEventFactory(eventFactory, eventName) {
-    return decorateWith([
-      assertFunctionContractDecoratorSpecs({
-        checkDomain: isEventFactoryDomain,
-        checkCodomain: isEventFactoryCodomain
-      }),
-      logFnTrace(['sources', 'settings']),
-      tapEventStreamOutput(eventName)
-    ], eventFactory)
-  }, events);
-}
-
-/**
- *
- * @param events
- * @param {Transitions} transitions
- * @returns {*}
- */
-function decorateTransitionsWithLog(events, transitions) {
-  return mapObjIndexed((transitionOption) => {
-    const { origin_state, event, target_states } = transitionOption;
-
-    return {
-      origin_state,
-      event,
-      target_states: mapR(decorateTransition, target_states)
-    }
-  }, transitions)
-}
-
-/**
- *
- * @param {Transition} transition
- */
-function decorateTransition(transition) {
-  const { event_guard, action_request, transition_evaluation, re_entry } = transition;
-
-  return {
-    re_entry,
-    transition_evaluation: mapR(decorateTransEval, transition_evaluation),
-    event_guard: event_guard ? decorateEventGuard(event_guard) : null,
-    action_request: action_request ? decorateActionRequestStruct(action_request) : null
-  }
-}
-
-// TODO : I am here NOOOOO different structure
-// TODO : also could be factored with R.evolve : NO
-// decorateTransition = evolve({
-// re_entry: identity, transition_evaluation: mapR(decorateTransEval), etc.})
-
-
-// TODO : crate a directory FSM and split the source ccode in several files
-
-// TODO : 0. docuemnting features,
+// TODO : same would be nice while saving to remote to show some message `pending...` = feature
+// i.e. some model update for when FSM in between states
+// The way to do this is to have ONE global pending internal FSM state which is associated to
+// some action (think about how, if we update the view with a spinner, how?)
+// TODO : 0. documenting features,
 // TODO : 0. docuemnting with examples and graphs
 // TODO : 1. convert a fsm data structure to a graphml or dot or tgf format
-// TODO : 1. study debugging/tracing facility (internal change of state, event guards results etc.)
-// preferably by preprocessing the fsm def : cleanest way
 // TODO : define my own errors with nice contextual messages and parameters
+// 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
+// 0. TODO : check remaining contracts
 // TODO : automatic actions through extra subject merged with the rest of event
 //        automatic action are specified with the entry actions,
 // attention to add the event at the end of the current tick (use cycle ordering of drivers?)
@@ -1165,12 +979,3 @@ function decorateTransition(transition) {
 // customize anything with D3 BUT graphlib not exportable Conversion
 // http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
 // - graphML is used by yed but also http://igraph.org/redirect.html
-// TODO : intercept aop library : some example
-// CERNY.configure = function() {
-//   var interceptors = CERNY.Configuration.Interception.active;
-//   interceptors.push(CERNY.Interceptors.LogIndenter);
-//   interceptors.push(CERNY.Interceptors.Tracer);
-//   // interceptors.push(CERNY.Interceptors.TypeChecker);
-//   // interceptors.push(CERNY.Interceptors.ContractChecker);
-//   interceptors.push(CERNY.Interceptors.Profiler);
-// }

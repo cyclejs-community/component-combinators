@@ -680,11 +680,11 @@ ${isString(passed) ? passed : ''}`);
   }
 });
 
-const logFnTrace = paramSpecs => ({
+const logFnTrace = (title, paramSpecs) => ({
   before: (args, fnToDecorateName) =>
-    console.info(`==> ${fnToDecorateName}(${paramSpecs.join(', ')}): `, args),
+    console.info(`==> ${title.toUpperCase()} | ${fnToDecorateName}(${paramSpecs.join(', ')}): `, args),
   after: (result, fnToDecorateName) => {
-    console.info(`<== ${fnToDecorateName} <- `, result);
+    console.info(`<== ${title.toUpperCase()} | ${fnToDecorateName} <- `, result);
     return result
   },
 });

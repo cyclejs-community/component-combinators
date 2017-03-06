@@ -10,7 +10,7 @@ import {
   EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, DRIVER_PREFIX, INIT_EVENT_NAME, INIT_STATE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE
 } from "../src/components/properties"
-import { makeFSM } from "../src/components/FSM"
+import { makeFSM } from "../src/components/FSM/FSM"
 
 let $ = Rx.Observable;
 
@@ -1079,7 +1079,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1240,7 +1241,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1401,7 +1403,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1562,7 +1565,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1712,7 +1716,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1901,7 +1906,8 @@ QUnit.test(
     const fsmSettings = {
       initial_model: initialModel,
       init_event_data: initEventData,
-      sinkNames: sinkNames
+      sinkNames: sinkNames,
+      debug : true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
