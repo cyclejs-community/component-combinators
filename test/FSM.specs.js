@@ -606,7 +606,7 @@ QUnit.test(
       [FIRST_STATE]: function (model) {
         return curry(dummyComponent2Sink)(__, { model })
       },
-      [SECOND_STATE]: function (model) {
+      [SECOND_STATE]: function entrySecondState(model) {
         return curry(dummyComponent1Sink)(__, { model })
       },
     };

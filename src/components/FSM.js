@@ -1051,16 +1051,16 @@ function wrapIfDebug({ debug, events, transitions, entryComponents }) {
 }
 
 function decorateStateEntryWithLog(entryComponents) {
-  //- `StateEntryComponents :: HashMap State StateEntryComponent`
-  //- `StateEntryComponent :: FSM_Model -> Component | Null`
   return mapObjIndexed(function (stateEntryComponent) {
-    return decorateWith([
+    return stateEntryComponent
+      ? decorateWith([
       assertFunctionContractDecoratorSpecs({
         checkDomain: isEntryComponentDomain,
         checkCodomain: isEntryComponentCodomain
       }),
       logFnTrace(['model']),
     ], stateEntryComponent)
+      : null
   }, entryComponents)
 }
 

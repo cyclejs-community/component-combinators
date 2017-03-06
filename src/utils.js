@@ -579,7 +579,7 @@ const handleError = curry(_handleError);
 //getFunctionName :: (* -> *) -> String
 const getFunctionName = (r => fn => {
   return fn.name || ((('' + fn).match(r) || [])[1] || 'Anonymous');
-})(/^\s*function\s*(\S*)\s*\(/);
+})(/^\s*function\s*([^\(]*)/i);
 
 // cf.
 // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
