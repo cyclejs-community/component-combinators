@@ -31,14 +31,19 @@ come with :
      init_event_data :: Event_Data 
      sinkNames :: [SinkName] | []
    }`
-- `ActionResponses :: [SourceName]`
+- `ActionResponse :: Record {
+    request : ActionRequest,
+    response : * | Null,
+    err : Error | Null,
+  }`
 - `Sources :: HashMap SourceName (Source *)`
 - `Events :: (HashMap EventName Event) | {}`
 - `Event :: Sources -> Settings -> Source EventData`
 - `Transitions :: HashMap TransitionName TransitionOptions`
 - `Request : Record {
-    command :: Command // mandatory
-    payload :: Payload // not mandatory
+    context :: *,
+    command :: Command
+    payload :: Payload | Null
   }`
 - `ActionRequest :: Record {
     driver :: SinkName | Null
@@ -86,44 +91,36 @@ come with :
 
 # FSM specifications
 ## Contracts
-- The `EV_INIT` event is reserved and cannot be used in user-defined event 
+x The `EV_INIT` event is reserved and cannot be used in user-defined event 
 configuration 
-- The seed state is `S_INIT` and is reserved and cannot be used in 
+x The seed state is `S_INIT` and is reserved and cannot be used in 
 user-defined state configuration
 - For the `INIT` event, there MUST be a defined success/error transition
 - States MAY be associated to entry action which is the instantiation of a component
-- A transition MUST move the state machine to a distinct state (no internal transition)
-- A transition MAY have an action response guard
-- A transition MAY have an event guard
+x A transition MAY have an action response guard
+x A transition MAY have an event guard
 x If a transition does not have an action response guard, it is equivalent to having a guard which always passes
-x If a transition does not have a event guard, it is equivalent to having a guard which always 
+x If a transition does not have a event guard, it is equivalent to having a guard which always
 passes
 x If a transition between two states have one or several action response guards, then for any 
-incoming events ONE (and only one) of the guards MUST pass. (cant have two components instantiated at the same time)
-x If a transition between two states have one or several event guards, then for any incoming events AT MOST ONE of the guards MAY pass. (cant have two actions triggered at the same time - all guards can also fail)
+incoming events, at least ONE of the guards MUST pass. 
 - guard predicates MUST be pure functions - or more relaxly have side-effects which do not affect the evaluation of other guards for the same event
-- Run To Completion (RTC) semantics : a state machine completes processing of each event before it can start processing the next event
+x Run To Completion (RTC) semantics : a state machine completes processing of each event before it can start processing the next event
 - Additional events occurring while the state machine is busy processing an event are dropped
 x FSM configured functions MUST NOT modify the model object parameter that they receive - to prevent this the implementation could pass a clone of the model object, or use inmutable models
 x an action request MAY take a special zero value which indicates no request (zero driver)
 - the state machine keeps a journal of the modification of its model (history 
 of update operations together with the transitions taken) for debugging 
 purposes or else
-- in the transition definition, only one event per origin state mapping to target states, i.e. 
-(origin_state, event, target_State)
-- all configured functions must be synchronous and not throw (event guard, action guard, event 
-functions, etc.) :: use tryCatch??
-- if action request has zero driver, then the request field MUST be null
+- all configured functions must be synchronous
 - there MUST be an init event and transition configured
-- if action request, then it is only ONE value passed in the specified driver
-- if action request is none then transition_evaluation.action_guard MUST be Null 
+- if action request has zero driver, then the request field MUST be null
+- if action request is none then `transition_evaluation.action_guard` MUST be Null 
 - an action request MUST have an action response associated i.e. no write-only driver
 - if an action request features a driver name, that driver name MUST be found in the sources
 - state defined in transition array MUST exist in state definition
 - the Init state MUST be associated ONLY with transition featuring INIT events
-NOTE THAT AN FSM WITH EVENT GUARD SUCH THAT INIT EVENT FAILS WILL REMAIN IN LIMBO (INIT_STATE) AS
- INIT EVENT WILL NOT BE REPEATED
- - In states definition, the init state MUST NOT be used
+NOTE THAT AN FSM WITH EVENT GUARD SUCH THAT INIT EVENT FAILS WILL REMAIN IN LIMBO (INIT_STATE) AS INIT EVENT WILL NOT BE REPEATED
 
 ## Behaviour
 When we refer to an event, we implicitly refer to an event configured to be handled by a FSM.
@@ -234,26 +231,23 @@ When we refer to an event, we implicitly refer to an event configured to be hand
      - FSM component emits only 1 value from Component, and 5 values from Component2, i.e. Component is switched out, and Component3 is never instantiated
 
 TODO : If I go with that, update contracts
-# DOC
-- init-event-data is passed with fsm settings 
-- document fsm settings
 
 # Possible improvements
-- queue events while the state machine is busy processing events/or waiting for action responses
-- exit actions for cleanup purpose -will have to be specified in sync with the entry action (which probably creates the resource to clean up) 
-- internal transition if the need occurs
-  - state re-entry (executing the entry/exit actions)
-  - or not
-- automatic events
-- investigate racing conditions
+- policies when a state machine is in between states (expecting action response)
+    - CANCEL AND FIRE : the action in course is cancelled and the event is processed
+    - DROP : the events are dropped and not processed, a warning is issued (default)
+    - QUEUE AND FIRE : events for that state are queued. If the transition is towards the same state, then events are dequeued and processed in order of arrival. If to another state, warning is issued and events are dropped
+    - QUEUE AND DROP : events for that state are queued. If the transition is towards the same state, then queued events who happened while the action was executed are dropped, the queued events who happened after action has ended (and hence state is re-entered) are processed in order of arrival. If transition is to another state, warning is issued and events are dropped
+- policy should be specified at the transition level
+  - the event triggering the transition should define its queuing policy
 
-// event E: click on one team - these are only event CHANGING fsm state!!
-// NOT SAME
-// - {teamData}
-// transition : [
-// - Sa, E, success, Sb,
-// - {targetDriver: (fsmModel, teamData) => action request}
-// - (fsmModel, teamData, response) => operation on model]
-
-// fsm(events, transitions, stateVsComponentMap) : component
-// stateVsComponentMap :: state => model => component
+- instead of having component executed upon state entry, one can have a full application, i.e a run(main) with drivers
+  - main will be injected the sources argument from its parent
+  - main can also define additional sources (by defining additional sinks)
+  - mian can redefine/redirect existing sinks 
+  - non-redefined sinks will be routed to the parent as always
+  - it will be necessary to check carefully the disposal mechanism of that application...
+  
+- implement exit actions for cleanup purpose -will have to be specified in sync with the entry action (which probably creates the resource to clean up) 
+- automatic events (i.e. immediate preemption or transient state)
+- investigate racing conditions (?)
