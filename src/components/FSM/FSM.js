@@ -931,6 +931,11 @@ const wrapIfDebug = cond([
   })],
   [T, identity]]);
 
+// TODO : use rxdb to replace firebase for the demo - it is totally offline
+// TODO : implement remaining contracts cf. doc
+// TODO : move contrac for action guards and event guards (return boolean value) into debug:true
+// so that when debug is false we have better performance
+// TODO : also in the AOP, add the wrappign of guards if they send exceptions...
 // TODO : same would be nice while saving to remote to show some message `pending...` = feature
 // i.e. some model update for when FSM in between states
 // The way to do this is to have ONE global pending internal FSM state which is associated to
