@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "repository": "https://github.com/brucou/rxcc.git",
   "main": "dist-node/index.js",
+  "module" : "src/index.js",
   "jsnext:main": "src/index.js",
   "jspm": {
     "main": "dist/rxcc.js"
@@ -54,6 +55,7 @@
     "rx": "^4.1.0",
     "snabbdom": "^0.5.0",
     "standard-error": "^1.1.0",
-    "watchify": "^3.8.0"
+    "watchify": "^3.8.0",
+    "route-matcher" : "^0.1.0"
   }
 }

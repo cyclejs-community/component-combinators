@@ -13,21 +13,23 @@
  * @typedef {?Object.<string, ?Object>} Settings
  */
 /**
+ * // TODO : review types to match m current implementation
+ * // I have example with only makeLocalSources set, so make all of them optional for now
  * @typedef {Object} DetailedComponentDef
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings)} makeOwnSinks
  * @property {function(Sinks, Array<Sinks>, Settings)} mergeSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
+ * @property {?function(Sinks):Boolean} sinksContract
+ * @property {?function(Sources):Boolean} sourcesContract
  */
 /**
  * @typedef {Object} ShortComponentDef
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
  * @property {function(Sources, Settings, Array<Component>)} makeAllSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
+ * @property {?function(Sinks):Boolean} sinksContract
+ * @property {?function(Sources):Boolean} sourcesContract
  */
 /**
  * @typedef {function(Sources, Settings):Sinks} Component

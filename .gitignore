@@ -4,6 +4,5 @@ dist
 dist-node
 archive
 dist-node-test
-src/vendor
 test/test-bundle.js
 gh-md-toc

@@ -931,7 +931,11 @@ const wrapIfDebug = cond([
   })],
   [T, identity]]);
 
-// TODO : use rxdb to replace firebase for the demo - it is totally offline
+// TODO : implmement history mechanism in this library
+// TODO: actionable implementation of statecharts in hs https://github.com/steelbreeze/state.js
+// TODO : fsm http://www.intersel.fr/assets_intersel_a/gitdemos/iFSM/Examples/Example_Slideshow.html
+// TODO : use rxdb to replace firebase for the demo - it is totally offline, or
+// pipeDb! https://github.com/pipelinedb/pipelinedb
 // TODO : implement remaining contracts cf. doc
 // TODO : move contrac for action guards and event guards (return boolean value) into debug:true
 // so that when debug is false we have better performance
@@ -984,3 +988,145 @@ const wrapIfDebug = cond([
 // customize anything with D3 BUT graphlib not exportable Conversion
 // http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
 // - graphML is used by yed but also http://igraph.org/redirect.html
+// TODO: can be used to have state chart logic for free : https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js
+// but I will have to add the events and change the formats (add transitions in objects instead
+// of imperative this.go(state) ) and so on
+// And also I should write tests, there are none...
+// for google cloud spark back-end C:\Users\toshiba\AppData\Local\Google\Cloud SDK
+
+
+// Dom driver
+// modified       .tap(console.log.bind(console, `For namespace ${namespace}, emitting ${type} event:`))
+// in C:\Users\toshiba\WebstormProjects\sparks-cyclejs\node_modules\cycle-snabbdom\lib\events.js
+// Auth driver
+// C:\Users\toshiba\WebstormProjects\sparks-cyclejs\node_modules\@sparksnetwork\cyclic-fire\dist\index.js
+/*
+ return rootElement$.first().flatMapLatest(function (rootElement) {
+ if (!namespace || namespace.length === 0) {
+ return (0, _fromEvent.fromEvent)(rootElement, type, useCapture);
+ }
+ var simulateBubbling = makeSimulateBubbling(namespace, rootElement);
+ return (0, _fromEvent.fromEvent)(rootElement, type, useCapture).filter(simulateBubbling);
+ })
+ .tap(tapDomEvent(namespace, type))
+ .share();
+ };
+ }
+
+ function tapDomEvent(namespace, type) {
+ return function tapDomEvent(ev) {
+ const selection = pick(['clientX', 'clientY', 'path', 'ctrlKey', 'shiftKey', 'type'], ev)
+ selection.targetClassName = ev.target ? ev.target.className : ""
+ selection.targetId = ev.target ? ev.target.id : ""
+
+ console.log(`For namespace ${namespace}, emitting ${type} event:`, selection)
+ }
+ }
+
+ function pick(arrProps, obj) {
+ let res = {}
+ arrProps.forEach(key => res[key] = obj[key])
+
+ return res
+ }
+*/
+// Queue driver
+// C:\Users\toshiba\WebstormProjects\sparks-cyclejs\node_modules\@sparksnetwork\cyclic-fire\dist\index.js
+/*
+return function (listenerKey) {
+  return ChildAddedStream(srcRef.child(listenerKey))
+    .tap(console.log.bind(console, `Response received for listenerKey (uid?) : ${listenerKey}`))
+    .doAction(function (_ref2) {
+      var key = _ref2.key;
+      return deleteResponse(srcRef, listenerKey, key);
+    });
+};*/
+// building query from fb api is simply mapping the args to chained fn calls
+// C:\Users\toshiba\WebstormProjects\sparks-cyclejs\node_modules\@sparksnetwork\cyclic-fire\dist\index.js
+// firebase driver
+/*
+var build = function build(args) {
+  var stream = ValueStream(args.reduce(chain, ref))
+    .tap(console.log.bind.console(`firebase query (args, ?)`, args))
+    .replay(null, 1);
+  var disposable = stream.connect();
+  compositeDisposable.add(disposable);
+  return stream;
+};
+*/
+/*
+action  :  "create"
+domain  :  "Assignments"
+uid    :    "nKyJt64tayMHJ0ucG0Q4A3gQogQ2"
+payload  : {
+  values    : {
+    engagementKey    :    "-KaFkxJRCi60lUlzSsGx"
+    oppKey    :    "-KX9OEk_l6mYeNFtS_mq"
+    profileKey    :    "-KaFkwVPmISpvbyqC_1v"
+    shiftKey    :    "-Ka35opxkYP01tVuiIgL"
+    teamKey    :    "-KXA7guQXeOC7f8Zn8y1"
+  }
+}
+*/
+/*
+Assignments : {
+  -KFsXPXhpr7Jk4m0U_Dt :{
+  engagementKey:"-KEyXx_POjDOx4Upiie1" // Engagments
+  oppKey:"-KEh5MsHxpWFMa7n-38t" // Opps
+  profileKey:    "-KEyXp9tXHdH7lBEBvGN" // Profiles
+  shiftKey:    "-KFe9WZmSNbrt53fkZNr" // Shifts
+  teamKey:    "-KEh7UYHKVz05E1HOsNY" // teams
+  }
+}
+*/
+/*
+Profiles : {
+-KR5Wv46CZeQ1iarHQHz : {
+  dob
+  email
+  fullName
+  isAdmin
+  isEAP
+  location
+  phone
+  portraitUrl
+  uid
+  }
+}
+*/
+/*
+Users : {
+  JGhKXoFvpURntzyNBYzr5CAqeSp2:    "-KYLI7kW6nVlVRmFG5v2"
+}
+*/
+/*
+Shifts : {
+  -KMwPqNFWph2BEBEvyIQ : {
+    assigned : 2 // number of people assigned to that shift??
+    date : "2016-07-30T00:00:00-04:00"
+    end : "2016-07-30T16:00:00-04:00"
+    hours : 4
+    ownerProfileKey : "-KEMTVUivQTtyS8eYqKg" // ??
+    people
+    reserved
+    start : "2016-07-30T12:00:00-04:00"
+    teamKey : "-KMW9UO1IkMjRjc6ZqB2" // shift belongs to that team, Teams
+  }
+}
+*/
+const shifts$ = sources.teams$
+  .map(map(prop('$key')))
+  .flatMapLatest(
+    compose(
+      combineLatest,
+      map(Shifts.query.byTeam(sources)),
+    )
+  )
+  .map(flatten)
+  .map(uniqBy(prop('$key')))
+  .map(sortBy(
+    compose(
+      localTime,
+      prop('start'),
+    )
+  ))

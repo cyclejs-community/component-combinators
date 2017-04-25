@@ -1,5 +1,5 @@
 // Avoid `console` errors in browsers that lack a console.
-(function() {
+(function () {
   let method;
   const noop = function () {};
   const methods = [
@@ -11,7 +11,7 @@
   let length = methods.length;
   let console = (window.console = window.console || {});
 
-  while (length--) {
+  while ( length-- ) {
     method = methods[length];
 
     // Only stub undefined methods.
@@ -21,9 +21,10 @@
   }
 }());
 
-import {m} from './components/m'
+import { m } from "./components/m"
 // Change from m to RouteWhen or sth like that
 // import {TODO} from './components/Router'
+import { onRoute } from "./components/Router"
 // change from m to Switch(CaseWhen...
 // update the switch code too, it changed in between version
 // TODO: also adapt the tests!!
@@ -31,6 +32,7 @@ import {m} from './components/m'
 
 export {
   m,
+  onRoute,
   //TODO
 }
 
