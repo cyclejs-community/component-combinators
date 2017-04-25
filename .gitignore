@@ -3,3 +3,6 @@ node_modules
 dist
 dist-node
 archive
+dist-node-test
+test/test-bundle.js
+gh-md-toc

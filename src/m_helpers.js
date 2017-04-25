@@ -34,7 +34,7 @@ function LoginButton(sources, options) {
     auth$: sources.DOM.select(options.classes) // i.e. '.google-login'
       .events('click')
       .withLatestFrom(sources.provider$, (click, provider) => {type: options.authType, provider}),
-    DOM: Button({...sources, phrase$: $.just(options.phrase)}).DOM
+    //DOM: Button({...sources, phrase$: $.just(options.phrase)}).DOM
   }
 }
 
@@ -59,7 +59,7 @@ function QueueActionOnAuth(sources, options) {
       .map(user => ({
         domain: options.domain,
         action: options.action,
-        ...user.providerData[0],
+        //...user.providerData[0],
   }
 ))
 }
