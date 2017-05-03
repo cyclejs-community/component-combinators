@@ -15,7 +15,7 @@
 /**
  * // TODO : review types to match m current implementation
  * // I have example with only makeLocalSources set, so make all of them optional for now
- * @typedef {Object} DetailedComponentDef
+ * @typedef {?Object} DetailedComponentDef
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings)} makeOwnSinks
@@ -24,10 +24,11 @@
  * @property {?function(Sources):Boolean} sourcesContract
  */
 /**
- * @typedef {Object} ShortComponentDef
+ * @typedef {?Object} ShortComponentDef
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
- * @property {function(Sources, Settings, Array<Component>)} makeAllSinks
+ * @property {?function(Sources, Settings, Array<Component>)} makeAllSinks
+ * @property {?function(Function, Array<Component>, Sources, Settings)} computeSinks
  * @property {?function(Sinks):Boolean} sinksContract
  * @property {?function(Sources):Boolean} sourcesContract
  */
@@ -236,7 +237,7 @@ function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) 
  *   settings and children components
  * - detailed spec :
  *   several properties as detailed above
- * @param {?(DetailedComponentDef|ShortComponentDef)} componentDef
+ * @param {DetailedComponentDef|ShortComponentDef} componentDef
  * @param {?Object} _settings
  * @param {Array<Component>} children
  * @returns {Component}
