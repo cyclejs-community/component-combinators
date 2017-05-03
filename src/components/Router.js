@@ -239,7 +239,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
 // TODO : check the current defaults of `m`
 export function onRoute(url, components) {
   // check that components is an array
-  assertContract (isArrayOf(isFunction), components, `onRoute : MUST be passed array of functions (components)`);
+  assertContract (isArrayOf(isFunction), [components], `onRoute : MUST be passed array of functions (components)`);
 
   return m({computeSinks: computeSinks}, {route: url}, components)
 }
