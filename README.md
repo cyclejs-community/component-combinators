@@ -35,11 +35,16 @@ There exists a number of ways to test functions which take a stream and return a
 - `Rxjs` for example uses a test scheduler, and offers some specific constructs (`TestScheduler`, `startWithTiming`, `createHotObservable`, `Rx.ReactiveTest.onNext` etc.). `Most` has the `most-test` community library which can also help. 
 - In the worse case, if the streaming library offers subjects from the get-go, it is relatively easy to pass a sequence of inputs through that, run the stream combinator and gather back the output in sequence.
 
-Testing functions which take a collection of streams and return a collection of streams however can be difficult :
-- we have the additional issue of simulating not only the inputs/input order for a given stream, but also the inputs/input order for the collection of streams, relative to each other. This is so because in the general case, change in that ordering can lead to changes in the stream combinator output and behavior.
-- prior experiments aiming at ensuring the aforedescribed total ordering with `setTimeOut`, or the `delay` operator proved challenging.
+Testing functions which take a collection of streams and return a collection of streams requires 
+specific treatment in the case that order of inputs is meaningful (i.e. total). That is the case 
+when inputs are syntactically divided into a collection of source streams (`HashMap<SourceName, Stream<*>>`), but semantically are in fact equivalent to a single source stream (`Stream<HashMap<SourceName, *>>`), whose inputs carry both source type and message information. On the other hand, we assume here that 
+ordering of outputs is only partial on the collection, and total on any given output stream.
 
-The `runTestScenario` utility function provides an interface which facilitates creating a collection of streams from an array of input values, executing a function on that collection and comparing the resulting collection of output streams vs. an expected array of output values.
+The total order on the input streams collection requires the testing facility to simulate the 
+emission of inputs in the expected order. The partial order on the output streams collection 
+allows the testing facility to only gather the outputs on a per-stream basis.
+
+`runTestScenario` is such a testing facility which provides an interface for creating a collection of streams from an array of input values, executing a function on that collection and comparing the resulting collection of output streams vs. an expected array of output values.
 
 In what follows :
 - by a collection of streams, we will refer to a hash object (i.e. standard javascript object), keyed by stream identifier, matched to the actual stream.

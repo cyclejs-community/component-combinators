@@ -3,7 +3,7 @@
  * components])
  */
 
-import { assertSignature, isArray, isString } from "../utils"
+import { assertContract, assertSignature, isArray, isArrayOf, isFunction, isString } from "../utils"
 import { m } from "./m"
 import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../vendor/routematcher"
@@ -231,8 +231,17 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
 }
 
 // TODO : think about some rules for names for this kind of functions (HOC? not totally)
-export function onRoute(url, component) {
-  return m({computeSinks: computeSinks}, {route: url}, [component])
+// 1. I need an array of component for nested routing
+// onRoute(URL, [onRoute(url1, chilcComp1), onRoute(url2, childComp2)])
+// 2. But then I miss the settings parameter, i.e. I need to merge the children sinks with an
+// appropriate default...
+// That is combineLatest for the behaviours (DOM...), merge for the events
+// TODO : check the current defaults of `m`
+export function onRoute(url, components) {
+  // check that components is an array
+  assertContract (isArrayOf(isFunction), components, `onRoute : MUST be passed array of functions (components)`);
+
+  return m({computeSinks: computeSinks}, {route: url}, components)
 }
 
 // TODO : have an index.js which imports stuff from sublibs and export * them out

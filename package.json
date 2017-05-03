@@ -1,6 +1,6 @@
 {
   "name": "rx-component-combinators",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Library providing combinators for reactive components",
   "author": "Olivier Couriol <olivier.couriol@gmail.com>",
   "license": "Apache-2.0",
@@ -12,6 +12,7 @@
     "main": "dist/rxcc.js"
   },
   "scripts": {
+    "release": "xyz --repo git@github.com:brucou/rxcc.git --increment",
     "build-node": "babel src --out-dir dist-node",
     "build-node-test": "babel test --source-maps --out-dir dist-node-test",
     "build-node-test2": "cp test dist-node-test",
@@ -39,7 +40,8 @@
     "normalize.css": "3.0.3",
     "qunitjs": "^1.20.0",
     "sinon": "^1.17.2",
-    "sinon-qunit": "^2.0.0"
+    "sinon-qunit": "^2.0.0",
+    "xyz": "~2.1.0"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",
