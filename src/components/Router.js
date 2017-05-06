@@ -230,6 +230,11 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   return mergeAllR(mapR(makeRoutedSink, sinkNames))
 }
 
+export function checkRouteSettingsHaveRouteProp(settings) {
+  // there must be a route property and it must be a string
+  return settings.route && isString(settings.route)
+}
+
 // TODO : think about some rules for names for this kind of functions (HOC? not totally)
 // 1. I need an array of component for nested routing
 // onRoute(URL, [onRoute(url1, chilcComp1), onRoute(url2, childComp2)])
@@ -237,11 +242,13 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
 // appropriate default...
 // That is combineLatest for the behaviours (DOM...), merge for the events
 // TODO : check the current defaults of `m`
-export function onRoute(url, components) {
+export function onRoute(settings, components) {
   // check that components is an array
-  assertContract (isArrayOf(isFunction), [components], `onRoute : MUST be passed array of functions (components)`);
+  assertContract(isArrayOf(isFunction), [components], `onRoute : MUST be passed array of functions (components)`);
+  // check that settings.route is set to a string
+  assertContract(checkRouteSettingsHaveRouteProp, [settings], `onRoute : settings MUST include the url in its route property!`)
 
-  return m({computeSinks: computeSinks}, {route: url}, components)
+  return m({ computeSinks }, settings, components)
 }
 
 // TODO : have an index.js which imports stuff from sublibs and export * them out

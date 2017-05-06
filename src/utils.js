@@ -3,14 +3,15 @@ import {
   reduce, all, either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty,
   where, both, curry
 } from "ramda"
-import { ERROR_MESSAGE_PREFIX } from "./components/properties"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
 // TODO : define custom error types
+import toHTML from "snabbdom-to-html"
 import { StandardError } from "standard-error"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map);
+export const ERROR_MESSAGE_PREFIX = 'ERROR : '
 
 // Type checking typings
 /**
@@ -124,6 +125,33 @@ function assertSignature(fnName, _arguments, vRules) {
   }
 
   return !hasFailed
+}
+
+function assertSignatureContract(fnName, args, signatureDef) {
+  let isContractFailing = false
+  const argChecks = mapIndexed((paramStruct, index) => {
+    const paramName = keys(paramStruct)[0]
+    const [paramContract, contractErrorMessage] = paramStruct[paramName]
+    if (isTrue(paramContract.call(null, args[index]))) {
+      // contract is fulfilled
+      return true
+    }
+    else {
+      isContractFailing = true
+      return `${paramName} fails contract ${paramContract.name} : ${contractErrorMessage}`
+    }
+  }, signatureDef)
+
+  if (isContractFailing) {
+    const errorMessages = map(
+      boolOrErrorMessage => isString(boolOrErrorMessage) ? boolOrErrorMessage : ""
+      , argChecks)
+      .join('\n')
+
+    throw `${fnName} called with unexpected or erroneous arguments! \n ${errorMessages}`
+  }
+
+
 }
 
 /**
@@ -321,10 +349,8 @@ function isEmptyArray(obj) {
  * @returns {function():Boolean}
  */
 function isArrayOf(predicateFn) {
-  // TODO : should I throw instead of returning false?? I think I should
   if (typeof predicateFn !== 'function') {
-    console.error('isArrayOf: predicateFn is not a function!!');
-    return always(false)
+    throw 'isArrayOf: predicateFn is not a function!!'
   }
 
   return function _isArrayOf(obj) {
@@ -476,8 +502,9 @@ function makeErrorMessage(errorMessage) {
  * called
  * @returns {*}
  */
-function trace(sinks, settings) {
+function trace(sinks) {
   // TODO BRC
+  // return traceSinks(sinks)
   return sinks
 }
 
@@ -689,10 +716,20 @@ const logFnTrace = (title, paramSpecs) => ({
   },
 });
 
+function convertVNodesToHTML (vNodeOrVnodes) {
+  if (isArray(vNodeOrVnodes)) {
+    return vNodeOrVnodes.map(x => x ? toHTML(x) : null)
+  }
+  else {
+    return toHTML(vNodeOrVnodes)
+  }
+}
+
 export {
   makeDivVNode,
   handleError,
   assertSignature,
+  assertSignatureContract,
   assertContract,
   checkSignature,
   unfoldObjOverload,
@@ -711,6 +748,7 @@ export {
   isVNode,
   isObject,
   isBoolean,
+  isTrue,
   isString,
   isArray,
   isEmptyArray,
@@ -731,5 +769,6 @@ export {
   decorateWith,
   makeFunctionDecorator,
   assertFunctionContractDecoratorSpecs,
-  logFnTrace
+  logFnTrace,
+  convertVNodesToHTML,
 }

@@ -12,7 +12,6 @@ export const AWAITING_RESPONSE = 'AWAITING_RESPONSE';
 export const INIT_STATE = 'INIT';
 
 // Error messages
-export const ERROR_MESSAGE_PREFIX = 'ERROR : '
 export const CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE =
   `For each action response, there MUST be a configured guard which is satisfied!`;
 export const CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE =

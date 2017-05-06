@@ -4,5 +4,6 @@ dist
 dist-node
 archive
 dist-node-test
+dist-node-test2
 test/test-bundle.js
 gh-md-toc

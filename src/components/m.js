@@ -37,35 +37,22 @@
  */
 
 import {
-  assertSignature,
-  assertContract,
-  trace,
-  projectSinksOn,
-  getSinkNamesFromSinksArray,
-  removeNullsFromArray,
-  isNullableObject,
-  isFunction,
-  isComponent,
-  isVNode,
-  isArrayOf,
-  isOptSinks,
-  isNullableComponentDef,
-  assertSourcesContracts,
-  isArrayOptSinks,
-  assertSinksContracts,
-  removeEmptyVNodes,
-  emitNullIfEmpty,
-  isMergeSinkFn,
-  assertSettingsContracts,
-} from '../utils'
+  assertContract, assertSettingsContracts, assertSignatureContract, assertSinksContracts,
+  assertSourcesContracts, convertVNodesToHTML, emitNullIfEmpty, getSinkNamesFromSinksArray,
+  isArrayOf, isArrayOptSinks, isComponent, isFunction, isMergeSinkFn, isNullableComponentDef,
+  isNullableObject, isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray,
+  trace
+} from "../utils"
 import {
-  flatten, always, merge, reduce, clone, map, is, mergeWith, concat, defaultTo
-} from 'ramda'
-import {div} from "cycle-snabbdom"
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+} from "ramda"
+import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
 
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable
+const mapIndexed = addIndex(map);
+
 const deepMerge = function deepMerge(a, b) {
   return (is(Object, a) && is(Object, b)) ? mergeWith(deepMerge, a, b) : b;
 }
@@ -109,7 +96,7 @@ function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   }
 
   return $.combineLatest(allDOMSinks)
-    .tap(console.log.bind(console, 'mergeDOMSinkDefault: allDOMSinks'))
+    .tap(x => console.log(`mergeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
     .map(mergeChildrenIntoParentDOM(parentDOMSinkOrNull))
 }
 
@@ -153,6 +140,8 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
       // observables, in which case we just return the parentVNode
       if (childrenVNode) {
         if (parentVNode.text) {
+          // TODO simplify comment - if parentVNode has text, then children = [], so no need for
+          // splice, just children[0] = the new text vNode
           parentVNode.children.splice(0, 0, {
             children: [],
             "data": {},
@@ -170,13 +159,16 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
     }
     else {
       // Case : the parent sinks does not have a DOM sink
-      // To avoid putting an extra `div` when there is only one vNode
-      // we put the extra `div` only when there are several vNodes
       switch (_arrayVNode.length) {
         case 0 :
           return null
-        case 1 :
-          return _arrayVNode[0]
+        /*
+         // To avoid putting an extra `div` when there is only one vNode
+         // we put the extra `div` only when there are several vNodes
+         // that did not work though... KEPT AS ADR i.e. documenting past choices
+         case 1 :
+         return _arrayVNode[0]
+         */
         default :
           return div(_arrayVNode)
       }
@@ -191,80 +183,171 @@ function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) 
     let mergeSinkFn = mergeSinks[sinkName]
       || defaultMergeSinkConfig[sinkName]
       || defaultMergeSinkConfig['_default']
-    assertContract(isMergeSinkFn, [mergeSinkFn], 'm : mergeSinkFn' +
-      ' for sink ${sinkName} must be a function : check' +
-      ' parameter or default merge function!')
+    assertContract(isMergeSinkFn, [mergeSinkFn],
+      `m : mergeSinkFn for sink ${sinkName} must be a function : check parameter or default merge function!`)
 
-    if (mergeSinkFn) {
-      accReducedSinks[sinkName] = mergeSinkFn(
-        ownSinks ? ownSinks[sinkName] : null,
-        projectSinksOn(sinkName, childrenSinks),
-        localSettings
-      )
-    }
+    accReducedSinks[sinkName] = mergeSinkFn(
+      ownSinks ? ownSinks[sinkName] : null,
+      projectSinksOn(sinkName, childrenSinks),
+      localSettings
+    )
 
     return accReducedSinks
   }
 }
 
+// m :: Opt Component_Def -> Opt Settings -> [Component] -> Component
 /**
  * Returns a component specified by :
  * - a component definition object (nullable)
- * - settings (nullable)
- * - children components
+ * - outer settings (nullable)
+ * - children components (or none)
  * Component definition properties :
  * - mergeSinks : computes resulting sinks or a specific sinks according to
  * configuration. See type information
  * - computeSinks : computes resulting sinks by executing the
  * children component and parent and merging the result
- * - sourcesContract : default to checking all sinks are observables or `null`
+ * - sourcesContract : default to ...
  * - sinksContract : default to checking all sinks are observables or `null`
  * - settingsContract : default to do noting
  * - makeLocalSources : default -> null
  * - makeLocalSettings : default -> null
  * - makeOwnSinks : -> default null
  *
+ * # Algorithm
  * The factored algorithm which derives sinks from sources is as follows :
- * - merging current sources with extra sources if any
- * - creating some sinks by itself
+ * - merging current `sources` with extra sources if any (configured with `makeLocalSources`)
  * - computing children sinks by executing the children components on the
  * merged sources
- * - merging its own computed sinks with the children computed sinks
- * There are two versions of definition, according to the level of
- * granularity desired : the short spec and the detailed spec :
+ * - computing some parent-component-specific sinks (i.e. that computation depends only on the
+ * `sources` and `settings` parameter)
+ * - merging the parent sinks with the children sinks
+ *
+ * There are two specification formats for the final component, according to the level of
+ * granularity desired - the short spec and the detailed spec :
  * - short spec :
- *   one function `computeSinks` which outputs the sinks from the sources,
- *   settings and children components
+ *   one function `computeSinks` which computes the sinks from a children-independent sink
+ *   factory, the sources, settings and children components. This is basically a big function
+ *   which takes all information at disposal to compute the computed component sinks in one
+ *   go. As such, this function gathers several concerns (source fetching, sinks creation,
+ *   sinks merging, etc.).
+ *   The rationale behind that function is that sometimes one needs complete control over the
+ *   creation of the generation of the sinks for the computed component. Because the array of
+ *   children components is passed directly (vs. passing the post-execution children
+ *   components sinks), that function has total freedom over deciding how to compute
+ *   and incorporate the children sinks.
+ *   For the short spec, the relevant properties are :
+ *   - `computeSinks`, `makeOwnSinks`,
+ *   - the user-defined factories, the user-defined contracts
  * - detailed spec :
+ *   For the detailed spec, the relevant properties are :
+ *   - `makeOwnSinks`, `mergeSinks`,
+ *   - the user-defined factories, the user-defined contracts
+ *   TODO : in fact, the dichotomy short/detailed is not really valid - find another terminology
+ *
+ * Children components and local sinks factory functions will be called with the extended sources
+ * (i.e. provided sources merged with locally computed sources, and settings resulting from
+ * the three-way settings merge described thereafter).
+ *
+ * The goal of these functions is as follows:
+ * - `makeOwnSinks(sources, settings)` : computation of children-independent sinks, i.e.
+ * specific to that `m` factory call.
+ * - `mergeSinks(ownSinks, childrenSinks, localSettings)` : outputs computed component sinks
+ * as a result of the children-independent sinks, the children-generated sinks, and the
+ * three-way merged settings received by the `m` factory and its run-time environment.
+ *
+ * To allow for an easier interface, and avoid repetition, in the absen TODO : detail the
+ * merge DOM sinks svs. other sinks
+ *
  *   several properties as detailed above
  * @param {DetailedComponentDef|ShortComponentDef} componentDef
  * @param {?Object} _settings
  * @param {Array<Component>} children
+ *
  * @returns {Component}
  * @throws when type- and user-specified contracts are not satisfied
  *
- * Contracts function allows to perform contract checking before computing
+ * # User-defined contracts
+ * Contract functions allows to perform additional user-defined contract checking before computing
  * the component, for instance :
- * - check that sources have the expected type
- * - check that sources include the mandatory source property for
- * computing the component
- * - check that the sinks have the expected type/exists
+ * - check that sources have the expected properties
+ * - check that the computed sinks have the expected type or properties
  *
- * Source contracts are checked before extending the sources
- * Settings contracts are checked before merging
+ * # Sources
+ * The factory-computer component is called with a `sources` argument which is the result of
+ * the merge between the `sources` argument passed to the factory and the `sources` resulting
+ * from the local sources factory (via `makeLocalSources`). In case of conflict, the local
+ * sources factory has the lowest precedence vs. the factory sources.
+ * It is important to note that this local sources factory function is called with a settings
+ * parameter which ignores the local settings factory! Hence local settings cannot influence
+ * the creation of sources.
+ * In fact, there is almost no cases where an extra source might depend on settings. In the
+ * vast majority of the cases, we expect the local sources factory to be independent of any
+ * settings.
+ *
+ * # Settings
+ * The output component returned by the `m` utility receives settings (at call time), termed in
+ * what follows as inner settings. The `m` utility also receives settings, termed here as
+ * outer settings. Any computation performed by the output component will be equivalent to
+ * that of the same output component who would have received a merge of the inner and outer
+ * settings. This allows the component factory `m` to parameterize/customize the behaviour of
+ * its computed component. This in particular means that the outer settings take precedence
+ * over the inner settings in case of conflict.
+ *
+ * Such merging conflicts are to be avoided in general. Having the computed component
+ * behaviour depending on a parameter external to its definition means that one can no longer
+ * reason about the component behaviour in isolation, but needs to know about the component's
+ * context (position in the component tree).
+ * There are however some valid cases when the equivalent of environment variables needs to be
+ * passed down to components. Rather than explicitly passing those parameters to every
+ * component individually down the component tree, it is enough to pass it once at some level,
+ * and those parameters will be :
+ * - visible at every lower level
+ * - cannot be altered by lower-level components
+ *
+ * Those 'environment variables' should reflect concerns which are fairly orthogonal to the
+ * component (leaf indexing, sinks signature, etc.), so that they do not interact with the
+ * intended behaviour of the component.
+ *
+ * To complicate the matter further, as a part of the component definition, one can include
+ * what is term here as computed settings (derived from the merge of inner and outer
+ * settings). Those computed (at call time) settings are merged to the other two and have the
+ * lowest precedence level of all. They aim at covering fairly narrow cases, and allow for
+ * temporary customization of component behaviour (another call can result in a different
+ * behaviour for the component).
+ *
+ * So :
+ * - settings passed to the `m` factory are permanent and inherited by both the computed
+ * component, and the children components which are part of the `m` factory definition
+ * - the computed component is called with settings which are automatically passed down the
+ * children components passed to the factory
+ * - the children component behaviour can, if there is no conflict with existing settings,
+ * be customized further by the local settings factory, which is a part of the `m` factory
+ * definition
+ *
+ * TODO : this only clarifies the precedence between the factory and its computed component.
+ * It might just be the opporiste of what is described there... because of tree evaluation order
+ * There is a third case which is that the computed component receives also settings from
+ * its upper hierarchy... To be detailed with examples, that\s the best given the three-way dance.
+ * Also note that the settings passed down to children component from
+ *
+ * IMPLEMENTATION NOTES:
+ * Source contracts are checked before merging incoming sources and user-configured sources
+ * Settings contracts are checked on the final settings for the component, which is the result
+ * of the merge of the outer settings passed through the `m` utility, and the inner settings
+ * passed to the output component.
  *
  */
-// m :: Opt Component_Def -> Opt Settings -> [Component] -> Component
 function m(componentDef, _settings, children) {
   console.groupCollapsed('Utils > m')
   console.log('componentDef, _settings, children', componentDef, _settings, children)
   // check signature
   const mSignature = [
-    {componentDef: isNullableComponentDef},
-    {settings: isNullableObject},
-    {children: isArrayOf(isComponent)},
+    { componentDef: [isNullableComponentDef, `m : component definition is invalid!`] },
+    { settings: [isNullableObject, `m : settings parameter is invalid!`] },
+    { children: [isArrayOf(isComponent), `m : children components parameter is either not an array or some of the components passed do not have the expected format! Children components must at a minimum be functions`] },
   ]
-  assertSignature('m', arguments, mSignature)
+  assertSignatureContract('m', arguments, mSignature)
 
   let {
     makeLocalSources, makeLocalSettings, makeOwnSinks, mergeSinks,
@@ -282,14 +365,17 @@ function m(componentDef, _settings, children) {
   settingsContract = defaultTo(always(true), settingsContract)
 
   console.groupEnd()
-  return function m(sources, innerSettings) {
-    console.groupCollapsed('m\'ed component > Entry')
-    console.log('sources, innerSettings', sources, innerSettings)
 
-    assertSettingsContracts(innerSettings, settingsContract)
+  return function mComponent(sources, innerSettings) {
+    const traceInfo = innerSettings && innerSettings.trace;
+    console.groupCollapsed(`${traceInfo} component > Entry`)
+    console.log('sources, innerSettings', sources, innerSettings)
 
     innerSettings = innerSettings || {}
     const mergedSettings = deepMerge(innerSettings, _settings)
+    console.debug('inner and outer settings merge', mergedSettings)
+
+    assertSettingsContracts(mergedSettings, settingsContract)
 
     assertSourcesContracts(sources, sourcesContract)
 
@@ -308,27 +394,32 @@ function m(componentDef, _settings, children) {
       makeLocalSettings(mergedSettings),
       mergedSettings
     )
+    console.info(`${traceInfo} component : final settings`, localSettings)
 
     let reducedSinks
 
     // Case : computeSinks is defined
     if (computeSinks) {
+      console.groupCollapsed(`${traceInfo} component > computeSinks`)
       reducedSinks = computeSinks(
         makeOwnSinks, children, extendedSources, localSettings
       )
+      console.groupEnd()
     }
     // Case : computeSinks is not defined, merge is defined in mergeSinks
     else {
-      console.groupCollapsed('m\'ed component > makeOwnSinks')
-      console.log('extendedSources, localSettings', extendedSources, localSettings)
+      console.groupCollapsed(`${traceInfo} component > makeOwnSinks`)
+      console.debug(`called with extendedSources : ${keys(extendedSources)}`)
+      console.debug(`called with localSettings`, localSettings)
       const ownSinks = makeOwnSinks(extendedSources, localSettings)
       console.groupEnd()
 
-      console.group('m\'ed component > computing children sinks')
-      const childrenSinks = map(
-        childComponent => childComponent(extendedSources, localSettings),
-        children
-      )
+      console.group(`${traceInfo} component > computing children sinks`)
+      console.debug(`called with extendedSources : ${keys(extendedSources)}`)
+      console.debug(`called with localSettings`, localSettings)
+
+      const childrenSinks = computeChildrenSinks(children, extendedSources, localSettings)
+
       console.groupEnd()
 
       assertContract(isOptSinks, [ownSinks], 'ownSinks must be a hash of observable sink')
@@ -338,8 +429,10 @@ function m(componentDef, _settings, children) {
       // Merge the sinks from children and one-s own...
       // Case : mergeSinks is defined through a function
       if (isFunction(mergeSinks)) {
-        console.groupCollapsed('m\'ed component > (fn) mergeSinks')
-        console.log('ownSinks, childrenSinks, localSettings', ownSinks, childrenSinks, localSettings)
+        console.groupCollapsed(`${traceInfo} component > (fn) mergeSinks`)
+        console.debug(`called with ownSinks : ${keys(ownSinks)}, 
+                       childrenSinks: ${childrenSinks.map(keys)}`)
+        console.debug(`called with localSettings`, localSettings)
         reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings)
         console.groupEnd()
       }
@@ -348,9 +441,11 @@ function m(componentDef, _settings, children) {
         const allSinks = flatten(removeNullsFromArray([ownSinks, childrenSinks]))
         const sinkNames = getSinkNamesFromSinksArray(allSinks)
 
-        console.groupCollapsed('m\'ed component > (obj) mergeSinks')
-        console.log('ownSinks, childrenSinks, localSettings,' +
-          ' (fn) mergeSinks', ownSinks, childrenSinks, localSettings, mergeSinks)
+        console.groupCollapsed(`${traceInfo} component > (obj) mergeSinks`)
+        console.log(`mergeSinks fn defined for sinks ${keys(mergeSinks)}`)
+        console.debug(`called with ownSinks : ${keys(ownSinks)}, 
+                       childrenSinks: ${childrenSinks.map(keys)}`)
+        console.debug(`called with localSettings`, localSettings)
         reducedSinks = reduce(
           computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks),
           {}, sinkNames
@@ -361,7 +456,7 @@ function m(componentDef, _settings, children) {
 
     assertSinksContracts(reducedSinks, sinksContract)
 
-    const tracedSinks = trace(reducedSinks, mergedSettings)
+    const tracedSinks = trace(reducedSinks)
     // ... and add tracing information(sinkPath, timestamp, sinkValue/sinkError) after each sink
     // TODO : specify trace/debug/error generation information
     // This would ensure that errors are automatically and systematically
@@ -375,4 +470,21 @@ function m(componentDef, _settings, children) {
   }
 }
 
-export {m}
+function computeChildrenSinks(children, extendedSources, localSettings) {
+  return mapIndexed(
+    (childComponent, index) => {
+      const childComponentName = childComponent.name || index
+
+      console.group(`computing children sinks for ${childComponentName}`)
+
+      const childSinks = childComponent(extendedSources, localSettings)
+
+      console.groupEnd()
+
+      return childSinks
+    },
+    children
+  )
+}
+
+export { m }
