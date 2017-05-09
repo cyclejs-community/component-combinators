@@ -10,6 +10,9 @@ import {runTestScenario} from '../src/runTestScenario';
 
 let $ = Rx.Observable;
 
+// TODO : write the full test space, the test strategy (exporation and pruning of space), and
+// some test common components
+
 // Fixtures
 const PROVIDERS = {
   google: 'google',
