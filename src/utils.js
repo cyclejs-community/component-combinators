@@ -1,7 +1,6 @@
 import {
-  defaultTo, mapObjIndexed, flatten, keys, always, reject, isNil, uniq, allPass, pipe, merge,
-  reduce, all, either, clone, map, values, equals, concat, addIndex, flip, difference, isEmpty,
-  where, both, curry
+  addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
+  isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reject, uniq, values, where
 } from "ramda"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
@@ -616,14 +615,14 @@ function NamedFunction(name, args, body, scope, values) {
   if (!Array.isArray(scope) || !Array.isArray(values)) {
     if (typeof scope == "object") {
       var keys = Object.keys(scope);
-      values = keys.map(function(p) { return scope[p]; });
+      values = keys.map(function (p) { return scope[p]; });
       scope = keys;
     } else {
       values = [];
       scope = [];
     }
   }
-  return Function(scope, "function "+name+"("+args.join(", ")+") {\n"+body+"\n}\nreturn "+name+";").apply(null, values);
+  return Function(scope, "function " + name + "(" + args.join(", ") + ") {\n" + body + "\n}\nreturn " + name + ";").apply(null, values);
 }
 
 // decorateWith(decoratingFn, fnToDecorate), where log :: fn -> fn such as both have same name
@@ -636,7 +635,7 @@ function decorateWithOne(decoratorSpec, fnToDecorate) {
       const decoratingFn = makeFunctionDecorator(decoratorSpec);
       return decoratingFn(args, fnToDecorateName, fnToDecorate);
 `,
-    {makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName});
+    { makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName });
 }
 
 const decorateWith = curry(function decorateWith(decoratingFnsSpecs, fnToDecorate) {
@@ -716,12 +715,22 @@ const logFnTrace = (title, paramSpecs) => ({
   },
 });
 
-function convertVNodesToHTML (vNodeOrVnodes) {
+function convertVNodesToHTML(vNodeOrVnodes) {
   if (isArray(vNodeOrVnodes)) {
     return vNodeOrVnodes.map(x => x ? toHTML(x) : null)
   }
   else {
     return toHTML(vNodeOrVnodes)
+  }
+}
+
+function preventDefault(ev) {
+  if (ev) ev.preventDefault()
+}
+
+function isOptional (predicate) {
+  return function (obj) {
+    return isNil(obj) ? predicate(obj) : true
   }
 }
 
@@ -746,6 +755,7 @@ export {
   isUndefined,
   isFunction,
   isVNode,
+  isOptional,
   isObject,
   isBoolean,
   isTrue,
@@ -771,4 +781,5 @@ export {
   assertFunctionContractDecoratorSpecs,
   logFnTrace,
   convertVNodesToHTML,
+  preventDefault
 }

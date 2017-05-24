@@ -20,8 +20,8 @@
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings)} makeOwnSinks
  * @property {function(Sinks, Array<Sinks>, Settings)} mergeSinks
- * @property {?function(Sinks):Boolean} sinksContract
- * @property {?function(Sources):Boolean} sourcesContract
+ * @property {?function(Sinks):Boolean} checkPostConditions
+ * @property {?function(Sources, Settings):Boolean} checkPreConditions
  */
 /**
  * @typedef {?Object} ShortComponentDef
@@ -29,8 +29,8 @@
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings, Array<Component>)} makeAllSinks
  * @property {?function(Function, Array<Component>, Sources, Settings)} computeSinks
- * @property {?function(Sinks):Boolean} sinksContract
- * @property {?function(Sources):Boolean} sourcesContract
+ * @property {?function(Sinks):Boolean} checkPostConditions
+ * @property {?function(Sources, Settings):Boolean} checkPreConditions
  */
 /**
  * @typedef {function(Sources, Settings):Sinks} Component
@@ -196,6 +196,13 @@ function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) 
   }
 }
 
+function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames){
+  return reduce(
+    computeReducedSink(eventSinks, childrenSinks, localSettings, {}),
+    {}, sinkNames
+  )
+}
+
 // m :: Opt Component_Def -> Opt Settings -> [Component] -> Component
 /**
  * Returns a component specified by :
@@ -207,9 +214,8 @@ function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) 
  * configuration. See type information
  * - computeSinks : computes resulting sinks by executing the
  * children component and parent and merging the result
- * - sourcesContract : default to ...
- * - sinksContract : default to checking all sinks are observables or `null`
- * - settingsContract : default to do noting
+ * - checkPreConditions : default to nothing
+ * - checkPostConditions : default to checking all sinks are observables or `null`
  * - makeLocalSources : default -> null
  * - makeLocalSettings : default -> null
  * - makeOwnSinks : -> default null
@@ -487,4 +493,4 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
   )
 }
 
-export { m }
+export { m, defaultMergeSinkFn }
