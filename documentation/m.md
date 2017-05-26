@@ -297,9 +297,26 @@ Include a link to the tests
 
 ## Button component
 `Button = m(ButtonComponentSpec, ButtonComponentSettings, childrenComponents)`
+`Button = mButton(ButtonComponentSettings, childrenComponents)`
+
+This example makes use of :
+- `checkPreConditions`
+- `makeOwnSinks`
+
+### Description
+The button component is a `<div>` that will behave like a button, according to the parameters 
+specified in settings. Cf. `semanticUI` documentation for a description of the settings properties.
+
+- The component MAY listen to any of the regular DOM event associated to a button:
+  - click, hover, etc.
+- A button MAY have content inside, which is any valid HTML representation
+- A button component inserts inside its tag the DOM content from its children components.
+- Any non-DOM children sink is default-merged with the button sink with the same sink name.
 
 ###  ButtonComponentSettings
-  - class
+**TODO : UPDATE** with latest from code
+
+  - classes
   - emphasis : 'primary, secondary, positive, negative, basic'
   - tabIndex
   - animated : {'', fade, vertical}
@@ -311,23 +328,9 @@ Include a link to the tests
   - layout : 'compact, fluid, attached, top attached, bottom attached, left attached, right attached'
   - listenTo : event list such as click, hover, etc.
   
-  TODO : contract for the settings
-     - DONT CHECK NO EXTRA COMPONENTS (could inherit settings from elsewhere)
-     - check values for property are in the corresponding enum list
-     - dont forget that a property can be present but undefined, and that is different from the 
-     property not being present
-
 ### Source code
 TODO : implement, include a link to the code on github, and excerpts from it with `...` for low 
 relevant part of the code. That means include ButtonComponentSpec as comments in the source code
-
-### ButtonComponentSpec
-The specifications are as follow :
-- The component MAY listen to any of the regular DOM event associated to a button:
-  - click, hover, etc.
-- A button MAY have content inside, which is any valid HTML
-  - hence a button children component can be a simple text (TODO : do I need a text component? or
-   mText operator - it is the same I think)
 
 We hence have :
   - `makeOwnSinks` which generates `<div class = 'ui button ...'> </div>`
@@ -338,34 +341,34 @@ We hence have :
     - we keep also the non-DOM sinks returned by the children
     - content MAY be empty
 
-#### makeOwnSinks
-- div ({class : analyzeSettings(settings)}) TODO check that it is class with snabbdom
-
-That should be it
-
 #### demo
+**TODO : MDIV OR LIFT** 
+
 Button = curry(m)(ButtonSpecs)
 Show = curry(m)({}) // simplest component to apply default sink merges
 ShowContent = curry(mDiv)({class : 'visible content'}) // mdiv = lifting div(...) into a `m` component, OR
+ShowContent = lift(div({class : 'visible content'}) // CURRIED, FIND A WAY TO WRITE IT 
+ShowContent = curry(div)({class : 'visible content'})
+component, OR
 HideContent = curry(mDiv)({class : 'hidden content'}) // polymorphic, last arg can be text or [Comp]
 
 UI = [
-  Button({animated:true}, [
-    ShowContent('Next'), 
-    HideContent([
-      mIcon({class : 'right arrow icon'}) // I could remove icon as it is implicit in mIcon
-    ])
+  mButton({animated:true}, [
+    mLift(ShowContent('Next')), 
+    mLift(HideContent([
+      icon({class : 'right arrow icon'})
+    ]))
   ]),
-  Button({animated: 'vertical'}, [
+  mButton({animated: 'vertical'}, [
     HideContent('Shop'),
     ShowContent ([
-      mIcon({class : 'shop icon'})
+      icon({class : 'shop icon'})
     ])
   ]),
-  Button({animated: 'fade'}, [
+  mButton({animated: 'fade'}, [
     ShowContent ('Sign-up for a Pro account'),
     HideContent ([
-      mText('$12.99 a month')
+      mText('$12.99 a month') // TODO : how to indicate text??
     ])
   ]),
 ]

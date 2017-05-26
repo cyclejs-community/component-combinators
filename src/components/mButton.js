@@ -1,5 +1,10 @@
-import { isStrictRecord, isString, isOptional } from "../utils"
+import { isArrayOf, isBoolean, isOneOf, isOptional, isStrictRecord, isString } from "../utils"
 import { m } from "./m"
+import { both, complement, either, prop } from "ramda"
+import * as Rx from "rx"
+import { div } from "cycle-snabbdom"
+
+let $ = Rx.Observable
 
 const mouseEventNames = [
   'mousedown', 'mouseup', 'mouseover', 'mousemove', 'mouseout', 'mouseenter', 'mouseleave',
@@ -30,39 +35,130 @@ function checkButtonSources(sources) {
   return sources && sources.DOM
 }
 
-const checkButtonSettings = isStrictRecord({
-  /*
-   - class
-   - emphasis : 'primary, secondary, positive, negative, basic'
-   - tabIndex
-   - animated : {'', fade, vertical}
-   - label : {text, position : 'left, right'}
-   - icon : for instance 'cloud' - must be mapped to an actual icon previously
-   - visualState : 'active, disabled, loading'
-   - social : 'facebook, twitter, google, vk, linkedin, instagram, youtube'
-   - size 'mini tiny small medium large big huge massive'
-   - layout : 'compact, fluid, attached, top attached, bottom attached, left attached, right attached'
-   - listenTo : event list such as click, hover, etc.
-   */
-  class: isOptional(isString),
-  emphasis: isOptional(isOneOf(['primary', 'secondary', 'positive', 'negative', 'basic'])),
-  tabIndex: isOptional(isBoolean),
-  animated: isOptional(either(isEmpty, isOneOf(['fade', 'vertical']))),
-  label: isStrictRecord({ text: isString, position: isOneOf(['left', 'right']) }),
-  // we dont check the mapping vs. a registry of possible icons
-  icon: isString,
-  visualState: isOptional(isOneOf(['active', 'disabled', 'loading'])),
-  social: isOptional(isOneOf(['facebook', 'twitter', 'google', 'vk', 'linkedin', 'instagram', ' youtube'])),
-  size: isOptional(isOneOf(['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'])),
-  layout: isOptional(isOneOf(['compact', 'fluid', 'attached', 'top attached', 'bottom attached', ' left', 'attached', 'right attached'])),
-  listenTo: isOptional(isOneOf(domEventNames)),
-})
+const checkButtonSettings = both(
+  isStrictRecord({
+    classes: isOptional(isArrayOf(isString)),
+    emphasis: isOptional(isOneOf(['primary', 'secondary', 'positive', 'negative'])),
+    basic: isOptional(isBoolean),
+    focusable: isOptional(isBoolean),
+    animated: isOptional(either(isBoolean, isOneOf(['fade', 'vertical']))),
+    label: isOptional(isStrictRecord({ text: isString, position: isOneOf(['left', 'right']) })),
+    // we dont check the mapping vs. a registry of possible icons
+    icon: isOptional(isString),
+    visualState: isOptional(isOneOf(['active', 'disabled', 'loading'])),
+    social: isOptional(isOneOf(['facebook', 'twitter', 'google', 'vk', 'linkedin', 'instagram', ' youtube'])),
+    size: isOptional(isOneOf(['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'])),
+    shape: isOptional(isOneOf(['circular'])),
+    layout: isOptional(isOneOf([
+      'attached', 'top attached', 'bottom attached', ' left attached', 'right attached',
+      'fluid', 'right floated', 'left floated'
+    ])),
+    id: isOptional(isString),
+    listenTo: isOptional(isOneOf(domEventNames)),
+  }),
+  // RULE : if there is a `listenTo`, there MUST be an id for the element to listen on
+  either(both(prop('listenTo'), prop(id)), complement(prop('listenTo')))
+)
 
 function checkButtonPreConditions(sources, settings) {
   return checkButtonSources(sources) && checkButtonSettings(settings)
 }
 
-// TODO
+function makeButtonSinks(sources, settings) {
+  let attrs = {};
+  const buttonClasses = ['ui', 'button']
+  const {
+    classes, id, emphasis, basic, focusable, animated, label, icon, visualState, social, size, shape, layout, listenTo
+  } = settings
+
+  if (classes) {
+    buttonClasses.push.call(null, classes)
+  }
+
+  if (focusable) {
+    attrs.tabindex = '0'
+  }
+
+  if (emphasis) {
+    buttonClasses.push(emphasis)
+  }
+
+  if (basic) {
+    buttonClasses.push('basic')
+  }
+
+  if (animated) {
+    // RULE :
+    // If a button is animated, it MUST have exactly TWO children components
+    // - ONE is visible
+    // - ONE is hidden
+    // NOTE : The button will be automatically sized according to the visible content size.
+    // Make sure there is enough room for the hidden content to show
+    isString(animated)
+      ? buttonClasses.push('animated', animated)
+      : buttonClasses.push('animated')
+  }
+
+  if (label) {
+    // RULE :
+    // A labelled button MUST have ONE child component which is a label
+    // AT LEAST ONE child MUST be a button
+    // NOTE : we do not follow the react-semantic-ui convention here (for instance `label : {as:
+    // 'a', basic:true, pointing : 'left'}`). The label can in any position in the children
+    // component, so we cannot insert it ourselves - we cannot where to insert it
+    buttonClasses.push('labeled')
+  }
+
+  if (icon) {
+    // RULE : if a button is an icon button, then it MUST have ONE icon child component (html
+    // tag AND class)
+    buttonClasses.push('icon')
+  }
+
+  if (visualState) {
+    buttonClasses.push(visualState)
+  }
+
+  if (social) {
+    buttonClasses.push(social)
+  }
+
+  if (size) {
+    buttonClasses.push(size)
+  }
+
+  if (layout) {
+    // NOTE : I do not really get the semantics of attached...
+    // But it seems that `bottom attached` must be the last, and `top attached` the first in a
+    // attachement group
+    buttonClasses.push(layout)
+  }
+
+  if (shape) {
+    buttonClasses.push(shape)
+  }
+
+  const classObject = reduce((acc, className) => {
+    acc[className] = true
+    return acc
+  }, {}, classes)
+
+  let sinks = {}
+  if (listenTo && id) {
+    sinks = reduce((acc, eventName) => {
+      acc[eventName] = sources.DOM.select('#' + id).events(eventName)
+    }, {}, listenTo)
+  }
+  sinks.DOM = $.of(
+    div({
+      class: classObject,
+      attrs: attrs
+    })
+  )
+
+  return sinks
+}
+
 const mButtonSpec = {
   // No extra sources
   makeLocalSources: null,
@@ -77,7 +173,22 @@ const mButtonSpec = {
   mergeSinks: null
 }
 
-// TODO
+/**
+ * `mButton` is returning a button component as specified per the `settings` parameter. Note
+ * that there is a dependency between the button and its children components in the
+ * form of 'grammatical' rules.
+ * For instance, an icon button MUST have an icon child component.
+ * Such rules would best be enforced at call time by the parent. An option is to introduce the
+ * children components in the preconditions contract. Peeking inside a child component type
+ * however requires a form of instrospection and that complicates significantly the implementation,
+ * so we skip that for now.
+ *
+ * @param mButtonSettings Settings for the button component. Cf. preconditions contract for the
+ * shape of that object (cf. `checkButtonSettings`)
+ * @param childrenComponents
+ * @returns {Component}
+ * @throws throws in case of failing contract
+ */
 export function mButton(mButtonSettings, childrenComponents) {
   // returns a DOM tree representation with the specifications passed through settings
   // and enclosing the DOM trees returned by the children components

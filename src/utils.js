@@ -322,15 +322,21 @@ function isFunction(obj) {
 }
 
 function isObject(obj) {
-  return typeof(obj) == 'object'
+  return typeof(obj) === 'object'
 }
 
 function isBoolean(obj) {
-  return typeof(obj) == 'boolean'
+  return typeof(obj) === 'boolean'
+}
+
+function isOneOf(strList){
+  return function (obj){
+    return isString(obj) && strList.indexOf(obj) !== -1
+  }
 }
 
 function isString(obj) {
-  return typeof(obj) == 'string'
+  return typeof(obj) === 'string'
 }
 
 function isArray(obj) {
@@ -497,8 +503,6 @@ function makeErrorMessage(errorMessage) {
 /**
  * Adds `tap` logging/tracing information to all sinks
  * @param {Sinks} sinks
- * @param {Settings} settings Settings with which the parent component is
- * called
  * @returns {*}
  */
 function trace(sinks) {
@@ -758,6 +762,7 @@ export {
   isOptional,
   isObject,
   isBoolean,
+  isOneOf,
   isTrue,
   isString,
   isArray,
