@@ -1,12 +1,13 @@
 import {
   addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
-  isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reject, uniq, values, where
+  isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq, values, where,
 } from "ramda"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
 // TODO : define custom error types
 import toHTML from "snabbdom-to-html"
 import { StandardError } from "standard-error"
+import formatObj from "fmt-obj"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map);
@@ -288,29 +289,31 @@ function isNullableComponentDef(obj) {
   // This allows to test for `undefined` and `null` at the same time
 
   return isNil(obj) || checkSignature(obj, {
-      makeLocalSources: either(isNil, isFunction),
-      makeLocalSettings: either(isNil, isFunction),
-      makeOwnSinks: either(isNil, isFunction),
-      mergeSinks: mergeSinks => {
-        if (obj.computeSinks) {
-          return !mergeSinks
-        }
-        else {
-          return either(isNil, either(isObject, isFunction))(mergeSinks)
-        }
-      },
-      computeSinks: either(isNil, isFunction),
-      sinksContract: either(isNil, isFunction)
-    }, {
-      makeLocalSources: 'makeLocalSources must be undefined or a function',
-      makeLocalSettings: 'makeLocalSettings must be undefined or a' +
-      ' function',
-      makeOwnSinks: 'makeOwnSinks must be undefined or a function',
-      mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
-      ' not, and when so, it must be undefined, an object or a function',
-      computeSinks: 'computeSinks must be undefined or a function',
-      sinksContract: 'sinksContract must be undefined or a function'
-    }, true)
+    makeLocalSources: either(isNil, isFunction),
+    makeLocalSettings: either(isNil, isFunction),
+    makeOwnSinks: either(isNil, isFunction),
+    mergeSinks: mergeSinks => {
+      if (obj.computeSinks) {
+        return !mergeSinks
+      }
+      else {
+        return either(isNil, either(isObject, isFunction))(mergeSinks)
+      }
+    },
+    computeSinks: either(isNil, isFunction),
+    checkPreConditions: either(isNil, isFunction),
+    checkPostConditions: either(isNil, isFunction),
+  }, {
+    makeLocalSources: 'makeLocalSources must be undefined or a function',
+    makeLocalSettings: 'makeLocalSettings must be undefined or a' +
+    ' function',
+    makeOwnSinks: 'makeOwnSinks must be undefined or a function',
+    mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
+    ' not, and when so, it must be undefined, an object or a function',
+    computeSinks: 'computeSinks must be undefined or a function',
+    checkPreConditions: 'checkPreConditions must be undefined or a function',
+    checkPostConditions: 'checkPostConditions must be undefined or a function'
+  }, true)
 }
 
 function isUndefined(obj) {
@@ -329,8 +332,8 @@ function isBoolean(obj) {
   return typeof(obj) === 'boolean'
 }
 
-function isOneOf(strList){
-  return function (obj){
+function isOneOf(strList) {
+  return function (obj) {
     return isString(obj) && strList.indexOf(obj) !== -1
   }
 }
@@ -459,12 +462,193 @@ function isArrayOptSinks(arrSinks) {
   return all(isOptSinks, arrSinks)
 }
 
-function assertSourcesContracts(sources, sourcesContract) {
+/**
+ *
+ * @param {Array<>} predicatesFn An array of predicates which must all be satisfied for the
+ * check to pass, together with an error message in the form of a string for when the predicate
+ * fails.
+ * Those error messages are accumulated, the `errorMessage` is appended to them, and the
+ * concatenation of those errors strings is returned.
+ * @param {String} errorMessage
+ * @returns {Function} function which returns a boolean or an error message string
+ */
+function checkAndGatherErrors(predicatesFn, errorMessage) {
+  return function (...args) {
+    let hasFailed = false;
+    const accErrorMessages = reduce((acc, [predicateFn, _errorMessage]) => {
+      const validationResultOrError = predicateFn.apply(predicateFn, args);
+
+      if (isTrue(validationResultOrError)) {
+        return acc
+      }
+      else {
+        // Case when the predicate returns an error message - which can be empty
+        _errorMessage && acc.push(_errorMessage);
+        acc.push(`Predicate ${predicateFn.name} failed with arguments : ${formatArrayObj(args, ', ')}`)
+        validationResultOrError && acc.push(validationResultOrError);
+        hasFailed = true;
+        return reduced(acc)
+      }
+    }, [], predicatesFn);
+
+    if (!hasFailed) {
+      // no errors - all checks passed
+      return true
+    }
+    else {
+      errorMessage && accErrorMessages.unshift(errorMessage);
+      return accErrorMessages.join('\n')
+    }
+  }
+}
+
+/**
+ * Cf. isStrictRecord. Adds the error messages accumulation aspect.
+ * @param recordSpec
+ */
+function isStrictRecordE(recordSpec) {
+  assertContract(isObject, [recordSpec], 'isStrictRecordE : record specification argument must' +
+    ' be a valid object!');
+
+  return allPassE([
+      // 1. no extra properties, i.e. all properties in obj are in recordSpec
+      // return true if recordSpec.keys - obj.keys is empty
+      [
+        pipe(keys, flip(difference)(keys(recordSpec)), isEmpty),
+        `isStrictRecordE : unexpected properties were found on object! Object should have only have properties within a configured fixed set of properties : ${keys(recordSpec)}!`
+      ],
+      // 2. the properties in recordSpec all pass their corresponding predicate
+      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
+      [
+        whereE(recordSpec),
+        `isStrictRecordE : At least one property of object failed its predicate!`
+      ]
+    ]
+  , `isStrictRecordE > allPassE : fails!`)
+
+}
+
+const allPassE = checkAndGatherErrors;
+
+function whereE(recordSpec) {
+  // RecordSpec :: HashMap<Key, Predicate>
+  const _keys = keys(recordSpec);
+
+  return function whereE(...args) {
+
+    const result = reduce((acc, key) => {
+      const predicate = recordSpec[key];
+      const arg = args[0];
+      const booleanOrErrorMessage = predicate(arg[key]);
+
+      if (isTrue(booleanOrErrorMessage)) {
+        return acc
+      }
+      else {
+        acc.push(`whereE : property ${key} fails predicate ${predicate.name}`);
+        booleanOrErrorMessage && acc.push(`${booleanOrErrorMessage}`);
+
+        return acc
+      }
+    }, [], _keys);
+
+    return result.length === 0
+      ? true
+      : result.join('\n')
+  }
+}
+
+/**
+ * Test against a left predicate. If that predicate passes, returns true. Otherwise tests
+ * against the right predicate. If that predicate passes, returns true. Otherwise, returns an
+ * error message which is the concatenation of the possible error messages returned by the
+ * left and right predicates
+ * @param leftValidation
+ * @param rightValidation
+ * @returns {function(*) : Boolean | String}
+ */
+function eitherE(leftValidation, rightValidation) {
+  return function (...args) {
+    let errorMessages = [];
+
+    const [leftPredicate, leftErrorMessage] = leftValidation;
+    const [rightPredicate, rightErrorMessage] = rightValidation;
+    const leftValidationResultOrMessage = leftPredicate.apply(leftPredicate, args);
+    const rightValidationResultOrMessage = rightPredicate.apply(rightPredicate, args);
+
+    if (isTrue(leftValidationResultOrMessage)) {
+      return true
+    }
+    else {
+      // left predicate fails -> check right predicate
+      if (isTrue(rightValidationResultOrMessage)) {
+        return true
+      }
+      else {
+        errorMessages.push(`eitherE : both predicates (${leftPredicate.name}, ${rightPredicate.name}) failed! One of them must pass!`);
+        leftErrorMessage && errorMessages.push('left: ' + leftErrorMessage);
+        leftValidationResultOrMessage && errorMessages.push('left : ' + leftValidationResultOrMessage);
+        rightErrorMessage && errorMessages.push('right: ' + rightErrorMessage);
+        rightValidationResultOrMessage && errorMessages.push('right : ' + rightValidationResultOrMessage);
+
+        return errorMessages.join('\n')
+      }
+    }
+  }
+}
+
+/**
+ * Cf. isHashMap. Decorates isHashMap with validation error messages
+ * @param {Predicate} predicateKey
+ * @param {Predicate} predicateValue
+ * @returns {Predicate}
+ * @throws when either predicate is not a function
+ */
+function isHashMapE(predicateKey, predicateValue) {
+  assertContract(isFunction, [predicateKey], 'isHashMapE : first argument must be a' +
+    ' predicate function!');
+  assertContract(isFunction, [predicateValue], 'isHashMapE : second argument must be a' +
+    ' predicate function!');
+
+  return allPassE([
+    [pipe(keys, allE(predicateKey)), `isHashMapE : at least one property key of the object failed its predicate!`],
+    [pipe(values, allE(predicateValue)), `isHashMapE : at least one property's value of the object failed its predicate!`]
+  ], null);
+}
+
+/**
+ * Decorate `R.all` from ramda with validation error messages
+ * @param predicate
+ */
+function allE(predicate) {
+  return function (...args) {
+    const arrayOfValues = args[0] || [];
+
+    const result = reduce((acc, value) => {
+      const booleanOrErrorMessage = predicate(value);
+
+      if (isTrue(booleanOrErrorMessage)) {
+        return acc
+      }
+      else {
+        acc.push(`allE : predicate ${predicate.name} fails with arguments : ${value}`);
+        booleanOrErrorMessage && acc.push(booleanOrErrorMessage);
+        return acc
+      }
+    }, [], arrayOfValues)
+
+    return result.length === 0
+      ? true
+      : result.join('\n')
+  }
+}
+
+function assertSourcesContracts([sources, settings], sourcesContract) {
   // Check sources contracts
   assertContract(isSources, [sources],
     'm : `sources` parameter is invalid');
-  assertContract(sourcesContract, [sources], 'm: `sources`' +
-    ' parameter fails contract ' + sourcesContract.name);
+  assertContract(sourcesContract, [sources, settings], 'm: `sources, settings`' +
+    ' parameters fails contract ' + sourcesContract.name);
 }
 
 function assertSinksContracts(sinks, sinksContract) {
@@ -603,6 +787,7 @@ function _handleError(msg, e) {
   console.error(`${msg}`, e);
   throw e;
 }
+
 const handleError = curry(_handleError);
 
 //IE workaround for lack of function name property on Functions
@@ -732,10 +917,14 @@ function preventDefault(ev) {
   if (ev) ev.preventDefault()
 }
 
-function isOptional (predicate) {
+function isOptional(predicate) {
   return function (obj) {
     return isNil(obj) ? predicate(obj) : true
   }
+}
+
+function formatArrayObj(arr, separator){
+  return arr.map(formatObj).join(separator)
 }
 
 export {
@@ -773,6 +962,13 @@ export {
   isOptSinks,
   isMergeSinkFn,
   isArrayOptSinks,
+  checkAndGatherErrors,
+  isStrictRecordE,
+  allPassE,
+  whereE,
+  isHashMapE,
+  allE,
+  eitherE,
   assertSourcesContracts,
   assertSinksContracts,
   assertSettingsContracts,
@@ -786,5 +982,6 @@ export {
   assertFunctionContractDecoratorSpecs,
   logFnTrace,
   convertVNodesToHTML,
-  preventDefault
+  preventDefault,
+  formatArrayObj
 }

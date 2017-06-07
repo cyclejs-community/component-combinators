@@ -9,4 +9,6 @@ export const isComponent = isFunction;
 export const isSettings = T;
 // dont want to go through the trouble of typing this as it is notoriously shapeshifting
 export const isSources = T;
-export const isEventName = both(isString, isNotEmpty);
+export function isEventName (x){
+  return both(isString, isNotEmpty)(x);
+}

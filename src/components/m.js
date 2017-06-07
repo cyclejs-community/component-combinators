@@ -42,7 +42,7 @@ import {
   isArrayOf, isArrayOptSinks, isComponent, isFunction, isMergeSinkFn, isNullableComponentDef,
   isNullableObject, isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray,
   trace
-} from "../utils"
+} from "../utils" //or ../utils
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
 } from "ramda"
@@ -140,8 +140,7 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
       // observables, in which case we just return the parentVNode
       if (childrenVNode) {
         if (parentVNode.text) {
-          // TODO simplify comment - if parentVNode has text, then children = [], so no need for
-          // splice, just children[0] = the new text vNode
+          // NOTE : if parentVNode has text, then children = [], so splice is too defensive here
           parentVNode.children.splice(0, 0, {
             children: [],
             "data": {},
@@ -165,7 +164,8 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
         /*
          // To avoid putting an extra `div` when there is only one vNode
          // we put the extra `div` only when there are several vNodes
-         // that did not work though... KEPT AS ADR i.e. documenting past choices
+         // that did not work though... `insertBefore : error...`
+         // KEPT AS ADR i.e. documenting past choices
          case 1 :
          return _arrayVNode[0]
          */
@@ -357,7 +357,7 @@ function m(componentDef, _settings, children) {
 
   let {
     makeLocalSources, makeLocalSettings, makeOwnSinks, mergeSinks,
-    computeSinks, sinksContract, sourcesContract, settingsContract
+    computeSinks, checkPostConditions, checkPreConditions
   } = componentDef
 
   // Set default values
@@ -366,9 +366,8 @@ function m(componentDef, _settings, children) {
   makeLocalSettings = defaultTo(always({}), makeLocalSettings)
   makeOwnSinks = defaultTo(always(null), makeOwnSinks)
   mergeSinks = defaultTo({}, mergeSinks)
-  sinksContract = defaultTo(always(true), sinksContract)
-  sourcesContract = defaultTo(always(true), sourcesContract)
-  settingsContract = defaultTo(always(true), settingsContract)
+  checkPostConditions = defaultTo(always(true), checkPostConditions)
+  checkPreConditions = defaultTo(always(true), checkPreConditions)
 
   console.groupEnd()
 
@@ -381,19 +380,6 @@ function m(componentDef, _settings, children) {
     const mergedSettings = deepMerge(innerSettings, _settings)
     console.debug('inner and outer settings merge', mergedSettings)
 
-    assertSettingsContracts(mergedSettings, settingsContract)
-
-    assertSourcesContracts(sources, sourcesContract)
-
-    // Computes and MERGES the extra sources which will be passed
-    // to the children and this component
-    // Extra sources are derived from the `sources`
-    // received as input, which remain untouched
-    const extendedSources = merge(
-      sources,
-      makeLocalSources(sources, mergedSettings)
-    )
-
     // Note that per `merge` ramda spec. the second object's values
     // replace those from the first in case of key conflict
     const localSettings = deepMerge(
@@ -401,6 +387,17 @@ function m(componentDef, _settings, children) {
       mergedSettings
     )
     console.info(`${traceInfo} component : final settings`, localSettings)
+
+    // Computes and MERGES the extra sources which will be passed
+    // to the children and this component
+    // Extra sources are derived from the `sources`
+    // received as input, which remain untouched
+    const extendedSources = merge(
+      sources,
+      makeLocalSources(sources, localSettings)
+    )
+
+    assertSourcesContracts([extendedSources, localSettings], checkPreConditions)
 
     let reducedSinks
 
@@ -460,7 +457,7 @@ function m(componentDef, _settings, children) {
       }
     }
 
-    assertSinksContracts(reducedSinks, sinksContract)
+    assertSinksContracts(reducedSinks, checkPostConditions)
 
     const tracedSinks = trace(reducedSinks)
     // ... and add tracing information(sinkPath, timestamp, sinkValue/sinkError) after each sink

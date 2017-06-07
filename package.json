@@ -41,7 +41,8 @@
     "qunitjs": "^1.20.0",
     "sinon": "^1.17.2",
     "sinon-qunit": "^2.0.0",
-    "xyz": "~2.1.0"
+    "xyz": "~2.1.0",
+    "fmt-obj": "^2.0.0"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",

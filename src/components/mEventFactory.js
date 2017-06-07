@@ -1,9 +1,10 @@
 import {
-  isStrictRecord, isHashMap, isFunction, isString, removeNullsFromArray, getSinkNamesFromSinksArray,
-  preventDefault
+  checkAndGatherErrors, eitherE, getSinkNamesFromSinksArray, isFunction, isHashMap, isStrictRecord,
+  isStrictRecordE, isHashMapE,
+  isString, preventDefault, removeNullsFromArray
 } from "../utils"
-import { defaultMergeSinkFn, m } from './m'
-import { isNil, either, T, reduce, keys, difference } from "ramda"
+import { defaultMergeSinkFn, m } from "./m"
+import { difference, either, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -19,19 +20,32 @@ const isSelector = isHashMap(isSelectorDescription, isSelectorString)
 // check it, as this is in the `m` it should have the highest priority, question is how the
 // merge is done... if recursive then yes, some extra properties might find their way there...
 // TODO: think : change the merge?? no more deep merge??
-const isEventFactoryEventSettings = either(isNil, isStrictRecord({
-  custom : either(isNil, isHashMap(isEventName, isEventFactoryFunction)),
-  DOM : either(isNil, isHashMap(isDomEventName, isSelector))
-}))
-
-function hasEventsProperty(settings) {
-  return settings && settings.events
+function isEventFactoryEventSettings(sources, settings) {
+  return eitherE(
+    [isNil, `isEventFactoryEventSettings > settings.events is not null`],
+    [isStrictRecordE({
+      custom: eitherE([isNil], [isHashMapE(isEventName, isEventFactoryFunction)]),
+      DOM: eitherE([isNil], [isHashMapE(isDomEventName, isSelector)])
+    }), `isEventFactoryEventSettings > BUT settings.events does not have the expected type`]
+  )(settings.events)
 }
 
-function checkEventFactoryPreConditions(sources, settings) {
-  return hasEventsProperty(settings) &&
-      isEventFactoryEventSettings(settings.events)
+function hasEventsProperty(sources, settings) {
+  return Boolean(settings && settings.events)
 }
+
+// TODO : add a version isStrictRecordE with errors accumulation - break in two the allPass
+// that means I need to change recordSpec...NO I need to know which field to associate to the
+// error message!! but I dont need to
+// TODO : add a version isHashMapE with errors accumulation - break in two the allPass
+// TODO : those version only pass error messages up, don't add to it, so we can keep a nice syntax
+// actually almost the same syntax
+
+const checkEventFactoryPreConditions = checkAndGatherErrors([
+    [hasEventsProperty, `Settings parameter must have an events property!`],
+    [isEventFactoryEventSettings, `settings' events property has unexpected shape!`]
+  ], `checkEventFactoryPreConditions : fails!`
+)
 
 /*
  ###  EventFactorySettings
@@ -42,15 +56,15 @@ function checkEventFactoryPreConditions(sources, settings) {
  -   `}`
  - `}`
  */
-function makeEventFactorySinks (sources, settings){
-  const {events : {custom, DOM}} = settings
+function makeEventFactorySinks(sources, settings) {
+  const { events: { custom, DOM } } = settings
 
-  const customEvents = reduce ((acc, customEventName) => {
+  const customEvents = reduce((acc, customEventName) => {
     acc[customEventName] = custom[customEventName](sources, settings)
     return acc
   }, {}, keys(custom))
 
-  const createdEvents = reduce ((acc, DomEventName) => {
+  const createdEvents = reduce((acc, DomEventName) => {
     // We dont test if this update is destructive, it is not in our contract
     // This means DOM events have priority over custom events in case of event name conflicts
     const selectors = DOM[DomEventName]
@@ -68,7 +82,7 @@ function makeEventFactorySinks (sources, settings){
   return createdEvents
 }
 
-function mergeEventFactorySinksWithChildrenSinks (eventSinks, childrenSinks, localSettings){
+function mergeEventFactorySinksWithChildrenSinks(eventSinks, childrenSinks, localSettings) {
   const childrenSinksArray = flatten(removeNullsFromArray([childrenSinks]))
   const allSinks = flatten(removeNullsFromArray([eventSinks, childrenSinks]))
   const eventSinkNames = keys(eventSinks)
@@ -76,7 +90,7 @@ function mergeEventFactorySinksWithChildrenSinks (eventSinks, childrenSinks, loc
   const sinkNames = getSinkNamesFromSinksArray(allSinks)
 
   // throw error in the case of children sinks with the same sink name as event sinks
-  if (difference (eventSinkNames, childrenSinkNames).length !== 0) {
+  if (difference(eventSinkNames, childrenSinkNames).length !== 0) {
     throw `mEventFactory > mergeEventFactorySinksWithChildrenSinks : found children sinks with 
            at least one sink name conflicting with an event sink : 
            ${eventSinkNames} vs. ${childrenSinkNames}`
@@ -100,9 +114,16 @@ const eventFactorySpec = {
   mergeSinks: mergeEventFactorySinksWithChildrenSinks
 }
 
-export function mEventFactory(EventFactorySettings, childrenComponents) {
+export function mEventFactory(eventFactorySettings, childrenComponents) {
   // returns a component which default-merges sinks coming from the children
   // and adds its events sinks to it
 
-  return m(eventFactorySpec, EventFactorySettings, childrenComponents)
+  // NOTE : we could test against eventFactorySettings here, before doing it in `m` too
+  // (fails fast). We will not.
+  // Instead, we will wait for the settings passed to `mEventFactory` at
+  // call time to be merged with the settings passed at creation time. This opens the
+  // possibility to have a factory with some events, and adding some events at call time via
+  // settings
+//  debugger
+  return m(eventFactorySpec, eventFactorySettings, childrenComponents)
 }
