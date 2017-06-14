@@ -4,7 +4,7 @@ import {
   isString, preventDefault, removeNullsFromArray
 } from "../utils"
 import { defaultMergeSinkFn, m } from "./m"
-import { difference, either, isNil, keys, reduce, T } from "ramda"
+import { difference, flatten, either, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -14,7 +14,7 @@ const isEventFactoryFunction = isFunction
 const isDomEventName = isString
 const isSelectorString = isString
 const isSelectorDescription = T
-const isSelector = isHashMap(isSelectorDescription, isSelectorString)
+const isSelector = isHashMapE(isSelectorDescription, isSelectorString)
 
 // TODO : change isStrictRecord to isNonStrictRecord as there might be extra property inherited??
 // check it, as this is in the `m` it should have the highest priority, question is how the
@@ -33,13 +33,6 @@ function isEventFactoryEventSettings(sources, settings) {
 function hasEventsProperty(sources, settings) {
   return Boolean(settings && settings.events)
 }
-
-// TODO : add a version isStrictRecordE with errors accumulation - break in two the allPass
-// that means I need to change recordSpec...NO I need to know which field to associate to the
-// error message!! but I dont need to
-// TODO : add a version isHashMapE with errors accumulation - break in two the allPass
-// TODO : those version only pass error messages up, don't add to it, so we can keep a nice syntax
-// actually almost the same syntax
 
 const checkEventFactoryPreConditions = checkAndGatherErrors([
     [hasEventsProperty, `Settings parameter must have an events property!`],

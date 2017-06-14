@@ -1,3 +1,4 @@
+// TODO : this is the master for utils - copy it back to FSM-examples times to times
 import {
   addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
   isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq, values, where,
@@ -111,10 +112,12 @@ function assertSignature(fnName, _arguments, vRules) {
 
   if (hasFailed) {
     const validationMessages = mapIndexed((errorMessageOrBool, index) => {
+      const argName = argNames[index]
+
         return isTrue(errorMessageOrBool) ?
           '' :
           [
-            `${fnName}: argument ${argNames[index]} fails rule ${vRules[index].name}`,
+            `${fnName}: argument ${argName} fails rule ${vRules[index][argName].name}`,
             isBoolean(errorMessageOrBool) ? '' : errorMessageOrBool
           ].join(': ')
       }, validatedArgs
@@ -631,7 +634,7 @@ function allE(predicate) {
         return acc
       }
       else {
-        acc.push(`allE : predicate ${predicate.name} fails with arguments : ${value}`);
+        acc.push(`allE : predicate ${predicate.name} fails with arguments : ${format(value)}`);
         booleanOrErrorMessage && acc.push(booleanOrErrorMessage);
         return acc
       }
@@ -906,9 +909,11 @@ const logFnTrace = (title, paramSpecs) => ({
 
 function convertVNodesToHTML(vNodeOrVnodes) {
   if (isArray(vNodeOrVnodes)) {
+    console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? toHTML(x) : null)}`)
     return vNodeOrVnodes.map(x => x ? toHTML(x) : null)
   }
   else {
+    console.debug(`toHTML: ${toHTML(vNodeOrVnodes)}`)
     return toHTML(vNodeOrVnodes)
   }
 }
@@ -924,7 +929,23 @@ function isOptional(predicate) {
 }
 
 function formatArrayObj(arr, separator){
-  return arr.map(formatObj).join(separator)
+  return arr.map(format).join(separator)
+}
+
+function format(obj){
+  // basically if obj is an object, use formatObj, else use toString
+  if (isObject(obj)) {
+    return formatObj(obj)
+  }
+  else {
+    return "" + obj
+  }
+}
+
+function addPrefix(prefix){
+  return function (str) {
+    return prefix + str
+  }
 }
 
 export {
@@ -983,5 +1004,7 @@ export {
   logFnTrace,
   convertVNodesToHTML,
   preventDefault,
-  formatArrayObj
+  formatArrayObj,
+  format,
+  addPrefix,
 }
