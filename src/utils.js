@@ -948,6 +948,10 @@ function addPrefix(prefix){
   }
 }
 
+function noop (){
+
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1007,4 +1011,5 @@ export {
   formatArrayObj,
   format,
   addPrefix,
+  noop,
 }

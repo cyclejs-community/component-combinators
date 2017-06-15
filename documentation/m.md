@@ -36,10 +36,9 @@ In what follows :
 helper function.
 - In the specified domain, components will be understood as `:: Sources -> Settings -> 
 Actions`, i.e. functions which :
-
-- take a `Sources` data structure which contains a way to receive event from event sources
-- take a `Settings` data structure which allows to parameterize the behaviour of the component
-- return an `Actions` data structure which encodes the actions to be performed by the reactive
+  - take a `Sources` data structure which contains a way to receive event from event sources
+  - take a `Settings` data structure which allows to parameterize the behaviour of the component
+  - return an `Actions` data structure which encodes the actions to be performed by the reactive
 system under study.
 
 **NOTE** : The type definition for components is adapted from the one used in the reactive 
@@ -80,9 +79,9 @@ parent component can only involve :
   broken down into a product type, i.e. for instance, `Actions :: HashMap<ActionName,
   ActionStream>`, where a given `ActionStream` can only be merged with another `ActionStream` of
   the same action name, we derive the most specialized form :
-    - `mergeSinks :: MergeActionsSpecs -> Actions -> Array<Actions> -> Settings -> Actions`, 
-    where `MergeActionsSpecs :: HashMap<ActionName, MergeActionStreamsFn>`, 
-    where `MergeActionStreamsFn :: ActionStream -> Array<ActionStream> -> Settings -> ActionStream`
+    - `mergeSinks :: MergeActionsSpecs -> Actions -> Array<Actions> -> Settings -> Actions`, where 
+      - `MergeActionsSpecs :: HashMap<ActionName, MergeActionStreamsFn>`, where 
+        - `MergeActionStreamsFn :: ActionStream -> Array<ActionStream> -> Settings -> ActionStream`
    
    ![mergeSinks - specs](http://i.imgur.com/kv87fhl.png)
 
@@ -146,7 +145,7 @@ The `m`  factory returns a component computed as follows :
     settings prioritization). 
     - The settings passed in parameter to the computed parent component have the maximum priority.
     - the computed parent component settings have a priority between the two.
-4. the `computeSinks` reducing function computes the parent sinks from the children independent 
+4. the `computeSinks` reducing function computes the parent sinks from the children-independent 
 sinks, merged sources, merged settings, and array of children. 
 
 ## `m :: CombineAllSinksSpecs -> Settings -> Array<Component> -> Component`
@@ -283,7 +282,9 @@ For instance :
 ```
 {
   events : {
-    custom : (sources, settings) => sources.motionSensor.zipWith(sources.locationSensor)
+    custom : {
+      [eventName] : (sources, settings) => sources.motionSensor.zipWith(sources.locationSensor)
+    }
   }
 }
 ```

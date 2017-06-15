@@ -1,3 +1,6 @@
+// TODO : extend to have also settings passed as argument to the tested function (optional) in
+// settings parameter?? or a parameter after ??
+
 /**
  * @typedef {function(*):boolean} Predicate
  */
@@ -30,16 +33,14 @@
  */
 
 import {
-  identity, mapObjIndexed, values, all as allR, addIndex, defaultTo, clone,
-  reduce as reduceR, keys as keysR, drop, isNil, map, always, curry, isEmpty,
-  tryCatch, __
-} from 'ramda';
+  __, addIndex, all as allR, always, clone, curry, defaultTo, identity, isEmpty, isNil,
+  keys as keysR, map, mapObjIndexed, reduce as reduceR, tryCatch, values
+} from "ramda"
 import {
-  isOptSinks, removeNullsFromArray, assertSignature, assertContract,
-  isString, isFunction, isArray, isUndefined, isArrayOf, isNullableObject,
-  makeErrorMessage
-} from './utils';
-import * as Rx from 'rx';
+  assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks,
+  isString, isUndefined, makeErrorMessage, removeNullsFromArray
+} from "./utils"
+import * as Rx from "rx"
 
 Rx.config.longStackSupport = true;
 const $ = Rx.Observable;
@@ -78,8 +79,9 @@ function isValidSourceName(sourceName) {
 }
 
 function hasTestCaseForEachSink(testCase, sinkNames) {
-  const _sinkNames = drop(1, sinkNames);
-  return allR(sinkName => !!testCase[sinkName], _sinkNames)
+  // TODO : remove the line below, I dont remember why I was dropping the first sink??
+  // const _sinkNames = drop(1, sinkNames);
+  return allR(sinkName => !!testCase[sinkName], sinkNames)
 }
 
 //////
@@ -242,7 +244,7 @@ function computeSources(inputs, mockedSourcesHandlers, sourceFactory) {
     return accSources
   }
 
-  return reduceR(makeSources, {sources: {}, streams: {}}, inputs)
+  return reduceR(makeSources, { sources: {}, streams: {} }, inputs)
 }
 
 function defaultErrorHandler(err) {
@@ -333,15 +335,15 @@ function defaultErrorHandler(err) {
  */
 function runTestScenario(inputs, expected, testFn, _settings) {
   assertSignature('runTestScenario', arguments, [
-    {inputs: isArrayOf(isSourceInput)},
-    {testCase: isExpectedRecord},
-    {testFn: isFunction},
-    {settings: isNullableObject},
+    { inputs: isArrayOf(isSourceInput) },
+    { testCase: isExpectedRecord },
+    { testFn: isFunction },
+    { settings: isNullableObject },
   ]);
 
   // Set default values if any
   const settings = defaultTo({}, _settings);
-  const {mocks, sourceFactory, errorHandler, tickDuration, waitForFinishDelay} = settings;
+  const { mocks, sourceFactory, errorHandler, tickDuration, waitForFinishDelay } = settings;
   const mockedSourcesHandlers = defaultTo({}, mocks);
   // TODO: add contract: for each key in sourceFactory, there MUST be the
   // same key in `inputs` : this avoids error by omission
@@ -359,7 +361,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // -> maxLen = 7
   const maxLen = inputs.length !== 0
     ? Math.max.apply(null,
-    map(sourceInput => (values(sourceInput)[0]).diagram.length, inputs))
+      map(sourceInput => (values(sourceInput)[0]).diagram.length, inputs))
     : 0;
 
   // Make an index array [0..maxLen[ for iteration purposes
@@ -388,44 +390,44 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   const testInputs$ = indexRange.length === 0
     ? $.empty()
     : reduceR(function makeInputs$(accEmitInputs$, tickNo) {
-    return accEmitInputs$
-      .delay(_tickDuration)
-      .concat(
-        $.from(projectAtIndex(tickNo, inputs))
-          .tap(function emitInputs(sourceInput) {
-            // input :: {sourceName : {{diagram : char, values: Array<*>}}
-            const sourceName = keysR(sourceInput)[0];
-            const input = sourceInput[sourceName];
-            const c = input.diagram;
-            const values = input.values || {};
-            const sourceSubject = sourcesStruct.streams[sourceName];
-            const errorVal = (values && values['#']) || '#';
+      return accEmitInputs$
+        .delay(_tickDuration)
+        .concat(
+          $.from(projectAtIndex(tickNo, inputs))
+            .tap(function emitInputs(sourceInput) {
+              // input :: {sourceName : {{diagram : char, values: Array<*>}}
+              const sourceName = keysR(sourceInput)[0];
+              const input = sourceInput[sourceName];
+              const c = input.diagram;
+              const values = input.values || {};
+              const sourceSubject = sourcesStruct.streams[sourceName];
+              const errorVal = (values && values['#']) || '#';
 
-            if (c) {
-              // case when the diagram for that particular source is
-              // finished but other sources might still go on
-              // In any case, there is nothing to emit
-              switch (c) {
-                case '-':
-                  // do nothing
-                  break;
-                case '#':
-                  sourceSubject.onError({data: errorVal});
-                  break;
-                case '|':
-                  sourceSubject.onCompleted();
-                  break;
-                default:
-                  const val = values.hasOwnProperty(c) ? values[c] : c;
-                  console.log('emitting for source ' + sourceName + ' ' + val);
-                  sourceSubject.onNext(val);
-                  break;
+              if (c) {
+                // case when the diagram for that particular source is
+                // finished but other sources might still go on
+                // In any case, there is nothing to emit
+                switch (c) {
+                  case '-':
+                    // do nothing
+                    break;
+                  case '#':
+                    sourceSubject.onError({ data: errorVal });
+                    break;
+                  case '|':
+                    sourceSubject.onCompleted();
+                    break;
+                  default:
+                    const val = values.hasOwnProperty(c) ? values[c] : c;
+                    console.log('emitting for source ' + sourceName + ' ' + val);
+                    sourceSubject.onNext(val);
+                    break;
+                }
               }
-            }
-          })
-      )
-  }, $.empty(), indexRange)
-    .share();
+            })
+        )
+    }, $.empty(), indexRange)
+      .share();
 
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects
@@ -442,7 +444,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   console.groupEnd();
 
   if (!isOptSinks(testSinks)) {
-    throw 'encountered a sink which is not an observable!'
+    throw `encountered a sink which is not an observable!`
   }
 
   // Gather the results in an array for easier processing
@@ -453,8 +455,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   );
 
   assertContract(hasTestCaseForEachSink, [expected, keysR(sinksResults)],
-    'runTestScenario : in test Case, could not find expected ouputs for all' +
-    ' sinks!'
+    `runTestScenario : in test Case, could not find expected ouputs for all sinks (${keysR(sinksResults)})!`
   );
 
   // Side-effect : execute `analyzeTestResults` function which

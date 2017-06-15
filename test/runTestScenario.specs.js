@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import {runTestScenario} from '../src'
-import {makeMockDOMSource} from '../src/utils/mockDOM'
+import {makeMockDOMSource} from '../src/mockDOM'
 import * as $ from 'most'
 import {hold, sync, async} from 'most-subject'
 

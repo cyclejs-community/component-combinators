@@ -4,7 +4,7 @@ import {
   isString, preventDefault, removeNullsFromArray
 } from "../utils"
 import { defaultMergeSinkFn, m } from "./m"
-import { difference, flatten, either, isNil, keys, reduce, T } from "ramda"
+import { intersection, flatten, either, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -40,6 +40,20 @@ const checkEventFactoryPreConditions = checkAndGatherErrors([
   ], `checkEventFactoryPreConditions : fails!`
 )
 
+/////
+// Utility functions
+export function makeEventNameFromSelectorAndEvent(selector, eventName) {
+  return [selector, eventName].join('_')
+}
+
+function log(x) {
+  return function (y) {
+    console.log(`${x}`, y)
+  }
+}
+
+/////
+// Core
 /*
  ###  EventFactorySettings
  - `{`
@@ -64,8 +78,10 @@ function makeEventFactorySinks(sources, settings) {
 
     return reduce((innerAcc, selectorDesc) => {
       const selector = selectors[selectorDesc]
-      const eventName = [selector, DomEventName].join('_')
+      const eventName = makeEventNameFromSelectorAndEvent(selector, DomEventName);
+
       innerAcc[eventName] = sources.DOM.select(selector).events(DomEventName).tap(preventDefault)
+        .tap(log(`${eventName}:`))
 
       return innerAcc
     }, acc, keys(selectors))
@@ -83,7 +99,7 @@ function mergeEventFactorySinksWithChildrenSinks(eventSinks, childrenSinks, loca
   const sinkNames = getSinkNamesFromSinksArray(allSinks)
 
   // throw error in the case of children sinks with the same sink name as event sinks
-  if (difference(eventSinkNames, childrenSinkNames).length !== 0) {
+  if (intersection(eventSinkNames, childrenSinkNames).length !== 0) {
     throw `mEventFactory > mergeEventFactorySinksWithChildrenSinks : found children sinks with 
            at least one sink name conflicting with an event sink : 
            ${eventSinkNames} vs. ${childrenSinkNames}`
