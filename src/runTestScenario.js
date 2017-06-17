@@ -419,7 +419,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
                     break;
                   default:
                     const val = values.hasOwnProperty(c) ? values[c] : c;
-                    console.log('emitting for source ' + sourceName + ' ' + val);
+                    console.log('runTestScenario : emitting for source ' + sourceName + ' ' + val);
                     sourceSubject.onNext(val);
                     break;
                 }
