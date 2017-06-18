@@ -1,10 +1,10 @@
 import {
   checkAndGatherErrors, eitherE, getSinkNamesFromSinksArray, isFunction, isHashMap, isStrictRecord,
   isStrictRecordE, isHashMapE,
-  isString, preventDefault, removeNullsFromArray
+  isString, preventDefault, removeNullsFromArray, assertContract, noDuplicateKeys, format, isNewKey
 } from "../utils"
 import { defaultMergeSinkFn, m } from "./m"
-import { intersection, flatten, either, isNil, keys, reduce, T } from "ramda"
+import { intersection, flatten, merge, either, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -37,8 +37,7 @@ function hasEventsProperty(sources, settings) {
 const checkEventFactoryPreConditions = checkAndGatherErrors([
     [hasEventsProperty, `Settings parameter must have an events property!`],
     [isEventFactoryEventSettings, `settings' events property has unexpected shape!`]
-  ], `checkEventFactoryPreConditions : fails!`
-)
+  ], `checkEventFactoryPreConditions : fails!`);
 
 /////
 // Utility functions
@@ -64,21 +63,21 @@ function log(x) {
  - `}`
  */
 function makeEventFactorySinks(sources, settings) {
-  const { events: { custom, DOM } } = settings
+  const { events: { custom, DOM } } = settings;
 
   const customEvents = reduce((acc, customEventName) => {
     acc[customEventName] = custom[customEventName](sources, settings)
     return acc
   }, {}, keys(custom))
 
-  const createdEvents = reduce((acc, DomEventName) => {
-    // We dont test if this update is destructive, it is not in our contract
-    // This means DOM events have priority over custom events in case of event name conflicts
-    const selectors = DOM[DomEventName]
+  const DOMEvents = reduce((acc, DomEventName) => {
+    const selectors = DOM[DomEventName];
 
     return reduce((innerAcc, selectorDesc) => {
       const selector = selectors[selectorDesc]
       const eventName = makeEventNameFromSelectorAndEvent(selector, DomEventName);
+
+      assertContract(isNewKey, [innerAcc, eventName], `makeEventFactorySinks : DOM Event definition object leads to event name conflicts for name ${eventName}!`);
 
       innerAcc[eventName] = sources.DOM.select(selector).events(DomEventName).tap(preventDefault)
         .tap(log(`${eventName}:`))
@@ -86,9 +85,11 @@ function makeEventFactorySinks(sources, settings) {
       return innerAcc
     }, acc, keys(selectors))
 
-  }, customEvents, keys(DOM))
+  }, {}, keys(DOM));
 
-  return createdEvents
+  assertContract(noDuplicateKeys, [customEvents, DOMEvents], `makeEventFactorySinks : Event definition object leads to at least one event name which is BOTH a custom event and a DOM event! (custom : ${format(customEvents)} ; DOM : ${format(DOMEvents)})`);
+
+  return merge(customEvents, DOMEvents)
 }
 
 function mergeEventFactorySinksWithChildrenSinks(eventSinks, childrenSinks, localSettings) {

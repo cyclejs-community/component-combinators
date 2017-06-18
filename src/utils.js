@@ -1,7 +1,8 @@
 // TODO : this is the master for utils - copy it back to FSM-examples times to times
 import {
   addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
-  isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq, values, where,
+  intersection, isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq,
+  values, where
 } from "ramda"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
@@ -112,7 +113,7 @@ function assertSignature(fnName, _arguments, vRules) {
 
   if (hasFailed) {
     const validationMessages = mapIndexed((errorMessageOrBool, index) => {
-      const argName = argNames[index]
+        const argName = argNames[index]
 
         return isTrue(errorMessageOrBool) ?
           '' :
@@ -292,31 +293,31 @@ function isNullableComponentDef(obj) {
   // This allows to test for `undefined` and `null` at the same time
 
   return isNil(obj) || checkSignature(obj, {
-    makeLocalSources: either(isNil, isFunction),
-    makeLocalSettings: either(isNil, isFunction),
-    makeOwnSinks: either(isNil, isFunction),
-    mergeSinks: mergeSinks => {
-      if (obj.computeSinks) {
-        return !mergeSinks
-      }
-      else {
-        return either(isNil, either(isObject, isFunction))(mergeSinks)
-      }
-    },
-    computeSinks: either(isNil, isFunction),
-    checkPreConditions: either(isNil, isFunction),
-    checkPostConditions: either(isNil, isFunction),
-  }, {
-    makeLocalSources: 'makeLocalSources must be undefined or a function',
-    makeLocalSettings: 'makeLocalSettings must be undefined or a' +
-    ' function',
-    makeOwnSinks: 'makeOwnSinks must be undefined or a function',
-    mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
-    ' not, and when so, it must be undefined, an object or a function',
-    computeSinks: 'computeSinks must be undefined or a function',
-    checkPreConditions: 'checkPreConditions must be undefined or a function',
-    checkPostConditions: 'checkPostConditions must be undefined or a function'
-  }, true)
+      makeLocalSources: either(isNil, isFunction),
+      makeLocalSettings: either(isNil, isFunction),
+      makeOwnSinks: either(isNil, isFunction),
+      mergeSinks: mergeSinks => {
+        if (obj.computeSinks) {
+          return !mergeSinks
+        }
+        else {
+          return either(isNil, either(isObject, isFunction))(mergeSinks)
+        }
+      },
+      computeSinks: either(isNil, isFunction),
+      checkPreConditions: either(isNil, isFunction),
+      checkPostConditions: either(isNil, isFunction),
+    }, {
+      makeLocalSources: 'makeLocalSources must be undefined or a function',
+      makeLocalSettings: 'makeLocalSettings must be undefined or a' +
+      ' function',
+      makeOwnSinks: 'makeOwnSinks must be undefined or a function',
+      mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
+      ' not, and when so, it must be undefined, an object or a function',
+      computeSinks: 'computeSinks must be undefined or a function',
+      checkPreConditions: 'checkPreConditions must be undefined or a function',
+      checkPostConditions: 'checkPostConditions must be undefined or a function'
+    }, true)
 }
 
 function isUndefined(obj) {
@@ -527,7 +528,7 @@ function isStrictRecordE(recordSpec) {
         `isStrictRecordE : At least one property of object failed its predicate!`
       ]
     ]
-  , `isStrictRecordE > allPassE : fails!`)
+    , `isStrictRecordE > allPassE : fails!`)
 
 }
 
@@ -928,11 +929,24 @@ function isOptional(predicate) {
   }
 }
 
-function formatArrayObj(arr, separator){
+function noDuplicateKeys(objA, objB) {
+  const objAkeys = keys(objA);
+  const objBkeys = keys(objB);
+
+  return (objAkeys.length === 0 || objBkeys.length === 0)
+    ? true // if objA or objB is empty, then there is no duplicate
+    : (intersection(objAkeys, objBkeys).length === 0)
+}
+
+function isNewKey(obj, key) {
+  return keys(obj).indexOf(key) === -1
+}
+
+function formatArrayObj(arr, separator) {
   return arr.map(format).join(separator)
 }
 
-function format(obj){
+function format(obj) {
   // basically if obj is an object, use formatObj, else use toString
   if (isObject(obj)) {
     return formatObj(obj)
@@ -942,13 +956,13 @@ function format(obj){
   }
 }
 
-function addPrefix(prefix){
+function addPrefix(prefix) {
   return function (str) {
     return prefix + str
   }
 }
 
-function noop (){
+function noop() {
 
 }
 
@@ -1012,4 +1026,6 @@ export {
   format,
   addPrefix,
   noop,
+  noDuplicateKeys,
+  isNewKey
 }
