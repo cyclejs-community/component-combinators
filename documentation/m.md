@@ -303,6 +303,7 @@ Include a link to the tests
 This example makes use of :
 - `checkPreConditions`
 - `makeOwnSinks`
+- default merge of sinks (DOM and non-DOM sinks)
 
 ### Description
 The button component is a `<div>` that will behave like a button, according to the parameters 

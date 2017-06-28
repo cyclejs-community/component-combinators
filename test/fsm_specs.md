@@ -1,3 +1,5 @@
+TODO : synchronize with documentation/efsm.md
+
 - Each statechart has states
 - All states have one entry action which is to initialize a component.
   That means when the state is entered, the sinks of the component are

@@ -3,7 +3,7 @@ import { m } from "./m"
 import { both, complement, either, prop } from "ramda"
 import * as Rx from "rx"
 import { div } from "cycle-snabbdom"
-
+//TODO: to be tested!!!
 let $ = Rx.Observable
 
 const mouseEventNames = [
@@ -65,6 +65,7 @@ function checkButtonPreConditions(sources, settings) {
 }
 
 function makeButtonSinks(sources, settings) {
+  // TODO : refactor towards a hashmap<setting key, reducer<class, attrs, sinks>>
   let attrs = {};
   const buttonClasses = ['ui', 'button']
   const {
@@ -144,6 +145,7 @@ function makeButtonSinks(sources, settings) {
   }, {}, classes)
 
   let sinks = {}
+  // TODO : change id to selector and remove the #
   if (listenTo && id) {
     sinks = reduce((acc, eventName) => {
       acc[eventName] = sources.DOM.select('#' + id).events(eventName)

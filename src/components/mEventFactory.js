@@ -1,10 +1,10 @@
 import {
   checkAndGatherErrors, eitherE, getSinkNamesFromSinksArray, isFunction, isHashMap, isStrictRecord,
-  isStrictRecordE, isHashMapE,
-  isString, preventDefault, removeNullsFromArray, assertContract, noDuplicateKeys, format, isNewKey
+  isStrictRecordE, isHashMapE, hasNoCommonValues,
+  isString, preventDefault, removeNullsFromArray, assertContract, hasNoDuplicateKeys, format, isNewKey
 } from "../utils"
 import { defaultMergeSinkFn, m } from "./m"
-import { intersection, flatten, merge, either, isNil, keys, reduce, T } from "ramda"
+import { flatten, merge, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -77,7 +77,7 @@ function makeEventFactorySinks(sources, settings) {
       const selector = selectors[selectorDesc]
       const eventName = makeEventNameFromSelectorAndEvent(selector, DomEventName);
 
-      assertContract(isNewKey, [innerAcc, eventName], `makeEventFactorySinks : DOM Event definition object leads to event name conflicts for name ${eventName}!`);
+      assertContract(isNewKey, [innerAcc, eventName], `makeEventFactorySinks : DOM Event definition object leads to event name conflicts for name ${eventName}!`); // VERY VERY UNLIKELY
 
       innerAcc[eventName] = sources.DOM.select(selector).events(DomEventName).tap(preventDefault)
         .tap(log(`${eventName}:`))
@@ -87,7 +87,7 @@ function makeEventFactorySinks(sources, settings) {
 
   }, {}, keys(DOM));
 
-  assertContract(noDuplicateKeys, [customEvents, DOMEvents], `makeEventFactorySinks : Event definition object leads to at least one event name which is BOTH a custom event and a DOM event! (custom : ${format(customEvents)} ; DOM : ${format(DOMEvents)})`);
+  assertContract(hasNoDuplicateKeys, [customEvents, DOMEvents], `makeEventFactorySinks : Event definition object leads to at least one event name which is BOTH a custom event and a DOM event! (custom : ${format(customEvents)} ; DOM : ${format(DOMEvents)})`);
 
   return merge(customEvents, DOMEvents)
 }
@@ -100,11 +100,10 @@ function mergeEventFactorySinksWithChildrenSinks(eventSinks, childrenSinks, loca
   const sinkNames = getSinkNamesFromSinksArray(allSinks)
 
   // throw error in the case of children sinks with the same sink name as event sinks
-  if (intersection(eventSinkNames, childrenSinkNames).length !== 0) {
-    throw `mEventFactory > mergeEventFactorySinksWithChildrenSinks : found children sinks with 
+  assertContract(hasNoCommonValues, [eventSinkNames, childrenSinkNames],
+    `mEventFactory > mergeEventFactorySinksWithChildrenSinks : found children sinks with 
            at least one sink name conflicting with an event sink : 
-           ${eventSinkNames} vs. ${childrenSinkNames}`
-  }
+           ${eventSinkNames} vs. ${childrenSinkNames}`);
 
   // otherwise apply default merge functions
   return defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
@@ -132,8 +131,7 @@ export function mEventFactory(eventFactorySettings, childrenComponents) {
   // (fails fast). We will not.
   // Instead, we will wait for the settings passed to `mEventFactory` at
   // call time to be merged with the settings passed at creation time. This opens the
-  // possibility to have a factory with some events, and adding some events at call time via
-  // settings
-//  debugger
+  // possibility to have a factory with some events, and adding soem additional events at call
+  // time via settings
   return m(eventFactorySpec, eventFactorySettings, childrenComponents)
 }

@@ -929,13 +929,17 @@ function isOptional(predicate) {
   }
 }
 
-function noDuplicateKeys(objA, objB) {
+function hasNoDuplicateKeys(objA, objB) {
   const objAkeys = keys(objA);
   const objBkeys = keys(objB);
 
   return (objAkeys.length === 0 || objBkeys.length === 0)
     ? true // if objA or objB is empty, then there is no duplicate
     : (intersection(objAkeys, objBkeys).length === 0)
+}
+
+function hasNoCommonValues(eventSinkNames, childrenSinkNames) {
+  return intersection(eventSinkNames, childrenSinkNames).length === 0
 }
 
 function isNewKey(obj, key) {
@@ -1026,6 +1030,7 @@ export {
   format,
   addPrefix,
   noop,
-  noDuplicateKeys,
+  hasNoDuplicateKeys,
+  hasNoCommonValues,
   isNewKey
 }

@@ -37,3 +37,4 @@ export {
 }
 
 export * from "./utils"
+export * from "./runTestScenario"
