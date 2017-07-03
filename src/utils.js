@@ -970,6 +970,23 @@ function noop() {
 
 }
 
+/**
+ * Returns a function which turns an object to be put at a given path location into an array of
+ * JSON patch operations
+ * @param {JSON_Pointer} path
+ * @returns {Function}
+ */
+function toJsonPatch(path) {
+  return pipe(
+    mapObjIndexed((value, key) => ({
+      op: "add",
+      path: [path, key].join('/'),
+      value: value
+    })),
+    values
+  );
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1032,5 +1049,6 @@ export {
   noop,
   hasNoDuplicateKeys,
   hasNoCommonValues,
-  isNewKey
+  isNewKey,
+  toJsonPatch
 }
