@@ -65,7 +65,6 @@ function checkButtonPreConditions(sources, settings) {
 }
 
 function makeButtonSinks(sources, settings) {
-  // TODO : refactor towards a hashmap<setting key, reducer<class, attrs, sinks>>
   let attrs = {};
   const buttonClasses = ['ui', 'button']
   const {
