@@ -6,4 +6,5 @@ window.$ = window.jQuery = require('jquery');
 
 // import './FSM.specs'
 // import './utils.specs'
-import './mEventFactory.specs'
+// import './mEventFactory.specs'
+import './mButtonFactory.specs'

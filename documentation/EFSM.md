@@ -1,6 +1,3 @@
-TODO : line break working in some markdown renderer, and not in others so go for the lowest 
-common denominator, and add new lines wherever needed
-
 [TOC]
 
 # Introduction
@@ -67,8 +64,7 @@ After discussion with stakeholders, the proposed flow is summarized with the fol
 
 # Challenges of human-computer interface design and implementation
 
-in addition to the difficulties associated with designing any complex software system, user
-interfaces add the following problems :
+in addition to the difficulties associated with designing any complex software system, user interfaces add the following problems :
 
 - user interfaces are reactive systems, they are hard to specify
 - they often require managing asynchrony, and concurrency
@@ -78,23 +74,29 @@ interfaces add the following problems :
 ## Reactive systems design is hard to specify and communicate 
 A reactive system, in contrast with a transformational system, is characterized by being event driven, continuously having to react to external and internal stimuli. 
 The problem in specifying reactive systems is rooted in the difficulty of describing reactive behavior in ways that are clear and realistic, and at the same time formal and rigorous, in order to be amenable to precise computerized analysis.
+
 The behavior of a reactive system is really the set of allowed sequences of input and output events, conditions, and actions, perhaps with some additional information such as timing constraints.
 What makes the problem especially acute is the fact that a set of sequences (usually a large and complex one) does not seem to lend itself naturally to 'friendly' gradual, level-by-level descriptions, that would fit nicely into a human being’s frame of mind[David Harel].
+
 This results in discrepancies both between the intended design and the actual design (design bug), and between the actual design and the implementation (implementation bug).
 
 ## User interface design is a creative, iterative process which means implementation is constantly changing
 The most important function that user interface designers do for their clients is the iterative extraction and refinement of the user needs and their corresponding translation in the interface.
+
 This means that implementation is also an iterative process. Ideally a small change in the design should correspond to a small change in the implementation. Costly implementation updates leads to the temptation to lower the number of iterations with end users, leading to a user interface which incorporates less feedback from the user. 
-This implies not only the use of rapid prototyping techniques, but also implementation techniques which allow for modularity, consistent patterns, and decoupling. The single responsibility principle here is key ('only one reason to change').
+
+Of major value are rapid prototyping techniques, but also implementation techniques which allow for modularity, consistent patterns, and decoupling. The single responsibility principle here is key ('only one reason to change').
 
 
 ## Asynchrony is tractable, but concurrency is hard
 The user interface software must be structured so that it can accept input events at all times (low latency), even while executing commands. Consequently, any operations that may take a long time is problematic and must be handled in separate ways. 
-At the same time, processing events triggering actions while another action is executing can lead to the well-known concurrency issues : synchronization, consistency, deadlocks, and race conditions.
-Concurrency can also be by design instead of accidental. Take the case of a user interface where a user may be involved in multiple ongoing dialogs with the application, for example, in different windows. These dialogs will each need to retain state about what the user has done, and will also interact with each other. 
+At the same time, processing events triggering actions while another action is executing can lead to the well-known concurrency issues : **synchronization**, **consistency**, **deadlocks**, and **race conditions**.[^accidental-concurrency]
 
-## User interface must handle the expected and  the unexpected gracefully
-Naturally, all software has robustness requirements. However, the software that handles the users’ inputs has especially stringent requirements because all inputs must be gracefully handled. Whereas a programmer might define the interface to an internal procedure to only work when passed a certain type of value, the user interface must always accept any possible input, and continue to operate.
+   [^accidental-concurrency]: Concurrency can also be by design instead of accidental. Take the case of a user interface where a user may be involved in multiple ongoing dialogs with the application, for example, in different windows. These dialogs will each need to retain state about what the user has done, and will also interact with each other. 
+
+## User interface must handle the expected and the unexpected gracefully
+Naturally, all software has robustness requirements. However, the software that handles the users’ inputs has especially stringent requirements because all inputs must be gracefully handled. Whereas a programmer might define the interface to an internal procedure to only work when passed a certain type of value, the user interface **must always accept any possible input, and continue to operate**.
+
 Furthermore, unlike internal routines that might abort to a debugger when an erroneous input is discovered, user interface software must respond with a helpful error message, and allow the user to start over or repair the error and continue. To make the task even more difficult, user interfaces should allow the user to abort and undo operations. Therefore, the programmer should implement most actions in a way that will allow them to be aborted while executing and reversed after completion.
 
 
@@ -154,14 +156,14 @@ In practice, this is not always the case. The action to be performed often depen
  - in a video game AI, a game agent might have a state `Patrol` wherein it wanders the map looking for enemies. Once it detects an enemy, it transitions into the `Attack` state. If the target starts taking shots at our agent, it might momentarily transition into the `TakeCover` state (a "blip") before transitioning back to `Attack`
  - A large number of enterprise applications are workflow-driven systems in which documents/files/processes transition from state to state
 
-What these have in common is that the same event is associated to different actions depending on the context in which the event occurs. We can then rewrite our equation as `action = f(event, context)` where context modelizes somehow the relevant and necessary contextual data. In the case where we can discriminate discrete logical branching points which determine the triggered action (`isToggled`, or `carriesWeapon`, etc.), we can write this equation `(action_n+1, model_n+1) = f(transitions, event_n, state_n, model_n)`, where :
+What these have in common is that the same event is associated to different actions depending on the context in which the event occurs. We can then rewrite our equation as `action = f(event, context)` where context modelizes somehow the relevant and necessary contextual data. In the case where we can discriminate discrete logical branching points which determine the triggered action (`isToggled`, or `carriesWeapon`, etc.), we can write this equation `(action_n+1, model_n+1) = f(event_n, state_n, model_n, transitions)`, where :
 
-- `f` is a pure function (to have `f` be a pure function, we had to expose the variation of the model as `f` computes an action but ALSO produces an updated contextual data),
-- `transitions` is an object which contains all transition data (origin state, target state, event trigger, guards, output action), i.e. the encoded control flow of the program
+- `f` is a pure function (to have `f` be a pure function, we had to expose a `model` variable as `f` computes an action but ALSO produces updated contextual data),
 - `state` is to be understood in the state machine sense (`isToggled` etc., we will call that `control state`, or sometimes `qualitative state`),
  - `model` is the contextual data necessary to parameterize the action to be triggered (we will call that `quantitative state` or simply just `model` - quite the polysemic term, but keep in mind that this is whatever extra information you need to write your reactive function as a pure function).
+- `transitions` is an object which contains all transition data on the aforementioned logical branching points (origin state, target state, event trigger, guards, output action), i.e. the encoded control flow of the program
 
-Written with streams, the equation becomes `actions = f(transitions, events, states, initialModel, initialEvent)`, where :
+Written with streams, the equation becomes `actions = f(events, states, initialModel, initialEvent, transitions)`, where :
 
 - `f` is a pure function,
 - `transitions` is an object which contains all transition data (origin state, target state, event trigger, guards, output action), i.e. the encoded control flow of the program
@@ -185,7 +187,7 @@ Among key examples, the state machine definition (`:: Record {transitions, event
 
 - used by `f` to compute the actions from the events, i.e to produce an executable version of the state machine
 - automatically parsed into a graphical representation of all or a slice of the behaviour (removing error handling flows for instance) of the state machine
-- paramount to generate automatic tests for the state machine (note that this requires additional formalization (refinement of the DSL) or prior knowledge of the guards, more on this in a specific section)
+- used to generate automatic tests for the state machine (note that this requires additional formalization (refinement of the DSL), more on this in a future section)
 
 Going back to the sample application, here is an example of automatically generated flow graph, in which the error flows have been sliced out :
 
@@ -205,7 +207,7 @@ Last but not least, readability refers to the ease with which a human reader can
 All state machine formalisms, universally assume that a state machine completes processing of each event before it can start processing the next event. This model of execution is called run to completion, or RTC.
 In the RTC model, the system processes events in discrete, indivisible RTC steps. New incoming events cannot interrupt the processing of the current event and must be stored (typically in an event queue) until the state machine becomes idle again. The RTC model also gets around the conceptual problem of processing actions associated with transitions, where the state machine is not in a well-defined state(is between two states) for the duration of the action. During event processing, the system is unresponsive (unobservable), so the ill-defined state during that time has no practical significance.
 
-These semantics completely avoid any internal concurrency issues within a single state machine. 
+These semantics completely avoid any internal concurrency issues within a single state machine. This eliminates a hard-to-deal-with class of bugs.
 
 Note : The proposed implementation at this moment does not queue events. Hence, events which occurs while an action is being executed, i.e. in between states will be ignored.
 
@@ -213,7 +215,7 @@ Note : The proposed implementation at this moment does not queue events. Hence, 
 
 
 ### Behaviour with respect to incremental changes in design
-As we discussed before, a reactive system whose behaviour is encoded in a state machine definition can be executed' by a function `f` such that `actions = f(events, stateMachineDefinition)` where`stateMachineDefinition` is of type `Record {transitions, eventNames, states, initialModel, initialEvent`.
+As we discussed before, a reactive system whose behaviour is encoded in a state machine definition can be executed' by a function `f` such that `actions = f(events, stateMachineDefinition)` where`stateMachineDefinition` is of type `Record {transitions, eventNames, states, initialModel, initialEvent}`.
 
 incremental changes in the design are then translated into changes in events, states, model, and transitions. 
 
@@ -222,9 +224,10 @@ If we suppose that the incremental change does not affect the model datatype and
 
 #### Control state changes
 If the incremental change in design results in a change in the set of control states, then the corresponding change in implementation cannot often be considered small. Removing a control state, for example, means removing all transitions to and from that control state, and the associated guards. That is a lot of meaning which disappears! This puts the onus on the state machine designer to come up with a set of control states such that incremental design change does not result in a change in control states. This may be achieved by domain-specific knowledge, and anticipation of the design changes.
+Conversely, adding a control state leads to evaluate the possibility of transitions from any previously existing control states to the new control states. The complexity of that is obviously linked to the number of control states. Hence if that number of control states is small, then the impact from adding a new control state is likely to be small.
 
 #### Model changes
-Incremental design changes which result in changes in the model (for example adding a property to the model) are tricky, as the worse case require touching all model updates functions, guards and entry/exit actions and the retesting of the whole reactive system. However, in many cases, changes in the existing implementation can be small and a significant portion of the existing code can be reused.
+Incremental design changes which result in changes in the model (for example adding a property to the model) are tricky, as the worse case require touching all model updates functions, guards and entry/exit actions and the retesting of the whole reactive system. However, in practice, in many cases, changes in the existing implementation can be small and a significant portion of the existing code can be reused.
 
 #### Multiple type of changes
 One can argue that incremental design changes which affect the whole state (control state and model) are not incremental. They often reflect either a poor state machine design (which does not stick closely enough to the reactive system design) or a significant change in the reactive system behaviour. 
@@ -233,6 +236,7 @@ One can argue that incremental design changes which affect the whole state (cont
 Those issues are naturally compounded by the number of states and transitions of the state machines, i.e. the complexity of the control flow that is implemented. 
 
 I however empirically found that carefully designing in a context of low-complexity control flow (around 5 states, and 20 transitions as my personal rule of thumb) generally results in a small change in reactive system design being corresponded to a small change in implementation. 
+
 The point by and large here, is that when reactive systems are **specified** as state machines (and such is the case of the presented wireframe flows, and of business processes' user interface in general), a state machine implementation obviously may have nicer properties than alternative implementations. Because in the end, one of the best things one can do for maintainability is to keep a strong correspondence between the specifications and the code.
 
 ### Robustness
@@ -253,9 +257,10 @@ For instance, in the sample application's implementation, errors occurring while
 State machines resists well to erroneous, invalid or unexpected inputs due to the following properties:
 
 - Events which are not specified for a given state are not processed when in that state
-- Transitions are deterministic (in the present context they are, it is however possible to define non-deterministic state machines), hence the system is always in a predictable and expected state, independently of its inputs
+- Transitions are deterministic[^non-deterministic-possible], hence the system is always in a predictable and expected state, independently of its inputs
 
-
+  [^non-deterministic-possible]: In the present context they are, it is however possible to define non-deterministic state machines.
+  
 # Extended finite state machine library
 
 We propose a state machine library which features :
@@ -1016,7 +1021,7 @@ One of the main challenges in becoming an effective state machine designer is to
 
 
 ## State - transition topology is static
-Capturing behavior as the “quantitative state” has its disadvantages and limitations, too. First, the state and transition topology in a state machine must be static and fixed at compile time, which can be too limiting and inflexible. Sure, you can easily devise “state machines” that would modify themselves at runtime (this is what often actually happens when you try to recode “stream spaghetti” as a state machine). However, this is like writing self-modifying code, which indeed was done in the early days of programming but was quickly dismissed as a generally bad idea. Consequently, “state” can capture only static aspects of the behavior that are known a priori and are unlikely to change in the future.
+Capturing behavior as the “quantitative state” has its disadvantages and limitations, too. First, the state and transition topology in a state machine must be static and fixed at compile time, which can be too limiting and inflexible. Sure, you can easily devise state machines that would modify themselves at **runtime** (this is what often actually happens when you try to recode “stream spaghetti” as a state machine). However, this is like writing self-modifying code, which indeed was done in the early days of programming but was quickly dismissed as a generally bad idea. Consequently, “state” can capture only static aspects of the behavior that are known a priori and are unlikely to change in the future.
 
 [//]: # (ref : Ref : A_Crash_Course_in_UML_State_Machines (Quantum Leaps)
 
@@ -1029,8 +1034,6 @@ This issue is considerably alleviated with the statecharts formalism (also calle
 [//]: # (http://self.gutenberg.org/articles/Hierarchical_state_machine)
 
 ## Run-to-Completion execution model can over-simplify concurrency issues 
-All state machine formalisms, universally assume that a state machine completes processing of each event before it can start processing the next event. This model of execution is called run to completion, or RTC.
-In the RTC model, the system processes events in discrete, indivisible RTC steps. New incoming events cannot interrupt the processing of the current event and must be stored (typically in an event queue) until the state machine becomes idle again. These semantics completely avoid any internal concurrency issues within a single state machine. The RTC model also gets around the conceptual problem of processing actions associated with transitions, where the state machine is not in a well-defined state(is between two states) for the duration of the action. During event processing, the system is unresponsive (unobservable),so the ill-defined state during that time has no practical significance.
 The key advantage of RTC processing is simplicity. Its biggest disadvantage is that the responsiveness of a state machine is determined by its longest RTC step. Achieving short RTC steps can sometimes significantly complicate real-time designs. 
 In a future version of the library, event queuing and convenient interruption policies will be added.
 
@@ -1043,13 +1046,17 @@ In a future version of the library, event queuing and convenient interruption po
 # Roadmap TODO
 
 # References TODO
+
+Challenges of HCI Design and Implementation, Brad A. Myers, 1994
+https://www.researchgate.net/publication/220383184_Challenges_of_HCI_Design_and_Implementation
+
 A_Crash_Course_in_UML_State_Machines (Quantum Leaps)
 https://classes.soe.ucsc.edu/cmpe013/Spring11/LectureNotes/A_Crash_Course_in_UML_State_Machines.pdf
 
 Design Patterns for Embedded Systems in C: An Embedded Software Engineering Toolkit (Bruce Powel Douglass, 2003)
 
-Hierarchical_state_machine, World Heritage Encyclopedia
+Hierarchical state machine, World Heritage Encyclopedia
 http://self.gutenberg.org/articles/Hierarchical_state_machine
 
-Readability_of_source_code, Wikipedia
+Readability of source code, Wikipedia
 https://en.wikipedia.org/wiki/Computer_programming#Readability_of_source_code

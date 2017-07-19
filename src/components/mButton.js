@@ -66,25 +66,25 @@ function checkButtonPreConditions(sources, settings) {
 
 function makeButtonSinks(sources, settings) {
   let attrs = {};
-  const buttonClasses = ['ui', 'button']
+  const buttonClasses = ['ui', 'button'];
   const {
     classes, id, emphasis, basic, focusable, animated, label, icon, visualState, social, size, shape, layout, listenTo
-  } = settings
+  } = settings;
 
   if (classes) {
-    buttonClasses.push.call(null, classes)
+    Array.prototype.push.apply(buttonClasses, classes);
   }
 
   if (focusable) {
-    attrs.tabindex = '0'
+    attrs.tabindex = '0';
   }
 
   if (emphasis) {
-    buttonClasses.push(emphasis)
+    buttonClasses.push(emphasis);
   }
 
   if (basic) {
-    buttonClasses.push('basic')
+    buttonClasses.push('basic');
   }
 
   if (animated) {
@@ -96,7 +96,7 @@ function makeButtonSinks(sources, settings) {
     // Make sure there is enough room for the hidden content to show
     isString(animated)
       ? buttonClasses.push('animated', animated)
-      : buttonClasses.push('animated')
+      : buttonClasses.push('animated');
   }
 
   if (label) {

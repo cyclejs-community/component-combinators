@@ -931,7 +931,7 @@ const wrapIfDebug = cond([
   })],
   [T, identity]]);
 
-// TODO : implmement history mechanism in this library
+// TODO : implement history mechanism in this library
 // TODO: actionable implementation of statecharts in hs https://github.com/steelbreeze/state.js
 // TODO : fsm http://www.intersel.fr/assets_intersel_a/gitdemos/iFSM/Examples/Example_Slideshow.html
 // TODO : use rxdb to replace firebase for the demo - it is totally offline, or
