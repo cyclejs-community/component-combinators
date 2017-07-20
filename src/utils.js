@@ -293,31 +293,31 @@ function isNullableComponentDef(obj) {
   // This allows to test for `undefined` and `null` at the same time
 
   return isNil(obj) || checkSignature(obj, {
-      makeLocalSources: either(isNil, isFunction),
-      makeLocalSettings: either(isNil, isFunction),
-      makeOwnSinks: either(isNil, isFunction),
-      mergeSinks: mergeSinks => {
-        if (obj.computeSinks) {
-          return !mergeSinks
-        }
-        else {
-          return either(isNil, either(isObject, isFunction))(mergeSinks)
-        }
-      },
-      computeSinks: either(isNil, isFunction),
-      checkPreConditions: either(isNil, isFunction),
-      checkPostConditions: either(isNil, isFunction),
-    }, {
-      makeLocalSources: 'makeLocalSources must be undefined or a function',
-      makeLocalSettings: 'makeLocalSettings must be undefined or a' +
-      ' function',
-      makeOwnSinks: 'makeOwnSinks must be undefined or a function',
-      mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
-      ' not, and when so, it must be undefined, an object or a function',
-      computeSinks: 'computeSinks must be undefined or a function',
-      checkPreConditions: 'checkPreConditions must be undefined or a function',
-      checkPostConditions: 'checkPostConditions must be undefined or a function'
-    }, true)
+    makeLocalSources: either(isNil, isFunction),
+    makeLocalSettings: either(isNil, isFunction),
+    makeOwnSinks: either(isNil, isFunction),
+    mergeSinks: mergeSinks => {
+      if (obj.computeSinks) {
+        return !mergeSinks
+      }
+      else {
+        return either(isNil, either(isObject, isFunction))(mergeSinks)
+      }
+    },
+    computeSinks: either(isNil, isFunction),
+    checkPreConditions: either(isNil, isFunction),
+    checkPostConditions: either(isNil, isFunction),
+  }, {
+    makeLocalSources: 'makeLocalSources must be undefined or a function',
+    makeLocalSettings: 'makeLocalSettings must be undefined or a' +
+    ' function',
+    makeOwnSinks: 'makeOwnSinks must be undefined or a function',
+    mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
+    ' not, and when so, it must be undefined, an object or a function',
+    computeSinks: 'computeSinks must be undefined or a function',
+    checkPreConditions: 'checkPreConditions must be undefined or a function',
+    checkPostConditions: 'checkPostConditions must be undefined or a function'
+  }, true)
 }
 
 function isUndefined(obj) {
@@ -519,7 +519,7 @@ function isStrictRecordE(recordSpec) {
       // return true if recordSpec.keys - obj.keys is empty
       [
         pipe(keys, flip(difference)(keys(recordSpec)), isEmpty),
-        `isStrictRecordE : unexpected properties were found on object! Object should have only have properties within a configured fixed set of properties : ${keys(recordSpec)}!`
+        `isStrictRecordE : unexpected properties were found on object! Object should only have properties within a configured fixed set of properties : ${keys(recordSpec)}!`
       ],
       // 2. the properties in recordSpec all pass their corresponding predicate
       // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
@@ -532,13 +532,50 @@ function isStrictRecordE(recordSpec) {
 
 }
 
+/**
+ * Cf. isRecord. Adds the error messages accumulation aspect.
+ * @param recordSpec
+ */
+function isRecordE(recordSpec) {
+  assertContract(isObject, [recordSpec], 'isRecordE : record specification argument must' +
+    ' be a valid object!');
+
+  return allPassE([
+      // 2. the properties in recordSpec all pass their corresponding predicate
+      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
+      [
+        whereE(recordSpec),
+        `isStrictRecordE : At least one property of object failed its predicate!`
+      ]
+    ]
+    , `isRecordE > allPassE : fails!`)
+
+}
+
 const allPassE = checkAndGatherErrors;
 
+function bothE([leftPredicateE, leftError], [rightPredicateE, rightError], error) {
+  return allPassE([
+    [leftPredicateE, leftError],
+    [rightPredicateE, rightError]
+  ], error || `One of the two predicates has failed!`)
+}
+
+/**
+ * TODO : doc
+ * @param recordSpec
+ * @returns {whereE}
+ */
 function whereE(recordSpec) {
   // RecordSpec :: HashMap<Key, Predicate>
   const _keys = keys(recordSpec);
 
-  return function whereE(...args) {
+  /**
+   * TODO : doc
+   * @param args
+   * @returns {boolean}
+   */
+  function whereE(...args) {
 
     const result = reduce((acc, key) => {
       const predicate = recordSpec[key];
@@ -560,6 +597,8 @@ function whereE(recordSpec) {
       ? true
       : result.join('\n')
   }
+
+  return whereE
 }
 
 /**
@@ -925,7 +964,7 @@ function preventDefault(ev) {
 
 function isOptional(predicate) {
   return function (obj) {
-    return isNil(obj) ? predicate(obj) : true
+    return isNil(obj) ? true : predicate(obj)
   }
 }
 
@@ -1025,10 +1064,12 @@ export {
   checkAndGatherErrors,
   isStrictRecordE,
   allPassE,
+  bothE,
   whereE,
   isHashMapE,
   allE,
   eitherE,
+  isRecordE,
   assertSourcesContracts,
   assertSinksContracts,
   assertSettingsContracts,

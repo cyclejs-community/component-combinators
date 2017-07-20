@@ -15,7 +15,7 @@
 // probability of occuring, or an impact that we are willing to absorb.
 //
 // ## Testing for Settings
-// - Settings = BadSettings | GoodSettings (T3 - instead of BadSettings x GoodSettings)
+// - Settings = BadSettings | GoodSettings
 //   - GoodSettings = CustomSettings | DOMSettings | CustomAndDomSettings
 //     - CustomSettings = 1 custom | >1 custom (T2)
 //     - DOMSettings = 1 DOM | >1 DOM same event | >1 DOM different events (T2)
