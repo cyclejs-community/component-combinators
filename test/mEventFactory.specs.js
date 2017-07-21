@@ -74,6 +74,17 @@ import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
 import { makeMockDOMSource } from "../src/mockDOM"
+// Bad settings - children sink name conflict with new event name TODO and move back to BAD up
+// Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
+// TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a
+// demonstration of how to use this APIs = to put in runTestScenario.md
+// TODO: move analyzeTestResults to a settings like tickDuration, review all runTestScenario
+// test, harmonize with FSM-example, review by default value or make mandatory! and update
+// documentation, and harmonize in FSM-example if necessary
+// also harmonize utils for FSM-example
+///////
+// mButtonFactory.specs
+import { mButton } from "../src/components/mButton"
 
 const SEP = ':';
 const NOT_A_FUNCTION = 42;
@@ -81,7 +92,7 @@ const NOT_A_STRING = 42;
 const SOME_EVENT_NAME = 'some_event_name';
 const ANOTHER_EVENT_NAME = 'another_event_name';
 const SOME_DOM_EVENT_NAME = 'click';
-const ANOTHER_DOM_EVENT_NAME = 'hover';
+const ANOTHER_DOM_EVENT_NAME = 'mouseover';
 const SOME_PREFIXED_DOM_EVENT_NAME_1 = SOME_DOM_EVENT_NAME + 'Button';
 const SOME_PREFIXED_DOM_EVENT_NAME_2 = SOME_DOM_EVENT_NAME + 'Input';
 const ANOTHER_PREFIXED_DOM_EVENT_NAME_1 = ANOTHER_DOM_EVENT_NAME + 'Button';
@@ -511,7 +522,7 @@ QUnit.module("Testing mEventFactory(eventFactorySettings, childrenComponents)", 
 // BadSettings
 
 // Bad settings - no events property in settings
-QUnit.test("Bad settings : no events property in settings", function exec_test(assert) {
+QUnit.skip("Bad settings : no events property in settings", function exec_test(assert) {
   const testData = testSpace.BadSettings.NoEventPropertyInSettings;
   const eventFactoryComponent = mEventFactory(testData.eventFactorySettings, testData.childrenComponents);
 
@@ -522,7 +533,7 @@ QUnit.test("Bad settings : no events property in settings", function exec_test(a
 });
 
 // Bad settings - custom event factory not a function
-QUnit.test("Bad settings : custom event factory not a function", function exec_test(assert) {
+QUnit.skip("Bad settings : custom event factory not a function", function exec_test(assert) {
   const testData = testSpace.BadSettings.EventFactoryNotAFunction;
 
   const eventFactoryComponent = mEventFactory(testData.eventFactorySettings, testData.childrenComponents);
@@ -535,7 +546,7 @@ QUnit.test("Bad settings : custom event factory not a function", function exec_t
 });
 
 // Bad settings - selector not a string
-QUnit.test("Bad settings : selector not a string", function exec_test(assert) {
+QUnit.skip("Bad settings : selector not a string", function exec_test(assert) {
   const testData = testSpace.BadSettings.SelectorNotAString;
 
   const eventFactoryComponent = mEventFactory(testData.eventFactorySettings, testData.childrenComponents);
@@ -551,7 +562,7 @@ QUnit.test("Bad settings : selector not a string", function exec_test(assert) {
 // GoodSettings
 
 // empty settings - no children components
-QUnit.test("Good settings > empty settings : no children components", function exec_test(assert) {
+QUnit.skip("Good settings > empty settings : no children components", function exec_test(assert) {
   const testData = testSpace.GoodSettings.EmptySettings.caseEmpmtyAndNoChildren;
 
   const emptyEventFactoryComponent = mEventFactory(testData.eventFactorySettings, testData.childrenComponents);
@@ -561,7 +572,7 @@ QUnit.test("Good settings > empty settings : no children components", function e
 });
 
 // empty settings - 1 child component
-QUnit.test("Good settings > empty settings : 1 child component", function exec_test(assert) {
+QUnit.skip("Good settings > empty settings : 1 child component", function exec_test(assert) {
   const done = assert.async(2);
 
   const testData = testSpace.GoodSettings.EmptySettings.caseEmpmtyAndOneChild;
@@ -596,7 +607,7 @@ QUnit.test("Good settings > empty settings : 1 child component", function exec_t
 });
 
 // empty settings - two children components
-QUnit.test("Good settings > empty settings : 2 children components", function exec_test(assert) {
+QUnit.skip("Good settings > empty settings : 2 children components", function exec_test(assert) {
   const done = assert.async(2);
 
   const testData = testSpace.GoodSettings.EmptySettings.caseEmpmtyAndTwoChildren;
@@ -640,7 +651,7 @@ QUnit.test("Good settings > empty settings : 2 children components", function ex
 // CustomSettings
 
 // custom settings - 1 custom x no children components
-QUnit.test("Good settings > custom settings : 1 custom x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 1 custom x no children components", function exec_test(assert) {
   const done = assert.async(1);
   const testData = testSpace.GoodSettings.CustomSettings.caseOneCustomAndNoChildren;
 
@@ -668,7 +679,7 @@ QUnit.test("Good settings > custom settings : 1 custom x no children components"
 });
 
 // custom settings - 1 custom x one child component
-QUnit.test("Good settings > custom settings : 1 custom x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 1 custom x one child component", function exec_test(assert) {
   const done = assert.async(3);
   const testData = testSpace.GoodSettings.CustomSettings.caseOneCustomAndOneChild;
 
@@ -711,7 +722,7 @@ QUnit.test("Good settings > custom settings : 1 custom x one child component", f
 });
 
 // custom settings - 1 custom x two children components
-QUnit.test("Good settings > custom settings : 1 custom x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 1 custom x two children components", function exec_test(assert) {
   const done = assert.async(3);
   const testData = testSpace.GoodSettings.CustomSettings.caseOneCustomAndTwoChildren;
 
@@ -760,7 +771,7 @@ QUnit.test("Good settings > custom settings : 1 custom x two children components
 });
 
 // custom settings - 2 custom x no children components
-QUnit.test("Good settings > custom settings : 2 custom x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 2 custom x no children components", function exec_test(assert) {
   const done = assert.async(2);
   const testData = testSpace.GoodSettings.CustomSettings.caseTwoCustomAndNoChildren;
 
@@ -797,7 +808,7 @@ QUnit.test("Good settings > custom settings : 2 custom x no children components"
 });
 
 // custom settings - 2 custom x one child component
-QUnit.test("Good settings > custom settings : 2 custom x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 2 custom x one child component", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.CustomSettings.caseTwoCustomAndOneChild;
 
@@ -849,7 +860,7 @@ QUnit.test("Good settings > custom settings : 2 custom x one child component", f
 });
 
 // custom settings - 2 custom x two children components
-QUnit.test("Good settings > custom settings : 2 custom x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > custom settings : 2 custom x two children components", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.CustomSettings.caseTwoCustomAndTwoChildren;
 
@@ -910,7 +921,7 @@ QUnit.test("Good settings > custom settings : 2 custom x two children components
 // DOMSettings
 
 // DOM Settings - 1 DOM x no children components
-QUnit.test("Good settings > DOM settings : 1 DOM x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 DOM x no children components", function exec_test(assert) {
   const done = assert.async(1);
   const testData = testSpace.GoodSettings.DOMSettings.caseDOMSettingsAndNoChildren;
 
@@ -949,7 +960,7 @@ QUnit.test("Good settings > DOM settings : 1 DOM x no children components", func
 });
 
 // DOM Settings - 1 DOM x one child component
-QUnit.test("Good settings > DOM settings : 1 DOM x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 DOM x one child component", function exec_test(assert) {
   const done = assert.async(3);
   const testData = testSpace.GoodSettings.DOMSettings.caseDOMSettingsAndOneChild;
 
@@ -1003,7 +1014,7 @@ QUnit.test("Good settings > DOM settings : 1 DOM x one child component", functio
 });
 
 // DOM Settings - 1 DOM x two children components
-QUnit.test("Good settings > DOM settings : 1 DOM x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 DOM x two children components", function exec_test(assert) {
   const done = assert.async(3);
   const testData = testSpace.GoodSettings.DOMSettings.caseDOMSettingsAndTwoChildren;
 
@@ -1063,7 +1074,7 @@ QUnit.test("Good settings > DOM settings : 1 DOM x two children components", fun
 });
 
 // DOM Settings - > 1 DOM same event x no children components
-QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : (> 1 DOM, same event) x no children components", function exec_test(assert) {
   const done = assert.async(2);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMSameEventSettingsAndNoChildren;
 
@@ -1115,7 +1126,7 @@ QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x no children c
 });
 
 // DOM Settings - > 1 DOM same event x one child component
-QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : (> 1 DOM, same event) x one child component", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMSameEventSettingsAndOneChild;
 
@@ -1182,7 +1193,7 @@ QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x one child com
 });
 
 // DOM Settings - > 1 DOM same event x two children components
-QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : (> 1 DOM, same event) x two children components", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMSameEventSettingsAndTwoChildren;
 
@@ -1255,7 +1266,7 @@ QUnit.test("Good settings > DOM settings : (> 1 DOM, same event) x two children 
 });
 
 // DOM Settings - > 1 DOM different events x no children components
-QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x no children components`, function exec_test(assert) {
+QUnit.skip(`Good settings > DOM settings : (> 1 DOM, different event) x no children components`, function exec_test(assert) {
   const done = assert.async(2);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMDifferentEventSettingsAndNoChildren;
 
@@ -1307,7 +1318,7 @@ QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x no child
 });
 
 // DOM Settings - > 1 DOM different events x one child component
-QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x one child component`, function exec_test(assert) {
+QUnit.skip(`Good settings > DOM settings : (> 1 DOM, different event) x one child component`, function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMDifferentEventSettingsAndOneChild;
 
@@ -1374,7 +1385,7 @@ QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x one chil
 });
 
 // DOM Settings - > 1 DOM different events x two children components
-QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x two children components`, function exec_test(assert) {
+QUnit.skip(`Good settings > DOM settings : (> 1 DOM, different event) x two children components`, function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.DOMSettings.case2DOMDifferentEventSettingsAndTwoChildren;
 
@@ -1450,7 +1461,7 @@ QUnit.test(`Good settings > DOM settings : (> 1 DOM, different event) x two chil
 // CustomAndDOMSettings
 
 // CustomAndDOMSettings -> 1 custom & 1 DOM x no children components
-QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 custom & 1 DOM x no children components", function exec_test(assert) {
   const done = assert.async(2);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case1DOM1CustomEventSettingsAndNoChildren;
 
@@ -1498,7 +1509,7 @@ QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x no children compon
 });
 
 // CustomAndDOMSettings -> 1 custom & 1 DOM x one child component
-QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 custom & 1 DOM x one child component", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case1DOM1CustomEventSettingsAndOneChild;
 
@@ -1561,7 +1572,7 @@ QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x one child componen
 });
 
 // CustomAndDOMSettings -> 1 custom & 1 DOM x two children components
-QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : 1 custom & 1 DOM x two children components", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case1DOM1CustomEventSettingsAndTwoChildren;
 
@@ -1630,7 +1641,7 @@ QUnit.test("Good settings > DOM settings : 1 custom & 1 DOM x two children compo
 });
 
 // CustomAndDOMSettings -> >1 custom & >1 DOM x no children components
-QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x no children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : >1 custom & >1 DOM x no children components", function exec_test(assert) {
   const done = assert.async(4);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case2DOM2CustomEventSettingsAndNoChildren;
 
@@ -1700,7 +1711,7 @@ QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x no children comp
 });
 
 // CustomAndDOMSettings -> >1 custom & >1 DOM x one child component
-QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x one child component", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : >1 custom & >1 DOM x one child component", function exec_test(assert) {
   const done = assert.async(6);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case2DOM2CustomEventSettingsAndOneChild;
 
@@ -1785,7 +1796,7 @@ QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x one child compon
 });
 
 // CustomAndDOMSettings -> >1 custom & >1 DOM x two children components
-QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x two children components", function exec_test(assert) {
+QUnit.skip("Good settings > DOM settings : >1 custom & >1 DOM x two children components", function exec_test(assert) {
   const done = assert.async(6);
   const testData = testSpace.GoodSettings.CustomAndDomSettings.case2DOM2CustomEventSettingsAndTwoChildren;
 
@@ -1875,15 +1886,940 @@ QUnit.test("Good settings > DOM settings : >1 custom & >1 DOM x two children com
   })
 });
 
-// Bad settings - children sink name conflict with new event name TODO and move back to BAD up
-
-// Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
-
-// TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a
-// demonstration of how to use this APIs = to put in runTestScenario.md
 
 
-// TODO: move analyzeTestResults to a settings like tickDuration, review all runTestScenario
-// test, harmonize with FSM-example, review by default value or make mandatory! and update
-// documentation, and harmonize in FSM-example if necessary
-// also harmonize utils for FSM-example
+// mButton(mButtonSettings, childrenComponents)
+// # Test space = Settings x ChildrenComponents
+// # Testing strategy
+// cf. document
+// - By the independence hypothesis, we will test separately
+//   - Test space = Settings + ChildrenComponents
+//     - this means we will test for children components while testing for settings
+// ChildrenComponents
+// ## Testing for Settings
+// - Settings = BadSettings | GoodSettings
+//   - Per the HC/LB faith hypothesis, we simply won't test against bad settings.
+//   - SettingsList = [classes, listenOn, emphasis, basic, focusable, animated, label, icon,
+// visualState, social, size, shape, layout, listenTo] - GoodSettings = Combinatorial(SettingsList)
+// -> too big - By and the independance hypothesis, we will only test separately for each setting
+// property in SettingsList - By the generating set hypothesis, we will only test for one/a minimum
+// of non-trivial value(s) of a given setting property - By the HC/LB faith hypothesis, we won't
+// test for trivial values of a given settings property - GoodSettings =
+// RepresentativeValue(s)Of(SettingsList) ## Testing for ChildrenComponents - childrenComponents :
+// 0 child | 1 child | > 1 child (generating set hypothesis) - as mentioned before, we will test
+// for children components while testing for settings
+
+// Initialization
+QUnit.module("mButton(mButtonSettings, childrenComponents)", {});
+
+const A_CLASS = 'a_class';
+const ANOTHER_CLASS = 'another_class';
+
+const buttonTestSpace = {
+  BadSettings: {},
+  GoodSettings: {
+    EmptySettings: {
+      caseEmpmtyAndTwoChildren: {
+        settings: {},
+        childrenComponents: [comp1DOM1NonDOMEvSource11, comp1DOM1NonDOMEvSource12]
+      }
+    },
+    ClassesSettings: {
+      caseClassesAndTwoChildren: {
+        settings: {
+          classes: [A_CLASS, ANOTHER_CLASS]
+        },
+        childrenComponents: [comp1DOM1NonDOMEvSource11, comp1DOM1NonDOMEvSource12]
+      }
+    },
+    EmphasisSetting: {
+      caseEmphasisAndOneChild: {
+        settings: { emphasis: 'secondary' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      }
+    },
+    BasicSetting: {
+      caseBasicAndOneChild: {
+        settings: { basic: true },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      }
+    },
+    AnimatedSetting: {
+      caseTrueAndOneChild: {
+        settings: { animated: true },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+      caseStringAndOneChild: {
+        settings: { animated: 'fade' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      }
+    },
+    LabelSetting: {
+      caseTrueAndOneChild: {
+        settings: { label: { position: 'left' } },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    IconSetting: {
+      caseTrueAndOneChild: {
+        settings: { icon: true },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    VisualStateSetting: {
+      caseActiveAndOneChild: {
+        settings: { visualState: 'active' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    SocialSetting: {
+      caseFacebookAndOneChild: {
+        settings: { social: 'facebook' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    SizeSetting: {
+      caseMassiveAndOneChild: {
+        settings: { size: 'massive' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    ShapeSetting: {
+      caseCircularAndOneChild: {
+        settings: { shape: 'circular' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    LayoutSetting: {
+      caseTopAttachedAndOneChild: {
+        settings: { layout: 'top attached' },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+    ListenToSetting: {
+      caseClickAndOneChild: {
+        settings: {
+          listenOn: SOME_SELECTOR,
+          listenTo : [SOME_DOM_EVENT_NAME, ANOTHER_DOM_EVENT_NAME]
+        },
+        childrenComponents: [comp1DOM1NonDOMEvSource12]
+      },
+    },
+  }
+}
+
+function makeButtonComponent(testData, settings) {
+  return function makeButtonComponent_(sources) {
+    return mButton(testData.settings, testData.childrenComponents)(sources, settings);
+  }
+}
+
+// Settings = {}
+QUnit.test("Good settings : empty settings", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.EmptySettings.caseEmpmtyAndTwoChildren;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+    {
+      [`DOM!${ANOTHER_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: {
+        diagram: '-x-y-z', values: DOMeventsTestValuesAnotherSelector
+      }
+    },
+  ];
+  const ATTRS = 'tabindex="0"';
+
+  const testResults = {
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-a`, `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-b`, `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-c`, `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: subjectFactory,
+      [`DOM!${SOME_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+});
+
+// Settings = {classes} - several classes
+QUnit.test("Good settings : classes - several classes", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.ClassesSettings.caseClassesAndTwoChildren;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+    {
+      [`DOM!${ANOTHER_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: {
+        diagram: '-x-y-z', values: DOMeventsTestValuesAnotherSelector
+      }
+    },
+  ];
+  const ATTRS = 'tabindex="0"';
+
+  const testResults = {
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-a`, `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-b`, `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-c`, `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: `${SEP}` }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: subjectFactory,
+      [`DOM!${SOME_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+
+});
+
+// Settings = {emphasis} - one
+QUnit.test("Good settings : emphasis", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.EmphasisSetting.caseEmphasisAndOneChild;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', testData.settings.emphasis].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {basic} - one
+QUnit.test("Good settings : basic", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.BasicSetting.caseBasicAndOneChild;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', testData.settings.basic ? 'basic' : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {animated} - one
+QUnit.test("Good settings : animated - boolean", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.AnimatedSetting.caseTrueAndOneChild;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', testData.settings.animated ? 'animated' : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+QUnit.test("Good settings : animated - string", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.AnimatedSetting.caseStringAndOneChild;
+  const animated = testData.settings.animated;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', animated ? 'animated ' + animated : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {label} - one
+QUnit.test("Good settings : label", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.LabelSetting.caseTrueAndOneChild;
+  const label = testData.settings.label;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', label ? `labeled ${label.position}` : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {icon} - one
+QUnit.test("Good settings : icon", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.IconSetting.caseTrueAndOneChild;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', testData.settings.icon ? 'icon' : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {visualState} - one
+QUnit.test("Good settings : visualState", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.VisualStateSetting.caseActiveAndOneChild;
+  const visualState = testData.settings.visualState;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', visualState ? visualState : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {social} - one
+QUnit.test("Good settings : social", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.SocialSetting.caseFacebookAndOneChild;
+  const social = testData.settings.social;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', social ? social : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {size} - one
+QUnit.test("Good settings : size", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.SizeSetting.caseMassiveAndOneChild;
+  const size = testData.settings.size;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', size ? size : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {shape} - one
+QUnit.test("Good settings : shape", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.ShapeSetting.caseCircularAndOneChild;
+  const shape = testData.settings.shape;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', shape ? shape : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {layout} - one
+QUnit.test("Good settings : layout", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = buttonTestSpace.GoodSettings.LayoutSetting.caseTopAttachedAndOneChild;
+  const layout = testData.settings.layout;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button', layout ? layout : ''].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});
+
+// Settings = {listenOn} - one
+// Settings = {listenTo} - one
+QUnit.test("Good settings : listenTo, listenOn", function exec_test(assert) {
+  const done = assert.async(4);
+
+  const testData = buttonTestSpace.GoodSettings.ListenToSetting.caseClickAndOneChild;
+  const listenTo = testData.settings.listenTo;
+  const listenOn = testData.settings.listenOn;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+    {
+      [`DOM!${SOME_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: {
+        diagram: '-x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+  ];
+  const classes = ['ui', 'button'].join(' ');
+  const ATTRS = 'tabindex="0"';
+  const testResults = {
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [SOME_DOM_EVENT_NAME]: {
+      outputs: values(DOMeventsTestValuesSomeSelector),
+      successMessage: `sink ${SOME_DOM_EVENT_NAME} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [ANOTHER_DOM_EVENT_NAME]: {
+      outputs: values(DOMeventsTestValuesSomeSelector),
+      successMessage: `sink ${ANOTHER_DOM_EVENT_NAME} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      ['DOM!' + SOME_SELECTOR + '@' + SOME_DOM_EVENT_NAME]: subjectFactory,
+      ['DOM!' + SOME_SELECTOR + '@' + ANOTHER_DOM_EVENT_NAME]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+});

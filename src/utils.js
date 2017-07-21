@@ -1009,6 +1009,8 @@ function noop() {
 
 }
 
+function toBoolean(x){return !!x}
+
 /**
  * Returns a function which turns an object to be put at a given path location into an array of
  * JSON patch operations
@@ -1091,5 +1093,6 @@ export {
   hasNoDuplicateKeys,
   hasNoCommonValues,
   isNewKey,
-  toJsonPatch
+  toJsonPatch,
+  toBoolean
 }

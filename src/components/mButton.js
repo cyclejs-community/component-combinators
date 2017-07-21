@@ -1,8 +1,8 @@
 import {
-  bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString
+  bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString, toBoolean
 } from "../utils"
 import { m } from "./m"
-import { both, complement, either, flatten, prop, reduce } from "ramda"
+import { both, complement, either, flatten, prop, reduce, tap, T, F, pipe } from "ramda"
 import * as Rx from "rx"
 import { div } from "cycle-snabbdom"
 //TODO: to be tested!!!
@@ -43,11 +43,10 @@ const checkButtonSettings = bothE(
       classes: isOptional(isArrayOf(isString)),
       emphasis: isOptional(isOneOf(['primary', 'secondary', 'positive', 'negative'])),
       basic: isOptional(isBoolean),
-      focusable: isOptional(isBoolean),
       animated: isOptional(either(isBoolean, isOneOf(['fade', 'vertical']))),
-      label: isOptional(isStrictRecord({ text: isString, position: isOneOf(['left', 'right']) })),
+      label: isOptional(isStrictRecord({ position: isOneOf(['left', 'right']) })),
       // we dont check the mapping vs. a registry of possible icons
-      icon: isOptional(isString),
+      icon: isOptional(isBoolean),
       visualState: isOptional(isOneOf(['active', 'disabled', 'loading'])),
       social: isOptional(isOneOf(['facebook', 'twitter', 'google', 'vk', 'linkedin', 'instagram', ' youtube'])),
       size: isOptional(isOneOf(['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'])),
@@ -56,13 +55,18 @@ const checkButtonSettings = bothE(
         'attached', 'top attached', 'bottom attached', ' left attached', 'right attached',
         'fluid', 'right floated', 'left floated'
       ])),
-      id: isOptional(isString),
-      listenTo: isOptional(isOneOf(domEventNames)),
+      listenOn: isOptional(isString),
+      listenTo: isOptional(isArrayOf(isOneOf(domEventNames))),
     }), `Button settings has incorrect format!`
   ],
   // RULE : if there is a `listenTo`, there MUST be an id for the element to listen on
   [
-    either(both(prop('listenTo'), prop('listenOn')), complement(prop('listenTo'))),
+    either(
+      // NOTE : We must use toBoolean here because ramda's both actually does not return a boolean
+      // And here we use types to detect whether we have an error message or a passing predicate
+      pipe(both(prop('listenTo'), pipe(prop('listenOn'), tap(x => console.log('tap', x)))), toBoolean),
+      complement(prop('listenTo'))
+    ),
     `If property listenTo is set (events to listen to), then property listenOn must also be set (selector to listen on).`
   ]
 )
@@ -74,8 +78,11 @@ function checkButtonPreConditions(sources, settings) {
 function makeButtonSinks(sources, settings) {
   let attrs = {};
   const buttonClasses = ['ui', 'button'];
+  // NOTE : we will always use a div instead of a button, in which case focusable must always be
+  // set to true
+  const focusable = true;
   const {
-    classes, listenOn, emphasis, basic, focusable, animated, label, icon, visualState, social, size, shape, layout, listenTo
+    classes, listenOn, emphasis, basic, animated, label, icon, visualState, social, size, shape, layout, listenTo
   } = settings;
 
   if (classes) {
@@ -113,7 +120,9 @@ function makeButtonSinks(sources, settings) {
     // NOTE : we do not follow the react-semantic-ui convention here (for instance `label : {as:
     // 'a', basic:true, pointing : 'left'}`). The label can in any position in the children
     // component, so we cannot insert it ourselves - we cannot where to insert it
-    buttonClasses.push('labeled')
+    isString(label.position)
+      ? buttonClasses.push(`labeled ${label.position}`)
+      : buttonClasses.push('labeled')
   }
 
   if (icon) {
