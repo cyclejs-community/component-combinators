@@ -1,8 +1,9 @@
 import * as assert from 'assert'
 import {runTestScenario} from '../src'
 import {makeMockDOMSource} from '../src/mockDOM'
-import * as $ from 'most'
-import {hold, sync, async} from 'most-subject'
+import * as Rx from "rx"
+
+const $ = Rx.Observable;
 
 function plan(n) {
   return function _done(done) {
@@ -152,7 +153,7 @@ describe("When inputs are simulating an object", () => {
         DOM: makeMockDOMSource
       },
       sourceFactory: {
-        DOM: () => hold(1, sync())
+        DOM: () => new Rx.ReplaySubject(1)
       },
       errorHandler: function (err) {
         done(err)
@@ -253,8 +254,8 @@ describe("When inputs are simulating an object, AND there is a mock" +
           DOM: makeMockDOMSource
         },
         sourceFactory: {
-          'DOM!input@click': () => sync(),
-          'DOM!a@hover' : () => sync(),
+          'DOM!input@click': () => new Rx.Subject(),
+          'DOM!a@hover' : () => Rx.Subject(),
         },
         errorHandler: function (err) {
           done(err)

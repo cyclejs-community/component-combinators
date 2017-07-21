@@ -30,11 +30,7 @@ import { onRoute } from "./components/Router"
 // TODO: also adapt the tests!!
 //import {TODO} from './components/Switch'
 
-export {
-  m,
-  onRoute,
-  //TODO
-}
-
+export * from  "./components/m"
+export * from  "./components/Router"
 export * from "./utils"
 export * from "./runTestScenario"

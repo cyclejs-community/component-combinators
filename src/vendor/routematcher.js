@@ -7,7 +7,7 @@ const rM = (function (root, factory) {
     define([], factory);
   } else {
     // Browser globals
-    root.routeMatcher = factory();
+    return (root || window).routeMatcher = factory();
   }
 }(this, function () {
   var exports = {};
