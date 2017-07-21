@@ -7,5 +7,5 @@ window.$ = window.jQuery = require('jquery');
 // import './FSM.specs'
 // import './utils.specs'
 import './mEventFactory.specs'
-// import './mButtonFactory2.specs' // TODO : those two tests call somehow the printer in the
+import './mButton.specs' // TODO : those two tests call somehow the printer in the
 // browser
