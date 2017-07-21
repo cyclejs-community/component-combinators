@@ -145,11 +145,11 @@ function makeButtonSinks(sources, settings) {
     buttonClasses.push(shape)
   }
 
-  const classObject = classes
+  const classObject = buttonClasses
     ? reduce((acc, className) => {
       acc[className] = true
       return acc
-    }, {}, classes)
+    }, {}, buttonClasses)
     : null;
 
   let sinks = {};

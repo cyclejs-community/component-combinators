@@ -9,25 +9,19 @@
 // ## Testing for Settings
 // - Settings = BadSettings | GoodSettings
 //   - Per the HC/LB faith hypothesis, we simply won't test against bad settings.
-//   - SettingsList = [classes, listenOn, emphasis, basic, focusable, animated, label, icon, visualState, social, size, shape, layout, listenTo]
-//   - GoodSettings = Combinatorial(SettingsList) -> too big
-//     - By and the independance hypothesis, we will only test separately for each setting
-// property in SettingsList
-//     - By the generating set hypothesis, we will only test for one/a minimum of non-trivial
-// value(s) of a given setting property
-//     - By the HC/LB faith hypothesis, we won't test for trivial values of a given settings
-// property
-//   - GoodSettings = RepresentativeValue(s)Of(SettingsList)
-// ## Testing for ChildrenComponents
-// - childrenComponents : 0 child | 1 child | > 1 child (generating set hypothesis)
-// - as mentioned before, we will test for children components while testing for settings
-//
+//   - SettingsList = [classes, listenOn, emphasis, basic, focusable, animated, label, icon,
+// visualState, social, size, shape, layout, listenTo] - GoodSettings = Combinatorial(SettingsList)
+// -> too big - By and the independance hypothesis, we will only test separately for each setting
+// property in SettingsList - By the generating set hypothesis, we will only test for one/a minimum
+// of non-trivial value(s) of a given setting property - By the HC/LB faith hypothesis, we won't
+// test for trivial values of a given settings property - GoodSettings =
+// RepresentativeValue(s)Of(SettingsList) ## Testing for ChildrenComponents - childrenComponents :
+// 0 child | 1 child | > 1 child (generating set hypothesis) - as mentioned before, we will test
+// for children components while testing for settings
 
 import * as QUnit from "qunitjs"
 import * as Rx from "rx"
-import { values } from "ramda"
-import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/components/mEventFactory"
-import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
+import { addPrefix, convertVNodesToHTML, noop } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
 import { makeMockDOMSource } from "../src/mockDOM"
@@ -50,6 +44,8 @@ const NON_DOM_SINK = 'non_dom_sink';
 const DOM_SINK = 'DOM';
 const SOME_SELECTOR = '#some_selector_id';
 const ANOTHER_SELECTOR = '.some_class';
+const A_CLASS = 'a_class';
+const ANOTHER_CLASS = 'another_class';
 const eventSourcesTestValues = {
   a: 'a', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f',
   A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'F'
@@ -118,11 +114,19 @@ function comp1DOM1NonDOMEvSource12(sources, settings) {
 }
 
 const testSpace = {
-  BadSettings:{  },
+  BadSettings: {},
   GoodSettings: {
     EmptySettings: {
       caseEmpmtyAndTwoChildren: {
-        settings: {        },
+        settings: {},
+        childrenComponents: [comp1DOM1NonDOMEvSource11, comp1DOM1NonDOMEvSource12]
+      }
+    },
+    ClassesSettings: {
+      caseClassesAndTwoChildren: {
+        settings: {
+          classes: [A_CLASS, ANOTHER_CLASS]
+        },
         childrenComponents: [comp1DOM1NonDOMEvSource11, comp1DOM1NonDOMEvSource12]
       }
     }
@@ -165,11 +169,11 @@ QUnit.test("Good settings : empty settings", function exec_test(assert) {
     },
     [DOM_SINK]: {
       outputs: [
-        `<div><span>${DOM_SINK} ${SEP} a</span><span>${DOM_SINK} ${SEP} a</span></div>`,
-        `<div><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} a</span></div>`,
-        `<div><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} b</span></div>`,
-        `<div><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
-        `<div><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
+        `<div class=\"ui button\"><span>${DOM_SINK} ${SEP} a</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\"><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\"><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\"><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\"><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
       transformFn: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
@@ -196,6 +200,68 @@ QUnit.test("Good settings : empty settings", function exec_test(assert) {
 });
 
 // Settings = {classes} - several classes
+QUnit.test("Good settings : classes - several classes", function exec_test(assert) {
+  const done = assert.async(2);
+
+  const testData = testSpace.GoodSettings.ClassesSettings.caseClassesAndTwoChildren;
+
+  const inputs = [
+    { [EVENT_SOURCE1]: { diagram: 'a-b-c|', values: eventSourcesTestValues } },
+    { [EVENT_SOURCE2]: { diagram: '-A-B-C|', values: eventSourcesTestValues } },
+    {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: {
+        diagram: 'x-y-z', values: DOMeventsTestValuesSomeSelector
+      }
+    },
+    {
+      [`DOM!${ANOTHER_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: {
+        diagram: '-x-y-z', values: DOMeventsTestValuesAnotherSelector
+      }
+    },
+  ];
+
+  const testResults = {
+    [NON_DOM_SINK]: {
+      outputs: [
+        `${SEP} ${NON_DOM_SINK}-a`, `${SEP} ${NON_DOM_SINK}-A`,
+        `${SEP} ${NON_DOM_SINK}-b`, `${SEP} ${NON_DOM_SINK}-B`,
+        `${SEP} ${NON_DOM_SINK}-c`, `${SEP} ${NON_DOM_SINK}-C`,
+      ],
+      successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+    [DOM_SINK]: {
+      outputs: [
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\"><span>${DOM_SINK} ${SEP} a</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\"><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} a</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\"><span>${DOM_SINK} ${SEP} b</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\"><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
+        `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\"><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
+      ],
+      transformFn: convertVNodesToHTML,
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      analyzeTestResults: analyzeTestResults(assert, done),
+    },
+  };
+
+  runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: `${SEP}` }), {
+    tickDuration: 5,
+    waitForFinishDelay: 50,
+    mocks: {
+      DOM: makeMockDOMSource
+    },
+    sourceFactory: {
+      [`DOM!${SOME_SELECTOR}@${SOME_DOM_EVENT_NAME}`]: subjectFactory,
+      [`DOM!${SOME_SELECTOR}@${ANOTHER_DOM_EVENT_NAME}`]: subjectFactory,
+    },
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+
+});
+
 // Settings = {emphasis} - one
 // Settings = {basic} - one
 // Settings = {focusable} - one
