@@ -241,7 +241,7 @@ QUnit.module("Testing m(component_def, settings, children)", {});
         childrenSinks$: $.of(childrenSinks),
         settings$: $.of(settings),
       }),
-      sinksContract: function checkMSinksContracts() {
+      checkPostConditions: function checkMSinksContracts() {
         return true
       }
     }, null, []);
@@ -342,7 +342,7 @@ QUnit.module("Testing m(component_def, settings, children)", {});
           DOM: $.of(div('.parent')),
           auth$: sources.auth$.startWith(PROVIDERS.google),
         }),
-        sinksContract: function checkMSinksContracts() {
+        checkPostConditions: function checkMSinksContracts() {
           return true
         }
 
@@ -481,7 +481,7 @@ QUnit.module("Testing m(component_def, settings, children)", {});
           childrenSinks$: $.merge(projectSinksOn('DOM', childrenSinks)),
           settings$: $.of(settings),
         }),
-        sinksContract: function checkMSinksContracts() {
+        checkPostConditions: function checkMSinksContracts() {
           return true
         }
 
