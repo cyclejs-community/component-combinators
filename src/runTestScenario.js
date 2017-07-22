@@ -1,5 +1,3 @@
-// TODO : extend to have also settings passed as argument to the tested function (optional) in
-// settings parameter?? or a parameter after ??
 // TODO :
 //  - if the syntax `x!y` is used for a source identifier, there MUST be a
 // corresponding key `x!y` in the `sourceFactory` object
