@@ -466,14 +466,14 @@ between the two around edge cases, depending on the streaming library in use, ma
 No shooting, no trouble.
 
 # Breaking Changes
-Soon. Cf. roadmap
+Maybe one day. Cf. roadmap
 
 # Roadmap
+- clean code
+- review API against open/closed principle
 - combine mocks and source factory in one indexed by the mock
   i.e. DOM : {y_n: factory(), constructor: makeDOMsource}
 - have documentation reviewed by external actor
-- clean code
-- review API against open/closed principle
 
 # License
 MIT
