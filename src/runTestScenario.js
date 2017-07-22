@@ -1,6 +1,9 @@
 // TODO : extend to have also settings passed as argument to the tested function (optional) in
 // settings parameter?? or a parameter after ??
-
+// TODO :
+//  - if the syntax `x!y` is used for a source identifier, there MUST be a
+// corresponding key `x!y` in the `sourceFactory` object
+// - make sure there is only one `!` in input streams identifiers
 /**
  * @typedef {function(*):boolean} Predicate
  */
@@ -15,7 +18,7 @@
  */
 /**
  * @typedef {Object} ExpectedRecord
- * @property {?function (outputs:Array<Output>)} transformFn
+ * @property {?function (output:Output):Output} transform
  * @property {Array<Output>} outputs
  * @property {?String} successMessage
  * @property {!function (Array<Output>, Array<Output>), String} analyzeTestResults
@@ -30,6 +33,26 @@
 /**
  * @typedef {Object.<string, Input>} SourceInput
  * only one key,value pair though
+ */
+/**
+ * @typedef {Object} TestRunnerSettings
+ * @property {Number} tickDuration
+ * @property {Number} waitForFinishDelay
+ * @property {function(error:Exception):void} errorHandler
+ * @property {function(actual, expected):void} analyzeTestResults By contract, should throw if
+ * actual != expected
+ * @property {Object.<String, function():Subject>} sourceFactory hashmap associating a mocked
+ * source to a subject factory. The factory should create a subject through which test inputs are
+ * emitted
+ * @property {Object.<String, function(mockedObj, sourceSpecs, stream):*>} mocks The keys of
+ * `mocks` are the mocked object to build. Those mocked objects are passed as a source
+ * to the sources parameter of the tested component function (:: Sources -> Sinks, where
+ * Sources :: Object.<key, Source>).
+ * Mocked source objects are build iteratively. As such, the function referred to here is a
+ * reducing function, which receives as first parameter the current value of the
+ * constructed mocked object, an additional parameter allowing for further parameterization,
+ * and the subject by which test inputs will flow for that (mock object, sourceSpecs) instance.
+ * Best is to review the tests to have a more precise understanding of the mechanism.
  */
 
 import {
@@ -55,7 +78,7 @@ function isSourceInput(obj) {
 }
 
 function isExpectedStruct(record) {
-  return (!record.transformFn || isFunction(record.transformFn)) &&
+  return (!record.transform || isFunction(record.transform)) &&
     record.outputs && isArray(record.outputs) &&
     record.analyzeTestResults && isFunction(record.analyzeTestResults) &&
     (!record.successMessage || isString(record.successMessage))
@@ -79,8 +102,6 @@ function isValidSourceName(sourceName) {
 }
 
 function hasTestCaseForEachSink(testCase, sinkNames) {
-  // TODO : remove the line below, I dont remember why I was dropping the first sink??
-  // const _sinkNames = drop(1, sinkNames);
   return allR(sinkName => !!testCase[sinkName], sinkNames)
 }
 
@@ -91,8 +112,8 @@ function standardSubjectFactory() {
   return new Rx.Subject();
 }
 
-function analyzeTestResults(testExpectedOutputs) {
-  return function analyzeTestResults(sinkResults$, sinkName) {
+function innerAnalyzeTestResults(testExpectedOutputs, globalAnalyzeTestResult) {
+  return function innerAnalyzeTestResults(sinkResults$, sinkName) {
     const expected = testExpectedOutputs[sinkName];
     // Case the component returns a sink with no expected value
     // That is a legit possibility, we might not want to test for all
@@ -101,7 +122,7 @@ function analyzeTestResults(testExpectedOutputs) {
 
     const expectedResults = expected.outputs;
     const successMessage = expected.successMessage;
-    const analyzeTestResultsFn = expected.analyzeTestResults;
+    const analyzeTestResultsFn = globalAnalyzeTestResult || expected.analyzeTestResults;
 
     return sinkResults$
     // `analyzeTestResultsFn` should include `assert` which
@@ -140,14 +161,14 @@ function getTestResults(testInputs$, expected, settings) {
       })
       .scan(function buildResults(accumulatedResults, sinkValue) {
         console.log(`runTestScenario : ${sinkName} receives `, sinkValue);
-        const transformFn = expected[sinkName].transformFn || identity;
+        const transformFn = expected[sinkName].transform || identity;
         const transformedResult = transformFn(clone(sinkValue));
         accumulatedResults.push(transformedResult);
 
         return accumulatedResults;
       }, []);
 
-    // Give it some time to process the inputs,
+    // NOTE : Give it some time to process the inputs,
     // after the inputs have finished being emitted
     // That's arbitrary, keep it in mind that the testing helper
     // is not suitable for functions with large processing delay
@@ -288,17 +309,17 @@ function defaultErrorHandler(err) {
  *   - only used if one of the input source key is of the form
  *   x!y, where x is the source identifier, and y is called the
  *   source qualifier
- *   - matches a source identifier to a mock function which produces a
+ *   - matches a source identifier to a factory function which produces a
  *   mocked object to be used in lieu of an input source
- *   - for instance, `DOM!.button@click` as an entry in the `inputs`
- *   hash MUST correspond to a `DOM` entry in the `mocks` object
+ *   - for instance, `DOM!.button@click` as a key in the `inputs` parameter
+ *   corresponds to a `DOM` entry in the `mocks` object passed in settings
  *   - the mock function takes three parameters :
  *     - mockedObj :
- *       - current accumulated value of the mock object
+ *       - current constructed value of the mock object (object is iteratively constructed)
  *     - sourceSpecs :
  *       - correspond to the `y` in `x!y`
  *     - stream :
- *       - subject which is produced by the matching factory
+ *       - subject passed to transmit input values for the corresponding mocked object
  * - sourceFactory :
  *   - entries whose keys are of the form `x!y` where `x` is the
  *   identifier for the corresponding source stream, and `y` is the
@@ -312,26 +333,25 @@ function defaultErrorHandler(err) {
  * identifier for the tested function's corresponding input stream
  *   - Input values for a given input streams are passed using the marble
  *   diagram syntax
- * @param {ExpectedTestResults} expected Object whose key correspond to
+ * @param {ExpectedTestResults} expected Object whose key corresponds to
  * an output stream identifier, matched to an object containing the
  * data relevant to the test case :
  *   - outputs : array of expected values emitted by the output stream
  *   - successMessage : description of the test being performed
- *   TODO : factor out analyzeTestResults to settings - always same function
  *   - analyzeTestResults : function which receives the actual, expected,
  *   and test messages information. It MUST raise an exception if the test
  *   fails. Typically this function fulfills the same function as the usual
- *   `assert.equal(actual, expected, message)`.
- *   TODO : refactor tranformFN to transform
- *   - transformFn : function which transforms the actual outputs from a stream.
+ *   `assert.equal(actual, expected, message)`. That function is optional. It also has lower
+ *   precedence over the function with the same name passed in settings, if any.
+ *   - transform : function which transforms the actual outputs from a stream.
  *   That transform function can be used to remove fields, which are irrelevant
  *   or non-reproducible (for instance timestamps), before comparison.
  *
  *   ALL output streams returned by the tested function must have defined
- *   expected results, otherwise an exception will be thrown
+ *   expected results, otherwise an exception will be thrown.
  * @param {function(Sources):Sinks} testFn Function to test
- * @param {{tickDuration: Number, waitForFinishDelay: Number}} _settings
- * @throws
+ * @param {TestRunnerSettings} _settings
+ * @throws when a predefined contract is broken, or when the tested function throws
  */
 function runTestScenario(inputs, expected, testFn, _settings) {
   assertSignature('runTestScenario', arguments, [
@@ -340,13 +360,32 @@ function runTestScenario(inputs, expected, testFn, _settings) {
     { testFn: isFunction },
     { settings: isNullableObject },
   ]);
+  /**
+   * @typedef {Object} TestRunnerSettings
+   * @property {Number} tickDuration
+   * @property {Number} waitForFinishDelay
+   * @property {function(error:Exception):void} errorHandler
+   * @property {function(actual, expected):void} analyzeTestResults By contract, should throw if
+   * actual != expected
+   * @property {Object.<String, function():Subject>} sourceFactory hashmap associating a mocked
+   * source to a subject factory. The factory should create a subject through which test inputs are
+   * emitted
+   * @property {Object.<String, function(mockedObj, sourceSpecs, stream):*>} mocks The keys of
+   * `mocks` are the mocked object to build. Those mocked objects are passed as a source
+   * to the sources parameter of the tested component function (:: Sources -> Sinks, where
+   * Sources :: Object.<key, Source>).
+   * Mocked source objects are build iteratively. As such, the function referred to here is a
+   * reducing function, which receives as first parameter the current value of the
+   * constructed mocked object, an additional parameter allowing for further parameterization,
+   * and the subject by which test inputs will flow for that (mock object, sourceSpecs) instance.
+   * Best is to review the tests to have a more precise understanding of the mechanism.
+   */
 
-  // Set default values if any
+    // Set default values if any
   const settings = defaultTo({}, _settings);
-  const { mocks, sourceFactory, errorHandler, tickDuration, waitForFinishDelay } = settings;
+  const { mocks, sourceFactory, errorHandler, tickDuration, analyzeTestResults, waitForFinishDelay } = settings;
   const mockedSourcesHandlers = defaultTo({}, mocks);
-  // TODO: add contract: for each key in sourceFactory, there MUST be the
-  // same key in `inputs` : this avoids error by omission
+  // TODO: add contract: for each mock source, there must correspond a mock subject factory
   const _sourceFactory = defaultTo({}, sourceFactory);
   const _errorHandler = defaultTo(defaultErrorHandler, errorHandler);
   const _tickDuration = defaultTo(tickDurationDefault, tickDuration);
@@ -385,7 +424,7 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // b--      values that are chronologically further in the diagram will
   // always be emitted later
   // This allows to have predictable and consistent data when analyzing
-  // test results. That was not the case when using the `setTimeOut`
+  // test results. NOTE : That was not the case when using the `setTimeOut`
   // scheduler to handle delays.
   const testInputs$ = indexRange.length === 0
     ? $.empty()
@@ -462,7 +501,9 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // makes use of `assert` and can lead to program interruption
   /** @type {Object.<string, Stream<Array<Output>>>} */
   const resultAnalysis = mapObjIndexed(
-    analyzeTestResults(expected),
+    // If there is a `analyzeTestResults` function passed globally in settings, use that one else
+    // use the one passed in `expected`
+    innerAnalyzeTestResults(expected, analyzeTestResults),
     sinksResults
   );
 

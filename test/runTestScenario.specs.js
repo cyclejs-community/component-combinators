@@ -32,19 +32,19 @@ QUnit.test(`emits the inputs in increasing order of (i,j), where :
       outputs: ['m-a-0', 'm-b-0', 'm-a-1', 'm-b-1', 'm-b-2'],
       successMessage: 'sink m produces the expected values',
       analyzeTestResults: analyzeTestResults(assert, done),
-      transformFn: undefined,
+      transform: undefined,
     },
     n: {
       outputs: ['t-n-a-0', 't-n-a-1'],
       successMessage: 'sink n produces the expected values',
       analyzeTestResults: analyzeTestResults(assert, done),
-      transformFn: x => 't-' + x,
+      transform: x => 't-' + x,
     },
     o: {
       outputs: ['o-b-0', 'o-b-1', 'o-b-2'],
       successMessage: 'sink o produces the expected values',
       analyzeTestResults: analyzeTestResults(assert, done),
-      transformFn: undefined,
+      transform: undefined,
     }
   }
 
@@ -121,19 +121,19 @@ QUnit.test(`constructs the object according to the mock handler, and emits the i
         outputs: ['m-a-0', 'm-a-1'],
         successMessage: 'sink m produces the expected values',
         analyzeTestResults: analyzeTestResults(assert, done),
-        transformFn: undefined,
+        transform: undefined,
       },
       n: {
         outputs: ['t-n-a-0', 't-n-a-1', 't-n-a-2'],
         successMessage: 'sink n produces the expected values',
         analyzeTestResults: analyzeTestResults(assert, done),
-        transformFn: x => 't-' + x,
+        transform: x => 't-' + x,
       },
       o: {
         outputs: ['o-b-0', 'o-b-1', 'o-b-2'],
         successMessage: 'sink o produces the expected values',
         analyzeTestResults: analyzeTestResults(assert, done),
-        transformFn: undefined,
+        transform: undefined,
       }
     }
 
@@ -215,19 +215,19 @@ QUnit.test(`constructs the object according to the mock handler, constructs the 
         outputs: ['m-a-0', 'm-a-1'],
         successMessage: 'sink m produces the expected values',
         analyzeTestResults: analyzeTestResults(assert,done),
-        transformFn: undefined,
+        transform: undefined,
       },
       n: {
         outputs: ['t-n-a-0', 't-n-a-1', 't-n-a-2'],
         successMessage: 'sink n produces the expected values',
         analyzeTestResults: analyzeTestResults(assert,done),
-        transformFn: x => 't-' + x,
+        transform: x => 't-' + x,
       },
       o: {
         outputs: [{"x":"a-0","y":"a-1"},{"x":"a-1","y":"a-1"},{"x":"a-2","y":"a-1"}],
         successMessage: 'sink o produces the expected values',
         analyzeTestResults: analyzeTestResults(assert,done),
-        transformFn: undefined,
+        transform: undefined,
       }
     }
 

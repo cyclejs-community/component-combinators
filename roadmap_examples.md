@@ -28,6 +28,8 @@ AppState :: TodoList
 #### Components
 - LogIn : display a dummy message, one button which logs in and reroutes
 ### Implementation through combinators
+
+```javascript
 const sinks = [TODO]
 App({sinks : sinks}, [
   OnRoute('/', SwitchCase({
@@ -111,6 +113,7 @@ TodoItemComponent = (sources, settings) => {
     ])
   }
 }
+```
 
 - Parent hold reactive COPY (i.e. property) of the state of their children
   - Store.get(namespace, reference)

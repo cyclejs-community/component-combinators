@@ -1,11 +1,4 @@
-runTestScenario
-====
-TODO : called combinators because https://wiki.haskell.org/Combinator_pattern, it builds complex stuff from simple stuff
-
-# ...
-`npm run build test ; npm run test`
-
-## Table of content
+# Table of content
    * [Context](#context)
    * [Dependencies](#dependencies)
    * [API](#api)
@@ -29,35 +22,38 @@ TODO : called combinators because https://wiki.haskell.org/Combinator_pattern, i
    * [License](#license)
    * [Contributing](#contributing)
 
-## Context
+# Context
 
 There exists a number of ways to test functions which take a stream and return a stream (referred to, in what follows, as stream combinator). Most streaming libraries have at least some basic APIs to that purpose. 
+
 - `Rxjs` for example uses a test scheduler, and offers some specific constructs (`TestScheduler`, `startWithTiming`, `createHotObservable`, `Rx.ReactiveTest.onNext` etc.). `Most` has the `most-test` community library which can also help. 
 - In the worse case, if the streaming library offers subjects from the get-go, it is relatively easy to pass a sequence of inputs through that, run the stream combinator and gather back the output in sequence.
 
-Testing functions which take a collection of streams and return a collection of streams requires 
-specific treatment in the case that order of inputs is meaningful (i.e. total). That is the case 
-when inputs are syntactically divided into a collection of source streams (`HashMap<SourceName, Stream<*>>`), but semantically are in fact equivalent to a single source stream (`Stream<HashMap<SourceName, *>>`), whose inputs carry both source type and message information. On the other hand, we assume here that 
-ordering of outputs is only partial on the collection, and total on any given output stream.
+Testing functions which take a collection of streams and return a collection of streams requires specific treatment in the case when order of inputs is total. That is the case when inputs are syntactically divided into a collection of source streams (`HashMap<SourceName, Stream<*>>`), but semantically are in fact equivalent to a single source stream (`Stream<HashMap<SourceName, *>>`), whose inputs carry both source type and message information. On the other hand, we assume here that ordering of outputs is only partial on the collection, and total on any given output stream.
 
-The total order on the input streams collection requires the testing facility to simulate the 
-emission of inputs in the expected order. The partial order on the output streams collection 
-allows the testing facility to only gather the outputs on a per-stream basis.
+The total order on the input streams collection requires the testing facility to simulate the emission of inputs in the expected order. The partial order on the output streams collection allows the testing facility to only gather the outputs on a per-stream basis.
 
 `runTestScenario` is such a testing facility which provides an interface for creating a collection of streams from an array of input values, executing a function on that collection and comparing the resulting collection of output streams vs. an expected array of output values.
 
 In what follows :
+
 - by a collection of streams, we will refer to a hash object (i.e. standard javascript object), keyed by stream identifier, matched to the actual stream.
 - the collection of streams, when envisioned as an input to the function under test, may also be called sources
 - the collection of streams, when envisioned as an output to the function under test, may also be called sinks
 - hence the function under test is a function which takes sources and computes sinks.
  
-## Dependencies
+# Dependencies
 - functional toolkit : `ramda`
-- streaming library : `most`
+- streaming library : `rxjs`
 
-## API
-### Key types 
+Customizing the testing library for a specific streaming is relatively simple as only the most basic functionalities of rxjs are used here. A `most` version already has already been published in the most community though no longer maintained by this author.
+
+# Running tests
+`npm run build-node-test ; npm run test`
+
+# API
+## Key types 
+
 ```
 /**
  * @typedef {function(*):boolean} Predicate
@@ -65,101 +61,84 @@ In what follows :
  * @typedef {Object} Output
  * @typedef {{diagram: string, values: Object.<string, Input>}} Sequence
  * @typedef {Object} ExpectedRecord
- *   @property {?function (outputs:Array<Output>)} transformFn
- *   @property {!Array<Output>} outputs
- *   @property {?String} successMessage
- *   @property {!function (Array<Output>, Array<Output>), String} analyzeTestResults
+ * @property {?function (output:Output):Output} transform
+ * @property {Array<Output>} outputs
+ * @property {?String} successMessage
+ * @property {!function (Array<Output>, Array<Output>), String} analyzeTestResults
  * @typedef {!Object.<string, ExpectedRecord>} ExpectedTestResults
  * @typedef {{diagram: string, values:*}} Input
- * - only one key,value pair though
+ * only one key,value pair though
  * @typedef {Object.<string, Input>} SourceInput
- * - only one key,value pair though
-*/
+ * only one key,value pair though
+ * @typedef {Object} TestRunnerSettings
+ * @property {Number} tickDuration
+ * @property {Number} waitForFinishDelay
+ * @property {function(error:Exception):void} errorHandler
+ * @property {function(actual, expected):void} analyzeTestResults By contract, should throw if actual != expected
+ * @property {Object.<String, function():Subject>} sourceFactory hashmap associating a mocked source to a subject factory. The factory should create a subject through which test inputs are emitted
+ * @property {Object.<String, function(mockedObj, sourceSpecs, stream):*>} mocks The keys of `mocks` are the mocked object to build. Those mocked objects are passed as a source to the sources parameter of the tested component function (:: Sources -> Sinks, where Sources :: Object.<key, Source>).
+ * Mocked source objects are build iteratively. As such, the function referred to here is a reducing function, which receives as first parameter the current value of the constructed mocked object, an additional parameter allowing for further parameterization, and the subject by which test inputs will flow for that (mock object, sourceSpecs) instance.
+ * Best is to review the tests to have a more precise understanding of the mechanism.
+ */
+
 ```
 
 ### `runTestScenario`
 As extracted for current source code (as of `v0.1.0`),
 ```
 /**
- * Tests a function which takes a collection of streams and returns a
- * collection of streams. In the current implementation, a collection of
- * streams refers to a hash object (POJO or Plain Old Javascript Object).
- * The function is run on some inputs, and its output is compared against the
- * expected values defined in a test case object.
+ * Tests a function which takes a collection of streams and returns a collection of streams. In the current implementation, a collection of streams refers to a hash object (POJO or Plain Old Javascript Object).
+ * The function is run on some inputs, and its output is compared against the expected values defined in a test case object.
  *
  * ### Test execution
- * Input values are emitted on their respective input streams according to
- * an order defined by the array `inputs` (rows) and the marble diagrams
- * (columns). That order is such that the first column is emitted first, and
+ * Input values are emitted on their respective input streams according to an order defined by the array `inputs` (rows) and the marble diagrams (columns). That order is such that the first column is emitted first, and
  * then subsequent columns in the marble diagrams are emitted next.
  * The time interval between column emission is configurable (`tickDuration`).
- * When there are no more input values to emit, a configurable amount of
- * time must lapse for the test to conclude (`waitForFinishDelay`).
- * Output values are optionally transformed, then hashed by output streams and
- * gathered into an output object which is compared against expected values.
- * If there is a discrepancy between actual and expected values, an
- * exception is raised.
+ * When there are no more input values to emit, a configurable amount of time must lapse for the test to conclude (`waitForFinishDelay`).
+ * Output values are optionally transformed, then hashed by output streams and gathered into an output object which is compared against expected values.
+ * If there is a discrepancy between actual and expected values, an exception is raised.
  *
  * The testing behaviour can be configured with the following settings :
  * - tickDuration :
- *   - the interval between the emission of a column of inputs and the next one
+ *   - the interval (ms) between the emission of a column of inputs and the next one
  * - waitForFinishDelay :
- *   - the time lapse in ms after the last input is emitted, after which the
- *   test is terminated
+ *   - the time lapse (ms) after the last input is emitted, after which the test is terminated
  * - errorHandler :
- *   - in case an exception is raised, the corresponding error is passed
- *   through that error handler
+ *   - in case an exception is raised, the corresponding error is passed through that error handler
  * - mocks :
  *   - only used if one of the input source key is of the form
- *   x!y, where x is the source identifier, and y is called the
- *   source qualifier
- *   - matches a source identifier to a mock function which produces a
- *   mocked object to be used in lieu of an input source
- *   - for instance, `DOM!.button@click` as an entry in the `inputs`
- *   hash MUST correspond to a `DOM` entry in the `mocks` object
+ *   x!y, where x is the source identifier, and y is called the source qualifier
+ *   - matches a source identifier to a factory function which produces a mocked object to be used in lieu of an input source
+ *   - for instance, `DOM!.button@click` as a key in the `inputs` parameter corresponds to a `DOM` entry in the `mocks` object passed in settings
  *   - the mock function takes three parameters :
  *     - mockedObj :
- *       - current accumulated value of the mock object
+ *       - current constructed value of the mock object (object is iteratively constructed)
  *     - sourceSpecs :
  *       - correspond to the `y` in `x!y`
  *     - stream :
- *       - subject which is produced by the matching factory
+ *       - subject passed to transmit input values for the corresponding mocked object
  * - sourceFactory :
- *   - entries whose keys are of the form `x!y` where `x` is the
- *   identifier for the corresponding source stream, and `y` is the
- *   qualifier for that same source. That key is matched to a function
- *   which takes no parameter and returns a stream to be used to emit
- *   input values (hence MUST be a subject).
+ *   - entries whose keys are of the form `x!y` where `x` is the identifier for the corresponding source stream, and `y` is the qualifier for that same source. That key is matched to a function which takes no parameter and returns a stream to be used to emit input values (hence MUST be a subject).
  *
  * @param {Array<SourceInput>} inputs
  * Inputs are passed in the form of an array
- * - Each element of the array is a POJO which exactly ONE key which is the
- * identifier for the tested function's corresponding input stream
- *   - Input values for a given input streams are passed using the marble
- *   diagram syntax
- * @param {ExpectedTestResults} expected Object whose key correspond to
- * an output stream identifier, matched to an object containing the
- * data relevant to the test case :
+ * - Each element of the array is a POJO which exactly ONE key which is the identifier for the tested function's corresponding input stream
+ *   - Input values for a given input streams are passed using the marble diagram syntax
+ * @param {ExpectedTestResults} expected Object whose key corresponds to an output stream identifier, matched to an object containing the data relevant to the test case :
  *   - outputs : array of expected values emitted by the output stream
  *   - successMessage : description of the test being performed
- *   - analyzeTestResults : function which receives the actual, expected,
- *   and test messages information. It MUST raise an exception if the test
- *   fails. Typically this function fulfills the same function as the usual
- *   `assert.equal(actual, expected, message)`.
- *   - transformFn : function which transforms the actual outputs from a stream.
- *   That transform function can be used to remove fields, which are irrelevant
- *   or non-reproducible (for instance timestamps), before comparison.
+ *   - analyzeTestResults : function which receives the actual, expected, and test messages information. It MUST raise an exception if the test fails. Typically this function fulfills the same function as the usual `assert.equal(actual, expected, message)`. That function is optional. It also has lower precedence over the function with the same name passed in settings, if any.
+ *   - transform : function which transforms the actual outputs from a stream.
+ *   That transform function can be used to remove fields, which are irrelevant or non-reproducible (for instance timestamps), before comparison.
  *
- *   ALL output streams returned by the tested function must have defined
- *   expected results, otherwise an exception will be thrown
+ *   ALL output streams returned by the tested function must have defined expected results, otherwise an exception will be thrown.
  * @param {function(Sources):Sinks} testFn Function to test
- * @param {{tickDuration: Number, waitForFinishDelay: Number}} _settings
- * @throws
+ * @param {TestRunnerSettings} _settings
+ * @throws when a predefined contract is broken, or when the tested function throws
  */
-function runTestScenario(inputs, expected, testFn, _settings)
 ```
 
-### Marble syntax
+## Marble syntax
 The marble syntax used for representing input sequences is inspired from 
 `rxjs5`'s [writing marble tests](https://github.com/ReactiveX/rxjs/blob/master/doc/writing-marble-tests.md).
 
@@ -170,7 +149,7 @@ In the present context, the syntax is used to denote four meanings :
 - `a` (any ONE character) : input value - All other characters than the three 
 previously shown represent a value being emitted by the producer signaling `next()`
 
-#### Examples
+### Examples
 - `a--#` : represents a producer which emits a value on the first time slot, 
 then emits nothing the next two time slots, and then on the 4th time slots 
 emits an error.
@@ -178,7 +157,7 @@ emits an error.
 then emits a value on the next time slot, then completes on the third 
 time slot..
 
-#### Total ordering
+### Total ordering
 The following inputs :
 ```
 [
@@ -197,10 +176,9 @@ will result in the following data emission and sequence of actions:
 - lapse of `waitForFinishDelay` ms
 - completion of the test producer and processing of outputs
 
-Hence data emission is such that, if `(i,j)`represents the input value at row `i` and column `j`, then `(i,j)` is ALWAYS emitted before `(k,l)` if `j < l` or 
-`j==l && i < k`.
+Hence data emission is such that, if `(i,j)`represents the input value at row `i` and column `j`, then `(i,j)` is ALWAYS emitted before `(k,l)` if `j < l` or `j==l && i < k`.
 
-#### Input values
+### Input values
 Input values can be associated to the letter/character in the diagram through
  the `values` property. When no matching entry can be found in `values`, the 
  input stream emits the character itself. For  instance :
@@ -214,7 +192,7 @@ Input values can be associated to the letter/character in the diagram through
 will result in the input stream `x$` emitting `a` on the first time slot 
 and dummy` on the third time slot.
 
-### Mocking
+## Mocking
 In order to cover `cycle.js` applications' use cases, where functions (called 
 components or component functions) take as input a collection of streams OR 
 regular  objects from which streams are derived, a mocking functionality has been added, extending the syntax. For example :
@@ -237,16 +215,17 @@ referred to as the mock identifier and can be any string (not including the `!` 
   Cf. the documentation in the code source and the example above for more 
   details.
 
-### Source factories
+## Source factories
 A source factory is a function which MUST return a subject (cf. contracts). 
 The functionality is added to support the object mocking ability.
 
-### Contracts
+## Contracts
 - key type contracts
   - tested function MUST have the expected signature
     - must take a collection of streams OR objects...
     - ...and return a collection of streams
   - `analyzeTestResults` is mandatory and must throw to signal test failure
+	  - it however can be defined globally in settings, or locally for each output stream
   - source factory functions must return a subject
 - other rules
   - source identifier MUST be non-empty strings
@@ -255,14 +234,10 @@ The functionality is added to support the object mocking ability.
   - if the syntax `x!y` is used for a source identifier, there MUST be a 
   corresponding key `x` in the `mocks` object
 
-  TODO :
-  - if the syntax `x!y` is used for a source identifier, there MUST be a 
-  corresponding key `x!y` in the `sourceFactory` object
-  - make sure there is only one `!` in input streams identifiers
-
-## Examples
-### Basic example
+# Examples
+## Basic example
 The example thereafter illustrates the following optional features:
+
  - settings
    - `tickDuration`
    - `waitForFinishDelay`
@@ -295,19 +270,19 @@ describe("When inputs are simulating regular stream behaviour", () => {
         outputs: ['m-a-0', 'm-b-0', 'm-a-1', 'm-b-1', 'm-b-2'],
         successMessage: 'sink m produces the expected values',
         analyzeTestResults: analyzeTestResults,
-        transformFn: undefined,
+        transform: undefined,
       },
       n: {
         outputs: ['t-n-a-0', 't-n-a-1'],
         successMessage: 'sink n produces the expected values',
         analyzeTestResults: analyzeTestResults,
-        transformFn: x => 't-' + x,
+        transform: x => 't-' + x,
       },
       o: {
         outputs: ['o-b-0', 'o-b-1', 'o-b-2'],
         successMessage: 'sink o produces the expected values',
         analyzeTestResults: analyzeTestResults,
-        transformFn: undefined,
+        transform: undefined,
       }
     }
 
@@ -326,7 +301,7 @@ describe("When inputs are simulating regular stream behaviour", () => {
 
 ```
 
-### Using ad-hoc mocks and factories
+## Using ad-hoc mocks and factories
 The example thereafter illustrates the following features:
  - mock
    - `makeDOMSource` mock
@@ -407,19 +382,19 @@ describe("When inputs are simulating an object, AND there is a mock" +
           outputs: ['m-a-0', 'm-a-1'],
           successMessage: 'sink m produces the expected values',
           analyzeTestResults: analyzeTestResults,
-          transformFn: undefined,
+          transform: undefined,
         },
         n: {
           outputs: ['t-n-a-0', 't-n-a-1', 't-n-a-2'],
           successMessage: 'sink n produces the expected values',
           analyzeTestResults: analyzeTestResults,
-          transformFn: x => 't-' + x,
+          transform: x => 't-' + x,
         },
         o: {
           outputs: [{"x":"a-0","y":"a-1"},{"x":"a-1","y":"a-1"},{"x":"a-2","y":"a-1"}],
           successMessage: 'sink o produces the expected values',
           analyzeTestResults: analyzeTestResults,
-          transformFn: undefined,
+          transform: undefined,
         }
       }
 
@@ -477,7 +452,7 @@ describe("When inputs are simulating an object, AND there is a mock" +
 
 ```
 
-## Known limitations
+# Known limitations
 - The edge case of a tested function which takes streams and returns nothing is 
 not handled.
 - `rxjs` grammar is not enforced for the marble diagrams, i.e. behaviour of a 
@@ -487,68 +462,26 @@ sequence such as `a-|b#-c|` is unspecified and untested.
 - Subjects are used to simulate input streams. Small semantic differences 
 between the two around edge cases, depending on the streaming library in use, may lead to false negatives.
 
-## Installation
-The library should work both in the browser and in a node.js environment. It is distributed with the so-called universal module format, and as such can be use with a commonJS, AMD style, or accessible through a global (`runTestScenario` if none of the former module formats are detected).
-
-The library itself is written with the ES6 dialect of javascript.
-
-You can install in a variety of ways:
-
-### npm
-
-On the command line, run:
-```
-npm install runTestScenario
-```
-
-Then you can build with Browserify/Webpack using `require('runTestScenario')`, or you can include it directly as a `<script>` tag via the `dist/runTestScenario.js` file. For Rollup users, it uses a `"jsnext:main"` field, so you can directly include the ES6 source.
-
-### Direct download
-
-Download either the unminified `runTestScenario.js` file or the minified `runTestScenario.min.js` file from the [Github releases](https://github.com/brucou/contrib/releases) page.
-
-### Bower
-
-```
-bower install runTestScenario
-```
-
-Then use the `dist/runTestScenario.js` as a `<script>` tag inside your HTML page.
-
-### jspm
-
-```
-jspm install runTestScenario
-```
-
-Then you can use `dist/runTestScenario.js`.
-
---------
-`npm run build` will build the Node-ready and browser-ready versions, which are written to the `dist-node` and `dist` directories.
-
-## Troubleshooting
+# Troubleshooting
 No shooting, no trouble.
 
-## Breaking Changes
+# Breaking Changes
 Soon. Cf. roadmap
 
-## Roadmap
+# Roadmap
 - combine mocks and source factory in one indexed by the mock
   i.e. DOM : {y_n: factory(), constructor: makeDOMsource}
-- refactor `transformFn` to just `transform`
 - have documentation reviewed by external actor
-- review marble diagrams syntax
-  - enforce rxjs grammar?
-- publish also the `rxjs` version
-- make a stream library agnostic version (use only `ES7` standard spec) + subjects
 - clean code
 - review API against open/closed principle
 
-## License
+# License
+MIT
 
-## Contributing
+# Contributing
 
 Shoot but aim high. Open a pull request!
 
 Suggestions, if you are bored on a sunday :
 - typescript type file
+	- most of the type information is there

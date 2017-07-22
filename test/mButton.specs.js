@@ -347,7 +347,6 @@ QUnit.test("Good settings : empty settings", function exec_test(assert) {
         `${SEP} ${NON_DOM_SINK}-c`, `${SEP} ${NON_DOM_SINK}-C`,
       ],
       successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
     [DOM_SINK]: {
       outputs: [
@@ -357,15 +356,15 @@ QUnit.test("Good settings : empty settings", function exec_test(assert) {
         `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"ui button\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
   };
 
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
+    analyzeTestResults : analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -409,7 +408,6 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
         `${SEP} ${NON_DOM_SINK}-c`, `${SEP} ${NON_DOM_SINK}-C`,
       ],
       successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
     [DOM_SINK]: {
       outputs: [
@@ -419,7 +417,7 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
         `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"ui button\ ${A_CLASS} ${ANOTHER_CLASS}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -428,6 +426,7 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: `${SEP}` }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
+    analyzeTestResults : analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -439,8 +438,6 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
       done(err)
     }
   })
-
-
 });
 
 // Settings = {emphasis} - one
@@ -467,9 +464,8 @@ QUnit.test("Good settings : emphasis", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
     [NON_DOM_SINK]: {
       outputs: [
@@ -485,6 +481,7 @@ QUnit.test("Good settings : emphasis", function exec_test(assert) {
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
+    analyzeTestResults : analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -522,7 +519,7 @@ QUnit.test("Good settings : basic", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -577,7 +574,7 @@ QUnit.test("Good settings : animated - boolean", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -632,7 +629,7 @@ QUnit.test("Good settings : animated - string", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -688,7 +685,7 @@ QUnit.test("Good settings : label", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -743,7 +740,7 @@ QUnit.test("Good settings : icon", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -799,7 +796,7 @@ QUnit.test("Good settings : visualState", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -855,7 +852,7 @@ QUnit.test("Good settings : social", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -911,7 +908,7 @@ QUnit.test("Good settings : size", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -967,7 +964,7 @@ QUnit.test("Good settings : shape", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -1023,7 +1020,7 @@ QUnit.test("Good settings : layout", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
@@ -1086,7 +1083,7 @@ QUnit.test("Good settings : listenTo, listenOn", function exec_test(assert) {
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} b</span></div>`,
         `<div class=\"${classes}\" ${ATTRS}><span>${DOM_SINK} ${SEP} c</span></div>`,
       ],
-      transformFn: convertVNodesToHTML,
+      transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
       analyzeTestResults: analyzeTestResults(assert, done),
     },
