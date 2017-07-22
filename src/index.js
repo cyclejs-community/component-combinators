@@ -21,14 +21,11 @@
   }
 }());
 
-import { m } from "./components/m"
-// Change from m to RouteWhen or sth like that
-// import {TODO} from './components/Router'
-import { onRoute } from "./components/Router"
-// change from m to Switch(CaseWhen...
-// update the switch code too, it changed in between version
+// TODO : Change from onRoute to RouteWhen or sth like that?
+// TODO : change Switch from m to Switch(CaseWhen...
+// TODO : update the switch code too, it changed in between version
 // TODO: also adapt the tests!!
-//import {TODO} from './components/Switch'
+// import {TODO} from './components/Switch'
 
 export * from  "./components/m"
 export * from  "./components/Router"

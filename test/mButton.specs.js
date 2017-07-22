@@ -419,7 +419,6 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
       ],
       transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
   };
 
@@ -474,7 +473,6 @@ QUnit.test("Good settings : emphasis", function exec_test(assert) {
         `${SEP} ${NON_DOM_SINK}-C`,
       ],
       successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
   };
 
@@ -521,7 +519,6 @@ QUnit.test("Good settings : basic", function exec_test(assert) {
       ],
       transform: convertVNodesToHTML,
       successMessage: `sink ${DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
     [NON_DOM_SINK]: {
       outputs: [
@@ -530,13 +527,13 @@ QUnit.test("Good settings : basic", function exec_test(assert) {
         `${SEP} ${NON_DOM_SINK}-C`,
       ],
       successMessage: `sink ${NON_DOM_SINK} produces the expected values`,
-      analyzeTestResults: analyzeTestResults(assert, done),
     },
   };
 
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
+    analyzeTestResults : analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
