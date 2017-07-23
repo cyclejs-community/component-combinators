@@ -1,3 +1,8 @@
+// TODO : some renaming to think about (cf. other comments)
+// TODO : right now all casewhen are evaluated, should we stop at the first who qualifies? just
+// like the switch () {case} command? that would allow to have {default} in a natural way
+// TODO : documentation of course, and code review
+
 define(function (require) {
   const U = require('util')
   const R = require('ramda')
@@ -123,6 +128,7 @@ function require_switch_component(Rx, $, U, R, Sdom, cfg) {
               {},
               {matched: caseWhen},
               childrenComponents)
+
           return mergedChildrenComponentsSinks(sources, settings)
         })
         .share() // multicasted to all sinks
