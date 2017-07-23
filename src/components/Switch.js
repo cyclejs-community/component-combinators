@@ -2,6 +2,14 @@
 // TODO : right now all casewhen are evaluated, should we stop at the first who qualifies? just
 // like the switch () {case} command? that would allow to have {default} in a natural way
 // TODO : documentation of course, and code review
+// TODO : in doc. show the interest of component switching
+// - simpler version of FSM with one state
+// - allow to remove a discrete(izable) parameters from a component design
+//   - for instance component (discrete, other) -> switch(discrete) {component (other)}
+//   - this allows for improved separation of concerns within the component
+//     - (case logged in/not)
+//   - should be used for the case where significantly different behaviours are in result of
+// different values of the discret(izabl)e parameter. Otherwise, it is DRY which suffers
 
 define(function (require) {
   const U = require('util')
