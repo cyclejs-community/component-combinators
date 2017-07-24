@@ -26,7 +26,7 @@ function isEventFactoryEventSettings(sources, settings) {
     [isStrictRecordE({
       custom: eitherE([isNil], [isHashMapE(isEventName, isEventFactoryFunction)]),
       DOM: eitherE([isNil], [isHashMapE(isDomEventName, isSelector)])
-    }), `isEventFactoryEventSettings > BUT settings.events does not have the expected type`]
+    }), `isEventFactoryEventSettings > settings.events does not have the expected type`]
   )(settings.events)
 }
 

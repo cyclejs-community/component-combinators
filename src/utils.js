@@ -544,7 +544,7 @@ function isRecordE(recordSpec) {
       // 2. the properties in recordSpec all pass their corresponding predicate
       // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
       [
-        whereE(recordSpec),
+        whereE(recordSpec, `isRecordE > allPassE > whereE : fails!`),
         `isStrictRecordE : At least one property of object failed its predicate!`
       ]
     ]
@@ -562,44 +562,22 @@ function bothE([leftPredicateE, leftError], [rightPredicateE, rightError], error
 }
 
 /**
- * TODO : doc
- * @param recordSpec
- * @returns {whereE}
+ * @param recordSpec an object containing for each key a predicate. Cf. Ramda `where` function
+ * documentation
+ * @param error error text to display when one the predicate is failing
+ * @returns {function}
  */
-function whereE(recordSpec) {
+function whereE(recordSpec, error) {
   // RecordSpec :: HashMap<Key, Predicate>
-  const _keys = keys(recordSpec);
+  const predicates = keys(recordSpec)
+    .map(key => [
+      obj => recordSpec[key](obj[key]),
+      `property ${key} fails predicate ${recordSpec[key].name}`
+    ]);
 
-  /**
-   * TODO : doc
-   * @param args
-   * @returns {boolean}
-   */
-  function whereE(...args) {
-
-    const result = reduce((acc, key) => {
-      const predicate = recordSpec[key];
-      const arg = args[0];
-      const booleanOrErrorMessage = predicate(arg[key]);
-
-      if (isTrue(booleanOrErrorMessage)) {
-        return acc
-      }
-      else {
-        acc.push(`whereE : property ${key} fails predicate ${predicate.name}`);
-        booleanOrErrorMessage && acc.push(`${booleanOrErrorMessage}`);
-
-        return acc
-      }
-    }, [], _keys);
-
-    return result.length === 0
-      ? true
-      : result.join('\n')
-  }
-
-  return whereE
+  return checkAndGatherErrors(predicates, error)
 }
+
 
 /**
  * Test against a left predicate. If that predicate passes, returns true. Otherwise tests
@@ -607,37 +585,23 @@ function whereE(recordSpec) {
  * error message which is the concatenation of the possible error messages returned by the
  * left and right predicates
  * @param leftValidation
+ * @param leftError
  * @param rightValidation
+ * @param rightError
+ * @param error
  * @returns {function(*) : Boolean | String}
  */
-function eitherE(leftValidation, rightValidation) {
-  return function (...args) {
-    let errorMessages = [];
+function eitherE([leftValidation, leftError], [rightValidation, rightError], error) {
+  const predicates = [[
+    either(leftValidation, rightValidation),
+    [
+      `both predicates (${leftValidation.name}, ${rightValidation.name}) failed!`,
+      `left predicate : ${leftError}`,
+      `right predicate : ${rightError}`
+    ].join('\n')
+  ]];
 
-    const [leftPredicate, leftErrorMessage] = leftValidation;
-    const [rightPredicate, rightErrorMessage] = rightValidation;
-    const leftValidationResultOrMessage = leftPredicate.apply(leftPredicate, args);
-    const rightValidationResultOrMessage = rightPredicate.apply(rightPredicate, args);
-
-    if (isTrue(leftValidationResultOrMessage)) {
-      return true
-    }
-    else {
-      // left predicate fails -> check right predicate
-      if (isTrue(rightValidationResultOrMessage)) {
-        return true
-      }
-      else {
-        errorMessages.push(`eitherE : both predicates (${leftPredicate.name}, ${rightPredicate.name}) failed! One of them must pass!`);
-        leftErrorMessage && errorMessages.push('left: ' + leftErrorMessage);
-        leftValidationResultOrMessage && errorMessages.push('left : ' + leftValidationResultOrMessage);
-        rightErrorMessage && errorMessages.push('right: ' + rightErrorMessage);
-        rightValidationResultOrMessage && errorMessages.push('right : ' + rightValidationResultOrMessage);
-
-        return errorMessages.join('\n')
-      }
-    }
-  }
+  return checkAndGatherErrors(predicates, error)
 }
 
 /**
@@ -656,7 +620,7 @@ function isHashMapE(predicateKey, predicateValue) {
   return allPassE([
     [pipe(keys, allE(predicateKey)), `isHashMapE : at least one property key of the object failed its predicate!`],
     [pipe(values, allE(predicateValue)), `isHashMapE : at least one property's value of the object failed its predicate!`]
-  ], null);
+  ], `isHashMapE : fails!`);
 }
 
 /**
@@ -1009,7 +973,7 @@ function noop() {
 
 }
 
-function toBoolean(x){return !!x}
+function toBoolean(x) {return !!x}
 
 /**
  * Returns a function which turns an object to be put at a given path location into an array of

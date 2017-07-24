@@ -1,33 +1,32 @@
 const sinks = ['DOM', 'Store', 'auth$']; // TODO : choose all caps or all mins
-import {ALL, ACTIVE, COMPLETED, IS_LOGGED_IN} from './properties';
+import { ACTIVE, ALL, COMPLETED, IS_LOGGED_IN } from './properties';
 
-App({sinks: sinks}, [
+App({ sinks: sinks }, [
   OnRoute('/', SwitchCase({
       on: 'auth$'
     }, [
-      Case({when: IS_LOGGED_IN}, [
-        TodoComponent({routeState: ALL}) // actually will require flip or
+      Case({ when: IS_LOGGED_IN }, [
+        TodoComponent({ routeState: ALL }) // actually will require flip or
         // curry and R.__
       ]),
-      Case({when: complement(IS_LOGGED_IN)}, [
-        LogIn({redirect: '/'})
+      Case({ when: complement(IS_LOGGED_IN) }, [
+        LogIn({ redirect: '/' })
       ])
     ]
   )),
   OnRoute('/active', SwitchCase({
       on: 'auth$', sinks: sinks
     }, [
-      Case({when: IS_LOGGED_IN}, [
-        TodoComponent({routeState: ACTIVE}) // actually will require flip or
+      Case({ when: IS_LOGGED_IN }, [
+        TodoComponent({ routeState: ACTIVE }) // actually will require flip or
         // curry and R.__
       ]),
-      Case({when: complement(IS_LOGGED_IN)}, [
-        LogIn({redirect: '/active'})
+      Case({ when: complement(IS_LOGGED_IN) }, [
+        LogIn({ redirect: '/active' })
       ])
     ]
   )),
-  OnRoute('/completed', TodoComponent({routeState: COMPLETED})
-  )
+  OnRoute('/completed', TodoComponent({ routeState: COMPLETED }))
 ]);
 
 TodoComponent = curry(flip(
@@ -36,7 +35,7 @@ TodoComponent = curry(flip(
     //some UNIQUE (vs. action requests) identifier for the state chart
     namespace: 'TODO_SC',
     // changed -> to compute x items left, removed -> to compute x items left
-    intents: {ADD_ITEM, COMPLETE_ALL, CHILD_CHANGED, CHILD_REMOVED},
+    intents: { ADD_ITEM, COMPLETE_ALL, CHILD_CHANGED, CHILD_REMOVED },
     actions: [ADD_ITEM, COMPLETE_ALL],
     responses: ['Store'],
     model$: 0,//{Store.get(namespace)(null), showOnlyActive : settings.routeState},
@@ -49,7 +48,7 @@ TodoComponent = curry(flip(
       },
       // INIT -> SUCCESS:INIT -> ERROR: ?? -> NO GUARD -> ADD_ITEM :
       (event, model$) => ({
-        Store: $.of({command: ADD_TODO, namespace, ref, payload: todoText}),
+        Store: $.of({ command: ADD_TODO, namespace, ref, payload: todoText }),
         // If one wants optimistic update, can also add:
         DOM: model$.map(ADD_ITEM_model_update).map(view)
       }),

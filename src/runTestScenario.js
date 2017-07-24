@@ -78,7 +78,7 @@ function isSourceInput(obj) {
 function isExpectedStruct(record) {
   return (!record.transform || isFunction(record.transform)) &&
     record.outputs && isArray(record.outputs) &&
-    record.analyzeTestResults && isFunction(record.analyzeTestResults) &&
+    (!record.analyzeTestResults || isFunction(record.analyzeTestResults)) &&
     (!record.successMessage || isString(record.successMessage))
 }
 
