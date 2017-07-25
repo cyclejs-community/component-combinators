@@ -5,7 +5,7 @@
 
 import { assertContract, assertSignature, isArray, isArrayOf, isFunction, isString } from "../utils"
 import { m } from "./m"
-import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR } from "ramda"
+import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR, keys } from "ramda"
 import { routeMatcher } from "../vendor/routematcher"
 import Rx from "rx"
 const $ = Rx.Observable
@@ -83,8 +83,10 @@ function isRouteSettings(obj) {
  *
  */
 export function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  console.groupCollapsed('Router component > makeAllSinks')
-  console.log('sources, settings, childrenComponents', sources, settings, childrenComponents);
+  console.groupCollapsed('Router > computeSinks')
+  console.log(`sources : ${keys(sources)}`)
+  console.log(`settings`, settings)
+  console.log('childrenComponents', childrenComponents);
 
   const signature = [{ settings: isRouteSettings },]
 
@@ -99,13 +101,13 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   // This behaviour results in having to handle null cases for sinks (some
   // sinks might be present only on some children components).
   const sinkNames = settings.sinkNames
-  const trace = 'router:' + (settings.trace || "")
+  const trace = 'Router (' + (settings.trace || "") + ")"
 
   let route$ = sources[routeSourceName]
-    .tap(console.error.bind(console, 'route$'))
+    .tap(console.debug.bind(console, `${trace} : route$`))
 
   let matchedRoute$ = route$.map(match(settings.route))
-    .tap(console.warn.bind(console, trace + '|matchedRoute$'))
+    .tap(console.debug.bind(console, `${trace} : matchedRoute$`))
     // NOTE : replaying here is mandatory
     // That's because the children are passed `matchedRoute` and
     // connect to it AFTER the `route$` has emitted its value...
@@ -116,10 +118,10 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   let changedRouteEvents$ = matchedRoute$
     .pluck('match')
     .distinctUntilChanged(x => {
-      console.log('distinctUntilChanged on : ', x ? omit(['routeRemainder'], x) : null)
+      console.debug('distinctUntilChanged on : ', x ? omit(['routeRemainder'], x) : null)
       return x ? omit(['routeRemainder'], x) : null
     })
-    .tap(console.warn.bind(console, 'changedRouteEvents$'))
+    .tap(console.debug.bind(console, `${trace} : changedRouteEvents$`))
     .share()
   // Note : must be shared, used twice here
 
@@ -131,16 +133,16 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
         console.info('computing children components sinks', params)
         const componentFromChildren = m({
             makeLocalSources: function makeLocalSources(sources, __settings) {
-              console.group('makeLocalSources')
-              console.log('sources, __settings', sources, __settings);
-              console.groupEnd('makeLocalSources')
+              console.group('${trace} : changedRouteEvents$ : children wrapper component :' +
+                ' makeLocalSources')
+              console.log(`sources : ${keys(sources)}, __settings :`, __settings);
+              console.groupEnd()
 
               return {
                 route$: matchedRoute$
                   .map(pathR(['match', 'routeRemainder']))
-                  .tap(console.warn.bind(console, settings.trace + ' :' +
-                    ' changedRouteEvents$' +
-                    ' : routeRemainder: '))
+                  .tap(console.debug.bind(console,
+                    `${trace} : changedRouteEvents$ : children wrapper component  : routeRemainder (new route$ for children)`))
                   .share(),
               }
             },
@@ -194,8 +196,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
             .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
             .finally(_ => {
               void _
-              console.log(trace + ' : sink ' + sinkName + ': terminating due to' +
-                ' route change')
+              console.log(`${trace} : sink ${sinkName} : terminating due to route change'`)
             })
 
           cached$ = $.concat(prefix$, preCached$)
@@ -208,8 +209,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
       }
       else {
         // Case : new route does NOT match component configured route
-        console.log('params is null!!! no match for this component on' +
-          ' this route :' + trace)
+        console.log(`${trace} : params is null!!! no match for this component on this route`)
         cached$ = sinkName === 'DOM' ? $.of(null) : $.empty()
       }
 
