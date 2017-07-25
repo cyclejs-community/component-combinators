@@ -8,7 +8,7 @@ import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
 // TODO : define custom error types
 import toHTML from "snabbdom-to-html"
-import { StandardError } from "standard-error"
+// import { StandardError } from "standard-error"
 import formatObj from "fmt-obj"
 
 const $ = Rx.Observable;
@@ -340,6 +340,10 @@ function isOneOf(strList) {
   return function (obj) {
     return isString(obj) && strList.indexOf(obj) !== -1
   }
+}
+
+function isNumber(obj){
+  return obj && typeof(obj) === 'number'
 }
 
 function isString(obj) {
@@ -1018,6 +1022,7 @@ export {
   isBoolean,
   isOneOf,
   isTrue,
+  isNumber,
   isString,
   isArray,
   isEmptyArray,
