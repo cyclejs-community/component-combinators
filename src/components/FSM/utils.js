@@ -14,6 +14,10 @@ import {
   isFsmModel
 } from "./types"
 
+export function modelUpdateIdentity() {
+  return []
+}
+
 // Allows to compose model update functions (a la monad chain operation)
 export function chainModelUpdates(arrayModelUpdateFn) {
   return function chainedModelUpdates(model, eventData, actionResponse) {
