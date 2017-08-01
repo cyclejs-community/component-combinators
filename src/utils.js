@@ -996,6 +996,8 @@ function toJsonPatch(path) {
   );
 }
 
+const DOM_SINK = 'DOM';
+
 export {
   makeDivVNode,
   handleError,
@@ -1063,5 +1065,6 @@ export {
   hasNoCommonValues,
   isNewKey,
   toJsonPatch,
-  toBoolean
+  toBoolean,
+  DOM_SINK
 }
