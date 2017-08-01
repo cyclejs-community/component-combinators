@@ -1,29 +1,30 @@
 // Patch library : https://github.com/Starcounter-Jack/JSON-Patch
 import {
-  evolve, map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone,
-  keys, filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
-  tryCatch, T, flip, identity, cond, always, prop
+  always, clone, cond, curry, defaultTo, either, equals, evolve, filter, find, findIndex, flatten,
+  identity, isNil, keys, map as mapR, mapObjIndexed, pipe, prop, reduce as reduceR, T, tryCatch,
+  uniq, values
 } from "ramda"
-import { checkSignature, assertContract, handleError, isBoolean } from "../../utils"
+import { assertContract, checkSignature, handleError, isBoolean } from "../../utils"
 import {
-  isFsmSettings, isFsmEvents, isFsmTransitions, isFsmEntryComponents, isArrayUpdateOperations,
-  isEntryComponentFactory, isEntryComponent, checkStateEntryComponentFnMustReturnComponent,
-  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent,
+  checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
-  checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable
+  checkStateEntryComponentFnMustReturnComponent,
+  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, isArrayUpdateOperations,
+  isEntryComponent, isEntryComponentFactory, isFsmEntryComponents, isFsmEvents, isFsmSettings,
+  isFsmTransitions
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"
 import {
-  EV_GUARD_NONE, ACTION_REQUEST_NONE, AR_GUARD_NONE, ZERO_DRIVER, EVENT_PREFIX, DRIVER_PREFIX,
-  INIT_EVENT_NAME, AWAITING_EVENTS, AWAITING_RESPONSE, INIT_STATE,
-  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
-  CONTRACT_EVENT_GUARD_FN_RETURN_VALUE, CONTRACT_EVENT_GUARD_CANNOT_FAIL,
+  ACTION_REQUEST_NONE, AR_GUARD_NONE, AWAITING_EVENTS, AWAITING_RESPONSE,
   CONTRACT_ACTION_GUARD_CANNOT_FAIL, CONTRACT_ACTION_GUARD_FN_RETURN_VALUE,
-  CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL
+  CONTRACT_EVENT_GUARD_CANNOT_FAIL, CONTRACT_EVENT_GUARD_FN_RETURN_VALUE,
+  CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, DRIVER_PREFIX, EV_GUARD_NONE, EVENT_PREFIX,
+  INIT_EVENT_NAME, INIT_STATE, ZERO_DRIVER
 } from "../properties"
 import {
-  decorateEventsWithLog, decorateTransitionsWithLog, decorateStateEntryWithLog
+  decorateEventsWithLog, decorateStateEntryWithLog, decorateTransitionsWithLog
 } from "./utils"
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
@@ -367,6 +368,7 @@ function _labelEvents(sources, settings, event$Fn, eventName, _) {
 
   return event$Fn$.map(prefixWith(eventName))
 }
+
 const computeAndLabelEvents = curry(_labelEvents);
 
 function getDriverNames(transOptions, transName) {
@@ -416,7 +418,7 @@ function evaluateTransitionWhenActionResponse(transitions, transName, current_ev
   const reEntry = transition.re_entry;
 
   const foundSatisfiedGuard = find(function (transEval) {
-    const { action_guard, target_state, model_update }= transEval;
+    const { action_guard, target_state, model_update } = transEval;
 
     if (action_guard == AR_GUARD_NONE) {
       // if no action guard is configured, it is equivalent to a passing guard
@@ -931,9 +933,11 @@ const wrapIfDebug = cond([
   })],
   [T, identity]]);
 
+// TODO : parametrize DOM sink name
 // TODO : implement history mechanism in this library
 // TODO: actionable implementation of statecharts in hs https://github.com/steelbreeze/state.js
-// TODO : fsm http://www.intersel.fr/assets_intersel_a/gitdemos/iFSM/Examples/Example_Slideshow.html
+// TODO : fsm
+// http://www.intersel.fr/assets_intersel_a/gitdemos/iFSM/Examples/Example_Slideshow.html
 // TODO : use rxdb to replace firebase for the demo - it is totally offline, or
 // pipeDb! https://github.com/pipelinedb/pipelinedb
 // TODO : implement remaining contracts cf. doc
@@ -988,8 +992,8 @@ const wrapIfDebug = cond([
 // customize anything with D3 BUT graphlib not exportable Conversion
 // http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
 // - graphML is used by yed but also http://igraph.org/redirect.html
-// TODO: can be used to have state chart logic for free : https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js
-// but I will have to add the events and change the formats (add transitions in objects instead
-// of imperative this.go(state) ) and so on
-// And also I should write tests, there are none...
-// for google cloud spark back-end C:\Users\toshiba\AppData\Local\Google\Cloud SDK
+// TODO: can be used to have state chart logic for free :
+// https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js but I
+// will have to add the events and change the formats (add transitions in objects instead of
+// imperative this.go(state) ) and so on And also I should write tests, there are none... for
+// google cloud spark back-end C:\Users\toshiba\AppData\Local\Google\Cloud SDK
