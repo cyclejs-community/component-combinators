@@ -20,9 +20,9 @@ export function modelUpdateIdentity() {
 
 // Allows to compose model update functions (a la monad chain operation)
 export function chainModelUpdates(arrayModelUpdateFn) {
-  return function chainedModelUpdates(model, eventData, actionResponse) {
+  return function chainedModelUpdates(model, eventData, actionResponse, settings) {
     return flatten(mapR(
-      modelUpdateFn => modelUpdateFn(model, eventData, actionResponse),
+      modelUpdateFn => modelUpdateFn(model, eventData, actionResponse, settings),
       arrayModelUpdateFn)
     )
   }

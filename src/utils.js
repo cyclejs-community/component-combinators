@@ -343,7 +343,7 @@ function isOneOf(strList) {
 }
 
 function isNumber(obj){
-  return obj && typeof(obj) === 'number'
+  return typeof(obj) === 'number'
 }
 
 function isString(obj) {
@@ -996,6 +996,22 @@ function toJsonPatch(path) {
   );
 }
 
+function stripHtmlTags(html)
+{
+  let tmp = document.createElement("DIV");
+  tmp.innerHTML = html;
+
+  const strippedContent =tmp.textContent || tmp.innerText || "";
+
+  tmp.remove();
+
+  return strippedContent
+}
+
+function traceFn(fn, text) {
+  return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "" )))
+}
+
 const DOM_SINK = 'DOM';
 
 export {
@@ -1066,5 +1082,7 @@ export {
   isNewKey,
   toJsonPatch,
   toBoolean,
+  stripHtmlTags,
+  traceFn,
   DOM_SINK
 }
