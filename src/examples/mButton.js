@@ -1,7 +1,7 @@
 import {
   bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString, toBoolean
 } from "../utils"
-import { m } from "./m"
+import { m } from "../components/m"
 import { both, complement, either, flatten, prop, reduce, tap, T, F, pipe } from "ramda"
 import * as Rx from "rx"
 import { div } from "cycle-snabbdom"

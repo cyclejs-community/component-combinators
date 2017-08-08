@@ -3,9 +3,9 @@ import {
   isStrictRecordE, isHashMapE, hasNoCommonValues,
   isString, preventDefault, removeNullsFromArray, assertContract, hasNoDuplicateKeys, format, isNewKey
 } from "../utils"
-import { defaultMergeSinkFn, m } from "./m"
+import { defaultMergeSinkFn, m } from "../components/m"
 import { flatten, merge, isNil, keys, reduce, T } from "ramda"
-import { isEventName } from "./types"
+import { isEventName } from "../components/types"
 
 // No further argument type checking here
 const isEventFactoryFunction = isFunction
@@ -77,7 +77,7 @@ function makeEventFactorySinks(sources, settings) {
       const selector = selectors[selectorDesc]
       const eventName = makeEventNameFromSelectorAndEvent(selector, DomEventName);
 
-      assertContract(isNewKey, [innerAcc, eventName], `makeEventFactorySinks : DOM Event definition object leads to event name conflicts for name ${eventName}!`); // VERY VERY UNLIKELY
+      assertContract(isNewKey, [innerAcc, eventName], `makeEventFactorySinks : DOM Event definition object leads to event name conflicts for name ${eventName}!`); // NOTE : VERY VERY UNLIKELY
 
       innerAcc[eventName] = sources.DOM.select(selector).events(DomEventName).tap(preventDefault)
         .tap(log(`${eventName}:`))
