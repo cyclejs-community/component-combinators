@@ -144,3 +144,23 @@ export const decorateTransitionsWithLog = mapObjIndexed(evolve({
   event: identity,
   target_states: mapR(decorateTransition)
 }));
+
+// NOTE!! the object passed as parameter must be a non-empty object!!
+// TODO : rewrite this properly to add an exception in case of misuse
+export const toJsonPatch = (path) => pipe(mapObjIndexed((value, key) => ({
+  op: "add",
+  path: [path, key].join('/'),
+  value: value
+})), values);
+
+export function addOpToJsonPatch(path, value) {
+  return [{
+    op: "add",
+    path: path,
+    value: value
+  }]
+}
+
+export function getSelectedKey(latestTeamIndex, teamKeys) {
+  return teamKeys[latestTeamIndex];
+}

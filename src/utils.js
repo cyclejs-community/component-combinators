@@ -2,7 +2,7 @@
 import {
   addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
   intersection, isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq,
-  values, where
+  values, where, tap
 } from "ramda"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
