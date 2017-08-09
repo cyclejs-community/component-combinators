@@ -3,9 +3,9 @@ import { runTestScenario } from "../../../src/runTestScenario"
 import * as Rx from "rx"
 import { pipe } from "ramda"
 import { ProcessApplication } from "../src/processApplication/index"
-import { makeMockDOMSource } from "../../../src/mockDOM"
-import { makeMockDocumentSource } from "../../../src/mockDocument"
-import { makeDomainQuerySource } from "../../../src/mockDomainQuery"
+import { makeMockDOMSource } from "../../../src/mocks/mockDOM"
+import { makeMockDocumentSource } from "../../../src/mocks/mockDocument"
+import { makeDomainQuerySource } from "../../../src/mocks/mockDomainQuery"
 import { convertVNodesToHTML, noop, stripHtmlTags } from "../../../src/utils"
 import {
   OPPORTUNITY, OPPORTUNITY_REF, PROJECTS, PROJECTS_REF, TEAMS, TEAMS_REF, USER_APPLICATION

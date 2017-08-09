@@ -73,7 +73,7 @@ import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/example
 import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
-import { makeMockDOMSource } from "../src/mockDOM"
+import { makeMockDOMSource } from "../src/mocks/mockDOM"
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
 // TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a
