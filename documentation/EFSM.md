@@ -1053,7 +1053,24 @@ When a state machine is activated, event factories are immediately executed, and
 
 **TODO add Angular2 implementation**
 
-# Roadmap TODO
+# Roadmap
+- specify event queuing, back pressure and interruption policies
+- isolate out the output of the state machine (command passed through sinks)
+- isolate out further the asynchronous actions to reuse a synchronous hierarchical state machine
+	- input -> EHFSM -> command request => command manager
+	- command manager orchestrates the command requests
+		- drop command request if there is a command currently executing and not finished
+		- queue command request to be executed after current command is done executing
+		- abort current command execution and execute incoming command request
+		- abort current command execution if it takes too long to return a response
+		- this would require a controlling input (channel) linking the command manager to the EHFSM.
+			- the EHFSM would hence have a BUSY state for all async. command which are pending execution
+			- the BUSY state would transition on controlling input received from command manager : BUSY, ABORT -> return to state before BUSY, SUCCESS -> transition to next state, ERROR -> same thing
+			- queuing events would have to be done at EHFSM level, but that is tricky...
+				- if event 1 succeed, the FSM changes state so the queued events would be interpreted in the new state context
+				- if event1 fails, the FSM might transition to an error state, so the queued events would be interpreted in the new error state context
+				- etc. so it is tricky - best is to drop the events, but not always possible?
+
 
 # References TODO
 
