@@ -1039,6 +1039,16 @@ In a future version of the library, event queuing and convenient interruption po
 
 [//]: # (A_Crash_Course_in_UML_State_Machines (Quantum Leaps))
 
+# How to
+## Perform operations at initialization
+The common use case is that you might want to fetch some remote data and update the internal model of the state machine with some of that.  Two options :
+
+1. Use `INIT` event in the state machine definition 
+Every state machine has a `INIT` event which is sent when the state machine is activated. It is possible to configure a transition with an action which updates the model from its result
+2. Use ONE event factory which immediately emits an event (i.e. synchronously)
+When a state machine is activated, event factories are immediately executed, and the state machine starts listening on events coming from those event factories. If ONE of those event factories immediately emits an event, that event will immediately be processed (after the initial `INIT` event kicking off the state machine). It is better to have only one immediate event, as if there would be several, there is no guarantee on the order with which those events would be processed, hence there is no guarantee on their effects.
+
+
 # Reusability TO DROP
 
 **TODO add Angular2 implementation**
@@ -1060,3 +1070,4 @@ http://self.gutenberg.org/articles/Hierarchical_state_machine
 
 Readability of source code, Wikipedia
 https://en.wikipedia.org/wiki/Computer_programming#Readability_of_source_code
+
