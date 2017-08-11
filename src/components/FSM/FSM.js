@@ -933,30 +933,21 @@ const wrapIfDebug = cond([
   })],
   [T, identity]]);
 
+// TODO : make sure that all event guards, action guards, and mdoel updates are called with a
+// clone of the model so they don't modify it inadvertently
 // TODO : parametrize DOM sink name
-// TODO : implement history mechanism in this library
-// TODO: actionable implementation of statecharts in hs https://github.com/steelbreeze/state.js
-// TODO : fsm
-// http://www.intersel.fr/assets_intersel_a/gitdemos/iFSM/Examples/Example_Slideshow.html
-// TODO : use rxdb to replace firebase for the demo - it is totally offline, or
-// pipeDb! https://github.com/pipelinedb/pipelinedb
 // TODO : implement remaining contracts cf. doc
 // TODO : move contrac for action guards and event guards (return boolean value) into debug:true
 // so that when debug is false we have better performance
-// TODO : also in the AOP, add the wrappign of guards if they send exceptions...
 // TODO : same would be nice while saving to remote to show some message `pending...` = feature
 // i.e. some model update for when FSM in between states
 // The way to do this is to have ONE global pending internal FSM state which is associated to
 // some action (think about how, if we update the view with a spinner, how?)
-// TODO : 0. documenting features,
 // TODO : 0. docuemnting with examples and graphs
 // TODO : 1. convert a fsm data structure to a graphml or dot or tgf format
 // TODO : define my own errors with nice contextual messages and parameters
 // 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
 // 0. TODO : check remaining contracts
-// TODO : automatic actions through extra subject merged with the rest of event
-//        automatic action are specified with the entry actions,
-// attention to add the event at the end of the current tick (use cycle ordering of drivers?)
 // TODO Doc : for init transition, set re_entry to true if one wants to have initial component
 // display : this is due to INIT state being both target and current state at start-up
 // doc that re-entry is useless if there is no transition defined with target=current state
@@ -966,8 +957,6 @@ const wrapIfDebug = cond([
 // also be useful to implement pre-emptive event : no, pre-emptive are events of the same state,
 // not the next event, hence to implement non RTC semantics
 // TODO : 6. FSM re_entry should be lower, at action guard level when I put the target state
-// DOC : the action responses will be obtained on the sources of the same name than the action sink
-// NTH : change cycle dom driver to inject document, which would allow testing by mocking
 // NTH : change cycle dom driver to use a real DOM vs. virtual DOM diff
 // -> add event in team detail to update the model and re-entry
 // ---- cf. https://github.com/patrick-steele-idem/morphdom,

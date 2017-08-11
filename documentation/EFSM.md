@@ -333,7 +333,7 @@ Event names can be any valid identifier, except the reserved identifiers used fo
 
 #### Contracts
 - The `EV_INIT` event is reserved and **MUST NOT** be used in user-defined event configuration (FOOTNOTE : the corresponding event name string is found in the declaration of `INIT_EVENT_NAME`)
-- For the `EV_INIT` event, there **MUST** be defined a transition 
+- For the `EV_INIT` event, there **MUST** be defined at least one transition 
 
 #### Description
 Events to be processed by the state machine are defined through event factories. The `events` parameter maps an event name to an event factory which once executed will return a stream of events associated to that event name.
@@ -439,12 +439,14 @@ The rationale for this is two-pronged:
 - A transition **MAY** have an event guard
 - If a transition between two states have one or several action response guards, then for any incoming events, **at least ONE** of the guards **MUST** pass.
 - (events and actions) guard predicates **MUST** be pure functions - or in a more relaxed manner **MAY** have side-effects which do not affect the evaluation of other guards for the same event
+- model update functions MUST be pure functions.
+- To ensure event guards, action guards, model update functions do not update the state machine model, a clone of that model is passed to those functions (**IMPLEMENTED??**).
+- All functions part of the transitions configuration must be synchronous functions (event guards, action guards, model updates)
 - Run-To-Completion (RTC) semantics : a state machine completes processing of each event before it can start processing the next event
 	- Additional events occurring while the state machine is busy processing an event are dropped
 - FSM configured functions **MUST NOT** modify the model object parameter that they receive
 - FSM configured functions **MUST** be synchronous and immediately compute and return their value
-- FSM configured functions **MAY** throw, and that results in the state machine re-throwing the
-exception
+- FSM configured functions **MAY** throw, and that results in the state machine re-throwing the exception
 - if `action_request` property has no driver associated, then the request field **MUST** be null (**implemented??**)
 - if `action_request` property is none then `transition_evaluation.action_guard` **MUST** be Null  (**implemented??**)
 - an action request **MUST** have an action response associated. Otherwise, the state machine will block without end, waiting for a response.
@@ -474,7 +476,7 @@ Otherwise, the state machine will block without end, waiting for a response. (**
 Control states are associated to state entry dataflow component factories. Those are functions which takes the current value of the encapsulated model of the state machine and return a regular dataflow component, which can be further parameterized by a `settings` parameter (optional).
 Upon entry of a state, the mapped dataflow component will be executed, and its sinks (i.e. actions) will be connected to the sinks of the same name of the state machine dataflow component.
 
-**entry component initialization** : performed when a target state has been evaluated and the target state is entered.
+**entry component initialization** : performed when a target state has been evaluated and the target state is entered. If there is no entry component configured, then no action is taken.
 
 **entry component termination** : performed when an action request is emitted, and the control state is left. Note that while the action is being executed, the state machine is in limbo, it is neither in the origin state, nor in the target state.
 
@@ -488,12 +490,9 @@ Upon entry of a state, the mapped dataflow component will be executed, and its s
 - `Sinks :: HashMap SinkName (Stream *)`
 
 #### Contracts
-- The starting state is `S_INIT` and is reserved and cannot be used in user-defined state
-configuration, other than to represent the starting state.
-- States MAY be associated to entry actions which is the instantiation of a component
-- States defined in transition parameter MUST exist in `stateEntryComponents`
-- the `S_INIT` state MUST be associated ONLY with transitions featuring `EV_INIT` event
-(**NOT implemented??**).
+- The starting state is `S_INIT` and is reserved and cannot be used in user-defined state configuration, other than to represent the starting state.
+- States MAY be associated to entry actions which is the instantiation of a component (i.e. in`stateEntryComponents`)
+- the `S_INIT` state MUST be associated ONLY with transitions featuring `EV_INIT` event (**NOT implemented??**).
 
 **NOTE OF CAUTION** :: an state machine configured with an event guard such that the init event fails will remain in the initial state : the init event will not be repeated, hence the state machine will never transition.
 
@@ -1054,7 +1053,13 @@ When a state machine is activated, event factories are immediately executed, and
 **TODO add Angular2 implementation**
 
 # Roadmap
+- the state machine keeps a journal of the modification of its model (history 
+of update operations together with the transitions taken) for debugging 
+purposes or else
+- implement exit actions for cleanup purpose 
+	- will have to be specified in sync with the entry action (which probably creates the resource to clean up) 
 - specify event queuing, back pressure and interruption policies
+- automatic events (i.e. immediate preemption or transient state)
 - isolate out the output of the state machine (command passed through sinks)
 - isolate out further the asynchronous actions to reuse a synchronous hierarchical state machine
 	- input -> EHFSM -> command request => command manager
@@ -1070,6 +1075,17 @@ When a state machine is activated, event factories are immediately executed, and
 				- if event 1 succeed, the FSM changes state so the queued events would be interpreted in the new state context
 				- if event1 fails, the FSM might transition to an error state, so the queued events would be interpreted in the new error state context
 				- etc. so it is tricky - best is to drop the events, but not always possible?
+				- so keep the policy, but queue the events and execute them after the currently executed event is finished. It will be up to the machine designer to choose wisely his policies
+
+- old policy thinking
+- - policies when a state machine is in between states (expecting action response)
+    - CANCEL AND FIRE : the action in course is cancelled and the event is processed
+    - DROP : the events are dropped and not processed, a warning is issued (default)
+    - QUEUE AND FIRE : events for that state are queued. If the transition is towards the same state, then events are dequeued and processed in order of arrival. If to another state, warning is issued and events are dropped
+    - QUEUE AND DROP : events for that state are queued. If the transition is towards the same state, then queued events who happened while the action was executed are dropped, the queued events who happened after action has ended (and hence state is re-entered) are processed in order of arrival. If transition is to another state, warning is issued and events are dropped
+- policy should be specified at the transition level
+  - the event triggering the transition should define its queuing policy
+
 
 
 # References TODO
