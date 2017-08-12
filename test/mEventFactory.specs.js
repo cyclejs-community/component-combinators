@@ -69,7 +69,7 @@
 import * as QUnit from "qunitjs"
 import * as Rx from "rx"
 import { values } from "ramda"
-import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/examples/mEventFactory"
+import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/components/mEventFactory"
 import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"

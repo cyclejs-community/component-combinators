@@ -3,9 +3,9 @@ import {
   isStrictRecordE, isHashMapE, hasNoCommonValues,
   isString, preventDefault, removeNullsFromArray, assertContract, hasNoDuplicateKeys, format, isNewKey
 } from "../utils"
-import { defaultMergeSinkFn, m } from "../components/m"
+import { defaultMergeSinkFn, m } from "./m"
 import { flatten, merge, isNil, keys, reduce, T } from "ramda"
-import { isEventName } from "../components/types"
+import { isEventName } from "./types"
 
 // No further argument type checking here
 const isEventFactoryFunction = isFunction
