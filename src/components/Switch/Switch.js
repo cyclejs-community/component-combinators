@@ -13,7 +13,7 @@
 
 import {assertSignature, assertContract, checkSignature, hasPassedSignatureCheck,
   isString, isArray, isArrayOf, isFunction, defaultsTo, isSource,
-  unfoldObjOverload, m, removeNullsFromArray, removeEmptyVNodes, isVNode} from '../utils'
+  unfoldObjOverload, m, removeNullsFromArray, removeEmptyVNodes, isVNode} from '../../utils'
 import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
   merge, mergeAll, flatten, prepend, uniq, always, reject,
   either, isNil, omit, path, complement, or} from 'ramda'
@@ -259,7 +259,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
  * - caseWhen is mandatory
  *
  */
-export const Switch = {
+export const SwitchDef = {
   mergeSinks: {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       const allSinks = flatten([ownSink, childrenDOMSink])
@@ -279,6 +279,10 @@ export const Switch = {
 }
 
 export const Case = {computeSinks: computeSinks}
+
+export function Switch (switchSettings, childrenComponents) {
+  return m(SwitchDef, childrenComponents)
+}
 
 // TODO : look a the test. Switc is used as m(Switch, []...)
 // change it to Switch(settings, [Case])... I dont know actually see the todo list with fsm

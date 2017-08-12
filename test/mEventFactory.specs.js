@@ -74,17 +74,9 @@ import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
 import { makeMockDOMSource } from "../src/mocks/mockDOM"
+import {DOM_SINK} from "../src/components/properties"
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
-// TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a
-// demonstration of how to use this APIs = to put in runTestScenario.md
-// TODO: move analyzeTestResults to a settings like tickDuration, review all runTestScenario
-// test, harmonize with FSM-example, review by default value or make mandatory! and update
-// documentation, and harmonize in FSM-example if necessary
-// also harmonize utils for FSM-example
-///////
-// mButtonFactory.specs
-import { mButton } from "../src/examples/mButton"
 
 const SEP = ':';
 const NOT_A_FUNCTION = 42;
@@ -100,7 +92,6 @@ const ANOTHER_PREFIXED_DOM_EVENT_NAME_2 = ANOTHER_DOM_EVENT_NAME + 'Input';
 const EVENT_SOURCE1 = 'eventSource1';
 const EVENT_SOURCE2 = 'eventSource2';
 const NON_DOM_SINK = 'non_dom_sink';
-const DOM_SINK = 'DOM';
 const SOME_SELECTOR = '#some_selector_id';
 const ANOTHER_SELECTOR = '.some_class';
 const eventSourcesTestValues = {

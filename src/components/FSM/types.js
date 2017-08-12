@@ -6,7 +6,7 @@ import {
   isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray, isBoolean,
   isObservable, isComponent
 } from "../../utils"
-import { INIT_EVENT_NAME, INIT_STATE } from "../properties"
+import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 import { isNotEmpty, isSources, isSettings } from "../types"
 
 ////////

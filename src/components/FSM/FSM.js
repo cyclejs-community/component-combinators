@@ -22,7 +22,7 @@ import {
   CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, DRIVER_PREFIX, EV_GUARD_NONE, EVENT_PREFIX,
   INIT_EVENT_NAME, INIT_STATE, ZERO_DRIVER
-} from "../properties"
+} from "./properties"
 import {
   decorateEventsWithLog, decorateStateEntryWithLog, decorateTransitionsWithLog
 } from "./utils"
