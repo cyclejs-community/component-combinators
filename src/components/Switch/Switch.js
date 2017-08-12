@@ -196,22 +196,43 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   return mergeAll(map(makeSwitchedSink, sinkNames))
 }
 
+export const SwitchSpec = {
+  mergeSinks: {
+    DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
+      const allSinks = flatten([ownSink, childrenDOMSink])
+      const allDOMSinks = removeNullsFromArray(allSinks)
+
+      // NOTE : zip rxjs does not accept only one argument...
+      return $.merge(allDOMSinks) //!! passes an array
+        .tap(console.warn.bind(console, 'Switch.specs' +
+          ' > mergeDomSwitchedSinks > merge'))
+        .filter(Boolean)
+      // Most values will be null
+      // All non-null values correspond to a match
+      // In the degenerated case, all values will be null (no match
+      // at all)
+    }
+  }
+}
+
+export const Case = {computeSinks: computeSinks}
+
 /**
- * Usage : m(SwitchCase, ::SwitchCaseSettings, ::Array<CaseComponent>)
+ * Usage : Switch(SwitchCaseSettings, Array<CaseComponent>)
  * Example : cf. specs
- *   > const mComponent = m(SwitchCase, {
+ *   > const mComponent = Switch({
    *   >    on: (sources,settings) => sources.sweatch$,
    *   >    sinkNames: ['DOM', 'a', 'b']
    *   >  }, [
- *   > m(Case, {caseWhen: true}, [childComponent1, childComponent2]),
- *   > m(Case, {caseWhen: false}, [childComponent3])
+ *   > Case({when: true}, [childComponent1, childComponent2]),
+ *   > Case({when: false}, [childComponent3])
  *   > ])
  *
  * The switch combinator activates a component conditionally depending on
- * whether a condition on a 'switched' source stream is satisfied. Note
+ * whether a condition on a 'switch' source stream is satisfied. Note
  * that the condition is evaluated every time there is an incoming value
- * on the relevant sources.
- * If it is necessary to implement a logic by which, the component activation
+ * on the switch source.
+ * If it is necessary to implement a logic by which the component activation
  * should only trigger on **changes** of the incoming value, that logic
  * could be implemented with a `distinctUntilChanged`.
  * When the condition is no longer satisfied, the previously activated
@@ -241,47 +262,32 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
  * - Cf. Signature 1 for the meaning of the rest of parameters
  *
  * Contracts :
- * - SwitchCase combinator must have at least one child component
+ * - Switch combinator must have at least one child component
  * - Case combinator must have at least one child component
- * - Conditions should be defined such that there is for any given value
- * of the 'switched' stream only one matching component
- *   - If that is not the case, the last matching component will be the one
- *   prevailing. It is however how to predict which of the components will
- *   be the last in a given configuration
- * - on, sinkNames, caseWhen are mandatory
+ * - Switch predicates should be defined such that, for any given value
+ * of the 'switch' source, there is only one matching Switch child component
+ *   - If that is not the case :
+ *     - behaviour is unspecified
+ *     - in the present implementation, the last matching component should be the one
+ *   prevailing (NOT TESTED).
+ * - on, sinkNames, when are mandatory
  *
  * Case component
- * - settings.caseWhen :: *
- * An object which will activate the switched-to component whenever the source
+ * - settings.when :: *
+ * An object which will activate the switched-to component whenever the switch source
  * observable returned by the `on` parameter emits that object
  *
  * Contracts :
- * - caseWhen is mandatory
+ * - when is mandatory
  *
+ * @params {SwitchSettings} switchSettings
+ * @params {Array.<Component>} childrenComponents
+ * @return {Component}
+ * @throws
  */
-export const SwitchDef = {
-  mergeSinks: {
-    DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
-      const allSinks = flatten([ownSink, childrenDOMSink])
-      const allDOMSinks = removeNullsFromArray(allSinks)
-
-      // NOTE : zip rxjs does not accept only one argument...
-      return $.merge(allDOMSinks) //!! passes an array
-        .tap(console.warn.bind(console, 'Switch.specs' +
-          ' > mergeDomSwitchedSinks > merge'))
-        .filter(Boolean)
-      // Most values will be null
-      // All non-null values correspond to a match
-      // In the degenerated case, all values will be null (no match
-      // at all)
-    }
-  }
-}
-
-export const Case = {computeSinks: computeSinks}
-
 export function Switch (switchSettings, childrenComponents) {
-  return m(SwitchDef, childrenComponents)
+  // TODO : add contract for switch settings and childrenComponents
+  return m(SwitchSpec, switchSettings, childrenComponents)
 }
 
 // TODO : look a the test. Switc is used as m(Switch, []...)
