@@ -5,7 +5,7 @@ import { m } from "../components/m"
 import { both, complement, either, flatten, prop, reduce, tap, T, F, pipe } from "ramda"
 import * as Rx from "rx"
 import { div } from "cycle-snabbdom"
-//TODO: to be tested!!!
+
 let $ = Rx.Observable
 
 const mouseEventNames = [
