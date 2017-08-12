@@ -1,35 +1,27 @@
-// TODO : some renaming to think about (cf. other comments)
-// TODO : right now all casewhen are evaluated, should we stop at the first who qualifies? just
-// like the switch () {case} command? that would allow to have {default} in a natural way
-// TODO : documentation of course, and code review
-// TODO : in doc. show the interest of component switching
-// - simpler version of FSM with one state
-// - allow to remove a discrete(izable) parameters from a component design
-//   - for instance component (discrete, other) -> switch(discrete) {component (other)}
-//   - this allows for improved separation of concerns within the component
-//     - (case logged in/not)
-//   - should be used for the case where significantly different behaviours are in result of
-// different values of the discret(izabl)e parameter. Otherwise, it is DRY which suffers
+// NOTE : right now all casewhen are evaluated
 
-import {assertSignature, assertContract, checkSignature, hasPassedSignatureCheck,
-  isString, isArray, isArrayOf, isFunction, defaultsTo, isSource,
-  unfoldObjOverload, m, removeNullsFromArray, removeEmptyVNodes, isVNode} from '../../utils'
+import {m} from '../m'
+import {assertSignature, assertContract, checkSignature,
+  isString, isArray, isArrayOf, isFunction, isSource,
+  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode} from '../../utils'
 import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
   merge, mergeAll, flatten, prepend, uniq, always, reject,
-  either, isNil, omit, path, complement, or} from 'ramda'
+  either, isNil, omit, path, complement, or, equals} from 'ramda'
 import * as Rx from 'rx'
 import {h, div, span} from 'cycle-snabbdom'
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
 
+function defaultsTo(obj, defaultsTo) {
+  return !obj ? defaultsTo : obj
+}
+
 // CONFIG
-const DEFAULT_SWITCH_COMPONENT_SOURCE_NAME = 'switch$' // NOT USED
 const defaultEqFn = function swichCptdefaultEqFn(a, b) {
-  return a === b
+  return equals(a,b)
 }
 const cfg = {
-  defaultSwitchComponentSourceName: DEFAULT_SWITCH_COMPONENT_SOURCE_NAME,
   defaultEqFn: defaultEqFn
 }
 
@@ -50,16 +42,16 @@ const cfg = {
 //////
 // Helper functions
 function isSwitchSettings(settings) {
-  const {eqFn, caseWhen, sinkNames, on} = settings
+  const {eqFn, when, sinkNames, on} = settings
   const signature = {
     eqFn: either(isNil, isFunction),
-    caseWhen: complement(isNil),
+    when: complement(isNil),
     sinkNames: isArrayOf(isString),
     on: either(isString, isFunction)
   }
   const signatureErrorMessages = {
-    eqFn: 'eqFn property, when not undefined, must be a function.',
-    caseWhen: 'caseWhen property is mandatory.',
+    eqFn: 'eqFn property, when not falsy, must be a function.',
+    when: '\'when\' property is mandatory.',
     sinkNames: 'sinkNames property must be an array of strings',
     on: '`on` property is mandatory and must be a string or a function.'
   }
@@ -80,15 +72,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   // passed and not inherited unexpectedly from an ancestor.
   // This will have to be done via settingsContracts at SwitchCase level
 
-  // debug info
-  // console.groupCollapsed('Switch component > computeSinks')
-  console.debug('sources, settings, childrenComponents', sources, settings, childrenComponents)
-
-  assertContract(isSwitchSettings, [settings], 'Invalid switch' +
-    ' component settings!')
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], 'switch combinator must at least have one child component to switch to!')
-
-  let {eqFn, caseWhen, sinkNames, on} = settings
+  let {eqFn, when, sinkNames, on} = settings
 
   const overload = unfoldObjOverload(on, [
     {'guard$': isFunction},
@@ -114,7 +98,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   eqFn = defaultsTo(eqFn, cfg.defaultEqFn)
 
   const shouldSwitch$ = switchSource
-    .map(x => eqFn(caseWhen, x))
+    .map(x => eqFn(when, x))
     .share()
 
   const cachedSinks$ = shouldSwitch$
@@ -122,7 +106,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .map(function (_) {
       const mergedChildrenComponentsSinks = m(
         {},
-        {matched: caseWhen},
+        {matched: when},
         childrenComponents)
 
       return mergedChildrenComponentsSinks(sources, settings)
@@ -215,7 +199,7 @@ export const SwitchSpec = {
   }
 }
 
-export const Case = {computeSinks: computeSinks}
+export const CaseSpec = {computeSinks: computeSinks}
 
 /**
  * Usage : Switch(SwitchCaseSettings, Array<CaseComponent>)
@@ -252,16 +236,17 @@ export const Case = {computeSinks: computeSinks}
  * mandatory as we can't know in advance which sinks to produce
  * - settings.eqFn :: * -> * -> Boolean
  * A predicate which returns true if both parameters are considered equal.
- * This parameter defaults to `===`
+ * This parameter defaults to ramda's equals function
  *
  * Signature 2: SwitchOnSource -> [Component] -> Component
  * - settings.on :: SourceName
  * A string which is the source name whose values will be used for the
- * conditional activation of the component. The sources used will be
+ * conditional activation of the component. The source used will be
  * sources[sourceName]
  * - Cf. Signature 1 for the meaning of the rest of parameters
  *
  * Contracts :
+ * - the source name given as parameter must exist as property of the `sources` parameter
  * - Switch combinator must have at least one child component
  * - Case combinator must have at least one child component
  * - Switch predicates should be defined such that, for any given value
@@ -286,11 +271,22 @@ export const Case = {computeSinks: computeSinks}
  * @throws
  */
 export function Switch (switchSettings, childrenComponents) {
-  // TODO : add contract for switch settings and childrenComponents
+  // TODO : check that contracts are correct - nothing missing and correct names of properties
+  // TODO : that means move `on` check in computeSinks here in conracts
+  // TODO : and use the validation monad for the error passing
+  assertContract(isSwitchSettings, [switchSettings], `Switch : Invalid switch component settings!`);
+  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : switch combinator must at least have one child component to switch to!`);
+ // TODO : change typedef for SwitchSpec
   return m(SwitchSpec, switchSettings, childrenComponents)
 }
 
-// TODO : look a the test. Switc is used as m(Switch, []...)
+export function Case (CaseSettings, childrenComponents) {
+  // TODO : check contracts
+  // TODO : change typedef for CaseSpec
+  return m(CaseSpec, CaseSettings, childrenComponents)
+}
+
+// TODO : look a the test. Switch is used as m(Switch, []...)
 // change it to Switch(settings, [Case])... I dont know actually see the todo list with fsm
 /*
 Switch({
