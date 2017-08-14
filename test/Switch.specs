@@ -58,7 +58,7 @@ QUnit.module("Testing Switch component", {})
 // 2. Switch on source generating function
 // same than 1
 
-QUnit.test("main cases - 2 children - switch on condition", function exec_test(assert) {
+QUnit.test("main cases - 1 match - 2 children - switch on source", function exec_test(assert) {
   const done = assert.async(3);
 
   const childComponent1 = function childComponent1(sources, settings) {
