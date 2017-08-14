@@ -19,7 +19,7 @@
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings)} makeOwnSinks
- * @property {function(Sinks, Array<Sinks>, Settings)} mergeSinks
+ * @property {function(Sinks, Array<Sinks>, Settings) || Object.<Sink, Function>} mergeSinks
  * @property {?function(Sinks):Boolean} checkPostConditions
  * @property {?function(Sources, Settings):Boolean} checkPreConditions
  */
@@ -92,11 +92,11 @@ function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   // That should not be possible as we come here only
   // when we detect a DOM sink
   if (allDOMSinks.length === 0) {
-    throw `mergeDOMSinkDefault: internal error!`
+    throw `m > computeDOMSinkDefault: internal error!`
   }
 
   return $.combineLatest(allDOMSinks)
-    .tap(x => console.log(`mergeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
+    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
     .map(mergeChildrenIntoParentDOM(parentDOMSinkOrNull))
 }
 

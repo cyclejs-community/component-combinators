@@ -1,14 +1,76 @@
 # Motivation
-The `Switch` component allows to associate a set of values from a source (called switch source) to a component. When the switch source emits the values associated to a given component, that component is activated. Components which are not associated to the emitted set of values are deactivated.
+The `Switch` component allows to associate a set of values from a source (called switch source) to a component. When the switch source emits the values associated to a given component, that component is activated (switched on). Components which are not associated to the emitted set of values are deactivated (switched off).
 
 The `Switch` component can be viewed as a single-state state machine, whose only event source is the switch source and event guards are the predicates specifying the component matching.
 
-Practically speaking, the `Switch` component allows to improve separation of concern by removing control flow out of some component designs. For instance, supposing we have a component whose behaviour depends on a discretizable parameter, in addition to other parameters, we need to write the logic corresponding to each discrete value in the body of the same function. With `Switch`, we can write several components corresponding to the logic for each discrete value.
+Practically speaking, the `Switch` component allows to improve separation of concern by removing control flow out of some component designs. For instance, supposing we have a component whose behaviour depends on a discretizable parameter, in addition to other parameters, we need to write the logic corresponding to each discrete value in the body of the same function. With `Switch`, we can write several components corresponding to the logic for each discrete value separately.
 
-For example, a component might be specified to display a product page when the user is logged in, and otherwise display a login page. This components hence has two behaviour or concerns which are unrelated. The discrete values here can be thought of as `LOGGED_IN`, `NOT_LOGGED_IN`. With `Switch`, we can write a `Login` component separately and independently from the `Product` component, and let the `Switch` component activate the right component.
+For example, a component might be specified to display a product page when the user is logged in, and otherwise display a login page. This component hence has two behaviors or concerns which are unrelated. The discrete values here can be thought of as `LOGGED_IN`, `NOT_LOGGED_IN`. With `Switch`, we can write a `Login` component separately and independently from the `Product` component, and let the `Switch` component activate the right component.
 
-Note that this makes less sense when the isolated concerns are dependent. For instance, a `Product` component which displays a product details page for a given product would not be a good fit for usage of the `Switch` component, even if one can discretize products by product ids. The code for displaying a given product id, being the same for any product, using `Switch` would lead to code duplication, violating the DRY principle.
+Note that this makes less sense when the isolated concerns are not independent. For instance, a `Product` component which displays a product details page for a given product would not be a good fit for usage of the `Switch` component, even if one can discretize products by product ids. The code for displaying a given product id, being the same for any product, using `Switch` would lead to code duplication, violating the DRY principle.
+
+# API
+
+## Switch :: SwitchSettings -> [CaseComponent] -> SwitchComponent
+
+### Description
+Creates a switch component whose behaviour is parameterized via `SwitchSettings`. Children components are the components to be mapped to incoming values on the switch source.
+
+The parametrization is as follows :
+
+- an array of sink names must be passed to indicate which sinks are to be extracted from the case components. Sinks produced by any child component which are not in the sink names array will be ignored. It is not necessary, for any sink name in that array, for a child component to return a sink of that name.
+- the switch source can be specified in two ways :
+	- the name of the source can be given as a string
+	- a function can be used to compute the switch source from `sources` and `settings` parameter of the switch component (i.e. the component returned after application of the `Switch` combinator).
+
+The behaviour is as follows :
+
+- for every incoming value of the switch source, all predicates found in children `CaseComponent`s are executed. 
+- The components associated to the fulfilled predicates are switched on
+- The other components are switched off
+
+
+### Types
+- `SwitchComponent :: Component`
+-  `CaseComponent :: Component`
+- `SwitchSettings :: Record {`
+- `  sinkNames :: [String]`  **Mandatory**
+- `  on :: SwitchOnCondition | SwitchOnSource` **Mandatory**
+- `  eqFn :: T -> T -> Boolean` **Optional**
+- `}`
+- `SwitchOnCondition :: Sources -> Settings -> Source`
+- `SwitchOnSource:: SourceName`
+- `SourceName :: String`
+
+### Contracts
+- children component MUST be `CaseComponent`, i.e. generated by the `Case` combinator
+- if the switch source is specified by name, then that source name MUST be found as a property of the `sources` parameter
+
+
+## Case:: CaseSettings -> [Component] -> CaseComponent
+### Description
+The `Case` combinator returns a case component and is to be used solely in combination with the Switch combinator. 
+
+It specifies a match between a value of a switch source and a component to be switched on. The match is specified by the property `when` in settings. Equality between two values can also be evaluated via a custom function passed in the `eqFn` property in settings.
+
+Every case component  will receive when executed the property `matched` as part of its settings. That property will be the incoming value of the switch source triggering the case component.
+
+This means that case component functions will be executed for each matching incoming value.
+
+### Types
+-  `CaseComponent :: Component`
+- `CaseSettings :: Record {`
+- `  when :: Object`  **Mandatory**
+- `  eqFn :: T -> T -> Boolean` **Optional**
+- `}`
+
+### Contracts
+- nothing special apart from the regular type contracts
+
+# Example
+
 
 # Tips
-- One should strive to have a relatively low number of discretized switch values as there is a performance cost which is linear with the number of such values. As a matter of fact, all predicates matching switched components to their discretized values are executed, for every incoming value of the switch source.
+- Note that the switch predicates are evaluated every time there is an incoming value on the switch source. If it is necessary to implement a logic by which the component switching should only trigger on **CHANGES** of the incoming value, that logic could be implemented with appending a `distinctUntilChanged` to the switch source.
+- One should strive for having a relatively low number of discretized switch values as there is a performance cost which is linear with the number of such values. As a matter of fact, all predicates matching switched components to their discretized values are executed, for every incoming value of the switch source.
 - One can have several fulfilled predicates for a given incoming value of the switch source. This means that several components could be activated for a given incoming value, but different conditions, which allows to implement more complex logic. This is however to use wisely, as the ability to reason about behaviour suffers somewhat. For instance, when several components can be activated for the same incoming value, and order of activation of those component matter, such ordering requirement is essentially hidden as implementation detail in the source code.

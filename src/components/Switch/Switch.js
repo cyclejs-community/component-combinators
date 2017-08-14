@@ -1,14 +1,15 @@
 // NOTE : right now all casewhen are evaluated
 
 import {m} from '../m'
-import {assertSignature, assertContract, checkSignature,
+import {
+  assertSignature, assertContract, checkSignature,
   isString, isArray, isArrayOf, isFunction, isSource,
-  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode} from '../../utils'
+  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode, checkAndGatherErrors
+} from '../../utils'
 import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
-  merge, mergeAll, flatten, prepend, uniq, always, reject,
+  merge, mergeAll, flatten, prepend, uniq, always, reject, defaultTo,
   either, isNil, omit, path, complement, or, equals} from 'ramda'
 import * as Rx from 'rx'
-import {h, div, span} from 'cycle-snabbdom'
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -41,68 +42,77 @@ const cfg = {
 
 //////
 // Helper functions
-function isSwitchSettings(settings) {
-  const {eqFn, when, sinkNames, on} = settings
-  const signature = {
-    eqFn: either(isNil, isFunction),
-    when: complement(isNil),
-    sinkNames: isArrayOf(isString),
-    on: either(isString, isFunction)
-  }
-  const signatureErrorMessages = {
-    eqFn: 'eqFn property, when not falsy, must be a function.',
-    when: '\'when\' property is mandatory.',
-    sinkNames: 'sinkNames property must be an array of strings',
-    on: '`on` property is mandatory and must be a string or a function.'
-  }
-
-  return checkSignature(settings, signature, signatureErrorMessages)
-}
-
 function hasAtLeastOneChildComponent(childrenComponents) {
   return childrenComponents &&
   isArray(childrenComponents) &&
   childrenComponents.length >= 1 ? true : ''
 }
 
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  // TODO (later): Be careful that the inheritance of settings down the
-  // chain can pollute children... So I need to check the presence of the
-  // passed settings before merge to check that mandatory properties are
-  // passed and not inherited unexpectedly from an ancestor.
-  // This will have to be done via settingsContracts at SwitchCase level
+function hasWhenProperty(sources, settings) {
+  return Boolean(settings && settings.when)
+}
 
-  let {eqFn, when, sinkNames, on} = settings
+function hasEqFnProperty(sources, settings) {
+  return Boolean(!settings || !settings.eqFn)
+    && Boolean(isFunction(settings.eqFn))
+}
+
+function hasSinkNamesProperty(sources, settings) {
+  return Boolean(settings || !settings.sinkNames)
+    && Boolean(isArrayOf(isString)(settings.sinkNames))
+}
+
+function hasOnProperty(sources, settings) {
+  return Boolean(settings || !settings.on) &&
+    (
+      Boolean(isString(settings.on) && sources[settings.on])
+      || Boolean(isFunction(settings.on))
+    )
+}
+
+const isCaseSettings = checkAndGatherErrors([
+  [hasWhenProperty, `Settings parameter must have a 'when' property!`],
+  [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
+], `isCaseSettings : fails!`);
+
+const isSwitchSettings = checkAndGatherErrors([
+  [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
+  [hasOnProperty, `Settings parameter must have a 'on' property, which is either a string or a function!`]
+    [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
+], `Switch : Invalid switch component settings!`);
+
+//////////////
+function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+  let {eqFn, when, sinkNames, on} = settings;
 
   const overload = unfoldObjOverload(on, [
     {'guard$': isFunction},
     {'sourceName': isString}
-  ])
-  let {guard$, sourceName, _index} = overload
-  let switchSource
+  ]);
+  let {guard$, sourceName, _index} = overload;
+  let switchSource;
 
   if (overload._index === 1) {
     // Case : overload `settings.on :: SourceName`
     switchSource = sources[sourceName]
-    assertContract(isSource, [switchSource],
-      `An observable with name ${sourceName} could not be found in sources`)
   }
   if (overload._index === 0) {
     // Case : overload `settings.on :: SourceName`
     switchSource = guard$(sources, settings)
     assertContract(isSource, [switchSource],
-      `The function used for conditional switching did not return an observable!`)
+      `Case > computeSinks > The function used for conditional switching did not return an observable!`)
   }
 
   // set default values for optional properties
-  eqFn = defaultsTo(eqFn, cfg.defaultEqFn)
+  eqFn = defaultTo(cfg.defaultEqFn, eqFn);
 
   const shouldSwitch$ = switchSource
-    .map(x => eqFn(when, x))
+    .map(x => eqFn(x, when))
     .share()
+  ;
 
   const cachedSinks$ = shouldSwitch$
-    .filter(x => x)
+    .filter(x => x) // filter out false values i.e. passes only if case predicate is satisfied
     .map(function (_) {
       const mergedChildrenComponentsSinks = m(
         {},
@@ -112,25 +122,20 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
       return mergedChildrenComponentsSinks(sources, settings)
     })
     .share() // multicasted to all sinks
+  ;
 
   function makeSwitchedSinkFromCache(sinkName) {
     return function makeSwitchedSinkFromCache(isMatchingCase, cachedSinks) {
+      // TODO : remove unused, use let isntead of var
+      // TODO : use return inside the ifs and remove cached$
       var cached$, preCached$, prefix$
+
       if (isMatchingCase) {
         // Case : the switch source emits a value corresponding to the
         // configured case in the component
 
-        // Case : matches configured value
+        // Case : the component produces a sink with that name
         if (cachedSinks[sinkName] != null) {
-          // Case : the component produces a sink with that name
-          // This is an important case, as parent can have children
-          // nested at arbitrary levels, with either :
-          // 1. sinks which will not be retained (not in `sinkNames`
-          // settings)
-          // 2. or no sinks matching a particular `sinkNames`
-          // Casuistic 1. is taken care of automatically as we only
-          // construct the sinks in `sinkNames`
-          // Casuistic 2. is taken care of thereafter
           cached$ = cachedSinks[sinkName]
             .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
             .finally(_ => {
@@ -140,8 +145,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         else {
           // Case : the component does not have any sinks with the
           // corresponding sinkName
-          // NOTE : $.never() could also be, but this one avoids hanging
-          // in some cases
+          // NOTE : Don't use $.never(), this avoids hanging in some cases
           cached$ = $.empty()
         }
       }
@@ -155,8 +159,12 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         // the current value of DOM, which should be on only iff the case
         // is fulfilled.
         // In even more fact, this is the case for any behaviour, not just
-        // the DOM. It must have a zero value for the monoidal merge operation
-        cached$ = sinkName === 'DOM' ? $.of(null) : $.empty()
+        // the DOM. Behaviours must continuously have a value. Not settings null for the DOM,
+        // i.e. for instance setting $.empty() would mean a `combineLatest` down the road would
+        // still lead to the display of the old DOM, or worse block part of the DOM building
+        // (all sources for `combineLatest` must have emitted for the operator to emit its first
+        // value)
+                cached$ = sinkName === 'DOM' ? $.of(null) : $.empty()
       }
       return cached$
     }
@@ -175,8 +183,6 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     }
   }
 
-  // console.groupEnd()
-
   return mergeAll(map(makeSwitchedSink, sinkNames))
 }
 
@@ -186,20 +192,26 @@ export const SwitchSpec = {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
 
+      // TODO : replace by combineLatest
+
       // NOTE : zip rxjs does not accept only one argument...
-      return $.merge(allDOMSinks) //!! passes an array
-        .tap(console.warn.bind(console, 'Switch.specs' +
-          ' > mergeDomSwitchedSinks > merge'))
+      return $.merge(allDOMSinks)
+        .tap(console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`))
         .filter(Boolean)
       // Most values will be null
       // All non-null values correspond to a match
       // In the degenerated case, all values will be null (no match
       // at all)
     }
-  }
+  },
+  checkPreConditions : isSwitchSettings
 }
 
-export const CaseSpec = {computeSinks: computeSinks}
+export const CaseSpec = {
+  computeSinks: computeSinks,
+  checkPreConditions : isCaseSettings
+}
+
 
 /**
  * Usage : Switch(SwitchCaseSettings, Array<CaseComponent>)
@@ -271,20 +283,23 @@ export const CaseSpec = {computeSinks: computeSinks}
  * @throws
  */
 export function Switch (switchSettings, childrenComponents) {
-  // TODO : check that contracts are correct - nothing missing and correct names of properties
-  // TODO : that means move `on` check in computeSinks here in conracts
-  // TODO : and use the validation monad for the error passing
-  assertContract(isSwitchSettings, [switchSettings], `Switch : Invalid switch component settings!`);
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : switch combinator must at least have one child component to switch to!`);
- // TODO : change typedef for SwitchSpec
   return m(SwitchSpec, switchSettings, childrenComponents)
 }
 
 export function Case (CaseSettings, childrenComponents) {
-  // TODO : check contracts
-  // TODO : change typedef for CaseSpec
   return m(CaseSpec, CaseSettings, childrenComponents)
 }
+
+// TODO : when doc and specs is written write carefully the test to test everything
+// - matched passed to children
+// - case when several components are active at the same time (several passing predicates)
+//   - not clear at all that this would work, given the DOM merge function, this would by why
+// only the latest DOM is displayed?? but all the other actions are executed
+// TODO : change the DOC : contracts - should only have one branch of Case at any given time for now
+// TODO : then change Switch to not merge simply DOM but combin them the default way but
+// removing null - or does the default way already removes null?? that would be great
+// TODO : study a DynSwitch reimplementation which multicasts the component sinks into one sink
 
 // TODO : look a the test. Switch is used as m(Switch, []...)
 // change it to Switch(settings, [Case])... I dont know actually see the todo list with fsm
