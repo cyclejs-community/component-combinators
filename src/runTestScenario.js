@@ -347,7 +347,7 @@ function defaultErrorHandler(err) {
  *
  *   ALL output streams returned by the tested function must have defined
  *   expected results, otherwise an exception will be thrown.
- * @param {function(Sources):Sinks} testFn Function to test
+ * @param {function(Sources, ?Settings):Sinks} testFn Function to test
  * @param {TestRunnerSettings} _settings
  * @throws when a predefined contract is broken, or when the tested function throws
  */

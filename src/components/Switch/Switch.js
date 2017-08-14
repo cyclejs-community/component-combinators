@@ -187,23 +187,6 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 }
 
 export const SwitchSpec = {
-  mergeSinks: {
-    DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
-      const allSinks = flatten([ownSink, childrenDOMSink])
-      const allDOMSinks = removeNullsFromArray(allSinks)
-
-      // TODO : replace by combineLatest
-
-      // NOTE : zip rxjs does not accept only one argument...
-      return $.merge(allDOMSinks)
-        .tap(console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`))
-        .filter(Boolean)
-      // Most values will be null
-      // All non-null values correspond to a match
-      // In the degenerated case, all values will be null (no match
-      // at all)
-    }
-  },
   checkPreConditions : isSwitchSettings
 }
 
@@ -294,15 +277,9 @@ export function Case (CaseSettings, childrenComponents) {
 // TODO : when doc and specs is written write carefully the test to test everything
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
-//   - not clear at all that this would work, given the DOM merge function, this would by why
-// only the latest DOM is displayed?? but all the other actions are executed
 // TODO : change the DOC : contracts - should only have one branch of Case at any given time for now
-// TODO : then change Switch to not merge simply DOM but combin them the default way but
-// removing null - or does the default way already removes null?? that would be great
 // TODO : study a DynSwitch reimplementation which multicasts the component sinks into one sink
 
-// TODO : look a the test. Switch is used as m(Switch, []...)
-// change it to Switch(settings, [Case])... I dont know actually see the todo list with fsm
 /*
 Switch({
   on: 'auth$'
