@@ -3,18 +3,26 @@
  * components])
  */
 
-import { assertContract, assertSignature, isArray, isArrayOf, isFunction, isString } from "../utils"
+import {
+  assertContract, assertSignature, DOM_SINK, isArray, isArrayOf, isFunction, isString
+} from "../utils"
 import { m } from "./m"
-import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR, keys } from "ramda"
+import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR, keys, defaultTo } from "ramda"
 import { routeMatcher } from "../vendor/routematcher"
 import Rx from "rx"
 const $ = Rx.Observable
 
 // Configuration
-const routeSourceName = 'route$'
+const defaultRouteSourceName = 'route$'
 
 ///////////
 // Helpers
+function hasAtLeastOneChildComponent(childrenComponents) {
+  return childrenComponents &&
+  isArray(childrenComponents) &&
+  childrenComponents.length >= 1 ? true : ''
+}
+
 function match(routeToMatch) {
   let rm1 = routeMatcher(routeToMatch)
   let rm2 = routeMatcher(routeToMatch + '/*routeRemainder')
@@ -36,7 +44,7 @@ function match(routeToMatch) {
 }
 
 function isRouteSettings(obj) {
-  return obj.route && isString(obj.route) &&
+  return obj && obj.route && isString(obj.route) &&
     obj.sinkNames && isArray(obj.sinkNames) && obj.sinkNames.length > 0
 }
 
@@ -100,7 +108,8 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   // enter the observable monad, from which we can't get out.
   // This behaviour results in having to handle null cases for sinks (some
   // sinks might be present only on some children components).
-  const sinkNames = settings.sinkNames
+  const {sinkNames, routeSource}= settings;
+  const routeSourceName = defaultTo(defaultRouteSourceName, routeSource)
   const trace = 'Router (' + (settings.trace || "") + ")"
 
   let route$ = sources[routeSourceName]
@@ -178,7 +187,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
           // construct the sinks in `sinkNames`
           // Casuistic 2. is taken care of thereafter
 
-          prefix$ = sinkName === 'DOM' ?
+          prefix$ = sinkName === DOM_SINK ?
             // Case : DOM sink
             // actually any sink which is merged with a `combineLatest`
             // but here by default only DOM sinks are merged that way
@@ -210,7 +219,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
       else {
         // Case : new route does NOT match component configured route
         console.log(`${trace} : params is null!!! no match for this component on this route`)
-        cached$ = sinkName === 'DOM' ? $.of(null) : $.empty()
+        cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
       }
 
       return cached$
@@ -242,14 +251,9 @@ export function checkRouteSettingsHaveRouteProp(settings) {
 // appropriate default...
 // That is combineLatest for the behaviours (DOM...), merge for the events
 // TODO : check the current defaults of `m`
-export function onRoute(settings, components) {
+export function onRoute(routeSettings, childrenComponents) {
   // check that components is an array
-  assertContract(isArrayOf(isFunction), [components], `onRoute : MUST be passed array of functions (components)`);
-  // check that settings.route is set to a string
-  assertContract(checkRouteSettingsHaveRouteProp, [settings], `onRoute : settings MUST include the url in its route property!`)
+  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : router combinator must at least have one child component to route to!`);
 
-  return m({ computeSinks }, settings, components)
+  return m({ computeSinks }, routeSettings, childrenComponents)
 }
-
-// TODO : have an index.js which imports stuff from sublibs and export * them out
-// TODO : then make a npm release, put that in a package.json in FSM-example

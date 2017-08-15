@@ -5,7 +5,7 @@ import {
   assertSignature, assertContract, checkSignature,
   isString, isArray, isArrayOf, isFunction, isSource,
   unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode, checkAndGatherErrors,
-  isEmptyArray
+  isEmptyArray, DOM_SINK
 } from '../../utils'
 import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
   merge, mergeAll, flatten, prepend, uniq, always, reject, defaultTo,
@@ -166,7 +166,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         // still lead to the display of the old DOM, or worse block part of the DOM building
         // (all sources for `combineLatest` must have emitted for the operator to emit its first
         // value)
-                cached$ = sinkName === 'DOM' ? $.of(null) : $.empty()
+                cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
       }
       return cached$
     }
