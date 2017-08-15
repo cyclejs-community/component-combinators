@@ -9,7 +9,7 @@ define(function (require) {
   const U = require('util')
   const m = U.m
   const Cycle = require('cycle')
-  const Router = require('components/Router')
+  const Router = require('components/Router/Router')
   //    const toHTML = require('vdomtohtml')
   const Sdom = require('cycle-snabbdom')
   const Sdom2html = require('snabbdom-to-html').toHTML

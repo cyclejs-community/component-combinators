@@ -4,19 +4,28 @@
  */
 
 import {
-  assertContract, assertSignature, DOM_SINK, isArray, isArrayOf, isFunction, isString
-} from "../utils"
-import { m } from "./m"
+  assertContract, assertSignature, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction,
+  isString
+} from "../../utils"
+import { m } from "../m"
 import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR, keys, defaultTo } from "ramda"
-import { routeMatcher } from "../vendor/routematcher"
+import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
+import { defaultRouteSourceName, ROUTE_PARAMS, ROUTE_SOURCE } from "./properties"
 const $ = Rx.Observable
-
-// Configuration
-const defaultRouteSourceName = 'route$'
 
 ///////////
 // Helpers
+function hasSinkNamesProperty(sources, settings) {
+  return Boolean(settings && 'sinkNames' in settings)
+    && Boolean(isArrayOf(isString)(settings.sinkNames))
+}
+
+function hasRouteProperty(sources, settings) {
+  return Boolean(settings && 'route' in settings)
+    || Boolean(isString(settings.route) && settings.route.length > 1)
+}
+
 function hasAtLeastOneChildComponent(childrenComponents) {
   return childrenComponents &&
   isArray(childrenComponents) &&
@@ -43,10 +52,10 @@ function match(routeToMatch) {
   }
 }
 
-function isRouteSettings(obj) {
-  return obj && obj.route && isString(obj.route) &&
-    obj.sinkNames && isArray(obj.sinkNames) && obj.sinkNames.length > 0
-}
+const isRouteSettings = checkAndGatherErrors([
+  [hasRouteProperty, `Settings parameter must have a 'route' property which is a non empty string!`],
+  [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
+], `isRouteSettings : fails!`);
 
 /**
  * Definition for a router component which :
@@ -109,7 +118,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   // This behaviour results in having to handle null cases for sinks (some
   // sinks might be present only on some children components).
   const {sinkNames, routeSource}= settings;
-  const routeSourceName = defaultTo(defaultRouteSourceName, routeSource)
+  const routeSourceName = defaultTo(ROUTE_SOURCE, routeSource)
   const trace = 'Router (' + (settings.trace || "") + ")"
 
   let route$ = sources[routeSourceName]
@@ -148,7 +157,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
               console.groupEnd()
 
               return {
-                route$: matchedRoute$
+                [routeSourceName]: matchedRoute$
                   .map(pathR(['match', 'routeRemainder']))
                   .tap(console.debug.bind(console,
                     `${trace} : changedRouteEvents$ : children wrapper component  : routeRemainder (new route$ for children)`))
@@ -156,7 +165,7 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
               }
             },
           }, {
-            routeParams: omit(['routeRemainder'], params),
+            [ROUTE_PARAMS]: omit(['routeRemainder'], params),
             trace: 'inner - ' + trace
           },
           childrenComponents)
@@ -239,21 +248,15 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   return mergeAllR(mapR(makeRoutedSink, sinkNames))
 }
 
-export function checkRouteSettingsHaveRouteProp(settings) {
-  // there must be a route property and it must be a string
-  return settings.route && isString(settings.route)
-}
+const RouterSpec = {
+  computeSinks: computeSinks,
+  checkPreConditions : isRouteSettings
+};
 
-// TODO : think about some rules for names for this kind of functions (HOC? not totally)
-// 1. I need an array of component for nested routing
-// onRoute(URL, [onRoute(url1, chilcComp1), onRoute(url2, childComp2)])
-// 2. But then I miss the settings parameter, i.e. I need to merge the children sinks with an
-// appropriate default...
-// That is combineLatest for the behaviours (DOM...), merge for the events
-// TODO : check the current defaults of `m`
+// TODO : in index.js set up the sinks for the router as in FSM-example
 export function onRoute(routeSettings, childrenComponents) {
   // check that components is an array
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : router combinator must at least have one child component to route to!`);
 
-  return m({ computeSinks }, routeSettings, childrenComponents)
+  return m(RouterSpec, routeSettings, childrenComponents)
 }

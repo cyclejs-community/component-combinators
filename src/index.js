@@ -21,13 +21,7 @@
   }
 }());
 
-// TODO : Change from onRoute to RouteWhen or sth like that?
-// TODO : change Switch from m to Switch(CaseWhen...
-// TODO : update the switch code too, it changed in between version
-// TODO: also adapt the tests!!
-// import {TODO} from './components/Switch'
-
 export * from  "./components/m"
-export * from  "./components/Router"
+export * from "./components/Router/Router"
 export * from "./utils"
 export * from "./runTestScenario"
