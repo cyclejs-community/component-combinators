@@ -7,4 +7,4 @@ import './mEventFactory.specs'
 import './mButton.specs'
 // TODO : add a test in runTestScenario for inputs = []
 import './runTestScenario.specs'
-
+import './Switch.specs'

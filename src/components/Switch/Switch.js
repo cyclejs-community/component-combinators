@@ -1,10 +1,11 @@
 // NOTE : right now all casewhen are evaluated
 
-import {m} from '../m'
+import { computeDOMSinkDefault, m } from '../m'
 import {
   assertSignature, assertContract, checkSignature,
   isString, isArray, isArrayOf, isFunction, isSource,
-  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode, checkAndGatherErrors
+  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode, checkAndGatherErrors,
+  isEmptyArray
 } from '../../utils'
 import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
   merge, mergeAll, flatten, prepend, uniq, always, reject, defaultTo,
@@ -49,12 +50,13 @@ function hasAtLeastOneChildComponent(childrenComponents) {
 }
 
 function hasWhenProperty(sources, settings) {
-  return Boolean(settings && settings.when)
+  console.log('SSSSEETTINGS', settings)
+  return Boolean(settings && 'when' in settings)
 }
 
 function hasEqFnProperty(sources, settings) {
-  return Boolean(!settings || !settings.eqFn)
-    && Boolean(isFunction(settings.eqFn))
+  return Boolean(!settings || !('eqFn' in settings))
+ || Boolean(isFunction(settings.eqFn))
 }
 
 function hasSinkNamesProperty(sources, settings) {
@@ -77,7 +79,7 @@ const isCaseSettings = checkAndGatherErrors([
 
 const isSwitchSettings = checkAndGatherErrors([
   [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
-  [hasOnProperty, `Settings parameter must have a 'on' property, which is either a string or a function!`]
+  [hasOnProperty, `Settings parameter must have a 'on' property, which is either a string or a function!`],
     [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
 ], `Switch : Invalid switch component settings!`);
 
@@ -187,6 +189,21 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 }
 
 export const SwitchSpec = {
+  mergeSinks: {
+    DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
+      const allSinks = flatten([ownSink, childrenDOMSink])
+      const allDOMSinks = removeNullsFromArray(allSinks)
+
+      // NOTE : zip rxjs does not accept only one argument...
+      return $.merge(allDOMSinks) //!! passes an array
+        .tap(console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`))
+        .filter(Boolean)
+      // Most values will be null
+      // All non-null values correspond to a match
+      // In the degenerated case, all values will be null (no match
+      // at all)
+    }
+  },
   checkPreConditions : isSwitchSettings
 }
 
@@ -194,7 +211,6 @@ export const CaseSpec = {
   computeSinks: computeSinks,
   checkPreConditions : isCaseSettings
 }
-
 
 /**
  * Usage : Switch(SwitchCaseSettings, Array<CaseComponent>)

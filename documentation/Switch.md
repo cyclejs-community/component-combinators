@@ -3,7 +3,7 @@ The `Switch` component allows to associate a set of values from a source (called
 
 The `Switch` component can be viewed as a single-state state machine, whose only event source is the switch source and event guards are the predicates specifying the component matching.
 
-Practically speaking, the `Switch` component allows to improve separation of concern by removing control flow out of some component designs. For instance, supposing we have a component whose behaviour depends on a discretizable parameter, in addition to other parameters, we need to write the logic corresponding to each discrete value in the body of the same function. With `Switch`, we can write several components corresponding to the logic for each discrete value separately.
+Practically speaking, the `Switch` component allows to improve separation of concerns by removing control flow out of some component designs. For instance, supposing we have a component whose behaviour depends on a discretizable parameter, in addition to other parameters, we need to write the logic corresponding to each discrete value in the body of the same function. With `Switch`, we can write several components corresponding to the logic for each discrete value separately.
 
 For example, a component might be specified to display a product page when the user is logged in, and otherwise display a login page. This component hence has two behaviors or concerns which are unrelated. The discrete values here can be thought of as `LOGGED_IN`, `NOT_LOGGED_IN`. With `Switch`, we can write a `Login` component separately and independently from the `Product` component, and let the `Switch` component activate the right component.
 
@@ -28,6 +28,7 @@ The behaviour is as follows :
 - for every incoming value of the switch source, all predicates found in children `CaseComponent`s are executed. 
 - The components associated to the fulfilled predicates are switched on
 - The other components are switched off
+- Note that correct behaviour is only guaranteed if predicates are mutually exclusive, i.e. if **no two predicates can be simultaneously true**, i.e. only one component branch validated at any given time
 
 
 ### Types
@@ -65,7 +66,7 @@ This means that case component functions will be executed for each matching inco
 - `}`
 
 ### Contracts
-- nothing special apart from the regular type contracts
+- Configuration of `when` must be such that at any given time, only one Case Component is activated, i.e. branching predicates are mutually exclusive
 
 # Example
 

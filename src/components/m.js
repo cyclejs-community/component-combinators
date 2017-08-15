@@ -490,4 +490,4 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
   )
 }
 
-export { m, defaultMergeSinkFn }
+export { m, defaultMergeSinkFn, computeDOMSinkDefault }

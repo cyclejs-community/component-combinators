@@ -915,14 +915,18 @@ const logFnTrace = (title, paramSpecs) => ({
   },
 });
 
+function toHTMLorNull(x){
+  return x ? toHTML(x) : null
+}
+
 function convertVNodesToHTML(vNodeOrVnodes) {
   if (isArray(vNodeOrVnodes)) {
     console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? toHTML(x) : null)}`)
-    return vNodeOrVnodes.map(x => x ? toHTML(x) : null)
+    return vNodeOrVnodes.map(toHTMLorNull)
   }
   else {
-    console.debug(`toHTML: ${toHTML(vNodeOrVnodes)}`)
-    return toHTML(vNodeOrVnodes)
+    console.debug(`toHTML: ${toHTMLorNull(vNodeOrVnodes)}`)
+    return toHTMLorNull(vNodeOrVnodes)
   }
 }
 
