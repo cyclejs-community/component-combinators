@@ -1,7 +1,9 @@
+
+
 # Motivation
 The `Router` component allows to associate a set of URL locations (routes) from a source (called location source) to a component or set of components. When the location source emits a route, the component(s) associated to that route should be activated and be parameterized by the information encoded in the route. 
 
-In many ways, routing is a sophisticated form of control flow, and relates strongly to the `Switch` component. However, there are specifics to the routing logic, due to the fact that routing in web applications is principally aimed at representing efficiently, concisely, and visually a specific state of the application :
+Routing involves a sophisticated form of control flow, and relates strongly to the `Switch` component. However, there are specifics to the routing logic, due to the fact that routing in web applications is principally aimed at representing efficiently, concisely, and visually a specific state of the application :
 
 - routing may be nested : a parent-child relationship at component level may be encoded with a parent-child relationship at route level 
 	- the standard mapping is a relationship between sections of the url. For instance `URL : 'x/y/z'` mapped to `Components : A1(x,y) -- B1(z)`
@@ -13,7 +15,7 @@ In many ways, routing is a sophisticated form of control flow, and relates stron
 
 As one can see, routing, at a simplified level, can be modelized as a two-concerns entity :
 
-1. a mapping between a URL (a string of text) and a tree of components. In the case of nested routing, we have _in fine_ a mapping between a tree of URL sections and a tree of components. 
+1. a mapping between a URL (representing the application state) and a tree of components (which compose the application in the given state). In the case of nested routing, we have _in fine_ a mapping between a tree of URL sections and a tree of components.  This is generally referred to as _deep linking_.
 2. a procedure to match updates of that URL to updates of the component tree as efficiently as possible.
 
 Some applications add extra control-flow requirement to routing by adding another concern :
@@ -46,5 +48,29 @@ The behaviour is as follows :
 	- the associated components are executed with a location source which is updated to remove the matched path from the current location source
 	- the sinks returned by the associated components are activated (meged into the rest of the application sinks)
 - if there is not a positive match on the configured route, then 
-- **TODO I AM HERE**
-	- no idea, still dont have it clear how the routing actuall works... maybe rewrite it?? that was a nightmare the first time, so not sure
+  - `null` is emitted on `DOM` sinks. This is so under the hypothesis that router's parent DOM sink will merge its children sinks with `combineLatest`, so we need all DOM sinks to have an initial value to avoid blocking the `combineLatest` operation. We also need to pass on the fact that the DOM is actually empty on that route[^1], so that previously displayed DOMs are actually erased on route changes. 
+
+[^1]: The core reason is that DOM sink correspond to a behaviour, and hence should always have a value. That not being enforced by cyclejs framework forces us to adjust manually.
+
+
+### Types
+- `RouteComponent :: Component`
+- `RouteSettings :: Record {`
+- `  sinkNames :: [String]`  **Mandatory**
+- `  route :: RouteSpec` **Mandatory**
+- `}`
+- `RouteSpec :: String` [syntax](https://github.com/cowboy/javascript-route-matcher)
+
+### Contracts
+- be careful about end slashing
+- ??
+
+
+# Example
+
+# Roadmap
+- route parsing
+	- switch to more recent and functional https://github.com/rcs/route-parser
+
+# Tips
+- TODO

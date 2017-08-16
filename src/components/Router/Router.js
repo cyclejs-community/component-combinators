@@ -1,8 +1,3 @@
-/**
- * Usage : m(Router, {route: RouteSpec, sinkNames: [...]}, [children
- * components])
- */
-
 import {
   assertContract, assertSignature, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction,
   isString
@@ -41,11 +36,15 @@ function hasAtLeastOneChildComponent(childrenComponents) {
  * @param {Route} routeToMatch the configured route to be matched against current location
  * @returns {function(Route): {match : ParsedRoute | {routeRemainder : *}}} Returns a function
  * which, when called with the current route location, returns :
- * - the parsed route when the current route location matches the configured route
+ * - the parsed route when the current route location matches the configured route (total match)
  * - the route remainder if the current route lcoation strictly 'contains' the configured route,
  * i.e. there is a substring of current route location that matches the configured route. The
  * route remainder is the difference between the current route location and that substring
  * - configured route : /*param, route location : /a/b => {routeRemainder : b, param : a}
+ * In short, this allows for partial matching of url vs. configured route.
+ * The returned object always contains the matched parameters from the url (undefined if none)
+ * and `routeRemainder` property holds on the next sections of the url (undefined when no
+ * next sections).
  */
 function match(routeToMatch) {
   let rm1 = routeMatcher(routeToMatch)
@@ -116,7 +115,7 @@ const isRouteSettings = checkAndGatherErrors([
  *
  */
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  const trace = 'Router (' + (settings.trace || "") + ")"
+  const trace = 'Router (' + (settings.trace || "") + ")";
   console.groupCollapsed(`${trace} > computeSinks`)
   console.debug(`sources : ${keys(sources)}`)
   console.debug(`settings`, settings)
@@ -164,9 +163,9 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         console.info('computing children components sinks', params);
         const componentFromChildren = m({
             makeLocalSources: function makeLocalSources(sources, __settings) {
-              console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`)
+              console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`);
               console.debug(`sources : ${keys(sources)}, __settings :`, __settings);
-              console.groupEnd()
+              console.groupEnd();
 
               return {
                 [routeSourceName]: matchedRoute$
