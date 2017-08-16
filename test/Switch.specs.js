@@ -1,31 +1,3 @@
-/**
- * Test plan
- *
- * A. Testing strategy
- * Main case tests must cover HaveParent x Signature x Children
- * That makes for 2 x 3 potential tests:
- * - Signature : whether Signature 1 or 2
- * - Children : whether the component has no children, 1 child, or several
- * children (We assume here that if the tests pass for two children, they will
- * pass for any number of children > 2)
- *
- * We will reduce the number of tests to perform to: 3 x (3 > 2 ?1 :2) by:
- * - assuming that the behaviour linked to the signature is
- * independent of the behaviour linked to the other arguments. Hence that
- * behaviour can be tested 'for free' on the way to testing expected
- * behaviour under the rest of the arguments.
- *
- * We hence remain with 3 tests to perform:
- * - (0,1,2) children
- * which will include along the way:
- * - default for optional properties (eqFn)
- * - signature 1 and 2
- *
- * B. Test scenarii
- */
-
-// TODO : test 1 match, 0 matches
-
 import * as QUnit from "qunitjs"
 import { m } from '../src/components/m'
 import * as Rx from 'rx'
@@ -46,14 +18,14 @@ function analyzeTestResults(assert, done) {
 
 QUnit.module("Testing Switch component", {})
 
-// Test plan TODO : write better in function of the latest
+// Test plan
 // All tests with two children min. for components, and 3 cases
-// All tests will test for all combination of transition of switch source (t->f, f->t, t->t, etc)
+// All tests will test for all combination of transition of switch source (t->f, f->t, t->t, f->f)
 // 1. Switch on source
 // 1.1 source not existing in sources
 // 1.2 source not a string or a function
 // 1.3 switch source 1 match
-// 1.4 switch source 2 matches -- DOES NOT WORK!!
+// 1.4 switch source 2 matches -- DOES NOT WORK!! -> REMOVED FROM SPECIFICATIONS
 // 1.5 switch source 0 matches
 // 1.6 same with config of eqFn
 // 2. Switch on source generating function
