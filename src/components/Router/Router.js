@@ -8,10 +8,10 @@ import {
   isString
 } from "../../utils"
 import { m } from "../m"
-import { isNil, map as mapR, mergeAll as mergeAllR, omit, path as pathR, keys, defaultTo } from "ramda"
+import { isNil, map as mapR, mergeAll, omit, path as pathR, keys, defaultTo } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
-import { defaultRouteSourceName, ROUTE_PARAMS, ROUTE_SOURCE } from "./properties"
+import { ROUTE_CONFIG, ROUTE_PARAMS, ROUTE_SOURCE } from "./properties"
 const $ = Rx.Observable
 
 ///////////
@@ -31,9 +31,25 @@ function hasAtLeastOneChildComponent(childrenComponents) {
   isArray(childrenComponents) &&
   childrenComponents.length >= 1 ? true : ''
 }
-
+/**
+ * @typedef {String} Route
+*/
+/**
+ * @typedef {Object.<String, String> | null} ParsedRoute
+ */
+/**
+ * @param {Route} routeToMatch the configured route to be matched against current location
+ * @returns {function(Route): {match : ParsedRoute | {routeRemainder : *}}} Returns a function
+ * which, when called with the current route location, returns :
+ * - the parsed route when the current route location matches the configured route
+ * - the route remainder if the current route lcoation strictly 'contains' the configured route,
+ * i.e. there is a substring of current route location that matches the configured route. The
+ * route remainder is the difference between the current route location and that substring
+ * - configured route : /*param, route location : /a/b => {routeRemainder : b, param : a}
+ */
 function match(routeToMatch) {
   let rm1 = routeMatcher(routeToMatch)
+  // TODO : put into a property when tests are passing `/*${ROUTE_REMAINDER}`
   let rm2 = routeMatcher(routeToMatch + '/*routeRemainder')
 
   return function match(incomingRoute) {
@@ -99,15 +115,12 @@ const isRouteSettings = checkAndGatherErrors([
  * @param {function(Sources, Settings)} makeOwnSinks
  *
  */
-export function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  console.groupCollapsed('Router > computeSinks')
-  console.log(`sources : ${keys(sources)}`)
-  console.log(`settings`, settings)
-  console.log('childrenComponents', childrenComponents);
-
-  const signature = [{ settings: isRouteSettings },]
-
-  assertSignature('Router > computeSinks', [settings], signature)
+function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+  const trace = 'Router (' + (settings.trace || "") + ")"
+  console.groupCollapsed(`${trace} > computeSinks`)
+  console.debug(`sources : ${keys(sources)}`)
+  console.debug(`settings`, settings)
+  console.debug('childrenComponents', childrenComponents);
 
   // The sink names are necessary as we cannot know otherwise in
   // advance what are the sinks output by the children components without
@@ -119,12 +132,11 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
   // sinks might be present only on some children components).
   const {sinkNames, routeSource}= settings;
   const routeSourceName = defaultTo(ROUTE_SOURCE, routeSource)
-  const trace = 'Router (' + (settings.trace || "") + ")"
 
   let route$ = sources[routeSourceName]
-    .tap(console.debug.bind(console, `${trace} : route$`))
+    .tap(console.debug.bind(console, `${trace} : source ${routeSourceName}`))
 
-  let matchedRoute$ = route$.map(match(settings.route))
+  let matchedRoute$ = route$.map(match(settings[ROUTE_CONFIG]))
     .tap(console.debug.bind(console, `${trace} : matchedRoute$`))
     // NOTE : replaying here is mandatory
     // That's because the children are passed `matchedRoute` and
@@ -147,29 +159,29 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
     .map(function (params) {
       let cachedSinks
 
+      // Case : the configured route did match the current route
       if (params != null) {
-        console.info('computing children components sinks', params)
+        console.info('computing children components sinks', params);
         const componentFromChildren = m({
             makeLocalSources: function makeLocalSources(sources, __settings) {
-              console.group('${trace} : changedRouteEvents$ : children wrapper component :' +
-                ' makeLocalSources')
-              console.log(`sources : ${keys(sources)}, __settings :`, __settings);
+              console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`)
+              console.debug(`sources : ${keys(sources)}, __settings :`, __settings);
               console.groupEnd()
 
               return {
                 [routeSourceName]: matchedRoute$
                   .map(pathR(['match', 'routeRemainder']))
                   .tap(console.debug.bind(console,
-                    `${trace} : changedRouteEvents$ : children wrapper component  : routeRemainder (new route$ for children)`))
+                    `${trace} > changedRouteEvents$ > children wrapper component  > source ${routeSourceName} > routeRemainder (new route$ for children)`))
                   .share(),
               }
             },
           }, {
             [ROUTE_PARAMS]: omit(['routeRemainder'], params),
-            trace: 'inner - ' + trace
+            trace: `${trace} > componentFromChildren`
           },
-          childrenComponents)
-        cachedSinks = componentFromChildren(sources, settings)
+          childrenComponents);
+        cachedSinks = componentFromChildren(sources, settings);
       }
       else {
         cachedSinks = null
@@ -211,10 +223,10 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
             $.empty()
 
           preCached$ = cachedSinks[sinkName]
-            .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
+            .tap(console.log.bind(console, `${trace} > makeRoutedSinkFromCache > sink ${sinkName} :`))
             .finally(_ => {
               void _
-              console.log(`${trace} : sink ${sinkName} : terminating due to route change'`)
+              console.log(`${trace} > makeRoutedSinkFromCache > sink ${sinkName} : terminating due to route change`)
             })
 
           cached$ = $.concat(prefix$, preCached$)
@@ -244,8 +256,9 @@ export function computeSinks(makeOwnSinks, childrenComponents, sources, settings
     }
   }
 
-  console.groupEnd('makeAllSinks')
-  return mergeAllR(mapR(makeRoutedSink, sinkNames))
+  console.groupEnd();
+
+  return mergeAll(mapR(makeRoutedSink, sinkNames))
 }
 
 const RouterSpec = {
@@ -254,6 +267,7 @@ const RouterSpec = {
 };
 
 // TODO : in index.js set up the sinks for the router as in FSM-example
+// TODO : write documentation
 export function onRoute(routeSettings, childrenComponents) {
   // check that components is an array
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : router combinator must at least have one child component to route to!`);

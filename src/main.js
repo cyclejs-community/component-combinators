@@ -207,3 +207,25 @@ define(function (require) {
   Cycle.run(main, drivers)
 
 })
+
+OnRoute({route: 'group/:groupId'}, [
+  showGroupCore,
+  OnRoute({route: 'user/:userId'}, [
+    showUsersCore,
+    showUserDetails
+  ])
+]);
+
+OR
+
+OnRoute({route: 'group/:groupId', parent: showGroupCore}, [
+  OnRoute({route: 'user/:userId', parent: showUsersCore}, [
+    showUserDetails
+  ])
+]);
+
+// Possible but goes against policy of having all components expressed in the tree. not in
+// parameters.
+// So recommendation is to use form 1 and when necessary use a mergeSink settings to add style or
+// whatever necessary to the DOM, but then gotta be careful that this merge settigns does not
+// interact badly with OnRoute original settings...
