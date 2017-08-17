@@ -963,8 +963,24 @@ function formatArrayObj(arr, separator) {
 
 function format(obj) {
   // basically if obj is an object, use formatObj, else use toString
-  if (isObject(obj)) {
-    return formatObj(obj)
+  if (obj === 'null'){
+    return '<null>'
+  }
+  else if (obj === 'undefined'){
+    return '<undefined>'
+  }
+  else if (obj === ''){
+    return '<empty string>'
+  }
+  else if (isArray(obj)) {
+    return formatArrayObj(obj, ' ; ')
+  }
+  else if (isObject(obj)) {
+    if (keys(obj).length === 0) {
+      // i.e. object is {}
+      return '<empty object>'
+    }
+    else return formatObj(obj)
   }
   else {
     return "" + obj

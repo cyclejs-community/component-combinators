@@ -58,7 +58,8 @@ import {
   keys as keysR, map, mapObjIndexed, reduce as reduceR, tryCatch, values
 } from "ramda"
 import {
-  assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks,
+  assertContract, assertSignature, format, isArray, isArrayOf, isFunction, isNullableObject,
+  isOptSinks,
   isString, isUndefined, makeErrorMessage, removeNullsFromArray
 } from "./utils"
 import * as Rx from "rx"
@@ -160,7 +161,17 @@ function getTestResults(testInputs$, expected, settings) {
       .scan(function buildResults(accumulatedResults, sinkValue) {
         console.log(`runTestScenario : ${sinkName} receives `, sinkValue);
         const transformFn = expected[sinkName].transform || identity;
-        const transformedResult = transformFn(clone(sinkValue));
+        const transformedResult = tryCatch(transformFn, function (err, ...args){
+          console.error (`runTestScenario > testAccumulatedResults$ > transformFn : ERROR!`, err);
+          console.warn (`while executing tranform function with args`, args);
+          return [
+            `ERROR while executing transform function when computing sink ${sinkName}`,
+            `Error message : ${err}`,
+            `Function arguments : ${format(args)}`,
+            `If there is an error message in the arguments, then the error occured before transform, in the sink!`,
+            `Consult log for more details!`,
+        ].join('\n')
+        })(clone(sinkValue));
         accumulatedResults.push(transformedResult);
 
         return accumulatedResults;

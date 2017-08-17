@@ -52,6 +52,7 @@ function match(routeToMatch) {
   let rm2 = routeMatcher(routeToMatch + '/*routeRemainder')
 
   return function match(incomingRoute) {
+    console.debug(`match > match : ${routeToMatch}`)
     if (isNil(incomingRoute)) {
       return {
         match: null

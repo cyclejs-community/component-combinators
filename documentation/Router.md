@@ -44,14 +44,24 @@ search.parse("search/gnarf/p10")  // {query: "gnarf", page: "10"}
 
 The behaviour is as follows :
 - for every incoming value of the location source, the incoming route is matched against the configured route
-- if there is a positive match on the configured route, then 
-	- the associated components are executed with a location source which is updated to remove the matched path from the current location source
-	- the sinks returned by the associated components are activated (meged into the rest of the application sinks)
+- if there is a match, and that match is the same as the previous match, nothing happens, the component(s) was/were already activated previously
+- if there is a non-redundant positive match on the configured route, then 
+	- the associated components are executed with 
+		- a location source which is updated to remove the matched path from the current location source
+			- this is the key mechanism allowing nested routing
+		- a `matched` property in settings which contain the partial route matching (for instance `/section/:capture` will lead to `{matched: capture: '...'}`)
+	- the sinks returned by the associated components are activated (merged into the rest of the application sinks)
+		- those sinks whose name is not in the `sinkNames` property are discarded
+		- those sinks whose name is in the `sinkNames` property are merged according to settings (default-merged if not)
 - if there is not a positive match on the configured route, then 
   - `null` is emitted on `DOM` sinks. This is so under the hypothesis that router's parent DOM sink will merge its children sinks with `combineLatest`, so we need all DOM sinks to have an initial value to avoid blocking the `combineLatest` operation. We also need to pass on the fact that the DOM is actually empty on that route[^1], so that previously displayed DOMs are actually erased on route changes. 
 
 [^1]: The core reason is that DOM sink correspond to a behaviour, and hence should always have a value. That not being enforced by cyclejs framework forces us to adjust manually.
 
+!!!!!!!!! TO DOCUMENT THE EMISSION OF NULL AS THIS HAS TO BE FILTERED SOMEWHERE. WORKS WITH DEFAULT MERGE THOUGH
+TWO CASES : 
+- MATCH TO MATCH
+- STARTS WITH NULL
 
 ### Types
 - `RouteComponent :: Component`
@@ -63,7 +73,7 @@ The behaviour is as follows :
 
 ### Contracts
 - be careful about end slashing
-- ??
+- `route :: RouteSpec` should not end by a `/` or start with a `/` (**NOTE** : for now! this is due to how `routeRemainder` is parsed and passed to children...)
 
 
 # Example
