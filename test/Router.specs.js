@@ -25,7 +25,7 @@
 // - Test Universe = TransitionTypes x NestingLevel + NoopWhenRepeatRoute
 // NOTE : In all rigour, I should add also the requirements described in behaviour in the
 // documentation, and relating to sink merging of children components, the parameter passing
-// to the children via `matched` property, and the purning of `route` source. I will incorporate
+// to the children via `matched` property, and the pruning of `route` source. I will incorporate
 // that in the tests without talking about it.
 
 import * as QUnit from "qunitjs"
