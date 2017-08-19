@@ -75,7 +75,6 @@ One can refer to the tests to see this in action.
 - be careful about end slashing
 - `route :: RouteSpec` should not end by a `/` or start with a `/` (**NOTE** : for now! this is due to how `routeRemainder` is parsed and passed to children...)
 
-
 # Example
 
 # Roadmap

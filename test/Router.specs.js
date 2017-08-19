@@ -56,6 +56,8 @@ const ROUTE_LOG_SINK = 'ROUTE_LOG';
 function makeTestHelperComponent(header, sourceName, routeCfg) {
   return function (sources, settings) {
     return {
+      // NOTE : that DOM example is a bit fictitious as DOM should ALWAYS have a starting value...
+      // We keep it like this though for testing purposes
       [DOM_SINK]: sources[sourceName].map(x => h('span', {},
         `${header} on route '${routeCfg}' > ${ROUTE_PARAMS} - ${sourceName}: ${format(settings[ROUTE_PARAMS])} - ${x}`)),
       // NOTE : x here will be the route remainder vs. current match
@@ -88,9 +90,6 @@ QUnit.module("Testing Router component", {});
 QUnit.test("non-nested routing - transitions - initial state", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
-//TODO : add routeLog or better name to check the route in the children
-  // TODO : reunderstand and document the null emissions : DOM when starts, and when finises
-  // so when match -> no match and no match -> match
   const routerComponent = m({}, { sinkNames: sinkNames }, [
     onRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
@@ -151,8 +150,6 @@ QUnit.test("non-nested routing - transitions no match -> match", function exec_t
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  // TODO : reunderstand and document the null emissions : DOM when starts, and when finises
-  // so when match -> no match and no match -> match
   const routerComponent = m({}, { sinkNames: sinkNames }, [
     onRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
@@ -227,8 +224,6 @@ QUnit.test("non-nested routing - transitions match -> no match, also testing par
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  // TODO : reunderstand and document the null emissions : DOM when starts, and when finises
-  // so when match -> no match and no match -> match
   const routerComponent = m({}, { sinkNames: sinkNames }, [
     onRoute({ route: 'group:param' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group:param'),
@@ -305,8 +300,6 @@ QUnit.test("non-nested routing - transitions", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  // TODO : reunderstand and document the null emissions : DOM when starts, and when finises
-  // so when match -> no match and no match -> match
   const routerComponent = m({}, { sinkNames: sinkNames }, [
     onRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
@@ -417,8 +410,6 @@ QUnit.test("nested routing depth 1 - transitions", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  // TODO : reunderstand and document the null emissions : DOM when starts, and when finises
-  // so when match -> no match and no match -> match
   const routerComponent = m({}, { sinkNames: sinkNames }, [
     onRoute({ route: 'master:qs' }, [
       makeTestHelperComponent('Master component', A_SOURCE, 'master'),
@@ -576,9 +567,8 @@ QUnit.test("nested routing depth 1 - transitions", function exec_test(assert) {
 });
 
 // C. with two nesting to test (TODO)
-// /guru -> /guru?:guruparams/master?:masterparams ->
-// /guru?:guruparams/master?:masterparams/detail?:detailparams ->
-// /guru?:guruparams/master?:masterparams -> /guru
+// /guru -> /guru:guruparams/master:masterparams ->
+// /guru:guruparams/master:masterparams/detail:detailparams ->
+// /guru:guruparams/master:masterparams -> /guru
 // D. non-repetition of computation (nesting level of two)
 // - /guru -> /guru -> /guru/master/detail -> /guru/master/detail -> /guru/master -> /guru/master
-
