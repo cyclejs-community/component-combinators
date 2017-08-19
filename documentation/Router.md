@@ -43,6 +43,7 @@ search.parse("search/gnarf/p10")  // {query: "gnarf", page: "10"}
 ```
 
 The behaviour is as follows :
+
 - for every incoming value of the location source, the incoming route is matched against the configured route
 - if there is a match, and that match is the same as the previous match, nothing happens, the component(s) was/were already activated previously
 - if there is a non-redundant positive match on the configured route, then 
@@ -54,14 +55,13 @@ The behaviour is as follows :
 		- those sinks whose name is not in the `sinkNames` property are discarded
 		- those sinks whose name is in the `sinkNames` property are merged according to settings (default-merged if not)
 - if there is not a positive match on the configured route, then 
-  - `null` is emitted on `DOM` sinks. This is so under the hypothesis that router's parent DOM sink will merge its children sinks with `combineLatest`, so we need all DOM sinks to have an initial value to avoid blocking the `combineLatest` operation. We also need to pass on the fact that the DOM is actually empty on that route[^1], so that previously displayed DOMs are actually erased on route changes. 
+  - `null` is emitted on `DOM` sinks. This is so under the hypothesis that router's parent DOM sink will merge its children sinks with `combineLatest`, so we need all DOM sinks to have an initial value to avoid blocking the `combineLatest` operation. We also need to pass on the fact that the DOM is actually empty on that route[^1], so that previously displayed DOMs are actually erased on route changes. Concretely there are two common cases :
+	  - transition [MATCH, INIT] TO NO_MATCH -> EMITS NULL
+	  - transition [MATCH, NO_MATCH] -> MATCH -> ALWAYS STARTS WITH NULL
+
+One can refer to the tests to see this in action.
 
 [^1]: The core reason is that DOM sink correspond to a behaviour, and hence should always have a value. That not being enforced by cyclejs framework forces us to adjust manually.
-
-!!!!!!!!! TO DOCUMENT THE EMISSION OF NULL AS THIS HAS TO BE FILTERED SOMEWHERE. WORKS WITH DEFAULT MERGE THOUGH
-TWO CASES : 
-- MATCH TO MATCH
-- STARTS WITH NULL
 
 ### Types
 - `RouteComponent :: Component`
@@ -80,7 +80,10 @@ TWO CASES :
 
 # Roadmap
 - route parsing
+	- have the parsing library as a configurable dependency
 	- switch to more recent and functional https://github.com/rcs/route-parser
 
 # Tips
-- TODO
+- The null emission mechanism is explained here for reference, and for analyzing output when testing. In a real application, the only impact this should have is that the DOM sink can receive null inputs, and as such must guards against them (filtering them out for instance)
+- The current parsing library does not parse query strings but passes all the query string to the component. One can then use a specific query string parsing library.  This ensures maximal flexibility for the router component library as any extra parsing library can be plugged in according to the shape of the route.
+
