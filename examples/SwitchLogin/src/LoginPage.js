@@ -1,7 +1,7 @@
 import * as Rx from "rx";
 import { div, form, h2, i, img, input } from 'cycle-snabbdom'
-import { assertContract, DOM_SINK } from "../../../src/utils"
-import { T, always } from "ramda"
+import { assertContract, convertVNodesToHTML, DOM_SINK } from "../../../src/utils"
+import { T, pipe, always } from "ramda"
 import { LOG_IN } from "../drivers/auth"
 
 const $ = Rx.Observable;
@@ -13,31 +13,26 @@ export function LoginPage(loginSettings) {
   return function LoginPage(sources, settings) {
     const loginIntent$ = sources[DOM_SINK].select('.login').events('click');
 
-/*
-    const loginAction$ = loginIntent$.map(always({
+    const loginAction$ = loginIntent$.map(x => ({
       context: '',
       command: LOG_IN,
       payload: { username: sources.document.querySelector('.email').value }
     }));
-    const redirectAction$ = source.auth$
+    const redirectAction$ = sources.auth$
       // filter out when user is not authenticated
       .filter(Boolean)
       // when user is authenticated, redirect
       .map(always(loginSettings.redirect))
-*/
 
     return {
-      [DOM_SINK]: $.of(render()),
-/*
+      [DOM_SINK]: $.of(render()).tap(pipe(convertVNodesToHTML, console.warn.bind(console, 'LOGIN:'))),
       auth$: loginAction$,
       router : redirectAction$
-*/
     }
   }
 }
 
 function render() {
-  debugger
   return div(".ui.middle.aligned.center.aligned.grid", [
     div(".column", [
       h2(".ui.teal.image.header", [

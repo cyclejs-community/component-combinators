@@ -2,7 +2,7 @@
 
 import { m } from '../m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction, isSource,
+  assertContract, checkAndGatherErrors, DOM_SINK, format, isArray, isArrayOf, isFunction, isSource,
   isString, removeNullsFromArray, unfoldObjOverload
 } from '../../utils'
 import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
@@ -111,7 +111,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   ;
 
   const cachedSinks$ = shouldSwitch$
-    .filter(x => x) // filter out false values i.e. passes only if case predicate is satisfied
+    .filter(Boolean) // filter out false values i.e. passes only if case predicate is satisfied
     .map(function (_) {
       const mergedChildrenComponentsSinks = m(
         {},
@@ -129,6 +129,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
       // TODO : use return inside the ifs and remove cached$
       var cached$, preCached$, prefix$
 
+      debugger
       if (isMatchingCase) {
         // Case : the switch source emits a value corresponding to the
         // configured case in the component
@@ -171,6 +172,8 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 
   function makeSwitchedSink(sinkName) {
     return {
+      // TODO : cache manually, erase cache on new shouldSwitch$.filter(Boolean), insert cache
+      // with shouldSwitch$.map(computeAndCacheSinks)
       [sinkName]: shouldSwitch$.withLatestFrom(
         cachedSinks$,
         makeSwitchedSinkFromCache(sinkName)
@@ -190,7 +193,7 @@ export const SwitchSpec = {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
-      debugger
+
       // NOTE : zip rxjs does not accept only one argument...
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
         function (x) {
