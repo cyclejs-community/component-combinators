@@ -27,7 +27,7 @@ export function LoginPage(loginSettings) {
       // filter out when user is not authenticated
       .filter(Boolean)
       // when user is authenticated, redirect
-      .map(always(loginSettings.redirect))
+      .map(always(loginSettings.redirect));
 
     return {
       [DOM_SINK]: $.of(render()).tap(pipe(convertVNodesToHTML, console.warn.bind(console, 'LOGIN:'))),

@@ -52,6 +52,7 @@ localForage.keys()
   .then((initLoginState) => {
 
     // Make auth drivers
+    debugger
     const {user$, authDriver} = makeAuthDriver(repository, initLoginState);
 
     const { sources, sinks } = run(App, {

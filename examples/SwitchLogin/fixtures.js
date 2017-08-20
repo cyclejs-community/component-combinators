@@ -5,5 +5,5 @@ export const user = null;
  * @param localforage
  */
 export function loadTestData(localforage) {
-    return localforage.setItem('user', user)
+    return localforage.getItem('user')
 }
