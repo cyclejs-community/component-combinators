@@ -15,8 +15,8 @@ export const App = Switch({
     MainPage // has a logout link...
   ]),
   Case({ when: IS_NOT_LOGGED_IN }, [
-//    LoginPage({ redirect: '/' }) // login page with login button TODO : settings not first arg
-    function coucou(){return ({DOM : $.of(p('coucou'))})}
+    LoginPage({ redirect: '/' }) // login page with login button TODO : settings not first arg
+    // function coucou(){return ({DOM : $.of(p('coucou'))})}
   ]),
 ])
 

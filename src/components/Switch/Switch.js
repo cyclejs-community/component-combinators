@@ -2,7 +2,7 @@
 
 import { m } from '../m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, format, isArray, isArrayOf, isFunction, isSource,
+  assertContract, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction, isSource,
   isString, removeNullsFromArray, unfoldObjOverload
 } from '../../utils'
 import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
@@ -83,6 +83,7 @@ const isSwitchSettings = checkAndGatherErrors([
 //////////////
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   let { eqFn, when, sinkNames, on } = settings;
+  let cachedSinks = null;
 
   const overload = unfoldObjOverload(on, [
     { 'guard$': isFunction },
@@ -107,77 +108,72 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 
   const shouldSwitch$ = switchSource
     .map(x => eqFn(x, when))
-    .share()
-  ;
+    .do(function (isMatching) {
+      if (isMatching) {
+        const mergedChildrenComponentsSinks = m(
+          {},
+          { matched: when },
+          childrenComponents)
 
-  const cachedSinks$ = shouldSwitch$
-    .filter(Boolean) // filter out false values i.e. passes only if case predicate is satisfied
-    .map(function (_) {
-      const mergedChildrenComponentsSinks = m(
-        {},
-        { matched: when },
-        childrenComponents)
-
-      return mergedChildrenComponentsSinks(sources, settings)
+        cachedSinks = mergedChildrenComponentsSinks(sources, settings)
+      }
     })
-    .share() // multicasted to all sinks
+    // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
+    // because the wire happens at switch time? and that is a different time every time??
+    // Anyways it semms to work like this, so no more touching it
+    .shareReplay(1)
   ;
-
-  function makeSwitchedSinkFromCache(sinkName) {
-    return function makeSwitchedSinkFromCache(isMatchingCase, cachedSinks) {
-      // TODO : remove unused, use let isntead of var
-      // TODO : use return inside the ifs and remove cached$
-      var cached$, preCached$, prefix$
-
-      debugger
-      if (isMatchingCase) {
-        // Case : the switch source emits a value corresponding to the
-        // configured case in the component
-
-        // Case : the component produces a sink with that name
-        if (cachedSinks[sinkName] != null) {
-          cached$ = cachedSinks[sinkName]
-            .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
-            .finally(_ => {
-              console.log(`sink ${sinkName} terminating due to applicable case change`)
-            })
-        }
-        else {
-          // Case : the component does not have any sinks with the
-          // corresponding sinkName
-          // NOTE : Don't use $.never(), this avoids hanging in some cases
-          cached$ = $.empty()
-        }
-      }
-      else {
-        // Case : the switch source emits a value NOT corresponding to the
-        // configured case in the component
-        console.log('isMatchingCase is null!!! no match for this component on' +
-          ' this route!')
-        // TODO : replace DOM which is specific to cycle
-        // In fact, we need to put null in DOM because we need to erase
-        // the current value of DOM, which should be on only iff the case
-        // is fulfilled.
-        // In even more fact, this is the case for any behaviour, not just
-        // the DOM. Behaviours must continuously have a value. Not settings null for the DOM,
-        // i.e. for instance setting $.empty() would mean a `combineLatest` down the road would
-        // still lead to the display of the old DOM, or worse block part of the DOM building
-        // (all sources for `combineLatest` must have emitted for the operator to emit its first
-        // value)
-        cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
-      }
-      return cached$
-    }
-  }
 
   function makeSwitchedSink(sinkName) {
     return {
-      // TODO : cache manually, erase cache on new shouldSwitch$.filter(Boolean), insert cache
-      // with shouldSwitch$.map(computeAndCacheSinks)
-      [sinkName]: shouldSwitch$.withLatestFrom(
-        cachedSinks$,
-        makeSwitchedSinkFromCache(sinkName)
-      )
+      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache(isMatchingCase) {
+        // TODO : remove unused, use let isntead of var
+        // TODO : use return inside the ifs and remove cached$
+        var cached$
+
+        debugger
+        if (isMatchingCase) {
+          debugger
+          // Case : the switch source emits a value corresponding to the
+          // configured case in the component
+
+          // Case : the component produces a sink with that name
+          if (cachedSinks[sinkName] != null) {
+            debugger
+            cached$ = cachedSinks[sinkName]
+              .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
+              .finally(_ => {
+                console.log(`sink ${sinkName} terminating due to applicable case change`)
+              })
+          }
+          else {
+            // Case : the component does not have any sinks with the
+            // corresponding sinkName
+            // NOTE : Don't use $.never(), this avoids hanging in some cases
+            debugger
+            cached$ = $.empty()
+          }
+        }
+        else {
+          debugger
+          // Case : the switch source emits a value NOT corresponding to the
+          // configured case in the component
+          console.log('isMatchingCase is null!!! no match for this component on' +
+            ' this route!')
+          // TODO : replace DOM which is specific to cycle
+          // In fact, we need to put null in DOM because we need to erase
+          // the current value of DOM, which should be on only iff the case
+          // is fulfilled.
+          // In even more fact, this is the case for any behaviour, not just
+          // the DOM. Behaviours must continuously have a value. Not settings null for the DOM,
+          // i.e. for instance setting $.empty() would mean a `combineLatest` down the road would
+          // still lead to the display of the old DOM, or worse block part of the DOM building
+          // (all sources for `combineLatest` must have emitted for the operator to emit its first
+          // value)
+          cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
+        }
+        return cached$
+      })
         .tap(function () {
           console.warn(`switching: ${sinkName}`)
         })

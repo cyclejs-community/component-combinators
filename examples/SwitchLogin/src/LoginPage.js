@@ -13,7 +13,12 @@ export function LoginPage(loginSettings) {
   return function LoginPage(sources, settings) {
     const loginIntent$ = sources[DOM_SINK].select('.login').events('click');
 
-    const loginAction$ = loginIntent$.map(x => ({
+    const loginAction$ = loginIntent$
+      .filter(_ => {
+        // NOTE : there are other ways to do this with HTML5, I just got lazy, that is just a demo
+        return sources.document.querySelector('.email').value && sources.document.querySelector('.password').value
+      })
+      .map(x => ({
       context: '',
       command: LOG_IN,
       payload: { username: sources.document.querySelector('.email').value }
@@ -61,7 +66,7 @@ function render() {
           div(".field", [
             div(".ui.left.icon.input", [
               i(".lock.icon"),
-              input({
+              input(".password",{
                 "attributes": {
                   "type": "password",
                   "name": "password",
