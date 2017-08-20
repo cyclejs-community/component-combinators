@@ -19,7 +19,7 @@ export function makeAuthDriver(repository, initLogInState){
         default :
           throw `unknow command ${command}`
       }
-    })
+    }).startWith(Boolean(initLogInState))
   }
 
   return {

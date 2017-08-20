@@ -1,7 +1,7 @@
-import { Rx } from "rx"
+import * as Rx from "rx";
 import { div, form, h2, i, img, input } from 'cycle-snabbdom'
 import { assertContract, DOM_SINK } from "../../../src/utils"
-import { T } from "ramda"
+import { T, always } from "ramda"
 import { LOG_IN } from "../drivers/auth"
 
 const $ = Rx.Observable;
@@ -11,8 +11,9 @@ export function LoginPage(loginSettings) {
   assertContract(isLoginSettings, [loginSettings], `LoginPage: some error!`);
 
   return function LoginPage(sources, settings) {
-    const loginIntent$ = sources.DOM.select('.login').events('click');
+    const loginIntent$ = sources[DOM_SINK].select('.login').events('click');
 
+/*
     const loginAction$ = loginIntent$.map(always({
       context: '',
       command: LOG_IN,
@@ -23,16 +24,20 @@ export function LoginPage(loginSettings) {
       .filter(Boolean)
       // when user is authenticated, redirect
       .map(always(loginSettings.redirect))
+*/
 
     return {
       [DOM_SINK]: $.of(render()),
+/*
       auth$: loginAction$,
       router : redirectAction$
+*/
     }
   }
 }
 
 function render() {
+  debugger
   return div(".ui.middle.aligned.center.aligned.grid", [
     div(".column", [
       h2(".ui.teal.image.header", [

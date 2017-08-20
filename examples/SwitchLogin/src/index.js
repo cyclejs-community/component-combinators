@@ -3,7 +3,7 @@ import { createHashHistory, createHistory } from "history"
 import { makeRouterDriver, supportsHistory } from 'cyclic-router'
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
-import { Rx } from "rx";
+import * as Rx from "rx";
 // drivers
 import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
@@ -22,7 +22,7 @@ const history = supportsHistory() ? createHistory() : createHashHistory();
 function filterNull(driver) {
   return function filteredDOMDriver(sink$) {
     return driver(sink$
-      .tap(x => console.log(`merged DOM (driver input): ${convertVNodesToHTML(x)}`, x))
+      .tap(x => console.warn(`merged DOM (driver input): ${convertVNodesToHTML(x)}`, x))
       .filter(x => x))
   }
 }
@@ -55,7 +55,7 @@ localForage.keys()
     const {user$, authDriver} = makeAuthDriver(repository, initLoginState);
 
     const { sources, sinks } = run(App, {
-      [DOM_SINK]: filterNull(makeDOMDriver('#ap', { transposition: false, modules })),
+      [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
       router: makeRouterDriver(history, { capture: true }),
       user$ : () => user$,
       auth$: authDriver,

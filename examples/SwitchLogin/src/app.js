@@ -4,7 +4,7 @@ import { MainPage } from "./MainPage"
 import { LoginPage } from "./LoginPage"
 import { DOM_SINK } from "../../../src/utils"
 
-export const App = Switch({  on : convertAuthToIsLoggedIn,  sinkNames : ['auth$', DOM_SINK]}, [
+export const App = Switch({  on : convertAuthToIsLoggedIn,  sinkNames : ['auth$', DOM_SINK, 'router']}, [
   Case ( {when : IS_LOGGED_IN}, [
     MainPage // has a logout link...
   ]),
@@ -17,5 +17,7 @@ function convertAuthToIsLoggedIn(sources, settings){
   // NOTE : auth$ contains the authenticated user, we only need to know whether that user is
   // logged in or not
   return sources.user$.map(user => user ? IS_LOGGED_IN : IS_NOT_LOGGED_IN)
+    .tap(x => console.warn('sources.user$', x))
+    .share()
 }
 

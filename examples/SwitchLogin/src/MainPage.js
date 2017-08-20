@@ -1,4 +1,4 @@
-import { Rx } from "rx";
+import * as Rx from "rx";
 import { DOM_SINK } from "../../../src/utils"
 import { a, div, form, h4, i, img, input, label, option, select } from 'cycle-snabbdom'
 import { LOG_OUT } from "../drivers/auth"
@@ -6,7 +6,7 @@ import { LOG_OUT } from "../drivers/auth"
 const $ = Rx.Observable;
 
 export function MainPage(sources, settings) {
-  const logoutIntent$ = sources.DOM.select('.logout').events('click');
+  const logoutIntent$ = sources[DOM_SINK].select('.logout').events('click');
   const logoutAction$ = logoutIntent$.map(always({
     context : '',
     command : LOG_OUT,

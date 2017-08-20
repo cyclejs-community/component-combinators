@@ -1,16 +1,13 @@
 // NOTE : right now all casewhen are evaluated
 
-import { computeDOMSinkDefault, m } from '../m'
+import { m } from '../m'
 import {
-  assertSignature, assertContract, checkSignature,
-  isString, isArray, isArrayOf, isFunction, isSource,
-  unfoldObjOverload, removeNullsFromArray, removeEmptyVNodes, isVNode, checkAndGatherErrors,
-  isEmptyArray, DOM_SINK
+  assertContract, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction, isSource,
+  isString, removeNullsFromArray, unfoldObjOverload
 } from '../../utils'
-import {addIndex, forEach, all, any, map, mapObjIndexed, reduce, keys, values,
-  merge, mergeAll, flatten, prepend, uniq, always, reject, defaultTo,
-  either, isNil, omit, path, complement, or, equals} from 'ramda'
+import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'
+import { SWITCH_SOURCE } from "./properties"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -21,7 +18,7 @@ function defaultsTo(obj, defaultsTo) {
 
 // CONFIG
 const defaultEqFn = function swichCptdefaultEqFn(a, b) {
-  return equals(a,b)
+  return equals(a, b)
 }
 const cfg = {
   defaultEqFn: defaultEqFn
@@ -31,6 +28,7 @@ const cfg = {
 /**
  * @typedef {function(Sources,Settings):Source} SwitchOnCondition
  */
+
 /**
  * @typedef {SourceName} SwitchOnSource
  */
@@ -50,13 +48,12 @@ function hasAtLeastOneChildComponent(childrenComponents) {
 }
 
 function hasWhenProperty(sources, settings) {
-  console.log('SSSSEETTINGS', settings)
   return Boolean(settings && 'when' in settings)
 }
 
 function hasEqFnProperty(sources, settings) {
   return Boolean(!settings || !('eqFn' in settings))
- || Boolean(isFunction(settings.eqFn))
+    || Boolean(isFunction(settings.eqFn))
 }
 
 function hasSinkNamesProperty(sources, settings) {
@@ -64,12 +61,12 @@ function hasSinkNamesProperty(sources, settings) {
     && Boolean(isArrayOf(isString)(settings.sinkNames))
 }
 
+function hasValidOnProperty(sources, settings) {
+  return Boolean(isString(settings.on) && sources[settings.on])
+}
+
 function hasOnProperty(sources, settings) {
-  return Boolean(settings || !settings.on) &&
-    (
-      Boolean(isString(settings.on) && sources[settings.on])
-      || Boolean(isFunction(settings.on))
-    )
+  return Boolean(settings && settings.on)
 }
 
 const isCaseSettings = checkAndGatherErrors([
@@ -79,19 +76,19 @@ const isCaseSettings = checkAndGatherErrors([
 
 const isSwitchSettings = checkAndGatherErrors([
   [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
-  [hasOnProperty, `Settings parameter must have a 'on' property, which is either a string or a function!`],
-    [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
+  [hasValidOnProperty, `Settings parameter must have a 'on' property, which is a string, and corresponds to a source in sources!`],
+  [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
 ], `Switch : Invalid switch component settings!`);
 
 //////////////
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  let {eqFn, when, sinkNames, on} = settings;
+  let { eqFn, when, sinkNames, on } = settings;
 
   const overload = unfoldObjOverload(on, [
-    {'guard$': isFunction},
-    {'sourceName': isString}
+    { 'guard$': isFunction },
+    { 'sourceName': isString }
   ]);
-  let {guard$, sourceName, _index} = overload;
+  let { guard$, sourceName, _index } = overload;
   let switchSource;
 
   if (overload._index === 1) {
@@ -118,7 +115,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .map(function (_) {
       const mergedChildrenComponentsSinks = m(
         {},
-        {matched: when},
+        { matched: when },
         childrenComponents)
 
       return mergedChildrenComponentsSinks(sources, settings)
@@ -166,7 +163,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         // still lead to the display of the old DOM, or worse block part of the DOM building
         // (all sources for `combineLatest` must have emitted for the operator to emit its first
         // value)
-                cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
+        cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
       }
       return cached$
     }
@@ -193,10 +190,16 @@ export const SwitchSpec = {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
-
+      debugger
       // NOTE : zip rxjs does not accept only one argument...
-      return $.merge(allDOMSinks) //!! passes an array
-        .tap(console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`))
+      return $.merge(allDOMSinks.map((sink, index) => sink.tap(
+        function (x) {
+          console.warn(`SwitchSpec > mergeDomSwitchedSinks :`, x, index)
+        }
+      ))) //!! passes an array
+        .tap(
+          console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`)
+        )
         .filter(Boolean)
       // Most values will be null
       // All non-null values correspond to a match
@@ -204,12 +207,12 @@ export const SwitchSpec = {
       // at all)
     }
   },
-  checkPreConditions : isSwitchSettings
+  checkPreConditions: isSwitchSettings
 }
 
 export const CaseSpec = {
   computeSinks: computeSinks,
-  checkPreConditions : isCaseSettings
+  checkPreConditions: isCaseSettings
 }
 
 /**
@@ -281,12 +284,31 @@ export const CaseSpec = {
  * @return {Component}
  * @throws
  */
-export function Switch (switchSettings, childrenComponents) {
+export function Switch(switchSettings, childrenComponents) {
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : switch combinator must at least have one child component to switch to!`);
-  return m(SwitchSpec, switchSettings, childrenComponents)
+  assertContract(hasOnProperty, [null, switchSettings], `Switch : switch combinator must at least have one child component to switch to!`);
+  let _SwitchSpec = SwitchSpec;
+  let _switchSettings = switchSettings;
+
+  // if we precompute the switch source, then change the specs and settings of the case
+  // components so that we add the precomputed source to the children sources, and we pass the
+  // `on` settings to be that extra source.
+  // All this is to avoid a previous bug where the computed switch source was computed within
+  // the Case component, hence it was computed every time for every case component
+  if (isFunction(switchSettings.on)) {
+    _SwitchSpec = assoc('makeLocalSources', function addComputedSwitchSource(sources, settings) {
+      const switchSource = switchSettings.on(sources, settings);
+      return {
+        [SWITCH_SOURCE]: switchSource
+      }
+    }, SwitchSpec);
+    _switchSettings = assoc('on', SWITCH_SOURCE, switchSettings);
+  }
+
+  return m(_SwitchSpec, _switchSettings, childrenComponents)
 }
 
-export function Case (CaseSettings, childrenComponents) {
+export function Case(CaseSettings, childrenComponents) {
   return m(CaseSpec, CaseSettings, childrenComponents)
 }
 
