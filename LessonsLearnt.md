@@ -1,0 +1,6 @@
+- bug with sources.source called several times. Use share or shareReplay(1) wisely - tricky to debug
+  - in the case of drivers specially think long about using share or shareReplay..., but there should be one, as there is no guarantee a driver source won't be called several times...
+- trace every single f.. sink
+  - it is relatively easy to see data flow, but when the problem is that the data does not flow it gets hairy, as this is often due to subscription not happening, and there is no way to trace subscription (unsubscription is possible to trace somehow due to `finally`).
+  - NOTE : onSubscribe possible. cf. https://stackoverflow.com/questions/41883339/observable-onsubscribe-equivalent-in-rxjs
+- in the example aplication, interesting how important to think that Switch is disconnection a component sinks, so here the router never gets to emit a route

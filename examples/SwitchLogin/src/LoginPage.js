@@ -27,12 +27,17 @@ export function LoginPage(loginSettings) {
       // filter out when user is not authenticated
       .filter(Boolean)
       // when user is authenticated, redirect
-      .map(always(loginSettings.redirect));
+      .map(always(loginSettings.redirect))
+    ;
 
     return {
       [DOM_SINK]: $.of(render()).tap(pipe(convertVNodesToHTML, console.warn.bind(console, 'LOGIN:'))),
       auth$: loginAction$,
-//      router : redirectAction$
+      // NOTE : router never gets to emit a value :
+      // - when auth sink leads to auth source change, the Switch component disconnect the
+      // LoginPage component, including the router sinks -> the route is never taken...
+      // I leave it there though as testimony of things to think about
+      router : redirectAction$
     }
   }
 }

@@ -18,7 +18,7 @@ export function MainPage(sources, settings) {
   return {
     [DOM_SINK]: $.of(render()),
     auth$ : logoutAction$,
-//    router : logoutAction$.map(always('/'))
+    router : logoutAction$.map(always('/sth'))
   }
 }
 

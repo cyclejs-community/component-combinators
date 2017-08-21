@@ -190,7 +190,6 @@ export const SwitchSpec = {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
-      console.debug(`Switch > SwitchSpec > mergeDomSwitchedSinks : ${allDOMSinks.length} DOM sinks to merge`)
 
       // NOTE : zip rxjs does not accept only one argument...
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
