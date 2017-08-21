@@ -110,12 +110,17 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .map(x => eqFn(x, when))
     .do(function (isMatching) {
       if (isMatching) {
+        console.info(`Found a match (${when}) for Case branch ${settings.trace}`)
+        console.info(`Computing the corresponding sinks`)
         const mergedChildrenComponentsSinks = m(
           {},
-          { matched: when },
+          { matched: when, trace : 'executing case children' },
           childrenComponents)
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
+      }
+      else {
+        console.info(`Did not find a match (${when}) for Case branch ${settings.trace}`)
       }
     })
     // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
@@ -131,17 +136,15 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         // TODO : use return inside the ifs and remove cached$
         var cached$
 
-        debugger
         if (isMatchingCase) {
-          debugger
           // Case : the switch source emits a value corresponding to the
           // configured case in the component
 
           // Case : the component produces a sink with that name
           if (cachedSinks[sinkName] != null) {
-            debugger
+            console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : extracting...`)
             cached$ = cachedSinks[sinkName]
-              .tap(console.log.bind(console, 'sink ' + sinkName + ':'))
+              .tap(console.warn.bind(console, `Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} emits :`))
               .finally(_ => {
                 console.log(`sink ${sinkName} terminating due to applicable case change`)
               })
@@ -150,16 +153,14 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
             // Case : the component does not have any sinks with the
             // corresponding sinkName
             // NOTE : Don't use $.never(), this avoids hanging in some cases
-            debugger
+            console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : component does not have a sink with that name, sink set to empty`)
             cached$ = $.empty()
           }
         }
         else {
-          debugger
           // Case : the switch source emits a value NOT corresponding to the
           // configured case in the component
-          console.log('isMatchingCase is null!!! no match for this component on' +
-            ' this route!')
+          console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : set to empty or null`)
           // TODO : replace DOM which is specific to cycle
           // In fact, we need to put null in DOM because we need to erase
           // the current value of DOM, which should be on only iff the case
@@ -175,13 +176,13 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         return cached$
       })
         .tap(function () {
-          console.warn(`switching: ${sinkName}`)
+          console.warn(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > switching in ${sinkName}`)
         })
         .switch()
     }
   }
 
-  return mergeAll(map(makeSwitchedSink, sinkNames))
+  return mergeAll(map(makeSwitchedSink, sinkNames)) // ramda mergeAll, not Rx
 }
 
 export const SwitchSpec = {
@@ -189,16 +190,14 @@ export const SwitchSpec = {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
+      console.debug(`Switch > SwitchSpec > mergeDomSwitchedSinks : ${allDOMSinks.length} DOM sinks to merge`)
 
       // NOTE : zip rxjs does not accept only one argument...
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
         function (x) {
-          console.warn(`SwitchSpec > mergeDomSwitchedSinks :`, x, index)
+          console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
         }
       ))) //!! passes an array
-        .tap(
-          console.warn.bind(console, `Switch.specs > mergeDomSwitchedSinks > merge`)
-        )
         .filter(Boolean)
       // Most values will be null
       // All non-null values correspond to a match

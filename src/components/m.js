@@ -10,7 +10,8 @@
  * NOTE : this type def is not perfect as we allow sometimes null values
  */
 /**
- * @typedef {?Object.<string, ?Object>} Settings
+ * @typedef {?Object.<string, *>} Settings
+ * @property {?String} trace
  */
 /**
  * // TODO : review types to match m current implementation
@@ -41,7 +42,7 @@ import {
   assertSourcesContracts, convertVNodesToHTML, emitNullIfEmpty, getSinkNamesFromSinksArray,
   isArrayOf, isArrayOptSinks, isComponent, isFunction, isMergeSinkFn, isNullableComponentDef,
   isNullableObject, isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray,
-  trace
+  traceSinks
 } from "../utils" //or ../utils
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
@@ -96,7 +97,7 @@ function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   }
 
   return $.combineLatest(allDOMSinks)
-    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
+//    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
     .map(mergeChildrenIntoParentDOM(parentDOMSinkOrNull))
 }
 
@@ -267,7 +268,7 @@ function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
  *
  *   several properties as detailed above
  * @param {DetailedComponentDef|ShortComponentDef} componentDef
- * @param {?Object} _settings
+ * @param {Settings} _settings
  * @param {Array<Component>} children
  *
  * @returns {Component}
@@ -345,7 +346,7 @@ function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
  *
  */
 function m(componentDef, _settings, children) {
-  console.groupCollapsed('Utils > m')
+  console.groupCollapsed('m factory > Entry')
   console.log('componentDef, _settings, children', componentDef, _settings, children)
   // check signature
   const mSignature = [
@@ -372,7 +373,8 @@ function m(componentDef, _settings, children) {
   console.groupEnd()
 
   return function mComponent(sources, innerSettings) {
-    const traceInfo = innerSettings && innerSettings.trace;
+    /** @type {String}*/
+    const traceInfo = (innerSettings && innerSettings.trace) || (_settings && _settings.trace);
     console.groupCollapsed(`${traceInfo} component > Entry`)
     console.log('sources, innerSettings', sources, innerSettings)
 
@@ -457,9 +459,9 @@ function m(componentDef, _settings, children) {
       }
     }
 
-    assertSinksContracts(reducedSinks, checkPostConditions)
+    assertSinksContracts(reducedSinks, checkPostConditions);
 
-    const tracedSinks = trace(reducedSinks)
+    const tracedSinks = traceSinks(traceInfo, reducedSinks);
     // ... and add tracing information(sinkPath, timestamp, sinkValue/sinkError) after each sink
     // TODO : specify trace/debug/error generation information
     // This would ensure that errors are automatically and systematically

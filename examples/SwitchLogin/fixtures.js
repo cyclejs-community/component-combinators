@@ -6,4 +6,5 @@ export const user = null;
  */
 export function loadTestData(localforage) {
     return localforage.getItem('user')
+// return localforage.setItem('user', null)
 }

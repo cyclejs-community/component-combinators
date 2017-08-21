@@ -32,7 +32,7 @@ export function LoginPage(loginSettings) {
     return {
       [DOM_SINK]: $.of(render()).tap(pipe(convertVNodesToHTML, console.warn.bind(console, 'LOGIN:'))),
       auth$: loginAction$,
-      router : redirectAction$
+//      router : redirectAction$
     }
   }
 }

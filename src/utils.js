@@ -697,13 +697,16 @@ function makeErrorMessage(errorMessage) {
 
 /**
  * Adds `tap` logging/tracing information to all sinks
+ * @param {String} traceInfo
  * @param {Sinks} sinks
  * @returns {*}
  */
-function trace(sinks) {
-  // TODO BRC
-  // return traceSinks(sinks)
-  return sinks
+function traceSinks(traceInfo, sinks) {
+  return mapObjIndexed((sink$, sinkName) => {
+    return sink$.tap(function log(x){
+      console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
+    })
+  },sinks)
 }
 
 function removeNullsFromArray(arr) {
@@ -1084,7 +1087,7 @@ export {
   assertSettingsContracts,
   deepFreeze,
   makeErrorMessage,
-  trace,
+  traceSinks,
   getFunctionName,
   decorateWithOne,
   decorateWith,

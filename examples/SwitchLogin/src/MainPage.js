@@ -7,16 +7,18 @@ import {always} from "ramda"
 const $ = Rx.Observable;
 
 export function MainPage(sources, settings) {
-  const logoutIntent$ = sources[DOM_SINK].select('.logout').events('click');
+  const logoutIntent$ = sources[DOM_SINK].select('.logout').events('click').do(ev => ev.preventDefault());
   const logoutAction$ = logoutIntent$.map(always({
     context : '',
     command : LOG_OUT,
     payload : null
-  }));
+  }))
+    .share();
 
   return {
-    [DOM_SINK]: sources.user$.map(render),
-    auth$ : logoutAction$
+    [DOM_SINK]: $.of(render()),
+    auth$ : logoutAction$,
+//    router : logoutAction$.map(always('/'))
   }
 }
 
@@ -25,11 +27,6 @@ function render(user) {
   return div([
     div(".ui.large.top.fixed.hidden.menu", [
       div(".ui.container", [
-        a(".active.item", [`Home`]),
-        a(".item", [`Claims`]),
-        a(".item", [`Eligibility`]),
-        a(".item", [`My Account`]),
-        a(".item", [`Knowledge Center`]),
         div(".right.menu", [
           div(".item", [
             a(".ui.button.logout", [`Logout`])

@@ -18,12 +18,11 @@ const modules = defaultModules;
 const history = supportsHistory() ? createHistory() : createHashHistory();
 
 // Helpers
-// NOTE : only useful in connection with router, which is not used here
 function filterNull(driver) {
   return function filteredDOMDriver(sink$) {
     return driver(sink$
-      .tap(x => console.warn(`merged DOM (driver input): ${convertVNodesToHTML(x)}`, x))
-      .filter(x => x))
+      .filter(Boolean)
+    )
   }
 }
 
@@ -51,15 +50,10 @@ localForage.keys()
   .then(() => localForage.getItem('user'))
   .then((initLoginState) => {
 
-    // Make auth drivers
-    debugger
-    const {user$, authDriver} = makeAuthDriver(repository, initLoginState);
-
     const { sources, sinks } = run(App, {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
       router: makeRouterDriver(history, { capture: true }),
-      user$ : () => user$,
-      auth$: authDriver,
+      auth$: makeAuthDriver(repository, initLoginState),
       document: documentDriver
     });
 
