@@ -1,33 +1,44 @@
-import { IS_LOGGED_IN, IS_NOT_LOGGED_IN } from "./properties"
-import { Case, Switch } from "../../../src/components/Switch/Switch"
-import { MainPage } from "./MainPage"
-import { LoginPage } from "./LoginPage"
+import { OnRoute } from "../../../src/components/Router/Router"
 import { DOM_SINK } from "../../../src/utils"
 import * as Rx from "rx";
+import { HomePage } from "./HomePage"
 
 const $ = Rx.Observable;
 
 // TODO : I am here, thats the code for swtich demo, adaprt to router demo
 
-export const App = Switch({
-  on: convertAuthToIsLoggedIn,
-  sinkNames: ['auth$', DOM_SINK, 'router'],
-  trace: 'Switch'
-}, [
-  Case({ when: IS_NOT_LOGGED_IN, trace: 'LoginPage Case' }, [
-    LoginPage({ redirect: '/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e' })
+export const App = m({}, { sinkNames: [DOM_SINK, 'router'], trace: 'App' }, [
+  OnRoute({ route: '', trace: 'OnRoute (/)' }, [
+    HomePage
   ]),
-  Case({ when: IS_LOGGED_IN, trace: 'MainPage Case' }, [
-    MainPage
-  ]),
-])
+  /*
+    OnRoute({ route: 'aspirational', trace: 'OnRoute  (aspirational)' }, [
+      m({ makeOwnSinks: AspirationalPageHeader }, { breadcrumbs: ['aspirational'] }, [
+        Card(BLACBIRD_CARD_INFO),
+        OnRoute({route: BLACK_BIRD_DETAIL_ROUTE},[
+          CardDetail(BLACBIRD_CARD_DETAILS)
+        ]),
+        Card(TECHX_CARD_INFO),
+        OnRoute({route: TECHX_CARD_DETAIL_ROUTE},[
+          CardDetail(TECHX_CARD_DETAILS)
+        ]),
+        Card(TYPOGRAPHICS_CARD_INFO),
+        OnRoute({route: TYPOGRAPHICS_CARD_DETAIL_ROUTE},[
+          CardDetail(TYPOGRAPHICS_CARD_DETAILS)
+        ]),
+      ])
+    ]),
+  */
+]);
 
-function convertAuthToIsLoggedIn(sources, settings) {
-  // NOTE : auth$ contains the authenticated user, we only need to know whether that user is
-  // logged in or not
-  return sources.auth$
-    .map(auth => auth ? IS_LOGGED_IN : IS_NOT_LOGGED_IN)
-    .tap(x => console.warn('convertAuthToIsLoggedIn > sources.auth$', x))
-    // NOTE : big big bug if I don't share replay here...
-    .shareReplay(1)
-}
+/*
+AspirationalPageHeader
+  contains
+<div id="instafeed" class="ui one column doubling grid container one card">
+  <div class="ui left breadcrumb">
+  <a class="section">Home</a>
+  <i class="right chevron icon divider"></i>
+  <div class="active section">Aspirational</div>
+  </div>
+*/
+

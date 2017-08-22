@@ -29,7 +29,7 @@
 // that in the tests without talking about it.
 
 import * as QUnit from "qunitjs"
-import { onRoute } from '../src/components/Router/Router'
+import { OnRoute } from '../src/components/Router/Router'
 import { m } from '../src/components/m'
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
@@ -91,7 +91,7 @@ QUnit.test("non-nested routing - transitions - initial state", function exec_tes
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
   const routerComponent = m({}, { sinkNames: sinkNames }, [
-    onRoute({ route: 'group' }, [
+    OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
     ]),
@@ -151,7 +151,7 @@ QUnit.test("non-nested routing - transitions no match -> match", function exec_t
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
   const routerComponent = m({}, { sinkNames: sinkNames }, [
-    onRoute({ route: 'group' }, [
+    OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
     ]),
@@ -225,7 +225,7 @@ QUnit.test("non-nested routing - transitions match -> no match, also testing par
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
   const routerComponent = m({}, { sinkNames: sinkNames }, [
-    onRoute({ route: 'group:param' }, [
+    OnRoute({ route: 'group:param' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group:param'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group:param'),
     ]),
@@ -301,11 +301,11 @@ QUnit.test("non-nested routing - transitions", function exec_test(assert) {
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
   const routerComponent = m({}, { sinkNames: sinkNames }, [
-    onRoute({ route: 'group' }, [
+    OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
     ]),
-    onRoute({ route: 'anything' }, [
+    OnRoute({ route: 'anything' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'anything'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'anything'),
     ]),
@@ -411,13 +411,13 @@ QUnit.test("nested routing depth 1 - transitions", function exec_test(assert) {
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
   const routerComponent = m({}, { sinkNames: sinkNames }, [
-    onRoute({ route: 'master:qs' }, [
+    OnRoute({ route: 'master:qs' }, [
       makeTestHelperComponent('Master component', A_SOURCE, 'master'),
-      onRoute({ route: 'detail:qs' }, [
+      OnRoute({ route: 'detail:qs' }, [
         makeTestHelperComponent('Detail component', ANOTHER_SOURCE, 'detail:qs'),
       ])
     ]),
-    onRoute({ route: 'anything' }, [
+    OnRoute({ route: 'anything' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'anything'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'anything'),
     ]),

@@ -268,7 +268,7 @@ const RouterSpec = {
 
 // TODO : in index.js set up the sinks for the router as in FSM-example
 // TODO : write documentation
-export function onRoute(routeSettings, childrenComponents) {
+export function OnRoute(routeSettings, childrenComponents) {
   // check that components is an array
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : router combinator must at least have one child component to route to!`);
 
