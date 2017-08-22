@@ -14,8 +14,6 @@
  * @property {?String} trace
  */
 /**
- * // TODO : review types to match m current implementation
- * // I have example with only makeLocalSources set, so make all of them optional for now
  * @typedef {?Object} DetailedComponentDef
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
@@ -38,12 +36,46 @@
  */
 
 import {
-  assertContract, assertSettingsContracts, assertSignatureContract, assertSinksContracts,
-  assertSourcesContracts, convertVNodesToHTML, emitNullIfEmpty, getSinkNamesFromSinksArray,
-  isArrayOf, isArrayOptSinks, isComponent, isFunction, isMergeSinkFn, isNullableComponentDef,
-  isNullableObject, isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray,
-  traceSinks
+  assertContract, assertSignatureContract, assertSinksContracts, assertSourcesContracts,
+  emitNullIfEmpty, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent, isFunction,
+  isMergeSinkFn, isNullableComponentDef, isNullableObject, isOptSinks, isVNode, projectSinksOn,
+  removeEmptyVNodes, removeNullsFromArray, traceSinks
 } from "../utils" //or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+import {
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+} from "ramda"
+import { div } from "cycle-snabbdom"
+import * as Rx from "rx"
+//or ../utils
+//or ../utils
+//or ../utils
+//or ../utils
+import {
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+} from "ramda"
+import { div } from "cycle-snabbdom"
+import * as Rx from "rx"
+//or ../utils
+//or ../utils
+import {
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+} from "ramda"
+import { div } from "cycle-snabbdom"
+import * as Rx from "rx"
+//or ../utils
+import {
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+} from "ramda"
+import { div } from "cycle-snabbdom"
+import * as Rx from "rx"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
 } from "ramda"
@@ -250,7 +282,7 @@ function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
  *   For the detailed spec, the relevant properties are :
  *   - `makeOwnSinks`, `mergeSinks`,
  *   - the user-defined factories, the user-defined contracts
- *   TODO : in fact, the dichotomy short/detailed is not really valid - find another terminology
+ *   TODO : in fact, the dichotomy short/detailed is not really valid - follow terminology of m docs
  *
  * Children components and local sinks factory functions will be called with the extended sources
  * (i.e. provided sources merged with locally computed sources, and settings resulting from
@@ -263,10 +295,6 @@ function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
  * as a result of the children-independent sinks, the children-generated sinks, and the
  * three-way merged settings received by the `m` factory and its run-time environment.
  *
- * To allow for an easier interface, and avoid repetition, in the absen TODO : detail the
- * merge DOM sinks svs. other sinks
- *
- *   several properties as detailed above
  * @param {DetailedComponentDef|ShortComponentDef} componentDef
  * @param {Settings} _settings
  * @param {Array<Component>} children
@@ -462,13 +490,6 @@ function m(componentDef, _settings, children) {
     assertSinksContracts(reducedSinks, checkPostConditions);
 
     const tracedSinks = traceSinks(traceInfo, reducedSinks);
-    // ... and add tracing information(sinkPath, timestamp, sinkValue/sinkError) after each sink
-    // TODO : specify trace/debug/error generation information
-    // This would ensure that errors are automatically and systematically
-    //       caught in the component where they occur, and not
-    //       interrupting the application implementation-wise, it might be
-    //       necessary to add a `currentPath` parameter somewhere which
-    //       carries the current path down the tree
 
     console.groupEnd()
     return tracedSinks
@@ -493,3 +514,16 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
 }
 
 export { m, defaultMergeSinkFn, computeDOMSinkDefault }
+
+// TODO : design better trace information
+// for instance outer trace could be concatenated to inner trace to trace also the
+// component hierarchy
+// TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
+// - change the name to parentComponent, or make it the first of the array, or
+// [parent,[children]], whatever is best, but seems better to take it out of first arg so I
+// can then easily curry on the first argument (parent cmponent concern bothers here)
+// TODO : also add slot mechanism to default DOM merge to include child component at given
+// position of parent
+//       necessary to add a `currentPath` parameter somewhere which
+//       carries the current path down the tree
+
