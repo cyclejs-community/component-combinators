@@ -12,8 +12,6 @@ import { loadTestData } from '../fixtures';
 import { DOM_SINK } from "../../../src/utils"
 import { merge } from "ramda"
 
-// TODO : I am here, thats the code for swtich demo, adaprt to router demo
-
 const $ = Rx.Observable;
 const repository = localForage;
 const modules = defaultModules;
@@ -39,7 +37,7 @@ function documentDriver(_) {
   return document
 }
 
-// Initialize the database
+// Initialize the database - for this demo I do not use local storage but I keep this anyways
 localForage._config = {
   driver: localForage.LOCALSTORAGE, // Force local storage;
   name: 'myApp',

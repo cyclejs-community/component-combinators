@@ -87,4 +87,5 @@ One can refer to the tests to see this in action.
 # Tips
 - The null emission mechanism is explained here for reference, and for analyzing output when testing. In a real application, the only impact this should have is that the DOM sink can receive null inputs, and as such must guards against them (filtering them out for instance)
 - The current parsing library does not parse query strings but passes all the query string to the component. One can then use a specific query string parsing library.  This ensures maximal flexibility for the router component library as any extra parsing library can be plugged in according to the shape of the route.
+- when the route changes to a route for which there is no matching component, the displayed DOM does not change. If there is a need for a different treatment in such cases, that should be implemented, by adding a component with a wildcard matching any children route of relevance.
 

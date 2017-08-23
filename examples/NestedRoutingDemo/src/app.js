@@ -4,6 +4,10 @@ import { DOM_SINK } from "../../../src/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
 import { ROUTE_SOURCE } from "../../../src/components/Router/properties"
+import { AspirationalPageHeader, Card, CardDetail } from "./AspirationalPage"
+import {
+  BLACBIRD_CARD_INFO, BLACK_BIRD_DETAIL_ROUTE, TECHX_CARD_INFO, TYPOGRAPHICS_CARD_INFO, TECHX_CARD_DETAIL_ROUTE, TYPOGRAPHICS_CARD_DETAIL_ROUTE
+} from "./properties"
 
 const $ = Rx.Observable;
 
@@ -33,34 +37,21 @@ export const App = InjectSourcesAndSettings({
   OnRoute({ route: '', trace: 'OnRoute (/)' }, [
     HomePage
   ]),
-  /*
     OnRoute({ route: 'aspirational', trace: 'OnRoute  (aspirational)' }, [
       m({ makeOwnSinks: AspirationalPageHeader }, { breadcrumbs: ['aspirational'] }, [
         Card(BLACBIRD_CARD_INFO),
         OnRoute({route: BLACK_BIRD_DETAIL_ROUTE},[
-          CardDetail(BLACBIRD_CARD_DETAILS)
+          CardDetail(BLACBIRD_CARD_INFO)
         ]),
         Card(TECHX_CARD_INFO),
         OnRoute({route: TECHX_CARD_DETAIL_ROUTE},[
-          CardDetail(TECHX_CARD_DETAILS)
+          CardDetail(TECHX_CARD_INFO)
         ]),
         Card(TYPOGRAPHICS_CARD_INFO),
         OnRoute({route: TYPOGRAPHICS_CARD_DETAIL_ROUTE},[
-          CardDetail(TYPOGRAPHICS_CARD_DETAILS)
+          CardDetail(TYPOGRAPHICS_CARD_INFO)
         ]),
       ])
     ]),
-  */
 ]);
-
-/*
-AspirationalPageHeader
-  contains
-<div id="instafeed" class="ui one column doubling grid container one card">
-  <div class="ui left breadcrumb">
-  <a class="section">Home</a>
-  <i class="right chevron icon divider"></i>
-  <div class="active section">Aspirational</div>
-  </div>
-*/
 
