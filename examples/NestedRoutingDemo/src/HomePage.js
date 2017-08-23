@@ -17,6 +17,8 @@ export function HomePage(sources, settings) {
     .map(always('/aspirational'));
   const goToGenXersIntent$ = DOMSource.select('a.genXers').events('click').do(preventDefault)
     .map(always('/genXers'));
+  const goToMillenialsIntent$ = DOMSource.select('a.millenials').events('click').do(preventDefault)
+    .map(always('/millenials'));
 
   const routeActions$ = $.merge([goToAspirationalIntent$, goToGenXersIntent$]);
 
@@ -24,17 +26,17 @@ export function HomePage(sources, settings) {
     router: routeActions$,
     [DOM_SINK]: $.of(
       div([
-        div(".ui.breadcrumb", [
-          div(".active.section", [`Home`])
-        ]),
-        div(".ui.yellow.message", [
-          i(".star.icon"),
-          `
+          div(".ui.breadcrumb", [
+            div(".active.section", [`Home`])
+          ]),
+          div(".ui.yellow.message", [
+            i(".star.icon"),
+            `
     Please choose the category you want to delve into`
           ]),
           div(".ui.items", [
             div(".item", [
-              a(".ui.medium.image", {
+              a(".ui.medium.image.aspirational", {
                 "attrs": {
                   "href": "/Aspirational",
                   "className": "ui medium image"
@@ -54,7 +56,7 @@ export function HomePage(sources, settings) {
               ])
             ]),
             div(".item", [
-              a(".ui.medium.image", {
+              a(".ui.medium.image.genXers", {
                 "attrs": {
                   "href": "/GenXers",
                   "className": "ui medium image"
@@ -74,7 +76,12 @@ export function HomePage(sources, settings) {
               ])
             ]),
             div(".item", [
-              a(".ui.medium.image", [
+              a(".ui.medium.image.millenials", {
+                "attrs": {
+                  "href": "/millenials",
+                  "className": "ui medium image"
+                }
+              }, [
                 img({
                   "attrs": {
                     "src": "https://i0.wp.com/luckyattitude.co.uk/wp-content/uploads/2015/05/millennials-characteristics.jpg?fit=485%2C323"
