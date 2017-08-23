@@ -1,13 +1,35 @@
 import { OnRoute } from "../../../src/components/Router/Router"
+import { m } from "../../../src/components/m"
 import { DOM_SINK } from "../../../src/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
+import { ROUTE_SOURCE } from "../../../src/components/Router/properties"
 
 const $ = Rx.Observable;
 
-// TODO : I am here, thats the code for swtich demo, adaprt to router demo
+function injectRouteSource(sources) {
+  const route$ = sources.router.observable.pluck('pathname').map(route => {
+      return (route && route[0] === '/') ? route.substring(1) : route
+    }
+  )
 
-export const App = m({}, { sinkNames: [DOM_SINK, 'router'], trace: 'App' }, [
+  return {
+    [ROUTE_SOURCE]: route$
+  }
+}
+
+function InjectSourcesAndSettings({ sourceFactory, settings }, childrenComponents) {
+  return m({ makeLocalSources: sourceFactory }, settings, childrenComponents)
+}
+
+export const App = InjectSourcesAndSettings({
+  sourceFactory: injectRouteSource,
+  settings: {
+    sinkNames: [DOM_SINK, 'router'],
+    routeSource : ROUTE_SOURCE,
+    trace: 'App'
+  }
+}, [
   OnRoute({ route: '', trace: 'OnRoute (/)' }, [
     HomePage
   ]),

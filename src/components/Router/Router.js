@@ -21,6 +21,12 @@ function hasRouteProperty(sources, settings) {
     || Boolean(isString(settings.route) && settings.route.length > 1)
 }
 
+function hasRouteSourceProperty(sources, settings) {
+  return Boolean(!settings || !('routeSource' in settings)) ||
+  Boolean(settings && 'routeSource' in settings
+    && isString(settings.routeSource) && settings.routeSource.length > 0)
+}
+
 function hasAtLeastOneChildComponent(childrenComponents) {
   return childrenComponents &&
   isArray(childrenComponents) &&
@@ -71,6 +77,7 @@ function match(routeToMatch) {
 const isRouteSettings = checkAndGatherErrors([
   [hasRouteProperty, `Settings parameter must have a 'route' property which is a non empty string!`],
   [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
+  [hasRouteSourceProperty, `If settings parameter have a 'routeSource' property, then it must be a string!`],
 ], `isRouteSettings : fails!`);
 
 /**

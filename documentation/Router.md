@@ -68,12 +68,14 @@ One can refer to the tests to see this in action.
 - `RouteSettings :: Record {`
 - `  sinkNames :: [String]`  **Mandatory**
 - `  route :: RouteSpec` **Mandatory**
+- `  routeSource :: String` **Optional**
 - `}`
 - `RouteSpec :: String` [syntax](https://github.com/cowboy/javascript-route-matcher)
 
 ### Contracts
 - be careful about end slashing
 - `route :: RouteSpec` should not end by a `/` or start with a `/` (**NOTE** : for now! this is due to how `routeRemainder` is parsed and passed to children...)
+
 
 # Example
 

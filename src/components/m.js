@@ -40,42 +40,7 @@ import {
   emitNullIfEmpty, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent, isFunction,
   isMergeSinkFn, isNullableComponentDef, isNullableObject, isOptSinks, isVNode, projectSinksOn,
   removeEmptyVNodes, removeNullsFromArray, traceSinks
-} from "../utils" //or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
-} from "ramda"
-import { div } from "cycle-snabbdom"
-import * as Rx from "rx"
-//or ../utils
-//or ../utils
-//or ../utils
-//or ../utils
-import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
-} from "ramda"
-import { div } from "cycle-snabbdom"
-import * as Rx from "rx"
-//or ../utils
-//or ../utils
-import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
-} from "ramda"
-import { div } from "cycle-snabbdom"
-import * as Rx from "rx"
-//or ../utils
-import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
-} from "ramda"
-import { div } from "cycle-snabbdom"
-import * as Rx from "rx"
+} from "../utils"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
 } from "ramda"
