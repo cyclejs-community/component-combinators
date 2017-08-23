@@ -1,8 +1,8 @@
 // TODO : this is the master for utils - copy it back to FSM-examples times to times
 import {
   addIndex, all, allPass, both, curry, defaultTo, difference, either, equals, flatten, flip,
-  intersection, isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, uniq,
-  values, where, tap
+  intersection, isEmpty, isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, reject, tap, uniq,
+  values, where
 } from "ramda"
 import * as Rx from "rx"
 // TODO https://github.com/moll/js-standard-error
@@ -342,7 +342,7 @@ function isOneOf(strList) {
   }
 }
 
-function isNumber(obj){
+function isNumber(obj) {
   return typeof(obj) === 'number'
 }
 
@@ -703,10 +703,10 @@ function makeErrorMessage(errorMessage) {
  */
 function traceSinks(traceInfo, sinks) {
   return mapObjIndexed((sink$, sinkName) => {
-    return sink$.tap(function log(x){
+    return sink$.tap(function log(x) {
       console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
     })
-  },sinks)
+  }, sinks)
 }
 
 function removeNullsFromArray(arr) {
@@ -778,12 +778,33 @@ function getValidKeys(obj) {
  * @returns {Observable|*}
  */
 function emitNullIfEmpty(sink) {
-  return isNil(sink) ?
-    null :
-    $.merge(
-      sink,
-      sink.isEmpty().filter(x => x).map(x => null)
-    )
+  return $.create(function emitNullIfEmptyObs(observer) {
+    let isEmpty = true;
+    sink.subscribe(function next(x) {
+      isEmpty = false;
+      observer.onNext(x);
+    }, function error(e) {
+      console.error(`emitNullIfEmpty > Error!`, e);
+      observer.onError(e);
+    }, function completed() {
+      if (isEmpty) {
+        observer.onNext(null);
+      }
+      observer.onCompleted();
+    });
+
+    return function dispose(){
+      // No clean-up necessary
+    }
+  })
+  /*
+    return isNil(sink) ?
+      null :
+      $.merge(
+        sink,
+        sink.isEmpty().filter(x => x).map(x => null)
+      )
+  */
 }
 
 function makeDivVNode(x) {
@@ -918,7 +939,7 @@ const logFnTrace = (title, paramSpecs) => ({
   },
 });
 
-function toHTMLorNull(x){
+function toHTMLorNull(x) {
   return x ? toHTML(x) : null
 }
 
@@ -966,13 +987,13 @@ function formatArrayObj(arr, separator) {
 
 function format(obj) {
   // basically if obj is an object, use formatObj, else use toString
-  if (obj === 'null'){
+  if (obj === 'null') {
     return '<null>'
   }
-  else if (obj === 'undefined'){
+  else if (obj === 'undefined') {
     return '<undefined>'
   }
-  else if (obj === ''){
+  else if (isString(obj) && obj.length === 0) {
     return '<empty string>'
   }
   else if (isArray(obj)) {
@@ -1019,12 +1040,11 @@ function toJsonPatch(path) {
   );
 }
 
-function stripHtmlTags(html)
-{
+function stripHtmlTags(html) {
   let tmp = document.createElement("DIV");
   tmp.innerHTML = html;
 
-  const strippedContent =tmp.textContent || tmp.innerText || "";
+  const strippedContent = tmp.textContent || tmp.innerText || "";
 
   tmp.remove();
 
@@ -1032,7 +1052,7 @@ function stripHtmlTags(html)
 }
 
 function traceFn(fn, text) {
-  return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "" )))
+  return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "")))
 }
 
 const DOM_SINK = 'DOM';

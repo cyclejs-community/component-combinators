@@ -1,5 +1,6 @@
 import {
-  assertContract, assertSignature, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction,
+  assertContract, assertSignature, checkAndGatherErrors, DOM_SINK, format, isArray, isArrayOf,
+  isFunction,
   isString
 } from "../../utils"
 import { m } from "../m"
@@ -58,7 +59,7 @@ function match(routeToMatch) {
   let rm2 = routeMatcher(routeToMatch + '/*routeRemainder')
 
   return function match(incomingRoute) {
-    console.debug(`match > match : ${routeToMatch}`)
+    console.debug(`Router > match > matching against route : ${format(routeToMatch)}`)
     if (isNil(incomingRoute)) {
       return {
         match: null
@@ -144,7 +145,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .tap(console.debug.bind(console, `${trace} : source ${routeSourceName}`))
 
   let matchedRoute$ = route$.map(match(settings[ROUTE_CONFIG]))
-    .tap(console.debug.bind(console, `${trace} : matchedRoute$`))
+    .tap(console.debug.bind(console, `${trace} > matchedRoute$ > route change matching to :`))
     // NOTE : replaying here is mandatory
     // That's because the children are passed `matchedRoute` and
     // connect to it AFTER the `route$` has emitted its value...
@@ -155,10 +156,10 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   let changedRouteEvents$ = matchedRoute$
     .pluck('match')
     .distinctUntilChanged(x => {
-      console.debug('distinctUntilChanged on : ', x ? omit(['routeRemainder'], x) : null)
+//      console.debug('distinctUntilChanged on : ', x ? omit(['routeRemainder'], x) : null)
       return x ? omit(['routeRemainder'], x) : null
     })
-    .tap(console.debug.bind(console, `${trace} : changedRouteEvents$`))
+    .tap(console.debug.bind(console, `${trace} > changedRouteEvents$ > route change (ignored duplicate) on section :`))
     .share()
   // Note : must be shared, used twice here
 
@@ -241,12 +242,14 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         else {
           // Case : the component does not have any sinks with the
           // corresponding sinkName
+          console.info(`${trace} > sink ${sinkName} : component has no such sink!`)
+          console.debug(`${trace} > makeRoutedSinkFromCache > sink ${sinkName} : -> empty`)
           cached$ = $.empty()
         }
       }
       else {
         // Case : new route does NOT match component configured route
-        console.log(`${trace} : params is null!!! no match for this component on this route`)
+        console.log(`${trace} > sink ${sinkName} : no match for this component on this route!`)
         cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
       }
 

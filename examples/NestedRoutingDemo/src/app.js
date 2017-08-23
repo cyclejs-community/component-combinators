@@ -1,6 +1,6 @@
 import { OnRoute } from "../../../src/components/Router/Router"
 import { m } from "../../../src/components/m"
-import { DOM_SINK } from "../../../src/utils"
+import { DOM_SINK, format } from "../../../src/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
 import { ROUTE_SOURCE } from "../../../src/components/Router/properties"
@@ -20,6 +20,8 @@ function injectRouteSource(sources) {
 
   return {
     [ROUTE_SOURCE]: route$
+      .tap(x => console.debug(`App > injectRouteSource > route$ emits :`, format(x)))
+        .share()
   }
 }
 
@@ -57,7 +59,6 @@ export const App = InjectSourcesAndSettings({
     ])
   ]),
 ]);
-
 // TODO : check logs:
 // - understand
 // - check no double display or recomputation (how?)
@@ -65,3 +66,10 @@ export const App = InjectSourcesAndSettings({
 // TODO : home route / matching
 // - what if I want to put there a coponent which is always displayed? How to do it with this
 // formulat? Should I not switch to have '/' always matching instead of now not matching??
+// TODO : Switch - put in DOC
+// with a function eq who let everything pass, and using the match property in the children, one can
+// have a parameterized component which updates for every change in the parameter! Give an example!
+// also explain advantage of this method : no need to use a source stream, simpler to write the
+// component function then, separation of concerns, - : some peformance loss maybe?
+// TODO : Switch btw have the switch component pass not only the when to the children but the
+// incomoing value too!! And add the corresponding test...
