@@ -1,4 +1,5 @@
 // NOTE : from https://github.com/r7kamura/cycle-history-driver/releases/tag/v0.0.2
+// very basic - not used
 import * as Rx from "rx";
 
 const historyRecord$ = new Rx.Subject();

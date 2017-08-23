@@ -1,6 +1,6 @@
 import * as Rx from "rx";
 
-// TODO:  test that it works (go -1 etc)
+// TODO:  evily copied from old version of cyclic-router - NOT USED
 const clickEvent = 'undefined' !== typeof document && document.ontouchstart ?
   'touchstart' : 'click';
 
