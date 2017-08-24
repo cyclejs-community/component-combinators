@@ -148,7 +148,14 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .tap(console.debug.bind(console, `${trace} : source ${routeSourceName}`))
 
   let matchedRoute$ = route$.map(match(settings[ROUTE_CONFIG]))
-    .tap(console.debug.bind(console, `${trace} > matchedRoute$ > route change matching to :`))
+    .tap(x => {
+        if (isNil(x.match)) {
+          console.debug(`${trace} > matchedRoute$ > current route does not match this component's route!`)
+        } else {
+          console.debug(`${trace} > matchedRoute$ > current route matches!! :`, x)
+        }
+      }
+    )
     // NOTE : replaying here is mandatory
     // That's because the children are passed `matchedRoute` and
     // connect to it AFTER the `route$` has emitted its value...
@@ -160,11 +167,11 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     .distinctUntilChanged(({ match }) => {
       return match ? omit(['routeRemainder'], match) : null
     })
-    .tap(console.debug.bind(console, `${trace} > changedRouteEvents$ > route change (ignored duplicate) on section :`))
+    .tap(console.debug.bind(console, `${trace} > changedRouteEvents$ > route change (ignoring duplicates) on section :`))
     .do(function computeChildrenSinksIfAny({ match }) {
       // Case : the configured route did match the current route
       if (match != null) {
-        console.info('computing children components sinks', match);
+        console.info(`${trace} > computing children components sinks with match`, match);
         const componentFromChildren = m({
             makeLocalSources: function makeLocalSources(sources, __settings) {
               console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`);
@@ -192,45 +199,11 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     })
     .share()
   // Note : must be shared, used twice here
-
-  /*
-    const cachedSinks$ = changedRouteEvents$
-      .pluck('match')
-      .map(function (params) {
-        let cachedSinks
-
-        // Case : the configured route did match the current route
-        if (params != null) {
-          console.info('computing children components sinks', params);
-          const componentFromChildren = m({
-              makeLocalSources: function makeLocalSources(sources, __settings) {
-                console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`);
-                console.debug(`sources : ${keys(sources)}, __settings :`, __settings);
-                console.groupEnd();
-
-                return {
-                  [routeSourceName]: matchedRoute$
-                    .map(pathR(['match', 'routeRemainder']))
-                    .tap(console.debug.bind(console,
-                      `${trace} > changedRouteEvents$ > children wrapper component  > source ${routeSourceName} > routeRemainder (new route$ for children)`))
-                    .share(),
-                }
-              },
-            }, {
-              [ROUTE_PARAMS]: omit(['routeRemainder'], params),
-              trace: `${trace} > componentFromChildren`
-            },
-            childrenComponents);
-          cachedSinks = componentFromChildren(sources, settings);
-        }
-        else {
-          cachedSinks = null
-        }
-
-        return cachedSinks
-      })
-      .share()
-  */
+  // NOTE : we cannot group  matchedRoute$ and changedRouteEvents$ in one, as one needs a Replay
+  // and the other one needs just a share :
+  // - changedRouteEvents$ really is an event, we don't want it to trigger in a delayed manner.
+  // Tests proved that this leads to children componnt emitting values when they should already
+  // be disconnected
 
   function makeRoutedSinkFromCache(sinkName) {
     return function makeRoutedSinkFromCache(params) {
