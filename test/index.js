@@ -7,5 +7,5 @@ window.$ = window.jQuery = require('jquery');
 // import './mButton.specs'
 // TODO : add a test in runTestScenario for inputs = []
 // import './runTestScenario.specs'
-// import './Switch.specs'
+ import './Switch.specs'
  import './Router.specs'

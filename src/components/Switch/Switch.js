@@ -2,9 +2,8 @@
 
 import { m } from '../m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArray, isArrayOf,
-  isFunction, isSource,
-  isString, removeNullsFromArray, unfoldObjOverload
+  assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArrayOf,
+  isFunction, isSource, isString, removeNullsFromArray, unfoldObjOverload
 } from '../../utils'
 import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'
@@ -107,7 +106,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         console.info(`Computing the corresponding sinks`)
         const mergedChildrenComponentsSinks = m(
           {},
-          { matched: when, trace : 'executing case children' },
+          { matched: when, trace: 'executing case children' },
           childrenComponents)
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
@@ -125,9 +124,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   function makeSwitchedSink(sinkName) {
     return {
       [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache(isMatchingCase) {
-        // TODO : remove unused, use let isntead of var
-        // TODO : use return inside the ifs and remove cached$
-        var cached$
+        let cached$;
 
         if (isMatchingCase) {
           // Case : the switch source emits a value corresponding to the
@@ -184,12 +181,11 @@ export const SwitchSpec = {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
 
-      // NOTE : zip rxjs does not accept only one argument...
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
         function (x) {
           console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
         }
-      ))) //!! passes an array
+      )))
         .filter(Boolean)
       // Most values will be null
       // All non-null values correspond to a match
