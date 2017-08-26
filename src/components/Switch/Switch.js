@@ -39,14 +39,6 @@ const cfg = {
  * @property {?function(*,*): Boolean} eqFn
  */
 
-//////
-// Helper functions
-function hasAtLeastOneChildComponent(childrenComponents) {
-  return childrenComponents &&
-  isArray(childrenComponents) &&
-  childrenComponents.length >= 1 ? true : ''
-}
-
 function hasWhenProperty(sources, settings) {
   return Boolean(settings && 'when' in settings)
 }

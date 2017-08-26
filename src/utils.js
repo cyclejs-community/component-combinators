@@ -695,6 +695,14 @@ function makeErrorMessage(errorMessage) {
   return ERROR_MESSAGE_PREFIX + errorMessage;
 }
 
+//////
+// Helper functions
+function hasAtLeastOneChildComponent(childrenComponents) {
+  return childrenComponents &&
+  isArray(childrenComponents) &&
+  childrenComponents.length >= 1 ? true : ''
+}
+
 /**
  * Adds `tap` logging/tracing information to all sinks
  * @param {String} traceInfo
@@ -1107,6 +1115,7 @@ export {
   assertSettingsContracts,
   deepFreeze,
   makeErrorMessage,
+  hasAtLeastOneChildComponent,
   traceSinks,
   getFunctionName,
   decorateWithOne,
