@@ -2,7 +2,8 @@
 
 import { m } from '../m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, isArray, isArrayOf, isFunction, isSource,
+  assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArray, isArrayOf,
+  isFunction, isSource,
   isString, removeNullsFromArray, unfoldObjOverload
 } from '../../utils'
 import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'

@@ -1,5 +1,6 @@
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, format, isArray, isArrayOf, isString
+  assertContract, checkAndGatherErrors, DOM_SINK, format, hasAtLeastOneChildComponent, isArray,
+  isArrayOf, isString
 } from "../../utils"
 import { m } from "../m"
 import { defaultTo, isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
@@ -25,12 +26,6 @@ function hasRouteSourceProperty(sources, settings) {
   return Boolean(!settings || !('routeSource' in settings)) ||
     Boolean(settings && 'routeSource' in settings
       && isString(settings.routeSource) && settings.routeSource.length > 0)
-}
-
-function hasAtLeastOneChildComponent(childrenComponents) {
-  return childrenComponents &&
-  isArray(childrenComponents) &&
-  childrenComponents.length >= 1 ? true : ''
 }
 
 /**
@@ -286,7 +281,7 @@ const RouterSpec = {
 // TODO : write documentation
 export function OnRoute(routeSettings, childrenComponents) {
   // check that components is an array
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : router combinator must at least have one child component to route to!`);
+  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Router : router combinator must at least have one child component to route to!`);
 
   return m(RouterSpec, routeSettings, childrenComponents)
 }
