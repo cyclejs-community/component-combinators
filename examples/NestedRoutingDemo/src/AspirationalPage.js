@@ -23,7 +23,6 @@ export function AspirationalPageHeader(sources, settings) {
 export function Card(cardInfo) {
   return function CardFragment(sources, settings) {
     return {
-      router: null, // TODO
       [DOM_SINK]: $.of(
         div(".column", [
           div(".ui.centered.fluid.card", [
@@ -66,7 +65,6 @@ export function Card(cardInfo) {
 export function CardDetail(cardInfo) {
   return function CardFragment(sources, settings) {
     return {
-      router: null, // TODO
       [DOM_SINK]: $.of(
         div(".column", [
           div(".ui.message", [

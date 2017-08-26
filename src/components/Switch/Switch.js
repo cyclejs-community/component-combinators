@@ -283,7 +283,7 @@ export const CaseSpec = {
  */
 export function Switch(switchSettings, childrenComponents) {
   assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : switch combinator must at least have one child component to switch to!`);
-  assertContract(hasOnProperty, [null, switchSettings], `Switch : switch combinator must at least have one child component to switch to!`);
+  assertContract(hasOnProperty, [null, switchSettings], `Switch : switch combinator must have a 'on' property !`);
   let _SwitchSpec = SwitchSpec;
   let _switchSettings = switchSettings;
 

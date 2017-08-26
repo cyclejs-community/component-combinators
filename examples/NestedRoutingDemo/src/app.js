@@ -59,10 +59,7 @@ export const App = InjectSourcesAndSettings({
     ])
   ]),
 ]);
-// TODO : check logs:
-// - understand
-// - check no double display or recomputation (how?)
-// - check why router Router (OnRoute (/)) : params is null!!! is duplicated ?? sometimes 5 of them
+
 // TODO : home route / matching
 // - what if I want to put there a coponent which is always displayed? How to do it with this
 // formulat? Should I not switch to have '/' always matching instead of now not matching??
@@ -73,3 +70,7 @@ export const App = InjectSourcesAndSettings({
 // component function then, separation of concerns, - : some peformance loss maybe?
 // TODO : Switch btw have the switch component pass not only the when to the children but the
 // incomoing value too!! And add the corresponding test...
+// TODO : add InjectSourcesAndSettings as a component too
+// TODO : change makeOwnSinks to ParentComponent somehow, probably [parent, [children]] is best API
+// or [children] when there is no parent
+// That way m only has the reducing functions, and can be curry in its first parameter
