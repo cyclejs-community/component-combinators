@@ -31,6 +31,7 @@ QUnit.module("Testing Switch component", {})
 // 2. Switch on source generating function
 // same than 1
 
+// 1.3 Switch on source : switch source 1 match
 QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_test(assert) {
   const done = assert.async(4);
 
@@ -178,6 +179,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_te
 
 });
 
+// 1.5 Switch on source : switch source 0 match
 QUnit.test("main cases - 0 match - 3 cases - switch on source", function exec_test(assert) {
   const done = assert.async(4);
 
@@ -275,6 +277,7 @@ QUnit.test("main cases - 0 match - 3 cases - switch on source", function exec_te
 
 });
 
+// 2.3 Switch on condition : switch source 1 match
 QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec_test(assert) {
   const done = assert.async(4);
 
@@ -422,6 +425,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec
 
 });
 
+// 2.5 Switch on condition : switch source 0 match
 QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec_test(assert) {
   const done = assert.async(4);
 
@@ -519,7 +523,7 @@ QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec
 
 });
 
-QUnit.test("edge cases - 0 case - switch on condition", function exec_test(assert) {
+QUnit.test("edge cases - 0 case components- switch on condition", function exec_test(assert) {
   const inputs = [
     {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
     {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},

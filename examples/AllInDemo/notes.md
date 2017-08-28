@@ -98,3 +98,24 @@ so
   a. the parent sink (so I need one) takes children sinks, associate an index on exit, then a merge function should always be the same {sinkName : merge()
 2. each card generate an id or sth with the index
   a. the parent creates the listener at his level and compute the merged sinks (like in delegation)
+
+HOW IT WORKS:
+- breakdown the component tree with control flow combinators and 'sequential' or 'linear' operators
+  - control flow
+    - Switch, ForEach, FSM, Router
+  - linear
+    - `Events :: HashMap<EventName, EventSource>`
+    - `EventsFactory :: HashMap<EventName, EventFactory>`
+    - `EventFactory :: Sources -> Settings -> EventSource`
+    - `Event :: Observable`
+    - `MakeActionsSettings :: Record{makeAction :: ActionsFactory}`
+    - `ActionsFactory :: Events -> Actions`
+    - `Actions :: HashMap<SinkName, Sink>`
+    - MakeEvents :: EventsFactory -> [Component] -> Component
+      - Note that it might be useful to have also 
+        - `EventsFactory :: Sources -> Settings -> Events` in case we need to make events from other previously made events (! be careful with the share and replay semantics there!!)
+    - `MakeActions :: MakeActionsSettings -> [Component] -> Component` 
+      - `makeAction` is a pure function
+    - we skip the intent intermediary step (often mapping one to one to action)
+    - `ev.preventDefault` SHOULD be in the event part, not the action part! We want  `makeAction` to be a pure function
+      

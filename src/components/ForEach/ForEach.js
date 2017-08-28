@@ -1,13 +1,12 @@
 // ForEach({from : 'fetchedCardsInfo$', as : 'items'}
-import {defaultTo} from 'ramda'
 import { defaultFilterBy } from "./properties"
-import { format } from "../../utils"
+import { format, isObservable } from "../../utils"
 import { m } from '../m'
 import {
   assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArrayOf,
-  isFunction, isSource, isString, removeNullsFromArray, unfoldObjOverload, isString, isFunction
+  isFunction, isSource, isString, removeNullsFromArray, unfoldObjOverload,
 } from '../../utils'
-import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
+import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll, keys } from 'ramda'
 import * as Rx from 'rx'
 
 function isForEachSettings (sources, settings) {
@@ -15,12 +14,19 @@ function isForEachSettings (sources, settings) {
   && isString(settings.from) && isString(settings.as)
 }
 
+function isValidForEachSettings(sources, settings){
+  return  sources &&  sources[settings.from] && isObservable(sources[settings.from])
+  && 'sinkNames' in settings
+}
+
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings){
   // TODO : when changing m signature pay attention to tat too, I don't use makeOwnSinks I should?
-  let { from, as } = settings;
+  let { from, as, sinkNames } = settings;
   let cachedSinks = null;
 
   const switchSource = sources[from];
+  assertContract(isValidForEachSettings, [sources, settings], `ForEach > computeSinks > isValidForEachSettings : source ${from} not found in sources!`);
+
   const shouldSwitch$ = switchSource
     .do(function (incomingValue) {
         console.info(`${settings.trace} > ForEach > New value from source ${from}`, format(incomingValue))
@@ -30,7 +36,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings){
           { [as]: incomingValue, trace: 'executing ForEach children' },
           childrenComponents);
 
-        cachedSinks = mergedChildrenComponentsSinks(sources, settings)
+        cachedSinks = mergedChildrenComponentsSinks(sources, settings);
     })
     // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
     // because the wire happens at switch time? and that is a different time every time??
