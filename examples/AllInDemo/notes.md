@@ -82,7 +82,7 @@ buildActionsFromChildrenSinks = {
     }))
     // TODO: that returns a clickIntent$ source... so got to get the mergeSinks as a fn or write custom merge, but pass a mapping in ListOf, to map childrenSinks to merged final parent sink I AM HERE
 
-  } 
+  }
 }
 
 // TODO : should I do a rename sink operator?? maybe

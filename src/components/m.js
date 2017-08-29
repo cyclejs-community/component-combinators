@@ -478,7 +478,7 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
   )
 }
 
-export { m, defaultMergeSinkFn, computeDOMSinkDefault }
+export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }
 
 // TODO : design better trace information
 // for instance outer trace could be concatenated to inner trace to trace also the
