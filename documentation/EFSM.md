@@ -1056,6 +1056,9 @@ When a state machine is activated, event factories are immediately executed, and
 - the state machine keeps a journal of the modification of its model (history 
 of update operations together with the transitions taken) for debugging 
 purposes or else
+- allow action request without waiting for response
+	- this allows for example to implement `forkJoin` with FSM
+	- will also help implementing optimistic update (EHFSM will be great for that as we will still have to cope with the pessimistic case, so there will be error flows for any state, hence will be nice to group them hierarchically not to repeat transtiions)
 - implement exit actions for cleanup purpose 
 	- will have to be specified in sync with the entry action (which probably creates the resource to clean up) 
 - specify event queuing, back pressure and interruption policies

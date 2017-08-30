@@ -13,7 +13,7 @@ function isListOfSettings(settings) {
 }
 
 function isListAnArray(sources, settings) {
-  return isArray(settings.list)
+  return isArray(settings[settings.list])
 }
 
 function hasValidBuildActionsFromChildrenSinks(sources, settings) {
@@ -22,6 +22,10 @@ function hasValidBuildActionsFromChildrenSinks(sources, settings) {
 
 function hasValidActionsMap(sources, settings) {
   return (!('actionsMap' in settings) || isObject(settings.actionsMap))
+}
+
+function hasExactlyOneChildComponent(arrayOfComponents){
+  return arrayOfComponents && isArray(arrayOfComponents) && arrayOfComponents.length === 1
 }
 
 const isValidListOfSettings =
@@ -38,7 +42,6 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   const { list, buildActionsFromChildrenSinks, actionsMap } = settings;
   const items = settings[list];
   const childComponent = childrenComponents[0]; // Just one child
-//  const parentSinks = makeOwnSinks && makeOwnSinks(sources, settings) || null;
 
   const indexedChildrenComponents = items.map((item,index) => {
     return function indexedChildComponent(sources, _settings){
@@ -51,27 +54,9 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   const reducedSinks = m({
     makeOwnSinks : makeOwnSinks,
     mergeSinks : buildActionsFromChildrenSinks || {}
-  }, {trace : 'ListOf > computing indexed children'}, indexedChildrenComponents);
+  }, {trace : 'ListOf > computing indexed children'}, indexedChildrenComponents)(sources,settings);
 
   const sinkNames = keys(reducedSinks);
-
-/*
-  /!** @type {Array<HashMap<SinkName, Sink>>} childrenSinks *!/
-  const childrenSinks = items.map((item, index) => {
-    const childComponentSettings = merge(settings, { [settings.as]: item, listIndex: index });
-
-    return childComponent(sources, childComponentSettings)
-  });
-
-// NO: I have to include the parent sinks
-  const sinkNames = keys(childrenSinks);
-
-  const reducedSinks = reduce(
-    computeReducedSink(parentSinks, childrenSinks, settings, buildActionsFromChildrenSinks || {}),
-    {},
-    sinkNames
-  );
-*/
 
   const mappedAndReducedSinks = reduce(
     function mapAndReduceSinks(acc, sinkName) {
@@ -99,7 +84,7 @@ const listOfSpec = {
 };
 
 export function ListOf(listOfSettings, childrenComponents) {
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `ListOf : ListOf combinator must at least have one child component to list!`);
+  assertContract(hasExactlyOneChildComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly one child component to list from!`);
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
   return m(listOfSpec, listOfSettings, childrenComponents)

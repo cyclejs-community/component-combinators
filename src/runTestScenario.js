@@ -34,15 +34,15 @@
  */
 /**
  * @typedef {Object} TestRunnerSettings
- * @property {Number} tickDuration
- * @property {Number} waitForFinishDelay
- * @property {function(error:Exception):void} errorHandler
- * @property {function(actual, expected):void} analyzeTestResults By contract, should throw if
- * actual != expected
- * @property {Object.<String, function():Subject>} sourceFactory hashmap associating a mocked
+ * @property {?Number} tickDuration
+ * @property {?Number} waitForFinishDelay
+ * @property {?function(error:Error):*} errorHandler
+ * @property {?function(actual, expected, message):*} analyzeTestResults By contract, should
+ * throw `message` if actual != expected
+ * @property {?Object.<String, function():Subject>} sourceFactory hashmap associating a mocked
  * source to a subject factory. The factory should create a subject through which test inputs are
  * emitted
- * @property {Object.<String, function(mockedObj, sourceSpecs, stream):*>} mocks The keys of
+ * @property {?Object.<String, function(mockedObj:*, sourceSpecs:*, stream):*>} mocks The keys of
  * `mocks` are the mocked object to build. Those mocked objects are passed as a source
  * to the sources parameter of the tested component function (:: Sources -> Sinks, where
  * Sources :: Object.<key, Source>).
