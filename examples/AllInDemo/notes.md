@@ -118,4 +118,27 @@ HOW IT WORKS:
       - `makeAction` is a pure function
     - we skip the intent intermediary step (often mapping one to one to action)
     - `ev.preventDefault` SHOULD be in the event part, not the action part! We want  `makeAction` to be a pure function
-      
+
+HOW WOULD I DO A TABBED COMPONENT? ALSO STEP COMPONENT!
+App = Tabs({tabs: [tab1, tab2, tab3]}, [Parent, [
+  Tab1,
+  Tab2,
+  Tab3
+]]
+)
+
+- tabs is an array of intents corresponding to the trigger to activate each tab
+- Tabs will be implemented with a Switch component
+- Parent ()and children) will receive in its settings the `when` (or `matched`?) property to hold the index of the tab to activate
+- Parent can then render differently (header?) as a function of that
+
+HOW TO DO A PROGRESS BAR COMPONENT
+With ForEach
+App = ForEach ({from, as}, [
+  ProgressBar
+])
+- from is for instance the intent click on a +/- button
+- as is the field necessary for ProgressBar 
+
+HOW WOULD I DO AN ACCORDEON COMPONENT?
+???
