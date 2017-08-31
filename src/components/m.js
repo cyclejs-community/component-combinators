@@ -397,8 +397,8 @@ function m(componentDef, _settings, children) {
     const localSettings = deepMerge(
       makeLocalSettings(mergedSettings),
       mergedSettings
-    )
-    console.info(`${traceInfo} component : final settings`, localSettings)
+    );
+    console.info(`${traceInfo} component : final settings`, localSettings);
 
     // Computes and MERGES the extra sources which will be passed
     // to the children and this component
@@ -407,11 +407,11 @@ function m(componentDef, _settings, children) {
     const extendedSources = merge(
       sources,
       makeLocalSources(sources, localSettings)
-    )
+    );
 
-    assertSourcesContracts([extendedSources, localSettings], checkPreConditions)
+    assertSourcesContracts([extendedSources, localSettings], checkPreConditions);
 
-    let reducedSinks
+    let reducedSinks;
 
     // Case : computeSinks is defined
     if (computeSinks) {
