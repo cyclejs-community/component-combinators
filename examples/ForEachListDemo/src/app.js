@@ -5,6 +5,7 @@ import { Card } from "./Card"
 import { AspirationalPageHeader } from "./AspirationalPageHeader"
 import * as Rx from "rx";
 import { div } from 'cycle-snabbdom'
+import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
 
 const $ = Rx.Observable;
 const maxPages = 3;
