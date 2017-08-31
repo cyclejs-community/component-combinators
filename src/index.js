@@ -25,3 +25,9 @@ export * from  "./components/m"
 export * from "./components/Router/Router"
 export * from "./utils"
 export * from "./runTestScenario"
+
+// TODO : Switch btw have the switch component pass not only the when to the children but the
+// incomoing value too!! And add the corresponding test...
+// TODO : change makeOwnSinks to ParentComponent somehow, probably [parent, [children]] is best API
+// or [children] when there is no parent
+// That way m only has the reducing functions, and can be curry in its first parameter

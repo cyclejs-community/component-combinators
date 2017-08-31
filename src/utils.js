@@ -13,7 +13,9 @@ import formatObj from "fmt-obj"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map);
-export const ERROR_MESSAGE_PREFIX = 'ERROR : '
+const ERROR_MESSAGE_PREFIX = 'ERROR : '
+
+const DOM_SINK = 'DOM';
 
 // Type checking typings
 /**
@@ -289,9 +291,6 @@ function isNullableObject(obj) {
  * @returns {SignatureCheck}
  */
 function isNullableComponentDef(obj) {
-  // Note that `==` is used instead of `===`
-  // This allows to test for `undefined` and `null` at the same time
-
   return isNil(obj) || checkSignature(obj, {
     makeLocalSources: either(isNil, isFunction),
     makeLocalSettings: either(isNil, isFunction),
@@ -1063,7 +1062,11 @@ function traceFn(fn, text) {
   return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "")))
 }
 
-const DOM_SINK = 'DOM';
+function EmptyComponent(sources, settings){
+  return {
+    [DOM_SINK] : $.of(null)
+  }
+}
 
 export {
   makeDivVNode,
@@ -1136,5 +1139,7 @@ export {
   toBoolean,
   stripHtmlTags,
   traceFn,
-  DOM_SINK
+  DOM_SINK,
+  ERROR_MESSAGE_PREFIX,
+  EmptyComponent,
 }

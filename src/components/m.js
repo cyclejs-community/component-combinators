@@ -201,6 +201,23 @@ function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames)
   )
 }
 
+function computeChildrenSinks(children, extendedSources, localSettings) {
+  return mapIndexed(
+    (childComponent, index) => {
+      const childComponentName = childComponent.name || index
+
+      console.group(`computing children sinks for ${childComponentName}`)
+
+      const childSinks = childComponent(extendedSources, localSettings)
+
+      console.groupEnd()
+
+      return childSinks
+    },
+    children
+  )
+}
+
 // m :: Opt Component_Def -> Opt Settings -> [Component] -> Component
 /**
  * Returns a component specified by :
@@ -459,23 +476,6 @@ function m(componentDef, _settings, children) {
     console.groupEnd()
     return tracedSinks
   }
-}
-
-function computeChildrenSinks(children, extendedSources, localSettings) {
-  return mapIndexed(
-    (childComponent, index) => {
-      const childComponentName = childComponent.name || index
-
-      console.group(`computing children sinks for ${childComponentName}`)
-
-      const childSinks = childComponent(extendedSources, localSettings)
-
-      console.groupEnd()
-
-      return childSinks
-    },
-    children
-  )
 }
 
 export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }

@@ -1,6 +1,4 @@
 import { App } from "./app"
-import { createHistory } from "history"
-import { makeRouterDriver } from 'cyclic-router'
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
 import * as Rx from "rx";
@@ -26,10 +24,6 @@ function filterNull(driver) {
 }
 
 // Make drivers
-// History driver
-const history = createHistory();
-const historyDriver = makeRouterDriver(history, { capture: true })
-
 // Document driver
 function documentDriver(_) {
   void _; // unused sink, this is a read-only driver
@@ -57,7 +51,6 @@ localForage.keys()
 
     const { sources, sinks } = run(init(App), {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
-      router: historyDriver,
       document: documentDriver
     });
 
@@ -77,14 +70,3 @@ localForage.keys()
 
 // NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/
 // ~~ attributes -> attrs
-
-function init(App) {
-  // NOTE : necessary in the context of the demo to put the initial route to /
-  return function initApp(sources, settings) {
-    const appSinks = App(sources, settings);
-
-    return merge(appSinks, {
-      router: $.concat([$.of('/'), appSinks.router])
-    })
-  }
-}

@@ -23,6 +23,7 @@ MainPage = InjectSourcesAndSettings({fetchedCardsInfo$ : fetch cards}, [
   ForEach({from : 'fetchedCardsInfo$', as : 'items'}, [
     AspirationalPageHeader, [
       ListOf({list : 'items', elementAs : 'cardInfo'}, [
+        Empty, 
         Card, 
       ])
     ]
@@ -30,6 +31,7 @@ MainPage = InjectSourcesAndSettings({fetchedCardsInfo$ : fetch cards}, [
 ])
 
 Case A:
+Empty = function (sources, settings){return {[DOM_SINK] : $.of(null)}}
 Card = function (sources, settings) {
   const {cardInfo, listOfIndex} = settings;
   const {projectKey, opportunityKey} = cardInfo;
@@ -50,6 +52,7 @@ MainPage = InjectSourcesAndSettings({fetchedCardsInfo$ : fetch cards}, [
   ForEach({from : 'fetchedCardsInfo$', as : 'items'}, [
     ListOf({list : 'items', as : 'cardInfo', buildActionsFromChildrenSinks:..., actionMap:{'clickIntent$':'router'}}, [
       AspirationalPageHeader, [
+        Empty,
         Card, 
       ]
     ])
