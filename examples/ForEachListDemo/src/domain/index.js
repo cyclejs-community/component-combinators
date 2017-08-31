@@ -1,52 +1,22 @@
-import { assertContract } from '../../../../src/utils';
-import { checkUserApplicationContracts } from './contracts';
-
 export const OPPORTUNITY = 'OPPORTUNITY';
 export const USER_APPLICATION = 'USERAPP';
-export const TEAMS = 'TEAMS';
-export const PROJECTS = 'PROJECTS';
-export const OPPORTUNITY_REF = 'Opps';
-export const USER_APPLICATION_REF = 'UserApplications';
-export const TEAMS_REF = 'Teams';
-export const USERS_REF = 'Users';
-export const PROJECTS_REF = 'Projects';
+export const CARDS = 'CARDS';
+export const PAGE = 'PAGE';
+export const PAGE_REF = 'Page';
 export const UPDATE = 'Update';
 
 const KEY_SEP = '!';
 
-function makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey) {
-  return [USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey].join(KEY_SEP);
-}
-
 export const domainObjectsQueryMap = {
-  [PROJECTS]: {
-    get: function getProjectByProjectKey(repository, params) {
-      const { projectKey } = params;
-      const localforageKey = [PROJECTS_REF, projectKey].join(KEY_SEP);
-
-      return repository.getItem(localforageKey);
+  [PAGE]: {
+    get: function getPageNumber(repository, params) {
+      return repository.getItem(PAGE_REF);
     }
   },
-  [OPPORTUNITY]: {
-    get: function getOpportunityByOppKey(repository, params) {
-      const { opportunityKey } = params;
-      const localforageKey = [OPPORTUNITY_REF, opportunityKey].join(KEY_SEP);
-
-      return repository.getItem(localforageKey);
-    }
-  },
-  [TEAMS]: {
-    get: function getTeamsByProjectKey(repository, params) {
-      const { projectKey } = params;
-      const localforageKey = [TEAMS_REF, projectKey].join(KEY_SEP);
-
-      return repository.getItem(localforageKey);
-    }
-  },
-  [USER_APPLICATION]: {
-    get: function getUserAppByOppAndUserKeys(repository, params) {
-      const { opportunityKey, userKey } = params;
-      const localforageKey = makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey);
+  [CARDS]: {
+    get: function getCardPage(repository, params) {
+      const { page } = params;
+      const localforageKey = page + "";
 
       return repository.getItem(localforageKey);
     }
@@ -54,18 +24,14 @@ export const domainObjectsQueryMap = {
 };
 
 export const domainActionsConfig = {
-  [USER_APPLICATION]: {
+  [PAGE]: {
     [UPDATE]: function updateUserApplication(repository, context, payload) {
       void context;
 
-      // Check command contracts
-      assertContract(checkUserApplicationContracts, [payload],
-        `UserApplication's user and opportunity keys cannot be null!`);
+      const { page } = payload;
+      const localforageKey = PAGE_REF;
 
-      const { userKey, opportunityKey } = payload;
-      const localforageKey = makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey);
-
-      console.log('update user application:', context, localforageKey , payload);
+      console.log('update page: ', context, localforageKey, payload);
 
       return repository.setItem(localforageKey, payload);
     }

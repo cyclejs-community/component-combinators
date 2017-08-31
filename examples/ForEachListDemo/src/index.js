@@ -10,6 +10,8 @@ import { loadTestData } from '../fixtures';
 import { DOM_SINK } from "../../../src/utils"
 import { merge } from "ramda"
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
+import { makeDomainQueryDriver } from './domain/queryDriver/index';
+import { makeDomainActionDriver } from './domain/actionDriver/index';
 
 const $ = Rx.Observable;
 const repository = localForage;
