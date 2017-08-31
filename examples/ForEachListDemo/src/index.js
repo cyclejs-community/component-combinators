@@ -9,6 +9,7 @@ import { loadTestData } from '../fixtures';
 // utils
 import { DOM_SINK } from "../../../src/utils"
 import { merge } from "ramda"
+import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 
 const $ = Rx.Observable;
 const repository = localForage;
@@ -51,7 +52,9 @@ localForage.keys()
 
     const { sources, sinks } = run(init(App), {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
-      document: documentDriver
+      document: documentDriver,
+      domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
+      domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
     });
 
     // Webpack specific code

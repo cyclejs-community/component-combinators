@@ -5,12 +5,20 @@ import { Card } from "./Card"
 import { AspirationalPageHeader } from "./AspirationalPageHeader"
 import * as Rx from "rx";
 import { div } from 'cycle-snabbdom'
-import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
+import { InjectSources } from "../../../src/components/Inject/InjectSourcesAndSettings"
 
 const $ = Rx.Observable;
 const maxPages = 3;
 
-export const App = InjectSourcesAndSettings({
+function fetchCardsInfo (sources, settings){
+
+}
+
+function fetchPageNumber (sources, settings){
+
+}
+
+export const App = InjectSources({
   fetchedCardsInfo$: fetchCardsInfo,
   fetchedPageNumber$: fetchPageNumber
 }, [
@@ -54,8 +62,7 @@ function Pagination(sources, settings) {
   }
 }
 
-// TODO : make InjectSourcesAndSettings a component
-// TODO : write Pagination as reading from settings the active step
+
 // TODO : write before Pagination as a ForEach on the corresponding domain.query source
 // TODO : add domain driver
 // TODO : add logic to on click from page write page number in local storage (domain)
