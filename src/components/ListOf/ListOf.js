@@ -91,7 +91,8 @@ export function ListOf(listOfSettings, childrenComponents) {
   assertContract(hasExactlyTwoChildComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly one child component to list from!`);
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
-  return m(listOfSpec, listOfSettings, childrenComponents)
+  const trace = (listOfSettings.trace || '') + ' ListOf generic'
+  return m(listOfSpec, merge(listOfSettings, {trace}), childrenComponents)
 }
 
 // TODO : review and test (write test plans and then test)

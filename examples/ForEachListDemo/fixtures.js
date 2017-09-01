@@ -1,4 +1,5 @@
-import { keys } from 'ramda'
+import { PAGE_REF } from "./src/domain/index"
+import { PAGE_INIT } from "./src/properties"
 
 const BLACK_BIRD_DETAIL_ROUTE = 'watchProjector';
 const TECHX_CARD_DETAIL_ROUTE = 'ladyGlasses';
@@ -64,7 +65,10 @@ const cards = [
  */
 export function loadTestData(localforage) {
   return Promise.all([cards].map((domainObjectTestData, index) => {
-      return localforage.setItem(index+"", domainObjectTestData);
+    return localforage.setItem(index + "", domainObjectTestData);
   }))
+    .then(() => {
+      localforage.setItem(PAGE_REF, PAGE_INIT)
+    })
 }
 

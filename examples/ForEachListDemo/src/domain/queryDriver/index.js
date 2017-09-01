@@ -27,10 +27,14 @@ export function makeDomainQueryDriver(repository, config) {
 
     return {
       query: function query(domainObject, params) {
-          const fnToExec = config[domainObject].get;
-          const wrappedFn = tryCatch(fnToExec, errorHandler);
+        const fnToExec = config[domainObject].get;
+        const wrappedFn = tryCatch(fnToExec, errorHandler);
 
-          return $.fromPromise(wrappedFn(repository, params));
+        // NOTE : This will recompute the `get` for every call, we don't use caching here
+        // and we should not : there is no reason why the same call should return the same value!
+        // If this should be implementing a live query, then we should cache not to recompute
+        // the live query. The live query automatically pushes updates
+        return $.fromPromise(wrappedFn(repository, params));
       }
     }
   }

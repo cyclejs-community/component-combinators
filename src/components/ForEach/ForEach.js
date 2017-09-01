@@ -3,6 +3,8 @@ import {
 } from "../../utils"
 import { m } from '../m'
 import { map, mergeAll } from 'ramda'
+import * as Rx from "rx";
+const $ = Rx.Observable;
 
 function isForEachSettings(sources, settings) {
   return 'from' in settings && 'as' in settings

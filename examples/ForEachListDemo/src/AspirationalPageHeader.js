@@ -13,7 +13,7 @@ export function AspirationalPageHeader(sources, settings) {
         div(".ui.left.breadcrumb", [
           a(".section", [`Home`]),
           i(".right.chevron.icon.divider"),
-          div(".active.section", [`${breadcrumbs}`])
+          div(".active.section", [`TODO`])
         ])
       ])
     )

@@ -462,7 +462,7 @@ function isSources(obj) {
 
 function isOptSinks(obj) {
   // obj can be null
-  return !obj || all(either(isNil, isObservable), values(obj))
+  return isNil(obj) || (isObject(obj) && all(either(isNil, isObservable), values(obj)))
 }
 
 function isArrayOptSinks(arrSinks) {
@@ -1065,6 +1065,7 @@ function traceFn(fn, text) {
 function EmptyComponent(sources, settings){
   return {
     [DOM_SINK] : $.of(null)
+      .tap(x => console.debug(`EmptyComponent > DOM`, x))
   }
 }
 

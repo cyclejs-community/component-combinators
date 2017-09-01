@@ -1,36 +1,41 @@
-import { ForEach } from "../../../src/components/ForEach/ForEach"
-import { ListOf } from "../../../src/components/ListOf/ListOf"
-import { DOM_SINK, EmptyComponent } from "../../../src/utils"
-import { Card } from "./Card"
-import { AspirationalPageHeader } from "./AspirationalPageHeader"
 import * as Rx from "rx";
 import { div } from 'cycle-snabbdom'
+import { ForEach } from "../../../src/components/ForEach/ForEach"
+import { ListOf } from "../../../src/components/ListOf/ListOf"
+import { m } from "../../../src/components/m"
 import { InjectSources } from "../../../src/components/Inject/InjectSourcesAndSettings"
+import { DOM_SINK, EmptyComponent } from "../../../src/utils"
+import { AspirationalPageHeader } from "./AspirationalPageHeader"
+import { Card } from "./Card"
+import { CARDS, PAGE } from "./domain/index"
 
 const $ = Rx.Observable;
 const maxPages = 3;
 
 function fetchCardsInfo (sources, settings){
-
+  return sources.domainQuery.query(PAGE)
+    .flatMapLatest(page => sources.domainQuery.query(CARDS, {page}))
+    .tap(x => console.debug(`fetchCardsInfo > domainQuery > CARDS :`, x))
 }
 
 function fetchPageNumber (sources, settings){
-
+  return sources.domainQuery.query(PAGE)
+    .tap(x => console.debug(`fetchPageNumber > domainQuery > PAGE :`, x))
 }
 
 export const App = InjectSources({
   fetchedCardsInfo$: fetchCardsInfo,
   fetchedPageNumber$: fetchPageNumber
 }, [
-  ForEach({ from: 'fetchedCardsInfo$', as: 'items' }, [
-    m({ makeOwnSinks: AspirationalPageHeader }, { trace: 'AspirationalPageHeader' }, [
-      ListOf({ list: 'items', as: 'cardInfo' }, [
+  ForEach({ from: 'fetchedCardsInfo$', as: 'items', sinkNames : [DOM_SINK], trace:'ForEach card' }, [
+    m({ makeOwnSinks: AspirationalPageHeader }, { trace: 'm AspirationalPageHeader' }, [
+      ListOf({ list: 'items', as: 'cardInfo', trace :'ForEach card > ListOf' }, [
         EmptyComponent,
         Card,
       ])
     ])
   ]),
-  ForEach({ from: 'fetchedPageNumber$', as: 'pageNumber' }, [
+  ForEach({ from: 'fetchedPageNumber$', as: 'pageNumber', sinkNames : [DOM_SINK, 'domainAction$'] }, [
     Pagination
   ])
 ])

@@ -49,10 +49,9 @@ localForage.keys()
   )))
   .then(console.log.bind(console, `database content before`))
   .then(() => loadTestData(localForage))
-  .then(() => localForage.getItem('user'))
   .then((initLoginState) => {
 
-    const { sources, sinks } = run(init(App), {
+    const { sources, sinks } = run(App, {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
       document: documentDriver,
       domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
@@ -70,7 +69,7 @@ localForage.keys()
     }
   })
   .catch(function (err) {
-    console.log(`error while initializing database`, err);
+    console.error(`error while initializing database`, err);
   });
 
 // NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/

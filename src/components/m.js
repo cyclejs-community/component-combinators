@@ -37,7 +37,8 @@
 
 import {
   assertContract, assertSignatureContract, assertSinksContracts, assertSourcesContracts,
-  emitNullIfEmpty, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent, isFunction,
+  emitNullIfEmpty, format, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent,
+  isFunction,
   isMergeSinkFn, isNullableComponentDef, isNullableObject, isOptSinks, isVNode, projectSinksOn,
   removeEmptyVNodes, removeNullsFromArray, traceSinks
 } from "../utils"
@@ -363,34 +364,33 @@ function m(componentDef, _settings, children) {
     { componentDef: [isNullableComponentDef, `m : component definition is invalid!`] },
     { settings: [isNullableObject, `m : settings parameter is invalid!`] },
     { children: [isArrayOf(isComponent), `m : children components parameter is either not an array or some of the components passed do not have the expected format! Children components must at a minimum be functions`] },
-  ]
-  assertSignatureContract('m', arguments, mSignature)
+  ];
+  assertSignatureContract('m', arguments, mSignature);
 
   let {
     makeLocalSources, makeLocalSettings, makeOwnSinks, mergeSinks,
     computeSinks, checkPostConditions, checkPreConditions
-  } = componentDef
+  } = componentDef;
 
   // Set default values
-  _settings = _settings || {}
-  makeLocalSources = defaultTo(always(null), makeLocalSources)
-  makeLocalSettings = defaultTo(always({}), makeLocalSettings)
-  makeOwnSinks = defaultTo(always(null), makeOwnSinks)
-  mergeSinks = defaultTo({}, mergeSinks)
-  checkPostConditions = defaultTo(always(true), checkPostConditions)
-  checkPreConditions = defaultTo(always(true), checkPreConditions)
+  _settings = _settings || {};
+  makeLocalSources = defaultTo(always(null), makeLocalSources);
+  makeLocalSettings = defaultTo(always({}), makeLocalSettings);
+  makeOwnSinks = defaultTo(always(null), makeOwnSinks);
+  mergeSinks = defaultTo({}, mergeSinks);
+  checkPostConditions = defaultTo(always(true), checkPostConditions);
+  checkPreConditions = defaultTo(always(true), checkPreConditions);
 
-  console.groupEnd()
+  console.groupEnd();
 
   return function mComponent(sources, innerSettings) {
     /** @type {String}*/
     const traceInfo = (innerSettings && innerSettings.trace) || (_settings && _settings.trace);
-    console.groupCollapsed(`${traceInfo} component > Entry`)
-    console.log('sources, innerSettings', sources, innerSettings)
+    console.groupCollapsed(`${traceInfo} component > Entry`);
+    console.debug('sources, innerSettings', sources, innerSettings);
 
-    innerSettings = innerSettings || {}
-    const mergedSettings = deepMerge(innerSettings, _settings)
-    console.debug('inner and outer settings merge', mergedSettings)
+    innerSettings = innerSettings || {};
+    const mergedSettings = deepMerge(innerSettings, _settings);
 
     // Note that per `merge` ramda spec. the second object's values
     // replace those from the first in case of key conflict
@@ -398,7 +398,9 @@ function m(componentDef, _settings, children) {
       makeLocalSettings(mergedSettings),
       mergedSettings
     );
-    console.info(`${traceInfo} component : final settings`, localSettings);
+
+    console.debug('inner and outer settings merge', mergedSettings);
+    console.debug(`${traceInfo} component : final settings`, localSettings);
 
     // Computes and MERGES the extra sources which will be passed
     // to the children and this component
@@ -419,36 +421,44 @@ function m(componentDef, _settings, children) {
       reducedSinks = computeSinks(
         makeOwnSinks, children, extendedSources, localSettings
       )
+      console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
+      assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
       console.groupEnd()
     }
     // Case : computeSinks is not defined, merge is defined in mergeSinks
     else {
-      console.groupCollapsed(`${traceInfo} component > makeOwnSinks`)
-      console.debug(`called with extendedSources : ${keys(extendedSources)}`)
-      console.debug(`called with localSettings`, localSettings)
-      const ownSinks = makeOwnSinks(extendedSources, localSettings)
-      console.groupEnd()
+      console.groupCollapsed(`${traceInfo} component > makeOwnSinks`);
+      console.debug(`called with extendedSources : ${keys(extendedSources)}`);
+      console.debug(`called with localSettings`, localSettings);
+      const ownSinks = makeOwnSinks(extendedSources, localSettings);
+      console.debug(`${traceInfo} component > makeOwnSinks returns : `, ownSinks);
+      console.groupEnd();
 
-      console.group(`${traceInfo} component > computing children sinks`)
-      console.debug(`called with extendedSources : ${keys(extendedSources)}`)
-      console.debug(`called with localSettings`, localSettings)
+      console.group(`${traceInfo} component > computing children sinks`);
+      console.debug(`called with extendedSources : ${keys(extendedSources)}`);
+      console.debug(`called with localSettings`, localSettings);
 
-      const childrenSinks = computeChildrenSinks(children, extendedSources, localSettings)
+      const childrenSinks = computeChildrenSinks(children, extendedSources, localSettings);
+      console.debug(`${traceInfo} component > computing children sinks returns : `, childrenSinks);
 
-      console.groupEnd()
+      console.groupEnd();
 
-      assertContract(isOptSinks, [ownSinks], 'ownSinks must be a hash of observable sink')
+      assertContract(isOptSinks, [ownSinks], 'ownSinks must be a hash of observable sink');
       assertContract(isArrayOptSinks, [childrenSinks], 'childrenSinks must' +
-        ' be an array of sinks')
+        ' be an array of sinks');
 
       // Merge the sinks from children and one-s own...
       // Case : mergeSinks is defined through a function
       if (isFunction(mergeSinks)) {
-        console.groupCollapsed(`${traceInfo} component > (fn) mergeSinks`)
-        console.debug(`called with ownSinks : ${keys(ownSinks)}, 
-                       childrenSinks: ${childrenSinks.map(keys)}`)
-        console.debug(`called with localSettings`, localSettings)
-        reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings)
+        console.groupCollapsed(`${traceInfo} component > (fn) mergeSinks`);
+        console.debug(`called with ownSinks : ${format(keys(ownSinks))}, 
+                       childrenSinks: ${format(childrenSinks.map(keys))}`);
+        console.debug(`called with localSettings`, localSettings);
+
+        reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings);
+
+        console.debug(`${traceInfo} component > (fn) mergeSinks returns :`, reducedSinks)
+        assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > mergeSinks (fn) : must return sinks!, returned ${format(reducedSinks)}`);
         console.groupEnd()
       }
       // Case : mergeSinks is defined through an object
@@ -458,13 +468,17 @@ function m(componentDef, _settings, children) {
 
         console.groupCollapsed(`${traceInfo} component > (obj) mergeSinks`)
         console.log(`mergeSinks fn defined for sinks ${keys(mergeSinks)}`)
-        console.debug(`called with ownSinks : ${keys(ownSinks)}, 
-                       childrenSinks: ${childrenSinks.map(keys)}`)
+        console.debug(`called with ownSinks : ${format(keys(ownSinks))}, 
+                       childrenSinks: ${format(childrenSinks.map(keys))}`)
         console.debug(`called with localSettings`, localSettings)
+
         reducedSinks = reduce(
           computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks),
           {}, sinkNames
-        )
+        );
+
+        console.debug(`${traceInfo} component > (obj) mergeSinks returns :`,reducedSinks)
+        assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > mergeSinks (obj) : must return sinks!, returned ${format(reducedSinks)}`);
         console.groupEnd()
       }
     }
