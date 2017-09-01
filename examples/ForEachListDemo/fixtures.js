@@ -64,7 +64,7 @@ const cards = [
  * @param localforage
  */
 export function loadTestData(localforage) {
-  return Promise.all([cards].map((domainObjectTestData, index) => {
+  return Promise.all(cards.map((domainObjectTestData, index) => {
     return localforage.setItem(index + "", domainObjectTestData);
   }))
     .then(() => {

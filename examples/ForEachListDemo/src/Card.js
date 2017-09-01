@@ -6,7 +6,6 @@ const $ = Rx.Observable;
 
 export function Card(sources, settings) {
   const { cardInfo, listIndex } = settings;
-  debugger
 
   return {
     [DOM_SINK]: $.of(
