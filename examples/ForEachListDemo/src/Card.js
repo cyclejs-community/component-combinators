@@ -11,9 +11,9 @@ export function Card(sources, settings) {
     [DOM_SINK]: $.of(
       div(".column", [
         div(".ui.centered.fluid.card", [
-          a(".ui.fluid.image.aspirational", {
+          div(".ui.fluid.image.aspirational", {
             "attrs": {
-              "href": `/${cardInfo.category}/${cardInfo.link}`,
+//              "href": `/${cardInfo.category}/${cardInfo.link}`,
               "className": "ui medium image"
             }
           }, [

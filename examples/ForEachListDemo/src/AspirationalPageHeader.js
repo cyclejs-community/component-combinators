@@ -9,13 +9,11 @@ export function AspirationalPageHeader(sources, settings) {
 
   return {
     [DOM_SINK]: $.of(
-      div("#instafeed.ui.one.column.doubling.grid.container.one.card", [
         div(".ui.left.breadcrumb", [
           a(".section", [`Home`]),
           i(".right.chevron.icon.divider"),
           div(".active.section", [`TODO`])
         ])
-      ])
     )
   }
 }

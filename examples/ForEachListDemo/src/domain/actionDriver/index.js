@@ -61,20 +61,24 @@ export function makeDomainActionDriver(repository, config) {
             response: null
           }))
           .then((actionReponse) => {
-            eventEmitters[context].onNext(actionReponse);
+            // NOTE : we emit out of the current function to avoid possible re-entry issues
+            setTimeout(function () {eventEmitters[context].onNext(actionReponse);}, 0)
           })
       }
       else {
         // not a promise, hence synchronously returned value or exception from tryCatch
         if (isError(actionResult)) {
-          eventEmitters[context].onError(actionResult)
+          setTimeout(function () {eventEmitters[context].onError(actionResult)}, 0)
         }
         else {
-          eventEmitters[context].onNext({
-            request: action,
-            err: null,
-            response: actionResult
-          })
+          setTimeout(function () {
+            debugger
+            eventEmitters[context].onNext({
+              request: action,
+              err: null,
+              response: actionResult
+            })
+          }, 0)
         }
       }
     });
