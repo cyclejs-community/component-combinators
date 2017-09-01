@@ -56,3 +56,6 @@ export const App = InjectSources({
 // TODO : TAKE THIS ACTION DRIVER and put it out as a driver to be published (with the
 // setTimeout modif)
 // TODO : write the domain driver so I can get live query a la firebase
+// TODO : write doc for ForEach (check nothing new) and for ListOf and for
+// InjectSources/InjectSouAnSettings
+// TODO : write doc for domain driver also when finished

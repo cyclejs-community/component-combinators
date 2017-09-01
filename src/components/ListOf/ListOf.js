@@ -14,7 +14,7 @@ function isListOfSettings(settings) {
 function isListAnArray(sources, settings) {
   return isArray(settings[settings.list])
 }
-
+- `mergeSinks :: HashMap<SinkName, SinkMergeFn>`
 function hasValidBuildActionsFromChildrenSinks(sources, settings) {
   return (!('buildActionsFromChildrenSinks' in settings)
     || either(isNil, either(isObject, isFunction))(settings.buildActionsFromChildrenSinks))
@@ -24,7 +24,7 @@ function hasValidActionsMap(sources, settings) {
   return (!('actionsMap' in settings) || isObject(settings.actionsMap))
 }
 
-function hasExactlyTwoChildComponent(arrayOfComponents) {
+function hasExactlyTwoChildrenComponent(arrayOfComponents) {
   return arrayOfComponents && isArray(arrayOfComponents) && arrayOfComponents.length === 2
 }
 
@@ -88,11 +88,10 @@ const listOfSpec = {
 };
 
 export function ListOf(listOfSettings, childrenComponents) {
-  assertContract(hasExactlyTwoChildComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly one child component to list from!`);
+  assertContract(hasExactlyTwoChildrenComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly one child component to list from!`);
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
-  const trace = (listOfSettings.trace || '') + ' ListOf generic'
-  return m(listOfSpec, merge(listOfSettings, {trace}), childrenComponents)
+  return m(listOfSpec, listOfSettings, childrenComponents)
 }
 
 // TODO : review and test (write test plans and then test)
