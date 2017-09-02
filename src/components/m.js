@@ -502,7 +502,7 @@ export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }
 // [parent,[children]], whatever is best, but seems better to take it out of first arg so I
 // can then easily curry on the first argument (parent cmponent concern bothers here)
 // TODO : also add slot mechanism to default DOM merge to include child component at given
-// position of parent
+// position of parent : PUT THE SLOT IN VNODE DATA property
 //       necessary to add a `currentPath` parameter somewhere which
 //       carries the current path down the tree
 
