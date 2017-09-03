@@ -1,5 +1,6 @@
 import { Observable as $ } from "rx"
-import { tryCatch } from 'ramda';
+import { complement, isNil, tryCatch } from 'ramda';
+import { assertContract, isFunction } from "../../utils"
 
 // Helper functions
 function errorHandler(e, repository, params) {
@@ -26,7 +27,12 @@ export function makeDomainQueryDriver(repository, config) {
     void sink;
 
     return {
-      query: function query(context, payload) {
+      getCurrent: function query(context, payload) {
+        assertContract(complement(isNil), [config[context]],
+          `makeDomainQueryDriver > getCurrent : Context ${context} not found in config object!`);
+        assertContract(isFunction, [config[context].get],
+          `makeDomainQueryDriver > getCurrent : Context ${context} has a get property which is not a function!`);
+
         const fnToExec = config[context].get;
         const wrappedFn = tryCatch(fnToExec, errorHandler);
 

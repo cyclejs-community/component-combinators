@@ -15,6 +15,8 @@ const $ = Rx.Observable;
 function fetchCardsInfo(sources, settings) {
   return fetchPageNumber(sources, settings)
     .flatMapLatest(page => sources.domainQuery.query(CARDS, { page }))
+    // NOTE : this is a behaviour
+    .shareReplay(1)
     .tap(x => console.debug(`fetchCardsInfo > domainQuery > CARDS :`, x))
 }
 
