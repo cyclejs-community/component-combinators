@@ -14,14 +14,14 @@ const $ = Rx.Observable;
 
 function fetchCardsInfo(sources, settings) {
   return fetchPageNumber(sources, settings)
-    .flatMapLatest(page => sources.domainQuery.query(CARDS, { page }))
+    .flatMapLatest(page => sources.domainQuery.getCurrent(CARDS, { page }))
     // NOTE : this is a behaviour
     .shareReplay(1)
     .tap(x => console.debug(`fetchCardsInfo > domainQuery > CARDS :`, x))
 }
 
 function fetchPageNumber(sources, settings) {
-  return sources.domainQuery.query(PAGE)
+  return sources.domainQuery.getCurrent(PAGE)
     .concat(sources.domainAction$.getResponse(PAGE).map(path(['response', 'page'])))
     // NOTE : this is a behaviour
     .shareReplay(1)
