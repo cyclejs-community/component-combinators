@@ -27,7 +27,7 @@ function eventEmitterFactory(_, context, __) {
 
 /**
  * Driver factory which takes a configuration object and returns a driver.
- * The returned driver will be handling action requests arriving on its input stream (sink) via:
+ * The returned driver will be handling action requests arriving on its input stream (sink) :
  * - the context and command parameters of the action request are matched to a action handler
  * function
  * - that function is executed on incoming input from the sink and additional useful values
@@ -97,11 +97,3 @@ export function makeDomainActionDriver(repository, config) {
     return responseSource$;
   }
 }
-
-// DOC : if the contextual command throws, then that error will be passed on the error channel
-// of the observable. Other errors which do not lead to throwing will be passed on the same
-// channel as valid results. This for instance means that an http request might fail, but as
-// long as the function making the http request does not throw, the error code returned by the
-// request will be passed as a response just as a successful http request would. Hence the
-// caller of the `getResponse` is responsible for filtering out the response content and
-// associate the corresponding logic to it.

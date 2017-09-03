@@ -1,5 +1,3 @@
-
-
 # Motivation
 The action driver allows to execute a command on a resource and retrieve the response. The command is parameterized by the repository holding the resource, the resource in question, and additional parameters which specify further the command to be executed.
 
@@ -38,7 +36,6 @@ The behaviour is as follows :
 	- keep the matching request, to allow for posterior reconciliation of response and request
 - to further facilitate the filtering out of responses, each context has a dedicated source which passes on only responses corresponding to actions in that context.
 	- `getResponse` property holds a function which returns a subject which only passes on the responses for a given context
-
 
 ### Types
 - `Repository :: *` 
