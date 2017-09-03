@@ -38,6 +38,7 @@ function eventEmitterFactory(_, context, __) {
  */
 export function makeDomainActionDriver(repository, config) {
   // Create a subject for each context defined in config
+  // TODO : unsubscribe flows to think about (when app is exited willingly or forcefully)
   const eventEmitters = mapObjIndexed(eventEmitterFactory, config);
 
   return function (sink$) {
@@ -72,7 +73,6 @@ export function makeDomainActionDriver(repository, config) {
         }
         else {
           setTimeout(function () {
-            debugger
             eventEmitters[context].onNext({
               request: action,
               err: null,

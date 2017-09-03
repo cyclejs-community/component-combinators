@@ -8,7 +8,7 @@ import { AspirationalPageHeader } from "./AspirationalPageHeader"
 import { Card } from "./Card"
 import { CARDS, PAGE } from "./domain/index"
 import { Pagination } from "./Pagination"
-import {prop, path} from 'ramda'
+import { path } from 'ramda'
 
 const $ = Rx.Observable;
 
@@ -22,6 +22,8 @@ function fetchCardsInfo(sources, settings) {
 
 function fetchPageNumber(sources, settings) {
   return sources.domainQuery.getCurrent(PAGE)
+  // NOTE : building a live query by fetching the current page number and adding page number
+  // change notifications resulting from actions affecting the page
     .concat(sources.domainAction$.getResponse(PAGE).map(path(['response', 'page'])))
     // NOTE : this is a behaviour
     .shareReplay(1)
@@ -52,11 +54,11 @@ export const App = InjectSources({
   }, [
     Pagination
   ])
-])
+]);
 
-
-// TODO : TAKE THIS ACTION DRIVER and put it out as a driver to be published (with the
-// setTimeout modif)
-// TODO : write the domain driver so I can get live query a la firebase
 // TODO : write doc for domain driver also when finished
+// TODO : explain with current action and query driver how to get a live query (demo and few words)
+// TODO : write the domain driver so I can get live query a la firebase
 // TODO : see m.js TODO
+// TODO : think about work around for isolation, components need to pass their click free of
+// concerns
