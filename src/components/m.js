@@ -505,4 +505,3 @@ export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }
 // position of parent : PUT THE SLOT IN VNODE DATA property
 //       necessary to add a `currentPath` parameter somewhere which
 //       carries the current path down the tree
-

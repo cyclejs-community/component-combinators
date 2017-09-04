@@ -56,9 +56,6 @@ export const App = InjectSources({
   ])
 ]);
 
-// TODO : write doc for domain driver also when finished
-// TODO : explain with current action and query driver how to get a live query (demo and few words)
-// TODO : write the domain driver so I can get live query a la firebase
 // TODO : see m.js TODO
 // TODO : think about work around for isolation, components need to pass their click free of
 // concerns
