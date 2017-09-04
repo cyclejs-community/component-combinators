@@ -710,9 +710,12 @@ function hasAtLeastOneChildComponent(childrenComponents) {
  */
 function traceSinks(traceInfo, sinks) {
   return mapObjIndexed((sink$, sinkName) => {
-    return sink$.tap(function log(x) {
+    return sink$
+      ? sink$.tap(function log(x) {
       console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
     })
+      // Pass on null and undefined values as they are, they will be filtered out downstream
+      : sink$
   }, sinks)
 }
 

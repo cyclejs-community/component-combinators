@@ -1,6 +1,6 @@
 window.$ = window.jQuery = require('jquery');
 
-// import './m.specs'
+import './m.specs'
 // import './FSM.specs'
 // import './utils.specs'
 // import './mEventFactory.specs'
@@ -9,4 +9,4 @@ window.$ = window.jQuery = require('jquery');
 //  import './Switch.specs'
 // import './Router.specs'
 // import './ForEach.specs'
-import './ListOf.specs'
+// import './ListOf.specs'

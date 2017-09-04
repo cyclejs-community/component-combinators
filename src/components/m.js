@@ -34,19 +34,26 @@
 /**
  * @typedef {function(Sources, Settings):Sinks} Component
  */
+/**
+ *@typedef {Component | Array<Component>} ParentAndChildren
+ */
 
 import {
-  assertContract, assertSignatureContract, assertSinksContracts, assertSourcesContracts,
+  assertContract, assertSinksContracts, assertSourcesContracts, checkAndGatherErrors, eitherE,
   emitNullIfEmpty, format, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent,
-  isFunction,
-  isMergeSinkFn, isNullableComponentDef, isNullableObject, isOptSinks, isVNode, projectSinksOn,
-  removeEmptyVNodes, removeNullsFromArray, traceSinks
+  isFunction, isHashMap, isHashMapE, isMergeSinkFn, isNullableComponentDef, isNullableObject,
+  isObservable,
+  isOptSinks, isString,
+  isVNode,
+  projectSinksOn, removeEmptyVNodes, removeNullsFromArray, traceSinks
 } from "../utils"
 import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce
+  addIndex, always, both, clone, complement, concat, defaultTo, either, flatten, is, keys, map,
+  merge, mergeWith, pipe, prop, reduce
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
+import { hasMsignature } from "./m/types"
 
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable
@@ -95,7 +102,7 @@ function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   }
 
   return $.combineLatest(allDOMSinks)
-//    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
+  //    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
     .map(mergeChildrenIntoParentDOM(parentDOMSinkOrNull))
 }
 
@@ -195,7 +202,7 @@ function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) 
   }
 }
 
-function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames){
+function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames) {
   return reduce(
     computeReducedSink(eventSinks, childrenSinks, localSettings, {}),
     {}, sinkNames
@@ -280,7 +287,7 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  *
  * @param {DetailedComponentDef|ShortComponentDef} componentDef
  * @param {Settings} _settings
- * @param {Array<Component>} children
+ * @param {Array<Component> | Array<ParentAndChildren>} children
  *
  * @returns {Component}
  * @throws when type- and user-specified contracts are not satisfied
@@ -357,15 +364,13 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  *
  */
 function m(componentDef, _settings, children) {
-  console.groupCollapsed('m factory > Entry')
-  console.log('componentDef, _settings, children', componentDef, _settings, children)
-  // check signature
-  const mSignature = [
-    { componentDef: [isNullableComponentDef, `m : component definition is invalid!`] },
-    { settings: [isNullableObject, `m : settings parameter is invalid!`] },
-    { children: [isArrayOf(isComponent), `m : children components parameter is either not an array or some of the components passed do not have the expected format! Children components must at a minimum be functions`] },
-  ];
-  assertSignatureContract('m', arguments, mSignature);
+  console.groupCollapsed('m factory > Entry');
+  console.log('componentDef, _settings, children', componentDef, _settings, children);
+
+  // Check contracts
+  assertContract(hasMsignature, [componentDef, _settings, children],
+    `m > assertContract : error checking signature (componentDef, settings, children) = 
+   ${format({ componentDef, _settings, children })}!`);
 
   let {
     makeLocalSources, makeLocalSettings, makeOwnSinks, mergeSinks,
@@ -422,7 +427,7 @@ function m(componentDef, _settings, children) {
         makeOwnSinks, children, extendedSources, localSettings
       )
       console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
-      assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
+      assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
       console.groupEnd()
     }
     // Case : computeSinks is not defined, merge is defined in mergeSinks
@@ -458,7 +463,7 @@ function m(componentDef, _settings, children) {
         reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings);
 
         console.debug(`${traceInfo} component > (fn) mergeSinks returns :`, reducedSinks)
-        assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > mergeSinks (fn) : must return sinks!, returned ${format(reducedSinks)}`);
+        assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > mergeSinks (fn) : must return sinks!, returned ${format(reducedSinks)}`);
         console.groupEnd()
       }
       // Case : mergeSinks is defined through an object
@@ -477,8 +482,8 @@ function m(componentDef, _settings, children) {
           {}, sinkNames
         );
 
-        console.debug(`${traceInfo} component > (obj) mergeSinks returns :`,reducedSinks)
-        assertContract(isOptSinks, [reducedSinks],`${traceInfo} : m > mergeSinks (obj) : must return sinks!, returned ${format(reducedSinks)}`);
+        console.debug(`${traceInfo} component > (obj) mergeSinks returns :`, reducedSinks)
+        assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > mergeSinks (obj) : must return sinks!, returned ${format(reducedSinks)}`);
         console.groupEnd()
       }
     }
@@ -497,11 +502,15 @@ export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }
 // TODO : design better trace information
 // for instance outer trace could be concatenated to inner trace to trace also the
 // component hierarchy
-// TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
-// - change the name to parentComponent, or make it the first of the array, or
-// [parent,[children]], whatever is best, but seems better to take it out of first arg so I
-// can then easily curry on the first argument (parent cmponent concern bothers here)
 // TODO : also add slot mechanism to default DOM merge to include child component at given
 // position of parent : PUT THE SLOT IN VNODE DATA property
 //       necessary to add a `currentPath` parameter somewhere which
 //       carries the current path down the tree
+// TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
+// - change the name to parentComponent, or make it the first of the array, or
+// [parent,[children]], whatever is best, but seems better to take it out of first arg so I
+// can then easily curry on the first argument (parent cmponent concern bothers here)
+// - update tests
+// - update components - see if tests are passing
+// - update documentation of m
+//   - actually change the case for m, starting with example
