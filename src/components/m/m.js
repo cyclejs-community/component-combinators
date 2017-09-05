@@ -515,7 +515,7 @@ function m(componentDef, _settings, componentTree) {
   }
 }
 
-export { m, defaultMergeSinkFn, computeDOMSinkDefault, computeReducedSink }
+export { m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDOM, computeReducedSink }
 
 // TODO : design better trace information
 // for instance outer trace could be concatenated to inner trace to trace also the

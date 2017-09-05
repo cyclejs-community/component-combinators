@@ -2900,58 +2900,6 @@ function render(user) {
             })
           ])
         ]),
-        div(".fields", [
-          div(".two.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "2 Wide"
-              }
-            })
-          ]),
-          div(".twelve.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "12 Wide"
-              }
-            })
-          ]),
-          div(".two.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "2 Wide"
-              }
-            })
-          ])
-        ]),
-        div(".fields", [
-          div(".eight.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "8 Wide"
-              }
-            })
-          ]),
-          div(".six.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "6 Wide"
-              }
-            })
-          ]),
-          div(".two.wide.field", [
-            input({
-              "attributes": {
-                "type": "text",
-                "placeholder": "2 Wide"
-              }
-            })
-          ])
-        ])
       ])
     ])
   ])

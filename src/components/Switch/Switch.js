@@ -2,12 +2,14 @@
 
 import { m } from '../m/m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArrayOf,
-  isFunction, isSource, isString, removeNullsFromArray, unfoldObjOverload
+  assertContract, checkAndGatherErrors, DOM_SINK, emitNullIfEmpty, hasAtLeastOneChildComponent,
+  isArrayOf, isFunction, isSource, isString, isVNode, removeEmptyVNodes, removeNullsFromArray,
+  unfoldObjOverload
 } from '../../utils'
-import { addIndex, assoc, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
+import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'
 import { SWITCH_SOURCE } from "./properties"
+import { div } from "cycle-snabbdom"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -175,30 +177,126 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   return mergeAll(map(makeSwitchedSink, sinkNames)) // ramda mergeAll, not Rx
 }
 
+function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
+  return function mergeChildrenIntoParentDOM(arrayVNode) {
+    // We remove null elements from the array of vNode
+    // We can have a null vNode emitted by a sink if that sink is empty
+    let _arrayVNode = removeEmptyVNodes(removeNullsFromArray(arrayVNode));
+    assertContract(isArrayOf(isVNode), [_arrayVNode], 'DOM sources must' +
+      ' stream VNode objects! Got ' + _arrayVNode)
+
+    if (parentDOMSink) {
+      // Case : the parent sinks have a DOM sink
+      // We want to put the children's DOM **inside** the parent's DOM
+      // cf. m.js computeDOMSinkDefault
+      let parentVNode = clone(_arrayVNode.shift())
+      let childrenVNode = _arrayVNode
+      // For Case component, null does not mean empty vnode
+      // We want to avoid having the parent enclosing an empty content, which would not be
+      // semantically accurate (though eventually accurate - the next DOM values should be the
+      // right DOM to display, so this would be only temporally wrong, but still we remove it to
+      // avoid confusion)
+      if (childrenVNode.length === 0) {
+        return null
+      }
+
+      parentVNode.children = clone(parentVNode.children) || []
+
+      // childrenVNode could be null if all children sinks are empty
+      // observables, in which case we just return the parentVNode
+      if (childrenVNode) {
+        if (parentVNode.text) {
+          // NOTE : if parentVNode has text, then children = [], so splice is too defensive here
+          parentVNode.children.splice(0, 0, {
+            children: [],
+            "data": {},
+            "elm": undefined,
+            "key": undefined,
+            "sel": undefined,
+            "text": parentVNode.text
+          })
+          parentVNode.text = undefined
+        }
+        Array.prototype.push.apply(parentVNode.children, childrenVNode)
+      }
+
+      return parentVNode
+    }
+    else {
+      // Case : the parent sinks does not have a DOM sink
+      if (_arrayVNode.length === 0) {
+        return null
+      }
+
+      return div(_arrayVNode)
+    }
+  }
+}
+
+function computeSwitchDOMSink(parentDOMSinkOrNull, childrenSink, settings) {
+  // We want `combineLatest` to still emit the parent DOM sink, even when
+  // one of its children sinks is empty, so we modify the children sinks
+  // to emits ONE `Null` value if it is empty
+  // Note : in default function, settings parameter is not used
+  const childrenDOMSinkOrNull = map(emitNullIfEmpty, childrenSink)
+
+  const allSinks = flatten([parentDOMSinkOrNull, childrenDOMSinkOrNull])
+  const allDOMSinks = removeNullsFromArray(allSinks)
+
+  // Edge case : none of the sinks have a DOM sink
+  // That should not be possible as we come here only
+  // when we detect a DOM sink
+  if (allDOMSinks.length === 0) {
+    throw `Switch > computeSwitchDOMSink: internal error!`
+  }
+
+  return $.combineLatest(allDOMSinks)
+  //    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
+    .map(mergeCaseChildrenIntoParentDOM(parentDOMSinkOrNull))
+}
+
 export const SwitchSpec = {
   mergeSinks: {
     DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
-      const allSinks = flatten([ownSink, childrenDOMSink])
-      const allDOMSinks = removeNullsFromArray(allSinks)
-
-      // TODO : investigate parent component API here
-      // TODO : could be Switch({}, [Parent, [CaseComponent, CaseComponent]])
-      // TODO : so we have factored out the Parent out of the Cases
-      // TODO : beware of edge cases cf. filter Boolean stuff
-      // TODO : note that this applies only to dOM
-      // TODO : note that parent component wont have access to the incoming value...!!
-      return $.merge(allDOMSinks.map((sink, index) => sink.tap(
-        function (x) {
-          console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
-        }
-      )))
+      return computeSwitchDOMSink(ownSink, childrenDOMSink, settings)
+      // NOTE : current implementation of switch generates a lot of null (for each failing
+      // Case branch) - we filter that out, they do not mean a null vNode
         .filter(Boolean)
-      // Most values will be null
-      // All non-null values correspond to a match
-      // In the degenerated case, all values will be null (no match
-      // at all)
+        // NOTE : DOM values can be repeated for instance on every incoming value of the
+        // switching source. Repeating those values does not change semantics (DOM is a
+        // behaviour). However, we believe (only intuition) that performance is better by
+        // avoiding repetition, because `combineLatest` is very chatty (emitting anytime one of
+        // its arguments emit).
+        // In any case, testing certainly is easier by avoiding repetition. One does not have to
+        // compute the exact number of repetitions according to the current and past inputs
+        .distinctUntilChanged()
     }
   },
+  /*
+    mergeSinks: {
+      DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
+        const allSinks = flatten([ownSink, childrenDOMSink])
+        const allDOMSinks = removeNullsFromArray(allSinks)
+
+        // TODO : investigate parent component API here
+        // TODO : could be Switch({}, [Parent, [CaseComponent, CaseComponent]])
+        // TODO : so we have factored out the Parent out of the Cases
+        // TODO : beware of edge cases cf. filter Boolean stuff
+        // TODO : note that this applies only to dOM
+        // TODO : note that parent component wont have access to the incoming value...!!
+        return $.merge(allDOMSinks.map((sink, index) => sink.tap(
+          function (x) {
+            console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
+          }
+        )))
+          .filter(Boolean)
+        // Most values will be null
+        // All non-null values correspond to a match
+        // In the degenerated case, all values will be null (no match
+        // at all)
+      }
+    },
+  */
   checkPreConditions: isSwitchSettings
 }
 
@@ -272,7 +370,7 @@ export const CaseSpec = {
  * - when is mandatory
  *
  * @params {SwitchSettings} switchSettings
- * @params {Array.<Component>} childrenComponents
+ * @params {ComponentTree} componentTree
  * @return {Component}
  * @throws
  */
@@ -310,3 +408,7 @@ export function Case(CaseSettings, componentTree) {
 // TODO : change the DOC : contracts - should only have one branch of Case at any given time for now
 // TODO : pass the incoming value also to the switched component, not just the `when`
 // DOC : give examples of how to use eqFn function to match swath of values instead of one value
+// TODO DOC : switching will only occurs when a matching Case component is found
+// This means in particular if a value has no matching Case, the DOM is not switched to
+// [Parent], but remains the same
+

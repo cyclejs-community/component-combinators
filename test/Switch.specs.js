@@ -1,10 +1,9 @@
 import * as QUnit from "qunitjs"
-import { m } from '../src/components/m/m'
 import * as Rx from 'rx'
 import { div, h } from 'cycle-snabbdom'
 import { runTestScenario } from '../src/runTestScenario'
 import { Case, Switch } from '../src/components/Switch/Switch'
-import { convertVNodesToHTML, stripHtmlTags } from '../src/utils'
+import { convertVNodesToHTML, DOM_SINK } from '../src/utils'
 import { pipe } from 'ramda'
 
 const $ = Rx.Observable;
@@ -32,7 +31,7 @@ QUnit.module("Testing Switch component", {})
 // same than 1
 
 // 1.3 Switch on source : switch source 1 match
-QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_test(assert) {
+QUnit.test("main cases - 1 match - 3 cases - switch on source - with case container component", function exec_test(assert) {
   const done = assert.async(4);
 
   const childComponent1 = function childComponent1(sources, settings) {
@@ -64,19 +63,24 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_te
       c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
     }
   };
+  const CaseContainer = function CaseContainer(sources, settings) {
+    return {
+      [DOM_SINK]: $.of(div('.parent'))
+    }
+  }
 
   const switchComponent = Switch({
     on: 'sweatch$',
     sinkNames: ['DOM', 'a', 'b', 'c']
-  }, [
+  }, [CaseContainer, [
     Case({ when: false }, [childComponent3]),
     Case({ when: false }, [childComponent4]),
     Case({ when: true }, [childComponent1, childComponent2]),
-  ]);
+  ]]);
 
   const inputs = [
-    {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
-    {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
     {
       userAction$: {
         diagram: 'abc-b-ac--ab---c',
@@ -96,41 +100,18 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_te
     }
   ];
 
-  function makeVNode(x, y, z) {
-    return !z ?
-      div([
-        h('span', {}, `Component 1 : ${x}`),
-        h('span', {}, `Component 2 : ${y}`),
-      ]) :
-      h('span', {}, `Component 3 : ${z}`)
-  }
-
-  const vNodes = [
-    makeVNode('', '', 'c'),
-    makeVNode('c', 'd'),
-    //      makeVNode('c','e'), // won't happen because combineLatest
-    // (a,b) needs a first value for both a and b to emits its first value
-    //      makeVNode('d','e'),
-    makeVNode('', '', 'f'),
-    makeVNode('', '', 'a'),
-    makeVNode('f', 'b'),
-    makeVNode('f', 'c'),
-    makeVNode('a', 'c'),
-    makeVNode('a', 'd'),
-  ]
-
   /** @type TestResults */
   const expected = {
     DOM: {
       outputs: [
-        "<div><span>Component 3 : c</span></div>",
-        "<div><span>Component 1 : c</span><span>Component 2 : d</span></div>",
-        "<div><span>Component 3 : f</span></div>",
-        "<div><span>Component 3 : a</span></div>",
-        "<div><span>Component 1 : f</span><span>Component 2 : b</span></div>",
-        "<div><span>Component 1 : f</span><span>Component 2 : c</span></div>",
-        "<div><span>Component 1 : a</span><span>Component 2 : c</span></div>",
-        "<div><span>Component 1 : a</span><span>Component 2 : d</span></div>"
+        "<div class=\"parent\"><div><span>Component 3 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : f</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : a</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>",
       ],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
@@ -155,6 +136,275 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source", function exec_te
         "Component2 - user action : hover",
         "Component2 - user action : click",
         "Component3 - user action : select",
+        "Component2 - user action : hover"
+      ],
+      successMessage: 'sink b produces the expected values',
+    },
+    c: {
+      outputs: [
+        "Component4 - user action : select",
+        "Component4 - user action : select"
+      ],
+      successMessage: 'sink c produces the expected values',
+    },
+  }
+
+  runTestScenario(inputs, expected, switchComponent, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+});
+
+QUnit.test("main cases - 2 matches - 3 cases - switch on source - with case container component", function exec_test(assert) {
+  const done = assert.async(4);
+
+  const childComponent1 = function childComponent1(sources, settings) {
+    return {
+      DOM: sources.DOM1.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 1: '))
+        .map(x => h('span', {}, `Component 1 : ${x}`)),
+      a: sources.userAction$.map(x => `Component1 - user action : ${x}`)
+    }
+  };
+  const childComponent2 = function childComponent2(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 2: '))
+        .map(x => h('span', {}, `Component 2 : ${x}`)),
+      b: sources.userAction$.map(x => `Component2 - user action : ${x}`)
+    }
+  };
+  const childComponent3 = function childComponent3(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 3: '))
+        .map(x => h('span', {}, `Component 3 : ${x}`)),
+      b: sources.userAction$.map(x => `Component3 - user action : ${x}`)
+    }
+  };
+  const childComponent4 = function childComponent4(sources, settings) {
+    return {
+      c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
+    }
+  };
+  const CaseContainer = function CaseContainer(sources, settings) {
+    return {
+      [DOM_SINK]: $.of(div('.parent'))
+    }
+  }
+
+  const switchComponent = Switch({
+    on: 'sweatch$',
+    sinkNames: ['DOM', 'a', 'b', 'c']
+  }, [CaseContainer, [
+    Case({ when: true }, [childComponent3]),
+    Case({ when: false }, [childComponent4]),
+    Case({ when: true }, [childComponent1, childComponent2]),
+  ]]);
+
+  const inputs = [
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
+    {
+      userAction$: {
+        diagram: 'abc-b-ac--ab---c',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+    {
+      'sweatch$': {
+        //diagr: '-a--b--c--d--e--f--a',
+        //diagr: '-a-b-c-d-e-f-abb-c-d',
+        //userA: 'abc-b-ac--ab---c',
+        diagram: '-t-f-tttttff-t', values: {
+          t: true,
+          f: false,
+        }
+      }
+    }
+  ];
+
+  /** @type TestResults */
+  const expected = {
+    DOM: {
+      outputs: [
+        "<div class=\"parent\"><div><span>Component 3 : d</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : d</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : e</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : b</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : b</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : c</span></div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : d</span></div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : d</span></div><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>"
+      ],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [
+        'Component1 - user action : hover',
+        'Component1 - user action : click',
+        'Component1 - user action : hover',
+        'Component1 - user action : click',
+        'Component1 - user action : hover',
+      ],
+      successMessage: 'sink a produces the expected values',
+    },
+    b: {
+      outputs: [
+        "Component3 - user action : hover",
+        "Component2 - user action : hover",
+        "Component3 - user action : click",
+        "Component2 - user action : click",
+        "Component3 - user action : hover",
+        "Component2 - user action : hover",
+        "Component3 - user action : click",
+        "Component2 - user action : click",
+        "Component3 - user action : hover",
+        "Component2 - user action : hover"
+      ],
+      successMessage: 'sink b produces the expected values',
+    },
+    c: {
+      outputs: [
+        "Component4 - user action : select",
+        "Component4 - user action : select"
+      ],
+      successMessage: 'sink c produces the expected values',
+    },
+  }
+
+  runTestScenario(inputs, expected, switchComponent, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+});
+
+QUnit.test("main cases - 2 matches - 3 cases - switch on source - without case container" +
+  " component", function exec_test(assert) {
+  const done = assert.async(4);
+
+  const childComponent1 = function childComponent1(sources, settings) {
+    return {
+      DOM: sources.DOM1.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 1: '))
+        .map(x => h('span', {}, `Component 1 : ${x}`)),
+      a: sources.userAction$.map(x => `Component1 - user action : ${x}`)
+    }
+  };
+  const childComponent2 = function childComponent2(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 2: '))
+        .map(x => h('span', {}, `Component 2 : ${x}`)),
+      b: sources.userAction$.map(x => `Component2 - user action : ${x}`)
+    }
+  };
+  const childComponent3 = function childComponent3(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 3: '))
+        .map(x => h('span', {}, `Component 3 : ${x}`)),
+      b: sources.userAction$.map(x => `Component3 - user action : ${x}`)
+    }
+  };
+  const childComponent4 = function childComponent4(sources, settings) {
+    return {
+      c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
+    }
+  };
+  const CaseContainer = function CaseContainer(sources, settings) {
+    return {
+      [DOM_SINK]: $.of(div('.parent'))
+    }
+  }
+
+  const switchComponent = Switch({
+    on: 'sweatch$',
+    sinkNames: ['DOM', 'a', 'b', 'c']
+  }, [
+    Case({ when: true }, [childComponent3]),
+    Case({ when: false }, [childComponent4]),
+    Case({ when: true }, [childComponent1, childComponent2]),
+  ]);
+
+  const inputs = [
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
+    {
+      userAction$: {
+        diagram: 'abc-b-ac--ab---c',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+    {
+      'sweatch$': {
+        //diagr: '-a--b--c--d--e--f--a',
+        //diagr: '-a-b-c-d-e-f-abb-c-d',
+        //userA: 'abc-b-ac--ab---c',
+        diagram: '-t-f-tttttff-t', values: {
+          t: true,
+          f: false,
+        }
+      }
+    }
+  ];
+
+  /** @type TestResults */
+  const expected = {
+    DOM: {
+      outputs: [
+        "<div><div><span>Component 3 : d</span></div></div>",
+        "<div><div><span>Component 3 : d</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div><div><span>Component 3 : e</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div><div><span>Component 3 : b</span></div></div>",
+        "<div><div><span>Component 3 : b</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
+        "<div><div><span>Component 3 : c</span></div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div><div><span>Component 3 : d</span></div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div><div><span>Component 3 : d</span></div><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>"
+      ],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [
+        'Component1 - user action : hover',
+        'Component1 - user action : click',
+        'Component1 - user action : hover',
+        'Component1 - user action : click',
+        'Component1 - user action : hover',
+      ],
+      successMessage: 'sink a produces the expected values',
+    },
+    b: {
+      outputs: [
+        "Component3 - user action : hover",
+        "Component2 - user action : hover",
+        "Component3 - user action : click",
+        "Component2 - user action : click",
+        "Component3 - user action : hover",
+        "Component2 - user action : hover",
+        "Component3 - user action : click",
+        "Component2 - user action : click",
+        "Component3 - user action : hover",
         "Component2 - user action : hover"
       ],
       successMessage: 'sink b produces the expected values',
@@ -218,13 +468,13 @@ QUnit.test("main cases - 0 match - 3 cases - switch on source", function exec_te
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: '' }, [childComponent3]),
-    Case({ when: 'Y'}, [childComponent4]),
+    Case({ when: 'Y' }, [childComponent4]),
     Case({ when: 2 }, [childComponent1, childComponent2]),
   ]);
 
   const inputs = [
-    {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
-    {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
     {
       userAction$: {
         diagram: 'abc-b-ac--ab---c',
@@ -321,8 +571,8 @@ QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec
   ]);
 
   const inputs = [
-    {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
-    {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
     {
       userAction$: {
         diagram: 'abc-b-ac--ab---c',
@@ -342,41 +592,18 @@ QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec
     }
   ];
 
-  function makeVNode(x, y, z) {
-    return !z ?
-      div([
-        h('span', {}, `Component 1 : ${x}`),
-        h('span', {}, `Component 2 : ${y}`),
-      ]) :
-      h('span', {}, `Component 3 : ${z}`)
-  }
-
-  const vNodes = [
-    makeVNode('', '', 'c'),
-    makeVNode('c', 'd'),
-    //      makeVNode('c','e'), // won't happen because combineLatest
-    // (a,b) needs a first value for both a and b to emits its first value
-    //      makeVNode('d','e'),
-    makeVNode('', '', 'f'),
-    makeVNode('', '', 'a'),
-    makeVNode('f', 'b'),
-    makeVNode('f', 'c'),
-    makeVNode('a', 'c'),
-    makeVNode('a', 'd'),
-  ]
-
   /** @type TestResults */
   const expected = {
     DOM: {
       outputs: [
-        "<div><span>Component 3 : c</span></div>",
-        "<div><span>Component 1 : c</span><span>Component 2 : d</span></div>",
-        "<div><span>Component 3 : f</span></div>",
-        "<div><span>Component 3 : a</span></div>",
-        "<div><span>Component 1 : f</span><span>Component 2 : b</span></div>",
-        "<div><span>Component 1 : f</span><span>Component 2 : c</span></div>",
-        "<div><span>Component 1 : a</span><span>Component 2 : c</span></div>",
-        "<div><span>Component 1 : a</span><span>Component 2 : d</span></div>"
+        "<div><div><span>Component 3 : c</span></div></div>",
+        "<div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div><div><span>Component 3 : f</span></div></div>",
+        "<div><div><span>Component 3 : a</span></div></div>",
+        "<div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
+        "<div><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
+        "<div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
+        "<div><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>"
       ],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
@@ -464,13 +691,13 @@ QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: '' }, [childComponent3]),
-    Case({ when: 'Y'}, [childComponent4]),
+    Case({ when: 'Y' }, [childComponent4]),
     Case({ when: 2 }, [childComponent1, childComponent2]),
   ]);
 
   const inputs = [
-    {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
-    {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
     {
       userAction$: {
         diagram: 'abc-b-ac--ab---c',
@@ -525,8 +752,8 @@ QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec
 
 QUnit.test("edge cases - 0 case components- switch on condition", function exec_test(assert) {
   const inputs = [
-    {DOM1: {diagram: '-a--b--c--d--e--f--a'}},
-    {DOM2: {diagram: '-a-b-c-d-e-f-abb-c-d'}},
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
     {
       userAction$: {
         diagram: 'abc-b-ac--ab---c',

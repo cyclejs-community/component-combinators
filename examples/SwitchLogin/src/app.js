@@ -4,6 +4,7 @@ import { MainPage } from "./MainPage"
 import { LoginPage } from "./LoginPage"
 import { DOM_SINK } from "../../../src/utils"
 import * as Rx from "rx";
+import { a, div, i } from 'cycle-snabbdom'
 
 const $ = Rx.Observable;
 
