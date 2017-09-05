@@ -27,7 +27,7 @@
  * @property {?function(Sources, Settings)} makeLocalSources
  * @property {?function(Settings)} makeLocalSettings
  * @property {?function(Sources, Settings, Array<Component>)} makeAllSinks
- * @property {?function(Function, Array<Component>, Sources, Settings)} computeSinks
+ * @property {function(Function, Array<Component>, Sources, Settings)} computeSinks
  * @property {?function(Sinks):Boolean} checkPostConditions
  * @property {?function(Sources, Settings):Boolean} checkPreConditions
  */
@@ -39,17 +39,12 @@
  */
 
 import {
-  assertContract, assertSinksContracts, assertSourcesContracts, checkAndGatherErrors, eitherE,
-  emitNullIfEmpty, format, getSinkNamesFromSinksArray, isArrayOf, isArrayOptSinks, isComponent,
-  isFunction, isHashMap, isHashMapE, isMergeSinkFn, isNullableComponentDef, isNullableObject,
-  isObservable,
-  isOptSinks, isString,
-  isVNode,
-  projectSinksOn, removeEmptyVNodes, removeNullsFromArray, traceSinks
+  assertContract, assertSinksContracts, assertSourcesContracts, emitNullIfEmpty, format,
+  getSinkNamesFromSinksArray, isArray, isArrayOf, isArrayOptSinks, isFunction, isMergeSinkFn,
+  isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray, traceSinks
 } from "../utils"
 import {
-  addIndex, always, both, clone, complement, concat, defaultTo, either, flatten, is, keys, map,
-  merge, mergeWith, pipe, prop, reduce
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce, either, both, complement, isNil
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
@@ -285,9 +280,9 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  * as a result of the children-independent sinks, the children-generated sinks, and the
  * three-way merged settings received by the `m` factory and its run-time environment.
  *
- * @param {DetailedComponentDef|ShortComponentDef} componentDef
+ * @param {DetailedComponentDef} componentDef
  * @param {Settings} _settings
- * @param {Array<Component> | Array<ParentAndChildren>} children
+ * @param {Array<Component> | Array<ParentAndChildren>} componentTree
  *
  * @returns {Component}
  * @throws when type- and user-specified contracts are not satisfied
@@ -363,25 +358,46 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  * passed to the output component.
  *
  */
-function m(componentDef, _settings, children) {
+function m(componentDef, _settings, componentTree) {
   console.groupCollapsed('m factory > Entry');
-  console.log('componentDef, _settings, children', componentDef, _settings, children);
+  console.log('componentDef, _settings, children', componentDef, _settings, componentTree);
 
   // Check contracts
-  assertContract(hasMsignature, [componentDef, _settings, children],
+  assertContract(hasMsignature, [componentDef, _settings, componentTree],
     `m > assertContract : error checking signature (componentDef, settings, children) = 
-   ${format({ componentDef, _settings, children })}!`);
+   ${format({ componentDef, _settings, _children: componentTree })}!`);
 
   let {
-    makeLocalSources, makeLocalSettings, makeOwnSinks, mergeSinks,
+    makeLocalSources, makeLocalSettings, mergeSinks,
     computeSinks, checkPostConditions, checkPreConditions
   } = componentDef;
+  // DOC : beware of [ParentComponent] is not possible, it is read as [UniqueChild]
+  // DOC : should be [ParentComponent, []] instead! That can be a source of frequent errors...
+  // TODO : so maybe have ALWAYS the same shape, so here [null, []] and [null, [UniqueChild]]??
+  // TODO : in any case, all the functions with check at least one child must check it right
+  let makeOwnSinks;
+  let childrenComponents;
+
+  // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
+  // DOC : [null, [child]] is allowed
+  if (isNil(componentTree[1])){
+    makeOwnSinks = always(null);
+    childrenComponents = componentTree;
+  }
+  else if (isArray(componentTree[1])){
+    makeOwnSinks = defaultTo(always(null), componentTree[0]);
+    childrenComponents = componentTree[1];
+  }
+  else {
+    makeOwnSinks = always(null);
+    childrenComponents = componentTree;
+  }
+  // NOTE : there is no more branches as we already type-checked prior to here
 
   // Set default values
   _settings = _settings || {};
   makeLocalSources = defaultTo(always(null), makeLocalSources);
   makeLocalSettings = defaultTo(always({}), makeLocalSettings);
-  makeOwnSinks = defaultTo(always(null), makeOwnSinks);
   mergeSinks = defaultTo({}, mergeSinks);
   checkPostConditions = defaultTo(always(true), checkPostConditions);
   checkPreConditions = defaultTo(always(true), checkPreConditions);
@@ -424,7 +440,7 @@ function m(componentDef, _settings, children) {
     if (computeSinks) {
       console.groupCollapsed(`${traceInfo} component > computeSinks`)
       reducedSinks = computeSinks(
-        makeOwnSinks, children, extendedSources, localSettings
+        makeOwnSinks, childrenComponents, extendedSources, localSettings
       )
       console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
       assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
@@ -435,7 +451,9 @@ function m(componentDef, _settings, children) {
       console.groupCollapsed(`${traceInfo} component > makeOwnSinks`);
       console.debug(`called with extendedSources : ${keys(extendedSources)}`);
       console.debug(`called with localSettings`, localSettings);
+
       const ownSinks = makeOwnSinks(extendedSources, localSettings);
+
       console.debug(`${traceInfo} component > makeOwnSinks returns : `, ownSinks);
       console.groupEnd();
 
@@ -443,9 +461,9 @@ function m(componentDef, _settings, children) {
       console.debug(`called with extendedSources : ${keys(extendedSources)}`);
       console.debug(`called with localSettings`, localSettings);
 
-      const childrenSinks = computeChildrenSinks(children, extendedSources, localSettings);
-      console.debug(`${traceInfo} component > computing children sinks returns : `, childrenSinks);
+      const childrenSinks = computeChildrenSinks(childrenComponents, extendedSources, localSettings);
 
+      console.debug(`${traceInfo} component > computing children sinks returns : `, childrenSinks);
       console.groupEnd();
 
       assertContract(isOptSinks, [ownSinks], 'ownSinks must be a hash of observable sink');

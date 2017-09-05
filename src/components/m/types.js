@@ -1,7 +1,9 @@
 import {
-  checkAndGatherErrors, eitherE, isArrayOf, isComponent, isFunction, isHashMap, isObject, isString
+  checkAndGatherErrors, eitherE, isArray, isArrayOf, isComponent, isEmptyArray, isFunction,
+  isHashMap, isObject,
+  isString
 } from "../../utils"
-import { both, complement, either, pipe, prop, isNil } from 'ramda'
+import { both, complement, either, isNil, pipe, prop } from 'ramda'
 
 function hasValidComponentDefProperty(componentDef, _settings, children) {
   return eitherE(
@@ -11,7 +13,7 @@ function hasValidComponentDefProperty(componentDef, _settings, children) {
   )(componentDef)
 }
 
-function hasValidSettingsProperty (componentDef, _settings, children) {
+function hasValidSettingsProperty(componentDef, _settings, children) {
   return either(isNil, isObject)(_settings)
 }
 
@@ -42,8 +44,33 @@ const isNonNilComponentDef = checkAndGatherErrors([
   )]
 ], `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid component definition!`);
 
-function hasValidChildrenProperty (componentDef, _settings, children){
-  return isArrayOf(isComponent)(children)
+function isParentAndComponentArray(children) {
+  if (isNil(children) || !isArray(children)) return false
+
+  const parentCandidate = children[0];
+  const childrenCandidate = children[1];
+
+  if (isNil(parentCandidate) && isEmptyArray(childrenCandidate)){
+    return `m > hasMsignature > hasValidChildrenProperty > isParentAndComponentArray : 'm' component requires sinks to merge. That means both parent and children cannot be null at the same time!`
+  }
+
+  return either(isNil, isComponent)(parentCandidate) && isArray(childrenCandidate)
+    && (
+      childrenCandidate.length === 0
+      || isArrayOf(isComponent)(childrenCandidate)
+    )
+}
+
+function hasValidChildrenProperty(componentDef, _settings, children) {
+  if (isEmptyArray(children)) {
+    return `m > hasMsignature > hasValidChildrenProperty : 'children' parameter cannot be empty array, there has to be a component emitting sinks`
+  }
+
+  return eitherE(
+    [isArrayOf(isComponent), `m > hasMsignature > hasValidChildrenProperty : 'children' parameter is not an array of components`],
+    [isParentAndComponentArray, `m > hasMsignature > hasValidChildrenProperty : 'children' parameter does not have the shape [Parent, [Child]]`],
+    ``
+  )(children)
 }
 
 export const hasMsignature = checkAndGatherErrors([
