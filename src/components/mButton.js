@@ -188,7 +188,7 @@ const mButtonSpec = {
   checkPreConditions: checkButtonPreConditions,
   checkPostConditions: null,
   // Create the event sinks from the specifications
-  makeOwnSinks: makeButtonSinks,
+  // makeOwnSinks: makeButtonSinks,
   // We merge children and DOM sinks with the by-default merge functions
   mergeSinks: null
 }
@@ -205,7 +205,7 @@ const mButtonSpec = {
  *
  * @param mButtonSettings Settings for the button component. Cf. preconditions contract for the
  * shape of that object (cf. `checkButtonSettings`)
- * @param childrenComponents
+ * @param {Array<Component>} childrenComponents DOC MUST NOT include a parent component!!
  * @returns {Component}
  * @throws throws in case of failing contract
  */
@@ -214,5 +214,5 @@ export function mButton(mButtonSettings, childrenComponents) {
   // and enclosing the DOM trees returned by the children components
   // Other children sinks are default-merged
 
-  return m(mButtonSpec, mButtonSettings, childrenComponents)
+  return m(mButtonSpec, mButtonSettings, [makeButtonSinks, childrenComponents])
 }
