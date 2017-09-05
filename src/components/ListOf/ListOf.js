@@ -3,7 +3,7 @@
 import {
   assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString
 } from "../../utils"
-import { m } from '../m'
+import { m } from '../m/m'
 import { keys, merge, reduce, either, isNil } from 'ramda'
 
 function isListOfSettings(settings) {

@@ -1,5 +1,5 @@
 import * as QUnit from "qunitjs"
-import { m } from '../src/components/m'
+import { m } from '../src/components/m/m'
 import * as Rx from 'rx'
 import { div, h } from 'cycle-snabbdom'
 import { runTestScenario } from '../src/runTestScenario'

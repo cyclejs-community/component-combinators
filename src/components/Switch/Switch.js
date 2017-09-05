@@ -1,6 +1,6 @@
 // NOTE : right now all casewhen are evaluated
 
-import { m } from '../m'
+import { m } from '../m/m'
 import {
   assertContract, checkAndGatherErrors, DOM_SINK, hasAtLeastOneChildComponent, isArrayOf,
   isFunction, isSource, isString, removeNullsFromArray, unfoldObjOverload

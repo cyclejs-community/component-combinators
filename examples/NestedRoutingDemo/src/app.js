@@ -1,5 +1,5 @@
 import { OnRoute } from "../../../src/components/Router/Router"
-import { m } from "../../../src/components/m"
+import { m } from "../../../src/components/m/m"
 import { DOM_SINK, format } from "../../../src/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"

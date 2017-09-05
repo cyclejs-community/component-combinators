@@ -1,4 +1,4 @@
-import { m } from "../m"
+import { m } from "../m/m"
 import { mapObjIndexed } from 'ramda'
 
 export function InjectSources(sourcesHash, childrenComponents) {

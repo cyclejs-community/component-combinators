@@ -1,7 +1,7 @@
 import {
   assertContract, format, hasAtLeastOneChildComponent, isObservable, isString
 } from "../../utils"
-import { m } from '../m'
+import { m } from '../m/m'
 import { map, mergeAll } from 'ramda'
 import * as Rx from "rx";
 const $ = Rx.Observable;
@@ -17,7 +17,6 @@ function isValidForEachSettings(sources, settings) {
 }
 
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  // TODO : when changing m signature pay attention to tat too, I don't use makeOwnSinks I should?
   let { from, as, sinkNames } = settings;
   let cachedSinks = null;
 
@@ -31,7 +30,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
       const mergedChildrenComponentsSinks = m(
         {},
         { [as]: incomingValue, trace: 'executing ForEach children' },
-        childrenComponents);
+        [makeOwnSinks, childrenComponents]);
 
       cachedSinks = mergedChildrenComponentsSinks(sources, settings);
     })

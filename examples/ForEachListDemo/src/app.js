@@ -1,7 +1,6 @@
 import * as Rx from "rx";
 import { ForEach } from "../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../src/components/ListOf/ListOf"
-import { m } from "../../../src/components/m"
 import { InjectSources } from "../../../src/components/Inject/InjectSources"
 import { DOM_SINK, EmptyComponent } from "../../../src/utils"
 import { AspirationalPageHeader } from "./AspirationalPageHeader"
@@ -35,18 +34,17 @@ export const App = InjectSources({
   fetchedPageNumber$: fetchPageNumber
 }, [
   ForEach({
-    from: 'fetchedCardsInfo$',
-    as: 'items',
-    sinkNames: [DOM_SINK],
-    trace: 'ForEach card'
-  }, [
-    m({ makeOwnSinks: AspirationalPageHeader }, { trace: 'm AspirationalPageHeader' }, [
+      from: 'fetchedCardsInfo$',
+      as: 'items',
+      sinkNames: [DOM_SINK],
+      trace: 'ForEach card'
+    }, [AspirationalPageHeader, [
       ListOf({ list: 'items', as: 'cardInfo', trace: 'ForEach card > ListOf' }, [
         EmptyComponent,
         Card,
       ])
-    ])
-  ]),
+    ]]
+  ),
   ForEach({
     from: 'fetchedPageNumber$',
     as: 'pageNumber',
@@ -59,3 +57,5 @@ export const App = InjectSources({
 // TODO : see m.js TODO
 // TODO : think about work around for isolation, components need to pass their click free of
 // concerns
+// TODO : Switch btw have the switch component pass not only the when to the children but the
+// incomoing value too!! And add the corresponding test...

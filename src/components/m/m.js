@@ -42,13 +42,13 @@ import {
   assertContract, assertSinksContracts, assertSourcesContracts, emitNullIfEmpty, format,
   getSinkNamesFromSinksArray, isArray, isArrayOf, isArrayOptSinks, isFunction, isMergeSinkFn,
   isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray, traceSinks
-} from "../utils"
+} from "../../utils"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce, either, both, complement, isNil
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
-import { hasMsignature } from "./m/types"
+import { hasMsignature } from "./types"
 
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable

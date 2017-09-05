@@ -4,7 +4,7 @@ import { always } from 'ramda';
 import * as Rx from 'rx';
 import h from 'snabbdom/h';
 import { div } from 'cycle-snabbdom';
-import { m } from '../src/components/m';
+import { m } from '../src/components/m/m';
 import { makeDivVNode, projectSinksOn } from '../src/utils';
 import { runTestScenario } from '../src/runTestScenario';
 

@@ -30,7 +30,7 @@
 
 import * as QUnit from "qunitjs"
 import { OnRoute } from '../src/components/Router/Router'
-import { m } from '../src/components/m'
+import { m } from '../src/components/m/m'
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
 import { runTestScenario } from '../src/runTestScenario'
@@ -155,12 +155,6 @@ QUnit.test("non-nested routing - transitions no match -> match", function exec_t
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
     ]),
-    /*
-        onRoute({ route: 'anything' }, [
-          makeTestHelperComponent('Component 1', A_SOURCE, 'anything'),
-          makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'anything'),
-        ]),
-    */
   ]);
 
   const inputs = [
@@ -229,12 +223,6 @@ QUnit.test("non-nested routing - transitions match -> no match, also testing par
       makeTestHelperComponent('Component 1', A_SOURCE, 'group:param'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group:param'),
     ]),
-    /*
-        onRoute({ route: 'anything' }, [
-          makeTestHelperComponent('Component 1', A_SOURCE, 'anything'),
-          makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'anything'),
-        ]),
-    */
   ]);
 
   const inputs = [

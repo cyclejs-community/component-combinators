@@ -2,7 +2,7 @@ import {
   assertContract, checkAndGatherErrors, DOM_SINK, format, hasAtLeastOneChildComponent, isArray,
   isArrayOf, isString
 } from "../../utils"
-import { m } from "../m"
+import { m } from "../m/m"
 import { defaultTo, isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"

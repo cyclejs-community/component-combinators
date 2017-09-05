@@ -3,7 +3,7 @@ import {
   isStrictRecordE, isHashMapE, hasNoCommonValues,
   isString, preventDefault, removeNullsFromArray, assertContract, hasNoDuplicateKeys, format, isNewKey
 } from "../utils"
-import { defaultMergeSinkFn, m } from "./m"
+import { defaultMergeSinkFn, m } from "./m/m"
 import { flatten, merge, isNil, keys, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
