@@ -107,7 +107,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         const mergedChildrenComponentsSinks = m(
           {},
           { matched: when, trace: 'executing case children' },
-          childrenComponents)
+          [makeOwnSinks, childrenComponents])
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
       }
@@ -302,18 +302,5 @@ export function Case(CaseSettings, childrenComponents) {
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
 // TODO : change the DOC : contracts - should only have one branch of Case at any given time for now
-// TODO : study a DynSwitch reimplementation which multicasts the component sinks into one sink
-
-/*
-Switch({
-  on: 'auth$'
-}, [
-  Case({ when: IS_LOGGED_IN }, [
-    TodoComponent({ routeState: ALL }) // actually will require flip or
-    // curry and R.__
-  ]),
-  Case({ when: complement(IS_LOGGED_IN) }, [
-    LogIn({ redirect: '/' })
-  ])
-]
-  */
+// TODO : pass the incoming value also to the switched component, not just the `when`
+// DOC : give examples of how to use eqFn function to match swath of values instead of one value
