@@ -185,7 +185,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
             [ROUTE_PARAMS]: omit(['routeRemainder'], match),
             trace: `${trace} > componentFromChildren`
           },
-          childrenComponents);
+          [makeOwnSinks, childrenComponents]);
         cachedSinks = componentFromChildren(sources, settings);
       }
       else {
@@ -279,9 +279,9 @@ const RouterSpec = {
 
 // TODO : in index.js set up the sinks for the router as in FSM-example
 // TODO : write documentation
-export function OnRoute(routeSettings, childrenComponents) {
+export function OnRoute(routeSettings, componentTree) {
   // check that components is an array
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Router : router combinator must at least have one child component to route to!`);
+  assertContract(hasAtLeastOneChildComponent, [componentTree], `Router : router combinator must at least have one child component to route to!`);
 
-  return m(RouterSpec, routeSettings, childrenComponents)
+  return m(RouterSpec, routeSettings, componentTree)
 }

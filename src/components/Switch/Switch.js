@@ -181,6 +181,9 @@ export const SwitchSpec = {
       const allSinks = flatten([ownSink, childrenDOMSink])
       const allDOMSinks = removeNullsFromArray(allSinks)
 
+      // TODO : investigate parent component API here
+      // TODO : could be Switch({}, [Parent, [CaseComponent, CaseComponent]])
+      // TODO : so we have factored out the Parent out of the Cases
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
         function (x) {
           console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
@@ -270,8 +273,8 @@ export const CaseSpec = {
  * @return {Component}
  * @throws
  */
-export function Switch(switchSettings, childrenComponents) {
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `Switch : switch combinator must at least have one child component to switch to!`);
+export function Switch(switchSettings, componentTree) {
+  assertContract(hasAtLeastOneChildComponent, [componentTree], `Switch : switch combinator must at least have one child component to switch to!`);
   assertContract(hasOnProperty, [null, switchSettings], `Switch : switch combinator must have a 'on' property !`);
   let _SwitchSpec = SwitchSpec;
   let _switchSettings = switchSettings;
@@ -291,11 +294,11 @@ export function Switch(switchSettings, childrenComponents) {
     _switchSettings = assoc('on', SWITCH_SOURCE, switchSettings);
   }
 
-  return m(_SwitchSpec, _switchSettings, childrenComponents)
+  return m(_SwitchSpec, _switchSettings, componentTree)
 }
 
-export function Case(CaseSettings, childrenComponents) {
-  return m(CaseSpec, CaseSettings, childrenComponents)
+export function Case(CaseSettings, componentTree) {
+  return m(CaseSpec, CaseSettings, componentTree)
 }
 
 // TODO : when doc and specs is written write carefully the test to test everything
