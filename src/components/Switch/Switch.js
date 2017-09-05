@@ -184,6 +184,9 @@ export const SwitchSpec = {
       // TODO : investigate parent component API here
       // TODO : could be Switch({}, [Parent, [CaseComponent, CaseComponent]])
       // TODO : so we have factored out the Parent out of the Cases
+      // TODO : beware of edge cases cf. filter Boolean stuff
+      // TODO : note that this applies only to dOM
+      // TODO : note that parent component wont have access to the incoming value...!!
       return $.merge(allDOMSinks.map((sink, index) => sink.tap(
         function (x) {
           console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)

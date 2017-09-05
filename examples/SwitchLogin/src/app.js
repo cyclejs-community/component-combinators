@@ -18,7 +18,7 @@ export const App = Switch({
   Case({ when: IS_LOGGED_IN, trace: 'MainPage Case' }, [
     MainPage
   ]),
-])
+]);
 
 function convertAuthToIsLoggedIn(sources, settings) {
   // NOTE : auth$ contains the authenticated user, we only need to know whether that user is
