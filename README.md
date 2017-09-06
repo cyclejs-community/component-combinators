@@ -163,6 +163,7 @@ The proposed library has the following combinators :
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
 # Roadmap
+- test the repo, config, replay all demos etc.
 - write a better README
 	- links with docs for each combinator
 	- sell the FSM better, it is life changing
