@@ -3,7 +3,7 @@ import {
   isObservable, isString
 } from "../../utils"
 import { m } from "../m/m"
-import { defaultTo, isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
+import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
 import { ROUTE_CONFIG, ROUTE_PARAMS } from "./properties"
@@ -51,7 +51,6 @@ function hasRouteSourceProperty(sources, settings) {
  */
 function match(routeToMatch) {
   let rm1 = routeMatcher(routeToMatch)
-  // TODO : put into a property when tests are passing `/*${ROUTE_REMAINDER}`
   let rm2 = routeMatcher(routeToMatch + '/*routeRemainder')
 
   return function match(incomingRoute) {
@@ -276,8 +275,6 @@ const RouterSpec = {
   checkPreConditions: isRouteSettings
 };
 
-// TODO : in index.js set up the sinks for the router as in FSM-example
-// TODO : write documentation
 export function OnRoute(routeSettings, componentTree) {
   // check that components is an array
   assertContract(hasAtLeastOneChildComponent, [componentTree], `Router : router combinator must at least have one child component to route to!`);

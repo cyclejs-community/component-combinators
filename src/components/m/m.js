@@ -221,109 +221,25 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
   )
 }
 
-// m :: Opt Component_Def -> Opt Settings -> [Component] -> Component
 /**
- * Returns a component specified by :
- * - a component definition object (nullable)
- * - outer settings (nullable)
- * - children components (or none)
- * Component definition properties :
- * - mergeSinks : computes resulting sinks or a specific sinks according to
- * configuration. See type information
- * - computeSinks : computes resulting sinks by executing the
- * children component and parent and merging the result
- * - checkPreConditions : default to nothing
- * - checkPostConditions : default to checking all sinks are observables or `null`
- * - makeLocalSources : default -> null
- * - makeLocalSettings : default -> null
- * - makeOwnSinks : -> default null
- *
- * # Algorithm
- * The factored algorithm which derives sinks from sources is as follows :
- * - merging current `sources` with extra sources if any (configured with `makeLocalSources`)
- * - computing children sinks by executing the children components on the
- * merged sources
- * - computing some parent-component-specific sinks (i.e. that computation depends only on the
- * `sources` and `settings` parameter)
- * - merging the parent sinks with the children sinks
- *
- * There are two specification formats for the final component, according to the level of
- * granularity desired - the short spec and the detailed spec :
- * - short spec :
- *   one function `computeSinks` which computes the sinks from a children-independent sink
- *   factory, the sources, settings and children components. This is basically a big function
- *   which takes all information at disposal to compute the computed component sinks in one
- *   go. As such, this function gathers several concerns (source fetching, sinks creation,
- *   sinks merging, etc.).
- *   The rationale behind that function is that sometimes one needs complete control over the
- *   creation of the generation of the sinks for the computed component. Because the array of
- *   children components is passed directly (vs. passing the post-execution children
- *   components sinks), that function has total freedom over deciding how to compute
- *   and incorporate the children sinks.
- *   For the short spec, the relevant properties are :
- *   - `computeSinks`, `makeOwnSinks`,
- *   - the user-defined factories, the user-defined contracts
- * - detailed spec :
- *   For the detailed spec, the relevant properties are :
- *   - `makeOwnSinks`, `mergeSinks`,
- *   - the user-defined factories, the user-defined contracts
- *   TODO : in fact, the dichotomy short/detailed is not really valid - follow terminology of m docs
- *
- * Children components and local sinks factory functions will be called with the extended sources
- * (i.e. provided sources merged with locally computed sources, and settings resulting from
- * the three-way settings merge described thereafter).
- *
- * The goal of these functions is as follows:
- * - `makeOwnSinks(sources, settings)` : computation of children-independent sinks, i.e.
- * specific to that `m` factory call.
- * - `mergeSinks(ownSinks, childrenSinks, localSettings)` : outputs computed component sinks
- * as a result of the children-independent sinks, the children-generated sinks, and the
- * three-way merged settings received by the `m` factory and its run-time environment.
- *
- * @param {DetailedComponentDef} componentDef
- * @param {Settings} _settings
- * @param {Array<Component> | Array<ParentAndChildren>} componentTree
- *
- * @returns {Component}
- * @throws when type- and user-specified contracts are not satisfied
- *
- * # User-defined contracts
- * Contract functions allows to perform additional user-defined contract checking before computing
- * the component, for instance :
- * - check that sources have the expected properties
- * - check that the computed sinks have the expected type or properties
- *
- * # Sources
- * The factory-computer component is called with a `sources` argument which is the result of
- * the merge between the `sources` argument passed to the factory and the `sources` resulting
- * from the local sources factory (via `makeLocalSources`). In case of conflict, the local
- * sources factory has the lowest precedence vs. the factory sources.
- * It is important to note that this local sources factory function is called with a settings
- * parameter which ignores the local settings factory! Hence local settings cannot influence
- * the creation of sources.
- * In fact, there is almost no cases where an extra source might depend on settings. In the
- * vast majority of the cases, we expect the local sources factory to be independent of any
- * settings.
- *
  * # Settings
  * The output component returned by the `m` utility receives settings (at call time), termed in
- * what follows as inner settings. The `m` utility also receives settings, termed here as
- * outer settings. Any computation performed by the output component will be equivalent to
- * that of the same output component who would have received a merge of the inner and outer
- * settings. This allows the component factory `m` to parameterize/customize the behaviour of
- * its computed component. This in particular means that the outer settings take precedence
- * over the inner settings in case of conflict.
+ * what follows as inner settings or dynamic settings. The `m` utility also receives static
+ * settings (at compile time), termed here as outer settings or static settings.
+ * This allows the component factory `m` to parameterize/customize the behaviour of
+ * its computed component, both statically and dynamically. In the current implementation, the
+ * static settings take precedence over the inner settings in case of conflict.
  *
  * Such merging conflicts are to be avoided in general. Having the computed component
- * behaviour depending on a parameter external to its definition means that one can no longer
- * reason about the component behaviour in isolation, but needs to know about the component's
+ * behaviour depending statically on a parameter external to its definition means that one can no
+ * longer reason about the component behaviour in isolation, but needs to know about the component's
  * context (position in the component tree).
  * There are however some valid cases when the equivalent of environment variables needs to be
  * passed down to components. Rather than explicitly passing those parameters to every
  * component individually down the component tree, it is enough to pass it once at some level,
  * and those parameters will be :
  * - visible at every lower level
- * - cannot be altered by lower-level components
+ * - can be rewritten by lower level components if need arises
  *
  * Those 'environment variables' should reflect concerns which are fairly orthogonal to the
  * component (leaf indexing, sinks signature, etc.), so that they do not interact with the
@@ -357,6 +273,12 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  * of the merge of the outer settings passed through the `m` utility, and the inner settings
  * passed to the output component.
  *
+ * @param {*} componentDef
+ * @param {Settings} _settings
+ * @param {Array<Component> | Array<ParentAndChildren>} componentTree
+ *
+ * @returns {Component}
+ * @throws when type- and user-specified contracts are not satisfied
  */
 function m(componentDef, _settings, componentTree) {
   console.groupCollapsed('m factory > Entry');
@@ -371,10 +293,6 @@ function m(componentDef, _settings, componentTree) {
     makeLocalSources, makeLocalSettings, mergeSinks,
     computeSinks, checkPostConditions, checkPreConditions
   } = componentDef;
-  // DOC : beware of [ParentComponent] is not possible, it is read as [UniqueChild]
-  // DOC : should be [ParentComponent, []] instead! That can be a source of frequent errors...
-  // TODO : so maybe have ALWAYS the same shape, so here [null, []] and [null, [UniqueChild]]??
-  // TODO : in any case, all the functions with check at least one child must check it right
   let parentComponent;
   let childrenComponents;
 
@@ -516,11 +434,3 @@ function m(componentDef, _settings, componentTree) {
 }
 
 export { m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDOM, computeReducedSink }
-
-// TODO : design better trace information
-// for instance outer trace could be concatenated to inner trace to trace also the
-// component hierarchy
-// TODO : also add slot mechanism to default DOM merge to include child component at given
-// position of parent : PUT THE SLOT IN VNODE DATA property
-//       necessary to add a `currentPath` parameter somewhere which
-//       carries the current path down the tree

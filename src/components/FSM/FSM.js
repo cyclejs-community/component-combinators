@@ -937,7 +937,7 @@ const wrapIfDebug = cond([
 // clone of the model so they don't modify it inadvertently
 // TODO : parametrize DOM sink name
 // TODO : implement remaining contracts cf. doc
-// TODO : move contrac for action guards and event guards (return boolean value) into debug:true
+// TODO : move contract for action guards and event guards (return boolean value) into debug:true
 // so that when debug is false we have better performance
 // TODO : same would be nice while saving to remote to show some message `pending...` = feature
 // i.e. some model update for when FSM in between states
@@ -962,6 +962,7 @@ const wrapIfDebug = cond([
 // ---- cf. https://github.com/patrick-steele-idem/morphdom,
 // ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
 // -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
+// TODO : 7. can use https://codepen.io/davidkpiano/pen/ayWKJO/ ?
 // TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
 // - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
 // - - allows to have more than flowchart, more kind of diagrams

@@ -16,10 +16,9 @@ const isSelectorString = isString
 const isSelectorDescription = T
 const isSelector = isHashMapE(isSelectorDescription, isSelectorString)
 
-// TODO : change isStrictRecord to isNonStrictRecord as there might be extra property inherited??
+// NOTE : change isStrictRecord to isNonStrictRecord as there might be extra property inherited??
 // check it, as this is in the `m` it should have the highest priority, question is how the
 // merge is done... if recursive then yes, some extra properties might find their way there...
-// TODO: think : change the merge?? no more deep merge??
 function isEventFactoryEventSettings(sources, settings) {
   return eitherE(
     [isNil, `isEventFactoryEventSettings > settings.events is not null`],

@@ -168,6 +168,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
           // still lead to the display of the old DOM, or worse block part of the DOM building
           // (all sources for `combineLatest` must have emitted for the operator to emit its first
           // value)
+          // SO : we need a list of behaviour sinks, and their monoidal zero (eq. to $.of(null))
           cached$ = sinkName === DOM_SINK ? $.of(null) : $.empty()
         }
         return cached$
@@ -268,7 +269,7 @@ function computeSwitchDOMSink(parentDOMSinkOrNull, childrenSink, settings) {
 
 export const SwitchSpec = {
   mergeSinks: {
-    DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
+    [DOM_SINK]: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
       return computeSwitchDOMSink(ownSink, childrenDOMSink, settings)
       // NOTE : current implementation of switch generates a lot of null (for each failing
       // Case branch) - we filter that out, they do not mean a null vNode

@@ -96,8 +96,7 @@ export function ListOf(listOfSettings, childrenComponents) {
   return m(listOfSpec, listOfSettings, childrenComponents)
 }
 
-// TODO : review and test (write test plans and then test)
-// DOC NOTE : it is better to have only one child component. If several, we have to allow
+// NOTE ADR: it is better to have only one child component. If several, we have to allow
 // specifying how they are merged, which would complexify the API. We already have to specify
 // how the array of the components are merged. That would make two merge functions to specify
 // with different scopes, which is a bit harder to reason about and error-prone.
