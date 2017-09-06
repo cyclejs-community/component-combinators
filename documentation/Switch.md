@@ -28,7 +28,9 @@ The behaviour is as follows :
 - for every incoming value of the switch source, all predicates found in children `CaseComponent`s are executed. 
 - The components associated to the fulfilled predicates are switched on
 - The other components are switched off
-- Note that correct behaviour is only guaranteed if predicates are mutually exclusive, i.e. if **no two predicates can be simultaneously true**, i.e. only one component branch validated at any given time
+- If there is a incoming value on the switch source such that there is no matching case, then all components are deactivated
+	- the DOM for the parent component will still be activated, even as there will be no children DOM content
+	- in the absence of a DOM content for the parent component, then an empty `<div></div>` will be issued. This is necessary to remove the formerly displayed DOM nodes from the DOM.
 
 
 ### Types
@@ -54,9 +56,9 @@ The `Case` combinator returns a case component and is to be used solely in combi
 
 It specifies a match between a value of a switch source and a component to be switched on. The match is specified by the property `when` in settings. Equality between two values can also be evaluated via a custom function passed in the `eqFn` property in settings.
 
-Every case component  will receive when executed the property `matched` as part of its settings. That property will be the incoming value of the switch source triggering the case component.
+Every case component  will receive when executed the property `switchedOn` as part of its settings. That property will be the incoming value of the switch source triggering the case component.
 
-This means that case component functions will be executed for each matching incoming value.
+All `Case` component functions are executed for each incoming value. This means that case component functions will be activated for each matching incoming value. 
 
 ### Types
 -  `CaseComponent :: Component`
@@ -66,7 +68,7 @@ This means that case component functions will be executed for each matching inco
 - `}`
 
 ### Contracts
-- Configuration of `when` must be such that at any given time, only one Case Component is activated, i.e. branching predicates are mutually exclusive
+- type contracts
 
 # Example
 
@@ -75,3 +77,4 @@ This means that case component functions will be executed for each matching inco
 - Note that the switch predicates are evaluated every time there is an incoming value on the switch source. If it is necessary to implement a logic by which the component switching should only trigger on **CHANGES** of the incoming value, that logic could be implemented with appending a `distinctUntilChanged` to the switch source.
 - One should strive for having a relatively low number of discretized switch values as there is a performance cost which is linear with the number of such values. As a matter of fact, all predicates matching switched components to their discretized values are executed, for every incoming value of the switch source.
 - One can have several fulfilled predicates for a given incoming value of the switch source. This means that several components could be activated for a given incoming value, but different conditions, which allows to implement more complex logic. This is however to use wisely, as the ability to reason about behaviour suffers somewhat. For instance, when several components can be activated for the same incoming value, and order of activation of those component matter, such ordering requirement is essentially hidden as implementation detail in the source code.
+- One can also implement a `eqFn` such that a `Case` component is activated for a set of values instead of just one value. Alternatively, a `on` source can be computed in a way that assign a unique identifier to a given set of values. Using `eqFn` should however be more versatile, as one can specify a different `eqFn` for each `Case` component.

@@ -192,14 +192,16 @@ function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
       // cf. m.js computeDOMSinkDefault
       let parentVNode = clone(_arrayVNode.shift())
       let childrenVNode = _arrayVNode
-      // For Case component, null does not mean empty vnode
-      // We want to avoid having the parent enclosing an empty content, which would not be
-      // semantically accurate (though eventually accurate - the next DOM values should be the
-      // right DOM to display, so this would be only temporally wrong, but still we remove it to
-      // avoid confusion)
-      if (childrenVNode.length === 0) {
-        return null
-      }
+      /*
+            // For Case component, null does not mean empty vnode
+            // We want to avoid having the parent enclosing an empty content, which would not be
+            // semantically accurate (though eventually accurate - the next DOM values should be the
+            // right DOM to display, so this would be only temporally wrong, but still we remove it to
+            // avoid confusion)
+            if (childrenVNode.length === 0) {
+              return null
+            }
+      */
 
       parentVNode.children = clone(parentVNode.children) || []
 
@@ -225,12 +227,14 @@ function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
     }
     else {
       // Case : the parent sinks does not have a DOM sink
-      // Cf. above : For Case component, null does not mean empty vnode, it is an intermediate
-      // value, so don't add an empty div for nothing, add a null which will be filtered down
-      // the road
-      if (_arrayVNode.length === 0) {
-        return null
-      }
+      /*
+            // Cf. above : For Case component, null does not mean empty vnode, it is an intermediate
+            // value, so don't add an empty div for nothing, add a null which will be filtered down
+            // the road
+            if (_arrayVNode.length === 0) {
+              return null
+            }
+      */
 
       return div(_arrayVNode)
     }
@@ -379,8 +383,6 @@ export function Case(CaseSettings, componentTree) {
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
 // TODO : change the DOC : contracts - we can have a parent component for switch and various cases
-// TODO : pass the incoming value also to the switched component, not just the `when`
-// DOC : give examples of how to use eqFn function to match swath of values instead of one value
 // TODO DOC : switching will only occurs when a matching Case component is found
 // This means in particular if a value has no matching Case, the DOM is not switched to
 // [Parent], but remains the same

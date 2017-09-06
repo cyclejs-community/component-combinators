@@ -524,6 +524,3 @@ export { m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDO
 // position of parent : PUT THE SLOT IN VNODE DATA property
 //       necessary to add a `currentPath` parameter somewhere which
 //       carries the current path down the tree
-// TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
-// - update documentation of m
-//   - actually change the case for m, starting with example

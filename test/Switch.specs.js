@@ -105,15 +105,19 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
   const expected = {
     DOM: {
       outputs: [
+        "<div class=\"parent\"></div>",
         "<div class=\"parent\"><div><span>Component 3 : c</span></div></div>",
+        "<div class=\"parent\"></div>",
         "<div class=\"parent\"><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"></div>",
         "<div class=\"parent\"><div><span>Component 3 : f</span></div></div>",
         "<div class=\"parent\"><div><span>Component 3 : a</span></div></div>",
+        "<div class=\"parent\"></div>",
         "<div class=\"parent\"><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
         "<div class=\"parent\"><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
         "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
-        "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>",
-      ],
+        "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>"
+      ]      ,
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
       transform: pipe(convertVNodesToHTML)
@@ -138,6 +142,121 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
         "Component2 - user action : click",
         "Component3 - user action : select",
         "Component2 - user action : hover"
+      ],
+      successMessage: 'sink b produces the expected values',
+    },
+    c: {
+      outputs: [
+        "Component4 - user action : select",
+        "Component4 - user action : select"
+      ],
+      successMessage: 'sink c produces the expected values',
+    },
+  }
+
+  runTestScenario(inputs, expected, switchComponent, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+});
+
+QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case container component", function exec_test(assert) {
+  const done = assert.async(4);
+
+  const childComponent1 = function childComponent1(sources, settings) {
+    return {
+      DOM: sources.DOM1.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 1: '))
+        .map(x => h('span', {}, `Component 1 : ${x}`)),
+      a: sources.userAction$.map(x => `Component1 - user action : ${x}`)
+    }
+  };
+  const childComponent2 = function childComponent2(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 2: '))
+        .map(x => h('span', {}, `Component 2 : ${x}`)),
+      b: sources.userAction$.map(x => `Component2 - user action : ${x}`)
+    }
+  };
+  const childComponent3 = function childComponent3(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 3: '))
+        .map(x => h('span', {}, `Component 3 : ${x}`)),
+      b: sources.userAction$.map(x => `Component3 - user action : ${x}`)
+    }
+  };
+  const childComponent4 = function childComponent4(sources, settings) {
+    return {
+      c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
+    }
+  };
+  const CaseContainer = function CaseContainer(sources, settings) {
+    return {
+      [DOM_SINK]: $.of(div('.parent'))
+    }
+  }
+
+  const switchComponent = Switch({
+    on: 'sweatch$',
+    sinkNames: ['DOM', 'a', 'b', 'c']
+  }, [CaseContainer, [
+    Case({ when: false }, [childComponent3]),
+    Case({ when: false }, [childComponent4]),
+    Case({ when: 'true' }, [childComponent1, childComponent2]),
+  ]]);
+
+  const inputs = [
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
+    {
+      userAction$: {
+        diagram: 'abc-b-ac--ab---c',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+    {
+      'sweatch$': {
+        //diagr: '-a--b--c--d--e--f--a',
+        //diagr: '-a-b-c-d-e-f-abb-c-d',
+        //userA: 'abc-b-ac--ab---c',
+        diagram: '-t-f-tttttff-t', values: {
+          t: true,
+          f: false,
+        }
+      }
+    }
+  ];
+
+  /** @type TestResults */
+  const expected = {
+    DOM: {
+      outputs: [
+        "<div class=\"parent\"></div>",
+        "<div class=\"parent\"><div><span>Component 3 : c</span></div></div>",
+        "<div class=\"parent\"></div>",
+        "<div class=\"parent\"><div><span>Component 3 : f</span></div></div>",
+        "<div class=\"parent\"><div><span>Component 3 : a</span></div></div>",
+        "<div class=\"parent\"></div>"
+      ],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [],
+      successMessage: 'sink a produces the expected values',
+    },
+    b: {
+      outputs: [
+        "Component3 - user action : select",
+        "Component3 - user action : select"
       ],
       successMessage: 'sink b produces the expected values',
     },
@@ -234,10 +353,12 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - with case cont
   const expected = {
     DOM: {
       outputs: [
+        "<div class=\"parent\"></div>", // first `true` match activates the CaseContainer
         "<div class=\"parent\"><div><span>Component 3 : d</span></div></div>",
         "<div class=\"parent\"><div><span>Component 3 : d</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
         "<div class=\"parent\"><div><span>Component 3 : e</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
         "<div class=\"parent\"><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div class=\"parent\"></div>",
         "<div class=\"parent\"><div><span>Component 3 : b</span></div></div>",
         "<div class=\"parent\"><div><span>Component 3 : b</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
         "<div class=\"parent\"><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
@@ -370,10 +491,12 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - without case c
   const expected = {
     DOM: {
       outputs: [
+        "<div></div>",
         "<div><div><span>Component 3 : d</span></div></div>",
         "<div><div><span>Component 3 : d</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
         "<div><div><span>Component 3 : e</span></div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
         "<div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div></div>",
         "<div><div><span>Component 3 : b</span></div></div>",
         "<div><div><span>Component 3 : b</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
         "<div><div><span>Component 3 : c</span></div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
@@ -499,7 +622,7 @@ QUnit.test("main cases - 0 match - 3 cases - switch on source", function exec_te
   /** @type TestResults */
   const expected = {
     DOM: {
-      outputs: [],
+      outputs: ["<div></div>"],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
       transform: pipe(convertVNodesToHTML)
@@ -598,10 +721,14 @@ QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec
   const expected = {
     DOM: {
       outputs: [
+        "<div></div>",
         "<div><div><span>Component 3 : c</span></div></div>",
+        "<div></div>",
         "<div><div><span>Component 1 : c</span><span>Component 2 : d</span></div></div>",
+        "<div></div>",
         "<div><div><span>Component 3 : f</span></div></div>",
         "<div><div><span>Component 3 : a</span></div></div>",
+        "<div></div>",
         "<div><div><span>Component 1 : f</span><span>Component 2 : b</span></div></div>",
         "<div><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
         "<div><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
@@ -722,7 +849,9 @@ QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec
   /** @type TestResults */
   const expected = {
     DOM: {
-      outputs: [],
+      outputs: [
+        "<div></div>"
+      ],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
       transform: pipe(convertVNodesToHTML)
