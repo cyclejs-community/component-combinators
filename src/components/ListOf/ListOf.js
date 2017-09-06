@@ -5,6 +5,7 @@ import {
 } from "../../utils"
 import { m } from '../m/m'
 import { keys, merge, reduce, either, isNil } from 'ramda'
+import { isComponent } from "../types"
 
 function isListOfSettings(settings) {
   return 'list' in settings && 'as' in settings
@@ -25,7 +26,9 @@ function hasValidActionsMap(sources, settings) {
 }
 
 function hasExactlyTwoChildrenComponent(arrayOfComponents) {
+  // NOTE : we exclude [parent, [child, child]]. We want [child, child]
   return arrayOfComponents && isArray(arrayOfComponents) && arrayOfComponents.length === 2
+    && isComponent(arrayOfComponents[0]) && isComponent(arrayOfComponents[1])
 }
 
 const isValidListOfSettings =
@@ -56,7 +59,6 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     : [childComponent]
 
   const reducedSinks = m({
-    makeOwnSinks: makeOwnSinks,
     mergeSinks: buildActionsFromChildrenSinks || {}
   }, { trace: 'ListOf > computing indexed children' }, indexedChildrenComponents)(sources, settings);
 
@@ -88,7 +90,7 @@ const listOfSpec = {
 };
 
 export function ListOf(listOfSettings, childrenComponents) {
-  assertContract(hasExactlyTwoChildrenComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly one child component to list from!`);
+  assertContract(hasExactlyTwoChildrenComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly two children component to list from!`);
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
   return m(listOfSpec, listOfSettings, childrenComponents)

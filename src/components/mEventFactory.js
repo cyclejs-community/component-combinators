@@ -123,7 +123,7 @@ const eventFactorySpec = {
   mergeSinks: mergeEventFactorySinksWithChildrenSinks
 }
 
-export function mEventFactory(eventFactorySettings, childrenComponents) {
+export function mEventFactory(eventFactorySettings, componentTree) {
   // returns a component which default-merges sinks coming from the children
   // and adds its events sinks to it
 
@@ -133,5 +133,5 @@ export function mEventFactory(eventFactorySettings, childrenComponents) {
   // call time to be merged with the settings passed at creation time. This opens the
   // possibility to have a factory with some events, and adding soem additional events at call
   // time via settings
-  return m(eventFactorySpec, eventFactorySettings, childrenComponents)
+  return m(eventFactorySpec, eventFactorySettings, componentTree)
 }

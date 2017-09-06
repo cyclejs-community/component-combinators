@@ -24,13 +24,14 @@ QUnit.module("Testing Switch component", {})
 // 1.1 source not existing in sources
 // 1.2 source not a string or a function
 // 1.3 switch source 1 match
-// 1.4 switch source 2 matches -- DOES NOT WORK!! -> REMOVED FROM SPECIFICATIONS
+// 1.4 switch source 2 matches
 // 1.5 switch source 0 matches
 // 1.6 same with config of eqFn
 // 2. Switch on source generating function
 // same than 1
+// NOTE : due to changes in specifications, we also added tests for parent component
+// NOTE : no tests for the `switchedOn` property which passes the value from the switched source
 
-// 1.3 Switch on source : switch source 1 match
 QUnit.test("main cases - 1 match - 3 cases - switch on source - with case container component", function exec_test(assert) {
   const done = assert.async(4);
 
@@ -299,6 +300,7 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - without case c
   const done = assert.async(4);
 
   const childComponent1 = function childComponent1(sources, settings) {
+    debugger
     return {
       DOM: sources.DOM1.take(4)
         .tap(console.warn.bind(console, 'DOM : component 1: '))

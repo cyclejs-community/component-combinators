@@ -57,5 +57,3 @@ export const App = InjectSources({
 // TODO : see m.js TODO
 // TODO : think about work around for isolation, components need to pass their click free of
 // concerns
-// TODO : Switch btw have the switch component pass not only the when to the children but the
-// incomoing value too!! And add the corresponding test...

@@ -101,14 +101,15 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   eqFn = defaultTo(cfg.defaultEqFn, eqFn);
 
   const shouldSwitch$ = switchSource
-    .map(x => eqFn(x, when))
-    .do(function (isMatching) {
+    .map(x => ({isMatching : eqFn(x, when), incoming : x}))
+    .do(function ({isMatching, incoming}) {
       if (isMatching) {
         console.info(`Found a match (${when}) for Case branch ${settings.trace}`)
         console.info(`Computing the corresponding sinks`)
         const mergedChildrenComponentsSinks = m(
           {},
-          { matched: when, trace: 'executing case children' },
+          // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well.
+          { switchedOn: incoming, trace: 'executing case children' },
           [makeOwnSinks, childrenComponents])
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
@@ -125,10 +126,10 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 
   function makeSwitchedSink(sinkName) {
     return {
-      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache(isMatchingCase) {
+      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache({isMatching, incoming}) {
         let cached$;
 
-        if (isMatchingCase) {
+        if (isMatching) {
           // Case : the switch source emits a value corresponding to the
           // configured case in the component
 
@@ -224,6 +225,9 @@ function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
     }
     else {
       // Case : the parent sinks does not have a DOM sink
+      // Cf. above : For Case component, null does not mean empty vnode, it is an intermediate
+      // value, so don't add an empty div for nothing, add a null which will be filtered down
+      // the road
       if (_arrayVNode.length === 0) {
         return null
       }
@@ -251,7 +255,6 @@ function computeSwitchDOMSink(parentDOMSinkOrNull, childrenSink, settings) {
   }
 
   return $.combineLatest(allDOMSinks)
-  //    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
     .map(mergeCaseChildrenIntoParentDOM(parentDOMSinkOrNull))
 }
 
@@ -272,31 +275,7 @@ export const SwitchSpec = {
         .distinctUntilChanged()
     }
   },
-  /*
-    mergeSinks: {
-      DOM: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
-        const allSinks = flatten([ownSink, childrenDOMSink])
-        const allDOMSinks = removeNullsFromArray(allSinks)
-
-        // TODO : investigate parent component API here
-        // TODO : could be Switch({}, [Parent, [CaseComponent, CaseComponent]])
-        // TODO : so we have factored out the Parent out of the Cases
-        // TODO : beware of edge cases cf. filter Boolean stuff
-        // TODO : note that this applies only to dOM
-        // TODO : note that parent component wont have access to the incoming value...!!
-        return $.merge(allDOMSinks.map((sink, index) => sink.tap(
-          function (x) {
-            console.warn(`Switch > SwitchSpec > mergeDomSwitchedSinks (child ${index}) emits :`, x)
-          }
-        )))
-          .filter(Boolean)
-        // Most values will be null
-        // All non-null values correspond to a match
-        // In the degenerated case, all values will be null (no match
-        // at all)
-      }
-    },
-  */
+  // NOTE : cf. old implementation in 05.09.2017, and using nothing for mergeSinks
   checkPreConditions: isSwitchSettings
 }
 
@@ -351,23 +330,17 @@ export const CaseSpec = {
  *
  * Contracts :
  * - the source name given as parameter must exist as property of the `sources` parameter
- * - Switch combinator must have at least one child component
- * - Case combinator must have at least one child component
- * - Switch predicates should be defined such that, for any given value
- * of the 'switch' source, there is only one matching Switch child component
- *   - If that is not the case :
- *     - behaviour is unspecified
- *     - in the present implementation, the last matching component should be the one
- *   prevailing (NOT TESTED).
- * - on, sinkNames, when are mandatory
+ * - `Switch` combinator must have at least one child component
+ * - `Case` combinator must have at least one child component
+ * - `on`, `sinkNames`, `when` are mandatory
  *
  * Case component
- * - settings.when :: *
+ * - `settings.when :: *`
  * An object which will activate the switched-to component whenever the switch source
  * observable returned by the `on` parameter emits that object
  *
  * Contracts :
- * - when is mandatory
+ * - `when` is mandatory
  *
  * @params {SwitchSettings} switchSettings
  * @params {ComponentTree} componentTree
@@ -405,10 +378,14 @@ export function Case(CaseSettings, componentTree) {
 // TODO : when doc and specs is written write carefully the test to test everything
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
-// TODO : change the DOC : contracts - should only have one branch of Case at any given time for now
+// TODO : change the DOC : contracts - we can have a parent component for switch and various cases
 // TODO : pass the incoming value also to the switched component, not just the `when`
 // DOC : give examples of how to use eqFn function to match swath of values instead of one value
 // TODO DOC : switching will only occurs when a matching Case component is found
 // This means in particular if a value has no matching Case, the DOM is not switched to
 // [Parent], but remains the same
-
+// TODO : add a `as` to pass the switchedOn property to the children, BUT BEWARE TELESCOPING
+// with other `as`, so make as mandatory
+// TODO : check that the `as` are mandatory too for router and foreach (router : how do I
+// configure the route passed to children??)
+// TODO : update switch doc and continue with rest of impact from m

@@ -375,21 +375,21 @@ function m(componentDef, _settings, componentTree) {
   // DOC : should be [ParentComponent, []] instead! That can be a source of frequent errors...
   // TODO : so maybe have ALWAYS the same shape, so here [null, []] and [null, [UniqueChild]]??
   // TODO : in any case, all the functions with check at least one child must check it right
-  let makeOwnSinks;
+  let parentComponent;
   let childrenComponents;
 
   // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
   // DOC : [null, [child]] is allowed
   if (isNil(componentTree[1])){
-    makeOwnSinks = always(null);
+    parentComponent = always(null);
     childrenComponents = componentTree;
   }
   else if (isArray(componentTree[1])){
-    makeOwnSinks = defaultTo(always(null), componentTree[0]);
+    parentComponent = defaultTo(always(null), componentTree[0]);
     childrenComponents = componentTree[1];
   }
   else {
-    makeOwnSinks = always(null);
+    parentComponent = always(null);
     childrenComponents = componentTree;
   }
   // NOTE : there is no more branches as we already type-checked prior to here
@@ -440,7 +440,7 @@ function m(componentDef, _settings, componentTree) {
     if (computeSinks) {
       console.groupCollapsed(`${traceInfo} component > computeSinks`)
       reducedSinks = computeSinks(
-        makeOwnSinks, childrenComponents, extendedSources, localSettings
+        parentComponent, childrenComponents, extendedSources, localSettings
       )
       console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
       assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
@@ -452,7 +452,7 @@ function m(componentDef, _settings, componentTree) {
       console.debug(`called with extendedSources : ${keys(extendedSources)}`);
       console.debug(`called with localSettings`, localSettings);
 
-      const ownSinks = makeOwnSinks(extendedSources, localSettings);
+      const ownSinks = parentComponent(extendedSources, localSettings);
 
       console.debug(`${traceInfo} component > makeOwnSinks returns : `, ownSinks);
       console.groupEnd();
@@ -525,10 +525,5 @@ export { m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDO
 //       necessary to add a `currentPath` parameter somewhere which
 //       carries the current path down the tree
 // TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
-// - change the name to parentComponent, or make it the first of the array, or
-// [parent,[children]], whatever is best, but seems better to take it out of first arg so I
-// can then easily curry on the first argument (parent cmponent concern bothers here)
-// - update tests
-// - update components - see if tests are passing
 // - update documentation of m
 //   - actually change the case for m, starting with example

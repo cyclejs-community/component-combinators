@@ -75,9 +75,9 @@ const forEachSpec = {
   checkPreConditions : isValidForEachSettings
 };
 
-export function ForEach(forEachSettings, childrenComponents) {
-  assertContract(hasAtLeastOneChildComponent, [childrenComponents], `ForEach : ForEach combinator must at least have one child component to switch to!`);
+export function ForEach(forEachSettings, componentTree) {
+  assertContract(hasAtLeastOneChildComponent, [componentTree], `ForEach : ForEach combinator must at least have one child component to switch to!`);
   assertContract(isForEachSettings, [null, forEachSettings], `ForEach : ForEach combinator must have 'from' and 'as' property which are strings!`);
 
-  return m(forEachSpec, forEachSettings, childrenComponents)
+  return m(forEachSpec, forEachSettings, componentTree)
 }
