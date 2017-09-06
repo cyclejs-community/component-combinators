@@ -137,6 +137,16 @@ export const App = InjectSources({
 The iteration logic are taken care of with the `ForEach` and the `ListOf` combinators.
 
 # Combinators
+## Syntax
+In general combinators follow a common syntax : 
+
+- `Combinator :: Settings -> ComponentTree -> Component`
+    - `Component :: Sources -> Settings -> Sinks`
+    - `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
+    - `ParentComponent:: Component`
+    - `ChildrenComponents :: Array<Component>`
+
+## Combinator list
 The proposed library has the following combinators :
 
 | Combinator      | Description | 
