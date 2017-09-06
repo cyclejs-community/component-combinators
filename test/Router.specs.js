@@ -36,7 +36,7 @@ import { h } from 'cycle-snabbdom'
 import { runTestScenario } from '../src/runTestScenario'
 import { convertVNodesToHTML, DOM_SINK, format } from '../src/utils'
 import { pipe } from 'ramda'
-import { ROUTE_PARAMS, ROUTE_SOURCE } from "../src/components/Router/properties"
+import { ROUTE_PARAMS } from "../src/components/Router/properties"
 
 const $ = Rx.Observable;
 
@@ -52,6 +52,7 @@ const ANOTHER_NON_DOM_SINK = 'b';
 const A_SOURCE = 'DOM1';
 const ANOTHER_SOURCE = 'DOM2';
 const ROUTE_LOG_SINK = 'ROUTE_LOG';
+const ROUTE_SOURCE = 'route$';
 
 function makeTestHelperComponent(header, sourceName, routeCfg) {
   return function (sources, settings) {
@@ -90,7 +91,7 @@ QUnit.module("Testing Router component", {});
 QUnit.test("non-nested routing - transitions - initial state", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
-  const routerComponent = m({}, { sinkNames: sinkNames }, [
+  const routerComponent = m({}, { sinkNames: sinkNames, routeSource: ROUTE_SOURCE }, [
     OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
@@ -150,7 +151,7 @@ QUnit.test("non-nested routing - transitions no match -> match", function exec_t
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  const routerComponent = m({}, { sinkNames: sinkNames }, [
+  const routerComponent = m({}, { sinkNames: sinkNames, routeSource: ROUTE_SOURCE }, [
     OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
@@ -218,7 +219,7 @@ QUnit.test("non-nested routing - transitions match -> no match, also testing par
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  const routerComponent = m({}, { sinkNames: sinkNames }, [
+  const routerComponent = m({}, { sinkNames: sinkNames, routeSource: ROUTE_SOURCE }, [
     OnRoute({ route: 'group:param' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group:param'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group:param'),
@@ -288,7 +289,7 @@ QUnit.test("non-nested routing - transitions", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  const routerComponent = m({}, { sinkNames: sinkNames }, [
+  const routerComponent = m({}, { sinkNames: sinkNames, routeSource: ROUTE_SOURCE }, [
     OnRoute({ route: 'group' }, [
       makeTestHelperComponent('Component 1', A_SOURCE, 'group'),
       makeTestHelperComponent('Component 2', ANOTHER_SOURCE, 'group'),
@@ -398,7 +399,7 @@ QUnit.test("nested routing depth 1 - transitions", function exec_test(assert) {
   const done = assert.async(3);
   const sinkNames = [DOM_SINK, NON_DOM_SINK, ROUTE_LOG_SINK];
 
-  const routerComponent = m({}, { sinkNames: sinkNames }, [
+  const routerComponent = m({}, { sinkNames: sinkNames, routeSource: ROUTE_SOURCE }, [
     OnRoute({ route: 'master:qs' }, [
       makeTestHelperComponent('Master component', A_SOURCE, 'master'),
       OnRoute({ route: 'detail:qs' }, [
@@ -519,26 +520,26 @@ QUnit.test("nested routing depth 1 - transitions", function exec_test(assert) {
     },
     [ROUTE_LOG_SINK]: {
       outputs: [
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', {qs:'?queryStringDetail1'}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, 'detail?queryStringDetail2/extrasection')[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', {qs:'?queryStringDetail2'}, 'extrasection')[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:'?queryStringMaster'}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', { qs: '?queryStringDetail1' }, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, 'detail?queryStringDetail2/extrasection')[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', { qs: '?queryStringDetail2' }, 'extrasection')[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '?queryStringMaster' }, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 1', A_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 2', ANOTHER_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 1', A_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 2', ANOTHER_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', {qs:'?queryStringDetail1'}, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', { qs: '?queryStringDetail1' }, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 1', A_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 2', ANOTHER_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 1', A_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
         `${getHelperComponentOutput('Component 2', ANOTHER_SOURCE, 'anything', {}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, undefined)[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', {qs:''}, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
-        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', {qs:'?queryStringDetail1'}, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, undefined)[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Master component', A_SOURCE, 'master', { qs: '' }, 'detail?queryStringDetail1')[ROUTE_LOG_SINK]}`,
+        `${getHelperComponentOutput('Detail component', ANOTHER_SOURCE, 'detail:qs', { qs: '?queryStringDetail1' }, undefined)[ROUTE_LOG_SINK]}`,
       ],
       successMessage: `sink ${ROUTE_LOG_SINK} produces the expected values`,
     },

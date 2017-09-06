@@ -6,7 +6,7 @@ import { m } from "../m/m"
 import { defaultTo, isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
-import { ROUTE_CONFIG, ROUTE_PARAMS, ROUTE_SOURCE } from "./properties"
+import { ROUTE_CONFIG, ROUTE_PARAMS } from "./properties"
 
 const $ = Rx.Observable
 
@@ -23,11 +23,7 @@ function hasRouteProperty(sources, settings) {
 }
 
 function hasRouteSourceProperty(sources, settings) {
-  return true &&
-    // if routeSource is not defined, then the default route must be in the sources
-    Boolean(!settings || (!('routeSource' in settings) && ROUTE_SOURCE in sources && isObservable(sources[ROUTE_SOURCE])))
-      // if routeSource is defined then it must be a non-empty string, and be in the sources
-    || Boolean(settings && 'routeSource' in settings
+  return Boolean(settings && 'routeSource' in settings
       && isString(settings.routeSource) && settings.routeSource.length > 0
     && isObservable(sources[settings.routeSource]))
 }
@@ -120,10 +116,10 @@ const isRouteSettings = checkAndGatherErrors([
  * @param {Sources} sources
  * @param {{route: string, sinkNames: Array<string>, trace: string}} settings
  * @param {Array<Component>} childrenComponents
- * @param {function(Sources, Settings)} makeOwnSinks
+ * @param {function(Sources, Settings)} parentComponent
  *
  */
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+function computeSinks(parentComponent, childrenComponents, sources, settings) {
   const trace = 'Router (' + (settings.trace || "") + ")";
   console.groupCollapsed(`${trace} > computeSinks`)
   console.debug(`sources : ${keys(sources)}`)
@@ -139,12 +135,11 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   // This behaviour results in having to handle null cases for sinks (some
   // sinks might be present only on some children components).
   const { sinkNames, routeSource } = settings;
-  const routeSourceName = defaultTo(ROUTE_SOURCE, routeSource)
 
   let cachedSinks = null;
 
-  let route$ = sources[routeSourceName]
-    .tap(console.debug.bind(console, `${trace} : source ${routeSourceName}`))
+  let route$ = sources[routeSource]
+    .tap(console.debug.bind(console, `${trace} : source ${routeSource}`))
 
   let matchedRoute$ = route$.map(match(settings[ROUTE_CONFIG]))
     .tap(x => {
@@ -178,10 +173,10 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
               console.groupEnd();
 
               return {
-                [routeSourceName]: matchedRoute$
+                [routeSource]: matchedRoute$
                   .map(pathR(['match', 'routeRemainder']))
                   .tap(console.debug.bind(console,
-                    `${trace} > changedRouteEvents$ > children wrapper component  > source ${routeSourceName} > routeRemainder (new route$ for children)`))
+                    `${trace} > changedRouteEvents$ > children wrapper component  > source ${routeSource} > routeRemainder (new route$ for children)`))
                   .share(),
               }
             },
@@ -189,7 +184,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
             [ROUTE_PARAMS]: omit(['routeRemainder'], match),
             trace: `${trace} > componentFromChildren`
           },
-          [makeOwnSinks, childrenComponents]);
+          [parentComponent, childrenComponents]);
         cachedSinks = componentFromChildren(sources, settings);
       }
       else {

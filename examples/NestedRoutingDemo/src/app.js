@@ -2,7 +2,6 @@ import { OnRoute } from "../../../src/components/Router/Router"
 import { DOM_SINK, format } from "../../../src/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
-import { ROUTE_SOURCE } from "../../../src/components/Router/properties"
 import { AspirationalPageHeader, Card, CardDetail } from "./AspirationalPage"
 import {
   BLACBIRD_CARD_INFO, BLACK_BIRD_DETAIL_ROUTE, TECHX_CARD_DETAIL_ROUTE, TECHX_CARD_INFO,
@@ -11,6 +10,7 @@ import {
 import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
 
 const $ = Rx.Observable;
+const ROUTE_SOURCE = 'route$';
 
 function injectRouteSource(sources) {
   const route$ = sources.router.observable.pluck('pathname').map(route => {

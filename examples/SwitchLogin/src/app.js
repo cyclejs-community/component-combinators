@@ -11,6 +11,7 @@ const $ = Rx.Observable;
 export const App = Switch({
   on: convertAuthToIsLoggedIn,
   sinkNames: ['auth$', DOM_SINK, 'router'],
+  as : 'switchedOn',
   trace: 'Switch'
 }, [
   Case({ when: IS_NOT_LOGGED_IN, trace: 'LoginPage Case' }, [

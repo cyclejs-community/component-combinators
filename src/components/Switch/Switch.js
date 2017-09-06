@@ -383,10 +383,3 @@ export function Switch(switchSettings, componentTree) {
 export function Case(CaseSettings, componentTree) {
   return m(CaseSpec, CaseSettings, componentTree)
 }
-
-// TODO : when doc and specs is written write carefully the test to test everything
-// - matched passed to children
-// - case when several components are active at the same time (several passing predicates)
-// TODO : check that the `as` are mandatory too for router (router : how do I
-// configure the route passed to children??)
-// TODO : update switch doc and continue with rest of impact from m

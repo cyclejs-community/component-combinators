@@ -54,6 +54,7 @@ export const App = InjectSources({
   ])
 ]);
 
-// TODO : see m.js TODO
 // TODO : think about work around for isolation, components need to pass their click free of
 // concerns
+// TODO : see m.js TODO
+// NTH : Router : route params property name could be configured in settings, to think about
