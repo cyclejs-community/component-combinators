@@ -1,6 +1,6 @@
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, format, hasAtLeastOneChildComponent, isArray,
-  isArrayOf, isString
+  assertContract, checkAndGatherErrors, DOM_SINK, format, hasAtLeastOneChildComponent, isArrayOf,
+  isObservable, isString
 } from "../../utils"
 import { m } from "../m/m"
 import { defaultTo, isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
@@ -23,9 +23,13 @@ function hasRouteProperty(sources, settings) {
 }
 
 function hasRouteSourceProperty(sources, settings) {
-  return Boolean(!settings || !('routeSource' in settings)) ||
-    Boolean(settings && 'routeSource' in settings
-      && isString(settings.routeSource) && settings.routeSource.length > 0)
+  return true &&
+    // if routeSource is not defined, then the default route must be in the sources
+    Boolean(!settings || (!('routeSource' in settings) && ROUTE_SOURCE in sources && isObservable(sources[ROUTE_SOURCE])))
+      // if routeSource is defined then it must be a non-empty string, and be in the sources
+    || Boolean(settings && 'routeSource' in settings
+      && isString(settings.routeSource) && settings.routeSource.length > 0
+    && isObservable(sources[settings.routeSource]))
 }
 
 /**
@@ -74,7 +78,7 @@ function match(routeToMatch) {
 const isRouteSettings = checkAndGatherErrors([
   [hasRouteProperty, `Settings parameter must have a 'route' property which is a non empty string!`],
   [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
-  [hasRouteSourceProperty, `If settings parameter have a 'routeSource' property, then it must be a string!`],
+  [hasRouteSourceProperty, `If settings parameter have a 'routeSource' property, then it must be a string! Otherwise a default value applies. The 'sources' must have a source with that name!`],
 ], `isRouteSettings : fails!`);
 
 /**

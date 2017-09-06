@@ -34,6 +34,7 @@ Creates a router component whose behaviour is parameterized via `RouteSettings`.
 The parametrization is as follows :
 
 - an array of sink names must be passed to indicate which sinks are to be extracted from the children components. Sinks produced by any child component which are not in the sink names array will be ignored. It is not necessary, for any sink name in that array, for a child component to return a sink of that name.
+- the source from which the urls are emitted may be specified with `routeSource` setting property, in which case urls will be read from `sources[routeSource]`. `'route$'` is the default value for `routeSource`
 - the route matching/parameter parsing is specified by a [syntax](https://github.com/cowboy/javascript-route-matcher) akin to a regular expression (termed instead a dynamic expression) :
 ```javascript
 var search = routeMatcher("search/:query/p:page");
@@ -75,6 +76,7 @@ One can refer to the tests to see this in action.
 ### Contracts
 - be careful about end slashing
 - `route :: RouteSpec` should not end by a `/` or start with a `/` (**NOTE** : for now! this is due to how `routeRemainder` is parsed and passed to children...)
+- if `routeSource` is specified, then `sources[routeSource]` must be defined (and be an observable)
 
 
 # Example

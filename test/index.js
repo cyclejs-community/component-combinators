@@ -7,6 +7,6 @@ window.$ = window.jQuery = require('jquery');
 // import './mButton.specs' // DOC case apart : MUST NOT have parent sinks, only children sinks
 // import './runTestScenario.specs'
 import './Switch.specs' // TODO DOC I could have a parent with switch too, try it
-// import './Router.specs' // TODO DOC I could have a parent with router too, try it
+import './Router.specs' // TODO DOC I could have a parent with router too, try it
 // import './ForEach.specs' // TODO DOC I could have a parent with ForEach too, try it
 // import './ListOf.specs'

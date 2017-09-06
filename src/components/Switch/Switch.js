@@ -387,8 +387,6 @@ export function Case(CaseSettings, componentTree) {
 // TODO : when doc and specs is written write carefully the test to test everything
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
-// TODO : add a `as` to pass the switchedOn property to the children, BUT BEWARE TELESCOPING
-// with other `as`, so make as mandatory
-// TODO : check that the `as` are mandatory too for router and foreach (router : how do I
+// TODO : check that the `as` are mandatory too for router (router : how do I
 // configure the route passed to children??)
 // TODO : update switch doc and continue with rest of impact from m
