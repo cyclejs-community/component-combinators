@@ -12,18 +12,17 @@ components and derives a new component, i.e `combine :: Array<Component> -> Comp
 
   The function `m` is a such a combinator, specialized to the domain of reactive systems's user   interface, which abstracts out a limited set of operations/patterns by which a component tree can be composed.
 
-   The speculated benefits are :
+The speculated benefits are :
 
    - linking a bottom-up user interface design with a bottom-up user-interface implementation
    - making the component tree explicit which allows for top-down processing (more on that elsewhere)
 
-TODO : examples to give. `m([m([a]), m([b])])` etc is equivalent to m-fold ([[a,b]]). This means that [[a,b]] is the structure, and `m` is a folding function. There
-could be other interesting folding functions.
-TODO : talk about webcomponents, how this only touches the view part. `m` touches all actions
+**TODO** : having the component tree explicit allows to post-process it or pre-process it as needed. For instance, running the app is akin to performing a monadic tree traversal of the component tree, where action sinks are reduced during traversal, and the DOM tree is monoidally assembled. Other traversal could check syntactic contracts prior to running the app. A pre-processing stage could add aspects (logging, tracing, etc.)
+**TODO** : make the link with webcomponents, which only gives the view and event part. This can be construed as a generalization of webcomponents in so far as it allows to also express the computation of the actions.
 
 In what follows :
 
-- `m` will be interchangeably termed as combinator, component factory, utility function, or helper function.
+- `m` will be interchangeably termed as component combinator, component factory, utility function, or helper function.
 - In the specified domain, components will be understood as `:: Sources -> Settings ->
 Actions`, i.e. functions which :
   - take a `Sources` data structure which contains a way to receive event from event sources
@@ -34,22 +33,23 @@ Actions`, i.e. functions which :
 
 # API
 
-As explained before, we have `parentComponent = combine (childrenComponents)` - (cf. Fig `combine`).
+As explained before, we have `combinedComponent = combine (childrenComponents)` - (cf. Fig `combine`).
 
 ![combine](http://i.imgur.com/C7y9x2A.png).
 
-From the signature of the `combine`, we can deduce that the computation of the actions for the parent component can only involve :
+From the signature of the `combine`, we can deduce that the computation of the actions for the combined component can only involve :
 
 - computations independent from the children `makeOwnSinks:: Sources -> Settings -> Actions`
+	- the signature is naturally that of a component, we will call it in what follows the parent component (`parentComponent`). It is what the `combinedComponent` is in absence of any children.
 
 ![makeOwnSinks](http://i.imgur.com/zKruDeA.png)
 
-- computations dependent from some or all children :
-  - the most general form is `computeSinks :: makeOwnSinks -> Array<Component> -> Sources ->  Settings -> Actions`
+- computations dependent on some or all children :
+  - the most general form is `computeSinks :: parentComponent -> Array<Component> -> Sources ->  Settings -> Actions`
 
   ![computeSinks](http://i.imgur.com/huxKPTJ.png)
 
-  - when `Actions` combine well together (monoidal type), a common pattern is to build the parent actions from the list of both children actions and parent actions through merge. When  the `Sources` data structure only serves to generate children component actions, the general form can be specialized to :
+  - when `Actions` combine well together (monoidal type), a common pattern is to build the combined actions from the list of both children actions and parent actions through merge. When  the `Sources` data structure only serves to generate children component actions, the general form can be specialized to :
   `mergeSinks :: Actions -> Array<Actions> -> Settings -> Actions`
 
   ![mergeSinks - function](http://i.imgur.com/hW97jzn.png)
@@ -73,22 +73,28 @@ Other specification parameters for the combining function are the same for all f
 
  - contract checking
  - sources and settings adjustment
- - children-independent sinks generation
 
-In addition to the combining function specification, the `m` factory also receives settings which parameterize its behavior, and naturally the array of components from which it computes its resulting component.
+In addition to the combining function specification, the `m` factory also receives settings which parameterize its behavior, and naturally the array of components from which it computes its combined component.
 
- In what follows, the array of components will be termed as children component, while the component returned by the `m` factory will be called parent component. We will use `Sinks` as a type synonym for `Actions`, and `Sink` as a type synonym for `ActionStream`. This is to reuse the terminology put in vogue by `cyclejs`.
+ In what follows :
 
-## `m :: CombineGenericSpecs -> Settings -> Array<Component>`
+- the array of components will be termed as component tree,
+- the component tree will enclose a parent component (root), and children components (leaves)
+- the component returned by the `m` factory will be called combined component.
+- We will use `Sinks` as a type synonym for `Actions`, and `Sink` as a type synonym for `ActionStream`. This is to reuse the terminology put in vogue by `cyclejs`.
+
+## `m :: CombineGenericSpecs -> Settings -> ComponentTree`
 ### Types
 - `Component :: Sources -> Settings -> Sinks`
+- `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
+- `ParentComponent:: Component`
+- `ChildrenComponents :: Array<Component>`
 - `CombineGenericSpecs :: Record {`
-  - `makeOwnSinks :: Sources -> Settings -> Sinks`
-  - `computeSinks :: makeOwnSinks -> Array<Component> -> Sources -> Settings -> Sinks`
-  - `makeLocalSources :: Optional < Sources -> Settings -> Sources >`
-  - `makeLocalSettings :: Optional < Settings -> Settings >`
-  - `checkPreConditions :: Optional < Sources -> Settings -> Boolean >`
-  - `checkPostConditions :: Optional < Sinks -> Boolean >`
+  - `  computeSinks :: makeOwnSinks -> Array<Component> -> Sources -> Settings -> Sinks`
+  - `  makeLocalSources :: Optional < Sources -> Settings -> Sources >`
+  - `  makeLocalSettings :: Optional < Settings -> Settings >`
+  - `  checkPreConditions :: Optional < Sources -> Settings -> Boolean >`
+  - `  checkPostConditions :: Optional < Sinks -> Boolean >`
   - `}`
 
 ### Contracts
@@ -99,19 +105,18 @@ The `m`  factory returns a component computed as follows :
 
 1. contracts are checked
   - if one contract fails, an exception is raised
-2. children-independent sinks are generated by calling `makeOwnSinks` (default value is null)
-3. additional sources and settings are generated via `makeLocalSources`, and `makeLocalSettings`
-  - `makeLocalSources` returns the extra sources to **INJECT** sources to the `children components`, which will be added to the sources passed in parameter by the parent component. If not present, no extra sources are added. `makeLocalSources` is called with the sources passed to the parent component and the merged settings
-  - `makeLocalSettings` returns the extra settings to **INJECT** to the settings passed in parameter to the computed parent component.
+2. additional sources and settings are generated via `makeLocalSources`, and `makeLocalSettings`
+  - `makeLocalSources` returns the extra sources to **INJECT** sources to the children and parent components. If not present, no extra sources are added. `makeLocalSources` is called with the sources passed to the combined component and the merged settings
+  - `makeLocalSettings` returns the extra settings to **INJECT** to the settings passed in parameter to the computed combined component.
     - If not present, no extra settings is added.
-    - The local settings are computed from the merge of the computed parent component settings and  the `m` factory settings.
+    - The local settings are computed from the merge of the computed combined component settings and  the `m` factory settings.
     - The local settings added have the lowest priority in case of conflict (cf. section on
     settings prioritization).
-    - The settings passed in parameter to the computed parent component have the maximum priority.
-    - the computed parent component settings have a priority between the two.
-4. the `computeSinks` reducing function computes the parent sinks from the children-independent sinks, merged sources, merged settings, and array of children.
+    - The settings passed in parameter to the combined component have the maximum priority.
+    - the computed combined component settings have a priority between the two.
+3. the `computeSinks` reducing function computes the combined component's sinks from the parent component, children component, merged sources, and merged settings.
 
-## `m :: CombineAllSinksSpecs -> Settings -> Array<Component> -> Component`
+## `m :: CombineAllSinksSpecs -> Settings -> ComponentTree -> Component`
 ### Types
 - `CombineAllSinksSpecs :: Record {`
   - `makeOwnSinks :: Sources -> Settings -> Sinks`
@@ -132,7 +137,7 @@ The `m`  factory returns a component computed as follows :
 4. Sinks are computed for each child component from the merged sources and merged settings.
 5. Those sinks are later reduced by `mergeSinks` into the parent component sinks.
 
-## `m :: CombinePerSinkSpecs -> Settings -> Array<Component> -> Component`
+## `m :: CombinePerSinkSpecs -> Settings -> ComponentTree -> Component`
 ### Types
 - `Sinks :: HashMap<SinkName, Sink>`
 - `Sink :: Stream <*>`
@@ -155,29 +160,29 @@ The `m`  factory returns a component computed as follows :
 1-3. same as in the general signature
 4. Sinks are computed for each child component from the merged sources, and merged settings.
 5. For each sink (uniquely identified by `sinkName::SinkName`) :
-  - if there is a merge function defined in `mergeSinks` for that `sinkName`, that function is used to compute the resulting parent component sink from the children-independent sink, the children components' sinks, and the merged settings.
+  - if there is a merge function defined in `mergeSinks` for that `sinkName`, that function is used to compute the resulting combined component sink from the parent's sink, the children components' sinks, and the merged settings.
   - If not, a default merge function is used :
-    - Default DOM merge function will merge the `VTree` from the children components INSIDE the `Vtree`
-    from the children-independent DOM sink
-      - if there is DOM sink, it return `null`
-      - if there is no children-independent DOM sink, then it returns the children VTrees wrapped in a `div` VNode
-      - if there is a children-independent DOM sink, and there is no children DOM sinks, then it
-      returns the children-independent DOM sink
-      - if there is a children-independent DOM sink, and there are children DOM sinks, then it returns a VTree in which the children DOM sinks are children of the children-independent
-      DOM VNode and appended to any existing children
-    - Default non-DOM merge function will merge the children-independent sink together with the children sinks via simple stream merge (i.e. `Rx.Observable.merge`)
+    - Default DOM merge function will merge the `VTree` from the children components **INSIDE** the `Vtree` from the parent DOM sink[^2]
+      - if there is no DOM sink at all, it returns `null`
+      - if there is no parent DOM sink, then it returns the children VTrees wrapped in a `div` VNode
+      - if there is a parent DOM sink, and there is no children DOM sinks, then it       returns the parent DOM sink
+      - if there is a parent DOM sink, and there are children DOM sinks, then it returns a VTree in which the children DOM vNodes are children of the parent's vNode
+      children vNodes are **appended** to any already existing children of the parent vNode
+    - Default non-DOM merge function will merge the parent's sink together with the children sinks via simple stream merge (i.e. `Rx.Observable.merge`)
+
+[^2]: that is about the main justification of while it is termed parent component : independent of the children and children go inside of it
 
 # Examples
 In this section, we are going to show miscellaneous examples of use of componentization with the`m` factory.
 Most of those examples will be inspired from already-existent UI component library, such as`Semantic UI`.
 
 ## Event factory component
-`Events = m(EventFactorySpec, EventFactorySettings, childrenComponents)`
-`Events = mEventFactory(EventFactorySettings, childrenComponents)`
+- `Events = m(EventFactorySpec, EventFactorySettings, componentTree)`, or by currying `m` into `mEventFactory`
+- `Events = mEventFactory(EventFactorySettings, componentTree)`
 
 This example makes use of :
 - `checkPreConditions`
-- `makeOwnSinks`
+- a component tree with parent and children
 - `mergeSinks`
 - utility function `defaultMergeSinkFn`
 
@@ -186,6 +191,7 @@ This component allows to create events from event sources. For ease of reasoning
 maintainability, the created events should be coupled to the DOM representation generated by the children component. There is however no enforcement of such property. The created events will be mixed with the sinks returned from the children components.
 
 Contracts:
+
 - an event sink generated from event sources MUST NOT conflict with a sink with the same key from the children component
 - there MUST be an `events` property in the settings object. The corresponding object MAY be empty (event factory created no events).
 
@@ -197,8 +203,7 @@ Contracts:
   - `}`
 - `}`
 
-Note that all events generated from the DOM remove the default DOM side effect with
-`preventDefault`.
+Note that all events generated from the DOM remove the default DOM side effect with `preventDefault`.
 
 #### `events.DOM` property
 `events.DOM` is a list of selectors that MAY be later used in the children components, for instance to uniquely identify the target of an event. This allow to parameterize the coupling between the parent and the children components, i.e. between the events and the event targets.
@@ -239,8 +244,7 @@ For instance :
 The resulting stream of events is passed through the sink `eventName`.
 
 ### Source code
-TODO : implement, include a link to the code on github, and excerpts from it with `...` for low relevant part of the code, maybe explain a bit or better do that in the source code in fact.
-Include a link to the tests
+cf. repo
 
 ## Button component
 `Button = m(ButtonComponentSpec, ButtonComponentSettings, childrenComponents)`
@@ -276,87 +280,88 @@ The button component is a `<div>` that will behave like a button, according to t
   - listenTo : event list such as click, hover, etc.
 
 ### Source code
-TODO : implement, include a link to the code on github, and excerpts from it with `...` for low relevant part of the code. That means include ButtonComponentSpec as comments in the source code
+Cf. repo
 
-We hence have :
-  - `makeOwnSinks` which generates `<div class = 'ui button ...'> </div>`
-    - class list will depend on settings
-  - `childrenSinks` merged DOM which correspond to `Content` in
-  `<div class = 'ui button ...'> Content </div>`
-    - that is the default DOM merge
-    - we keep also the non-DOM sinks returned by the children
-    - content MAY be empty
+```javascript
+export function mButton(mButtonSettings, childrenComponents) {
+  // returns a DOM tree representation with the specifications passed through settings
+  // and enclosing the DOM trees returned by the children components
+  // Other children sinks are default-merged
 
-#### demo
-**TODO : MDIV OR LIFT**
+  return m(mButtonSpec, mButtonSettings, [makeButtonSinks, childrenComponents])
+}
 
-Button = curry(m)(ButtonSpecs)
-Show = curry(m)({}) // simplest component to apply default sink merges
-ShowContent = curry(mDiv)({class : 'visible content'}) // mdiv = lifting div(...) into a `m` component, OR
-ShowContent = lift(div({class : 'visible content'}) // CURRIED, FIND A WAY TO WRITE IT
-ShowContent = curry(div)({class : 'visible content'})
-component, OR
-HideContent = curry(mDiv)({class : 'hidden content'}) // polymorphic, last arg can be text or [Comp]
+function makeButtonSinks(sources, settings) {
+  let attrs = {};
+  const buttonClasses = ['ui', 'button'];
+  const focusable = true;
+  const {
+    classes, listenOn, emphasis, basic, animated, label, icon, visualState, social, size, shape, layout, listenTo
+  } = settings;
 
-UI = [
-  mButton({animated:true}, [
-    mLift(ShowContent('Next')),
-    mLift(HideContent([
-      icon({class : 'right arrow icon'})
-    ]))
-  ]),
-  mButton({animated: 'vertical'}, [
-    HideContent('Shop'),
-    ShowContent ([
-      icon({class : 'shop icon'})
-    ])
-  ]),
-  mButton({animated: 'fade'}, [
-    ShowContent ('Sign-up for a Pro account'),
-    HideContent ([
-      mText('$12.99 a month') // TODO : how to indicate text??
-    ])
-  ]),
-]
+  if (classes) {
+    Array.prototype.push.apply(buttonClasses, classes);
+  }
 
-demo - Show({}, UI)
+  if (focusable) {
+    attrs.tabindex = '0';
+  }
 
-This should produce the following HTML code :
+  if (emphasis) {
+    buttonClasses.push(emphasis);
+  }
 
-```html
-<div class="ui animated button" tabindex="0">
-  <div class="visible content">Next</div>
-  <div class="hidden content">
-    <i class="right arrow icon"></i>
-  </div>
-</div>
-<div class="ui vertical animated button" tabindex="0">
-  <div class="hidden content">Shop</div>
-  <div class="visible content">
-    <i class="shop icon"></i>
-  </div>
-</div>
-<div class="ui animated fade button" tabindex="0">
-  <div class="visible content">Sign-up for a Pro account</div>
-  <div class="hidden content">
-    $12.99 a month
-  </div>
-</div>
+[...]
+
+  const classObject = buttonClasses
+    ? reduce((acc, className) => {
+      acc[className] = true
+      return acc
+    }, {}, buttonClasses)
+    : null;
+
+  let sinks = {};
+  if (listenTo && listenOn) {
+    sinks = reduce((acc, eventName) => {
+      acc[eventName] = sources.DOM.select(listenOn).events(eventName);
+
+      return acc
+    }, {}, listenTo)
+  }
+  sinks.DOM = $.of(
+    div({
+      class: classObject,
+      attrs: attrs
+    })
+  )
+
+  return sinks
+}
+
 ```
 
-## Button group component
-  - or : 'true, false'
-  - layout : 'attached, top attached, bottom attached, left attached, right attached, vertical. '
-  - icon : 'true, false'
-  - equalWidth : 'three, five'
-  - labeled : 'true, false' - only in conjunction with icon? i.e. labeled icon
-  - size : cf. property for button component, here applies to the whole group
-  - emphasis : cf. property for button component, here applies to the whole group
-  - listenTo : event list such as click, hover, etc.
-
+We hence have :
+  - `makeButtonSinks` which generates `<div class = 'ui button ...'> </div>`
+    - class list will depend on settings
+  - children component's DOM sinks will correspond to `Content` in
+  `<div class = 'ui button ...'> Content </div>`
+    - that is the default DOM merge
+    - we keep also the non-DOM sinks returned by the children (default non-DOM sink merge)
+    - content MAY be empty
 
 # Possible improvements
 - should make `localSettings`, settings which are only applied locally, i.e. for `makeOwnSinks`, and not passed down to the children. That would allow to customize those own sinks as a function of the settings from construction time (inherited from parent and ancestors) at runtime. Settings  for now are inherited as `parent <- grand parent <- ... patriarch`.
+- TODO : design better trace information
+    // for instance outer trace could be concatenated to inner trace to trace also the
+    // component hierarchy
+- TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
+    // - change the name to parentComponent, or make it the first of the array, or
+    // [parent,[children]], whatever is best, but seems better to take it out of first arg so I
+    // can then easily curry on the first argument (parent cmponent concern bothers here)
+- TODO : also add slot mechanism to default DOM merge to include child component at given
+    // position of parent
+    //       necessary to add a `currentPath` parameter somewhere which
+    //       carries the current path down the tree
 
 Bibliography
 Brooks, Fred P. (1986). "No Silver Bullet — Essence and Accident in Software Engineering". Proceedings of the IFIP Tenth World Computing Conference: 1069–1076
