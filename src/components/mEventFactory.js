@@ -117,8 +117,6 @@ const eventFactorySpec = {
   // We check that the settings have the appropriate shape
   checkPreConditions: checkEventFactoryPreConditions,
   checkPostConditions: null,
-  // Create the event sinks from the specifications
-  makeOwnSinks: makeEventFactorySinks,
   // We merge children sinks with the by-default merge functions
   mergeSinks: mergeEventFactorySinksWithChildrenSinks
 }
@@ -133,5 +131,5 @@ export function mEventFactory(eventFactorySettings, componentTree) {
   // call time to be merged with the settings passed at creation time. This opens the
   // possibility to have a factory with some events, and adding soem additional events at call
   // time via settings
-  return m(eventFactorySpec, eventFactorySettings, componentTree)
+  return m(eventFactorySpec, eventFactorySettings, [makeEventFactorySinks, componentTree])
 }
