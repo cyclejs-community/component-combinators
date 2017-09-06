@@ -284,3 +284,7 @@ export function OnRoute(routeSettings, componentTree) {
 
   return m(RouterSpec, routeSettings, componentTree)
 }
+
+// NOTE ADR: 'routeSource' and not 'from' to avoid telescoping with other combinators which use
+// 'from' as well. Routing is always at the top level, so the risk of collusion is sort of
+// maximized
