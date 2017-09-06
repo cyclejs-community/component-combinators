@@ -72,6 +72,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
 
   const switchComponent = Switch({
     on: 'sweatch$',
+    as : 'switched',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [CaseContainer, [
     Case({ when: false }, [childComponent3]),
@@ -165,7 +166,8 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
 
 });
 
-QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case container component", function exec_test(assert) {
+QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case container component" +
+  " - testing incoming switched value", function exec_test(assert) {
   const done = assert.async(4);
 
   const childComponent1 = function childComponent1(sources, settings) {
@@ -194,7 +196,7 @@ QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case cont
   };
   const childComponent4 = function childComponent4(sources, settings) {
     return {
-      c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
+      c: sources.userAction$.map(x => `Component4 - user action : ${x} | switched on : ${settings.switchedOn}`)
     }
   };
   const CaseContainer = function CaseContainer(sources, settings) {
@@ -205,6 +207,7 @@ QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case cont
 
   const switchComponent = Switch({
     on: 'sweatch$',
+    as : 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [CaseContainer, [
     Case({ when: false }, [childComponent3]),
@@ -262,8 +265,8 @@ QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case cont
     },
     c: {
       outputs: [
-        "Component4 - user action : select",
-        "Component4 - user action : select"
+        "Component4 - user action : select | switched on : false",
+        "Component4 - user action : select | switched on : false"
       ],
       successMessage: 'sink c produces the expected values',
     },
@@ -320,6 +323,7 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - with case cont
 
   const switchComponent = Switch({
     on: 'sweatch$',
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [CaseContainer, [
     Case({ when: true }, [childComponent3]),
@@ -458,6 +462,7 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - without case c
 
   const switchComponent = Switch({
     on: 'sweatch$',
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: true }, [childComponent3]),
@@ -590,6 +595,7 @@ QUnit.test("main cases - 0 match - 3 cases - switch on source", function exec_te
 
   const switchComponent = Switch({
     on: 'sweatch$',
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: '' }, [childComponent3]),
@@ -688,6 +694,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on condition", function exec
 
   const switchComponent = Switch({
     on: (sources, settings) => sources.sweatch$,
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: false }, [childComponent3]),
@@ -817,6 +824,7 @@ QUnit.test("main cases - 0 match - 3 cases - switch on condition", function exec
 
   const switchComponent = Switch({
     on: (sources, settings) => sources.sweatch$,
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [
     Case({ when: '' }, [childComponent3]),

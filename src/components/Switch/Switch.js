@@ -63,6 +63,10 @@ function hasOnProperty(sources, settings) {
   return Boolean(settings && settings.on)
 }
 
+function hasAsProperty(sources, settings) {
+  return Boolean(settings && settings.as && isString(settings.as))
+}
+
 const isCaseSettings = checkAndGatherErrors([
   [hasWhenProperty, `Settings parameter must have a 'when' property!`],
   [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
@@ -76,7 +80,7 @@ const isSwitchSettings = checkAndGatherErrors([
 
 //////////////
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  let { eqFn, when, sinkNames, on } = settings;
+  let { eqFn, when, sinkNames, on, as } = settings;
   let cachedSinks = null;
 
   const overload = unfoldObjOverload(on, [
@@ -109,7 +113,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
         const mergedChildrenComponentsSinks = m(
           {},
           // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well.
-          { switchedOn: incoming, trace: 'executing case children' },
+          { [as]: incoming, trace: 'executing case children' },
           [makeOwnSinks, childrenComponents])
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
@@ -354,6 +358,7 @@ export const CaseSpec = {
 export function Switch(switchSettings, componentTree) {
   assertContract(hasAtLeastOneChildComponent, [componentTree], `Switch : switch combinator must at least have one child component to switch to!`);
   assertContract(hasOnProperty, [null, switchSettings], `Switch : switch combinator must have a 'on' property !`);
+  assertContract(hasAsProperty, [null, switchSettings], `Switch : switch combinator must have a 'as' property !`);
   let _SwitchSpec = SwitchSpec;
   let _switchSettings = switchSettings;
 
@@ -382,10 +387,6 @@ export function Case(CaseSettings, componentTree) {
 // TODO : when doc and specs is written write carefully the test to test everything
 // - matched passed to children
 // - case when several components are active at the same time (several passing predicates)
-// TODO : change the DOC : contracts - we can have a parent component for switch and various cases
-// TODO DOC : switching will only occurs when a matching Case component is found
-// This means in particular if a value has no matching Case, the DOM is not switched to
-// [Parent], but remains the same
 // TODO : add a `as` to pass the switchedOn property to the children, BUT BEWARE TELESCOPING
 // with other `as`, so make as mandatory
 // TODO : check that the `as` are mandatory too for router and foreach (router : how do I
