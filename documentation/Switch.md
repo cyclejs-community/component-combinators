@@ -27,6 +27,8 @@ The behaviour is as follows :
 
 - for every incoming value of the switch source, all predicates found in children `CaseComponent`s are executed. 
 - The components associated to the fulfilled predicates are switched on
+	- they receive the triggering value of the switch source as settings, in the property configured in `as`
+	- **note that the parent component does not receive such value as it is upper in the hierarchy**
 - The other components are switched off
 - If there is a incoming value on the switch source such that there is no matching case, then all components are deactivated
 	- the DOM for the parent component will still be activated, even as there will be no children DOM content
@@ -39,6 +41,7 @@ The behaviour is as follows :
 - `SwitchSettings :: Record {`
 - `  sinkNames :: [String]`  **Mandatory**
 - `  on :: SwitchOnCondition | SwitchOnSource` **Mandatory**
+- `  as :: String` **Mandatory**
 - `  eqFn :: T -> T -> Boolean` **Optional**
 - `}`
 - `SwitchOnCondition :: Sources -> Settings -> Source`
