@@ -90,7 +90,7 @@ In addition to the combining function specification, the `m` factory also receiv
 - `ParentComponent:: Component`
 - `ChildrenComponents :: Array<Component>`
 - `CombineGenericSpecs :: Record {`
-  - `  computeSinks :: makeOwnSinks -> Array<Component> -> Sources -> Settings -> Sinks`
+  - `  computeSinks :: ParentComponent -> Array<Component> -> Sources -> Settings -> Sinks`
   - `  makeLocalSources :: Optional < Sources -> Settings -> Sources >`
   - `  makeLocalSettings :: Optional < Settings -> Settings >`
   - `  checkPreConditions :: Optional < Sources -> Settings -> Boolean >`
@@ -106,7 +106,11 @@ The `m`  factory returns a component computed as follows :
 1. contracts are checked
   - if one contract fails, an exception is raised
 2. additional sources and settings are generated via `makeLocalSources`, and `makeLocalSettings`
-  - `makeLocalSources` returns the extra sources to **INJECT** sources to the children and parent components. If not present, no extra sources are added. `makeLocalSources` is called with the sources passed to the combined component and the merged settings
+  - `makeLocalSources` returns the extra sources to **INJECT** sources to the children and parent components.
+	  - If not present, no extra sources are added.
+	  - `makeLocalSources` is called with the sources passed to the combined component and the fully merged settings (i.e. include also settings from `makeLocalSettings`)
+		  -  Note that so far there has been no cases where an extra source might depend on settings. We expect the local sources factory to be independent of any settings but keep the door open, should that case occur.
+	  -  In case of conflict, the local sources factory has the lowest precedence vs. the factory sources
   - `makeLocalSettings` returns the extra settings to **INJECT** to the settings passed in parameter to the computed combined component.
     - If not present, no extra settings is added.
     - The local settings are computed from the merge of the computed combined component settings and  the `m` factory settings.
@@ -120,7 +124,7 @@ The `m`  factory returns a component computed as follows :
 ### Types
 - `CombineAllSinksSpecs :: Record {`
   - `makeOwnSinks :: Sources -> Settings -> Sinks`
-  - `mergeSinks :: makeOwnSinks -> Array<Sinks> -> Settings -> Sinks`
+  - `mergeSinks :: parentComponent -> Array<Sinks> -> Settings -> Sinks`
   - `makeLocalSources :: Optional < Sources -> Settings -> Sources >`
   - `makeLocalSettings :: Optional < Settings -> Settings >`
   - `checkPreConditions :: Optional < Sources -> Settings -> Boolean >`
@@ -349,15 +353,15 @@ We hence have :
     - we keep also the non-DOM sinks returned by the children (default non-DOM sink merge)
     - content MAY be empty
 
-# Possible improvements
-- should make `localSettings`, settings which are only applied locally, i.e. for `makeOwnSinks`, and not passed down to the children. That would allow to customize those own sinks as a function of the settings from construction time (inherited from parent and ancestors) at runtime. Settings  for now are inherited as `parent <- grand parent <- ... patriarch`.
+#Tips
+- when writing the component tree, a common error is to use `[parentComponent]` to signify a parent component without children. This will actually be parsed as one unique child component (i.e. as `[uniqueChild]`). The correct syntax would be `[parentComponent, []]`.
+
+# Roadmap
+- review settings inheritance
+	- ? should make `localSettings`, settings which are only applied locally, i.e. for `parentComponent`, and not passed down to the children. That would allow to customize those parent sinks as a function of the settings from construction time (inherited from parent and ancestors) at runtime. Settings  for now are inherited as `parent <- grand parent <- ... patriarch`.
 - TODO : design better trace information
     // for instance outer trace could be concatenated to inner trace to trace also the
     // component hierarchy
-- TODO : rethink maybe design of makeOwnSinks : that is the parent component!!
-    // - change the name to parentComponent, or make it the first of the array, or
-    // [parent,[children]], whatever is best, but seems better to take it out of first arg so I
-    // can then easily curry on the first argument (parent cmponent concern bothers here)
 - TODO : also add slot mechanism to default DOM merge to include child component at given
     // position of parent
     //       necessary to add a `currentPath` parameter somewhere which

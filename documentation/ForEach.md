@@ -8,7 +8,7 @@ Note that for each incoming value of the source, the component is switched off a
 
 # API
 
-## ForEach :: ForEachSettings -> [Component] -> ForEachComponent
+## ForEach :: ForEachSettings -> ComponentTree -> ForEachComponent
 
 ### Description
 Creates a `ForEach` component whose behaviour is parameterized via `ForEachSettings`. Children components are the components to be mapped to incoming values on the `ForEach` source.
@@ -27,6 +27,9 @@ The behaviour is as follows :
 
 ### Types
 - `ForEachComponent :: Component`
+- `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
+- `ParentComponent :: Component`
+- `ChildrenComponents :: Array<CaseComponent>`
 - `ForEachSettings :: Record {`
 - `  sinkNames :: [SinkName]`  **Mandatory**
 - `  from :: SourceName` **Mandatory**

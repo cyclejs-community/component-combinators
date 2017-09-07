@@ -11,7 +11,7 @@ Note that this makes less sense when the isolated concerns are not independent. 
 
 # API
 
-## Switch :: SwitchSettings -> [CaseComponent] -> SwitchComponent
+## Switch :: SwitchSettings -> ComponentTree -> SwitchComponent
 
 ### Description
 Creates a switch component whose behaviour is parameterized via `SwitchSettings`. Children components are the components to be mapped to incoming values on the switch source.
@@ -37,6 +37,9 @@ The behaviour is as follows :
 
 ### Types
 - `SwitchComponent :: Component`
+- `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
+- `ParentComponent :: Component`
+- `ChildrenComponents :: Array<CaseComponent>`
 -  `CaseComponent :: Component`
 - `SwitchSettings :: Record {`
 - `  sinkNames :: [String]`  **Mandatory**
@@ -53,7 +56,7 @@ The behaviour is as follows :
 - if the switch source is specified by name, then that source name MUST be found as a property of the `sources` parameter
 
 
-## Case:: CaseSettings -> [Component] -> CaseComponent
+## Case:: CaseSettings -> ComponentTree -> CaseComponent
 ### Description
 The `Case` combinator returns a case component and is to be used solely in combination with the Switch combinator. 
 

@@ -15,3 +15,4 @@
 // TODO : FSM : a bunch of them pending
 // TODO : also review the structure of the repository (m_helpers? history_driver? where to put
 // runTestScenario?)
+// TODO DOC: update doc (types componentTree) for Switch, Route, ForEach, List

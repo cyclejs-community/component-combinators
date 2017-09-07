@@ -16,7 +16,7 @@ function isValidForEachSettings(sources, settings) {
     && 'sinkNames' in settings
 }
 
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+function computeSinks(parentComponent, childrenComponents, sources, settings) {
   let { from, as, sinkNames } = settings;
   let cachedSinks = null;
 
@@ -30,7 +30,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
       const mergedChildrenComponentsSinks = m(
         {},
         { [as]: incomingValue, trace: 'executing ForEach children' },
-        [makeOwnSinks, childrenComponents]);
+        [parentComponent, childrenComponents]);
 
       cachedSinks = mergedChildrenComponentsSinks(sources, settings);
     })
