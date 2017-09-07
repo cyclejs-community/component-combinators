@@ -1,2 +1,3 @@
-npm run build-node-test
-npm run test
+# Running tests
+- npm run build-node-test
+- npm run test

@@ -163,6 +163,42 @@ The proposed library has the following combinators :
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
 # Roadmap
+- test the repo, config, replay all demos etc.
+- clean stuff out (m_helpers)
 - write a better README
 	- links with docs for each combinator
 	- sell the FSM better, it is life changing
+
+# Installation
+## Running tests
+- `npm install`
+- `npm run node-build-test`
+- `npm run test`
+- then open with a local webserver the `index.html` in `test` directory 
+
+## Demos
+### volunteerApplication
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory 
+
+### Switch
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/SwitchLogin` directory
+
+### OnRoute
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/NestedRoutingDemo` directory
+
+### ForEach and List
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
+
+### 
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
+
