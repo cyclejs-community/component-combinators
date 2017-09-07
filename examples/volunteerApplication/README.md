@@ -1,1 +1,5 @@
-Example extracted from a work assignment illustrating the use of the FSM component to implement sequence of screens involving complex control flow in a SOLID way. 
+# Motivation
+This is a demonstration illustrating the use of a FSM combinator component to display sequence of screens according to a declarative control flow logic.
+
+# Component documentation
+[Extended Finite State Machine](../../documentation/EFSM.md)
