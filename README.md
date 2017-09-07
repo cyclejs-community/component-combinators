@@ -164,6 +164,7 @@ Documentation, demo and tests for each combinator can be found in its respective
 
 # Roadmap
 - test the repo, config, replay all demos etc.
+- clean stuff out (m_helpers)
 - write a better README
 	- links with docs for each combinator
 	- sell the FSM better, it is life changing
