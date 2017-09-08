@@ -59,11 +59,12 @@ import {
 } from "ramda"
 import {
   assertContract, assertSignature, format, isArray, isArrayOf, isFunction, isNullableObject,
-  isOptSinks,
-  isString, isUndefined, makeErrorMessage, removeNullsFromArray
+  isOptSinks, isString, isUndefined, makeErrorMessage, removeNullsFromArray
 } from "./utils"
 import * as Rx from "rx"
 
+// NOTE : using $.of, just, amb, empty, from, tap, delay, concat, sample, merge, subscribe,
+// flatMap, map, last, isEmpty ; also Rx.Subject()
 Rx.config.longStackSupport = true;
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map);

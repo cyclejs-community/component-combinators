@@ -151,23 +151,56 @@ The proposed library has the following combinators :
 
 | Combinator      | Description | 
 | --------- | :-----|
-| Switch  | Activate component(s) depending on the incoming value of a source| 
-| ForEach     |   Activate component for each incoming value of a source| 
-| ListOf      |    Activate a list of a given component based on an array of items |
-| OnRoute      |    Activate a component based on the route changes. Allows nested routing. |
-| InjectSources      |    Activate a component which will be injected extra sources |
-| InjectSourcesAndSettings      |    Activate a component which will receive extra sources and extra settings |
-| FSM      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
-| m      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
+| [FSM](./documentation/EFSM.md)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
+| [OnRoute](./documentation/Router.md)      |    Activate a component based on the route changes. Allows nested routing. |
+| [Switch](./documentation/Switch.md)  | Activate component(s) depending on the incoming value of a source| 
+| [ForEach](./documentation/ForEach.md)     |   Activate component for each incoming value of a source| 
+| [ListOf](./documentation/ListOf.md)      |    Activate a list of a given component based on an array of items |
+| [InjectSources](./documentation/InjectSources.md)      |    Activate a component which will be injected extra sources |
+| [InjectSourcesAndSettings](./documentation/InjectSourcesAndSettings.md)      |    Activate a component which will receive extra sources and extra settings |
+| [m](./documentation/m.md)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
 # Roadmap
-- test the repo, config, replay all demos etc.
-- clean stuff out (m_helpers)
+Please note that library is still wildly under development :
+
+- APIs ~~might~~ will go through breaking changes
+- you might encounter problems in production
+- performance has not been investigated as of yet
+
+The current roadmap stands as :
+
+- [x] Testing library `runTestScenario`
+- [x] Generic combinator `m`
+- [x] Routing combinator `onRoute`
+- [x] Switch combinator 
+  - [x] `Switch`
+  - [x] `Case`
+- [x] State machine combinator `FSM`
+- [x] ForEach combinator `ForEach`
+- [x] List combinator `ListOf`
+- [x] Injection combinator 
+  - [x] `InjectSources`
+  - [x] `InjectSourcesAndSettings`
+- [ ] Event combinator `WithEvents`
+- [ ] Action combinator `MakeActions`
+- [ ] vNode combinator `VT`
+- [x] Query driver 
+- [x] Action driver 
+
+
+Other things to think about : 
+
+- demo site
+  - all in demo
+  - 
+- distribution
+  - monorepo?
+  - individual combinator packages?
 - write a better README
-	- links with docs for each combinator
 	- sell the FSM better, it is life changing
+- do a live dmeo github pages site : https://pages.github.com/  
 
 # Installation
 ## Running tests
@@ -177,7 +210,7 @@ Documentation, demo and tests for each combinator can be found in its respective
 - then open with a local webserver the `index.html` in `test` directory 
 
 ## Demos
-### volunteerApplication
+### State Machine
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory 
