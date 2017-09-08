@@ -1,4 +1,4 @@
-# The case for a component combinator library
+# The case for a component combinator library ![](https://img.shields.io/badge/license-MIT-blue.svg)
 This component combinator library comes from some pain points I experimented while dealing with implementing interactive applications, which make heavy use of streams and try to use componentization :
 
 - the stream plumbery between components is hard to read and make sense of

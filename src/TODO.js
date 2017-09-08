@@ -15,7 +15,6 @@
 // TODO : FSM : a bunch of them pending
 // TODO : also review the structure of the repository (m_helpers? history_driver? where to put
 // runTestScenario?)
-// TODO DOC: update doc (types componentTree) for Switch, Route, ForEach, List
 // TODO : structure src so I can make a release of the library of components
 // TODO : run the router only with cycle history
 // TODO : get all working with latest version of snabdomm, and cycle-run etc.
