@@ -15,6 +15,8 @@
 // TODO : FSM : a bunch of them pending
 // TODO : also review the structure of the repository (m_helpers? history_driver? where to put
 // runTestScenario?)
-// TODO : structure src so I can make a release of the library of components
+// TODO : study why lib/rxcc.min.js is so big ? can it be be build without rx? understand tree
+// shaking and builds...
 // TODO : run the router only with cycle history
 // TODO : get all working with latest version of snabdomm, and cycle-run etc.
+// TODO DOC: update doc (types componentTree) for Switch, Route, ForEach, List
