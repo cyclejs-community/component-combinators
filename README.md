@@ -185,6 +185,7 @@ The current roadmap stands as :
   - [x] `InjectSourcesAndSettings`
 - [ ] Event combinator `WithEvents`
 - [ ] Action combinator `MakeActions`
+- [ ] Tabbed component combinator `OneOf`
 - [ ] vNode combinator `VT`
 - [x] Query driver 
 - [x] Action driver 

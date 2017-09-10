@@ -20,3 +20,5 @@
 // TODO : run the router only with cycle history
 // TODO : get all working with latest version of snabdomm, and cycle-run etc.
 // TODO DOC: update doc (types componentTree) for Switch, Route, ForEach, List
+// TODO : tabbed component? + demo?
+// TODO : remove most runTestScenario, see how to publish it separately (...monorepo...)
