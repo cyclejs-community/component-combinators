@@ -22,3 +22,5 @@
 // TODO DOC: update doc (types componentTree) for Switch, Route, ForEach, List
 // TODO : tabbed component? + demo?
 // TODO : remove most runTestScenario, see how to publish it separately (...monorepo...)
+// TODO : for all components, decide if I pass the settings of the combinator downstream!!
+// - for instance, sinkNames is good to pass downstream, but slot would not be
