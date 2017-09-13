@@ -69,7 +69,7 @@ One can refer to the tests to see this in action.
 - `RouteSettings :: Record {`
 - `  sinkNames :: [String]`  **Mandatory**
 - `  route :: RouteSpec` **Mandatory**
-- `  routeSource :: String` **Optional**
+- `  routeSource :: String` **Mandatory**
 - `}`
 - `RouteSpec :: String` [syntax](https://github.com/cowboy/javascript-route-matcher)
 

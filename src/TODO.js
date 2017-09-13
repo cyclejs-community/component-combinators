@@ -24,3 +24,6 @@
 // TODO : remove most runTestScenario, see how to publish it separately (...monorepo...)
 // TODO : for all components, decide if I pass the settings of the combinator downstream!!
 // - for instance, sinkNames is good to pass downstream, but slot would not be
+// TODO : change InjectSourcesAndSettings so that factory returns both sources and settings so
+// one function call factory(sources, settings) -> {sources : {sources hash}, settings: new
+// settings}
