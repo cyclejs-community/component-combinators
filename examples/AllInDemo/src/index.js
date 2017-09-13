@@ -14,10 +14,10 @@ import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver/index';
 // Fixtures
-import { loadTestData } from '../fixtures';
+import { INITIAL_DATA } from "../fixtures"
 // utils
 import { DOM_SINK } from "../../../src/utils"
-import { merge } from "ramda"
+import { merge, keys, map,flatten } from "ramda"
 
 const $ = Rx.Observable;
 const modules = defaultModules;
@@ -57,13 +57,24 @@ try {
 const fbRoot = firebase.database().ref()
 const repository = fbRoot
 
-localForage.keys()
-  .then(keys => Promise.all(keys.map(key => {
-      return localForage.getItem(key).then(value => ({ [key]: value }))
+// Initialize database if empty
+fbRoot.once('value')
+  .then(dataSnapshot => {
+    if (keys(dataSnapshot.val()).length === 0){
+      console.log('Firebase database not initialized... Initializing it!')
+      return Promise.all(flatten(map(entity => { // for instance, projects
+        const entityRef =fbRoot.child(entity);
+        return INITIAL_DATA[entity].map(record => {// set in database
+          entityRef.push().set(record);
+        })
+      }, keys(INITIAL_DATA))))
     }
-  )))
-  .then((initLoginState) => {
-
+    else {
+      console.log('Firebase database already initialized!')
+      return Promise.resolve()
+    }
+  })
+  .then(() => {
     const { sources, sinks } = run(App, {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
       document: documentDriver,

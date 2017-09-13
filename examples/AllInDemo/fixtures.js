@@ -2,8 +2,9 @@ import Moment from 'moment';
 
 const now = Moment(new Date());
 
-export const INITIAL_DATA= [
-  {
+export const INITIAL_DATA = {
+  projects: [
+    {
     _id: 'project-1',
     type: 'project',
     deleted: false,
@@ -43,9 +44,15 @@ export const INITIAL_DATA= [
         effective: 129600000
       }
     }, {
-      type: 'task', nr: 4, position: 3, title: 'Task 4', done: false, created: +Moment(now).subtract(5, 'hours')
+      type: 'task',
+      nr: 4,
+      position: 3,
+      title: 'Task 4',
+      done: false,
+      created: +Moment(now).subtract(5, 'hours')
     }]
-  }, {
+  },
+    {
     _id: 'project-2',
     type: 'project',
     deleted: false,
@@ -84,17 +91,39 @@ export const INITIAL_DATA= [
         done: +Moment(now).subtract(5, 'hours'),
         created: +Moment(now).subtract(16, 'hours')
       },
-      {type: 'task', nr: 5, position: 4, title: 'Task E', done: null, created: +Moment(now).subtract(40, 'hours')}
+      {
+        type: 'task',
+        nr: 5,
+        position: 4,
+        title: 'Task E',
+        done: null,
+        created: +Moment(now).subtract(40, 'hours')
+      }
     ]
-  }, {
+  },
+    {
     _id: 'project-3',
     type: 'project',
     deleted: false,
     title: 'Your third project',
     description: 'This is your third project in the task management system you\'re building within the context of the Angular 2 Components book.',
     tasks: [
-      {type: 'task', nr: 1, position: 0, title: 'Task One', done: null, created: +Moment(now).subtract(2, 'hours')},
-      {type: 'task', nr: 2, position: 1, title: 'Task Two', done: null, created: +Moment(now).subtract(1.5, 'hours')},
+      {
+        type: 'task',
+        nr: 1,
+        position: 0,
+        title: 'Task One',
+        done: null,
+        created: +Moment(now).subtract(2, 'hours')
+      },
+      {
+        type: 'task',
+        nr: 2,
+        position: 1,
+        title: 'Task Two',
+        done: null,
+        created: +Moment(now).subtract(1.5, 'hours')
+      },
       {
         type: 'task',
         nr: 3,
@@ -104,7 +133,10 @@ export const INITIAL_DATA= [
         created: +Moment(now).subtract(5, 'hours')
       }
     ]
-  }, {
+  }
+  ],
+  activities: [
+    {
     type: 'activity',
     user: {
       name: 'You',
@@ -116,7 +148,8 @@ export const INITIAL_DATA= [
     title: 'A task was updated',
     message: 'The task \'New task created\' was updated on #project-1.',
     _id: 'ECEF8127-C237-9612-924B-2A087D6FACA4'
-  }, {
+  },
+    {
     type: 'activity',
     user: {
       name: 'You',
@@ -128,7 +161,8 @@ export const INITIAL_DATA= [
     title: 'A task was updated',
     message: 'The task \'New task created\' was updated on #project-2.',
     _id: 'ECEF8127-C237-9612-924B-2A087D6FACA5'
-  }, {
+  },
+    {
     type: 'activity',
     user: {
       name: 'You',
@@ -141,4 +175,5 @@ export const INITIAL_DATA= [
     message: 'The task \'New task created\' was updated on #project-3.',
     _id: 'ECEF8127-C237-9612-924B-2A087D6FACA6'
   }
-];
+  ]
+};
