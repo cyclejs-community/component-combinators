@@ -1,5 +1,6 @@
 import { App } from "./app"
 import defaultModules from "cycle-snabbdom/lib/modules"
+import { createHistory } from "history"
 import firebase from 'firebase'
 // drivers
 import {
@@ -10,6 +11,7 @@ import {
 import * as Rx from "rx";
 import { run } from "@cycle/core"
 import { makeDOMDriver } from "cycle-snabbdom"
+import { makeHistoryDriver} from '@cycle/history';
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver/index';
@@ -32,6 +34,10 @@ function filterNull(driver) {
 }
 
 // Make drivers
+// History driver
+const history = createHistory();
+const historyDriver = makeHistoryDriver(history, { capture: true })
+
 // Document driver
 function documentDriver(_) {
   void _; // unused sink, this is a read-only driver
@@ -82,6 +88,7 @@ fbRoot.once('value')
       queue$: makeQueueDriver(fbRoot.child('!queue'), 'responses', 'tasks', {debug : true}),
       domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
       domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
+      router: historyDriver,
     });
 
     // Webpack specific code

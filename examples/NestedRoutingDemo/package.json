@@ -57,6 +57,7 @@
     "@cycle/core": "^6.0.3",
     "@cycle/isolate": "^1.2.0",
     "cycle-snabbdom": "1.2.0",
+    "@cycle-history": "4.0.2",
     "cyclic-router": "^1.0.0",
     "history": "^2.0.1",
     "ramda": "^0.21.0",

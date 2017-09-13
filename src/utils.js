@@ -5,6 +5,7 @@ import {
   values, where
 } from "ramda"
 import * as Rx from "rx"
+import { div } from "cycle-snabbdom"
 // TODO https://github.com/moll/js-standard-error
 // TODO : define custom error types
 import toHTML from "snabbdom-to-html"
@@ -1068,7 +1069,12 @@ function traceFn(fn, text) {
 function EmptyComponent(sources, settings){
   return {
     [DOM_SINK] : $.of(null)
-      .tap(x => console.debug(`EmptyComponent > DOM`, x))
+  }
+}
+
+function DummyComponent(sources, settings){
+  return {
+    [DOM_SINK] : $.of(div('dummy content'))
   }
 }
 
@@ -1146,4 +1152,5 @@ export {
   DOM_SINK,
   ERROR_MESSAGE_PREFIX,
   EmptyComponent,
+  DummyComponent
 }
