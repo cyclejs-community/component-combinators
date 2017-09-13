@@ -41,6 +41,7 @@ function documentDriver(_) {
 
 // TODO Initialize the database - for this demo I do not use local storage but I keep this anyways
 // TODO : first use user dummy, then have a proper login page, maybe with firebase auth
+// TODO : NOTE firebase loin auth already made in sparks-frontend brnach forgot-pwd-w-combinator...
 try {
   firebase.app()
 } catch (err) {
