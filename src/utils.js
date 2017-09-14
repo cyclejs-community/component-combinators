@@ -441,6 +441,10 @@ function isComponent(obj) {
   return isFunction(obj)
 }
 
+function isPromise(obj){
+  return obj.then && isFunction(obj.then) && true
+}
+
 function isObservable(obj) {
   // duck typing in the absence of a type system
   return isFunction(obj.subscribe)
@@ -1109,6 +1113,7 @@ export {
   isArray,
   isEmptyArray,
   isArrayOf,
+  isPromise,
   isObservable,
   isSource,
   isOptSinks,
