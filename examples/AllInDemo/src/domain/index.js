@@ -38,7 +38,9 @@ export const domainObjectsQueryMap = {
         return function dispose() {
           repository.child(PROJECTS_REF).off('value', processProjectSnapshot)
         }
-      });
+      })
+      // NOTE : it is a behaviour
+        .shareReplay(1);
     })
   },
   [ACTIVITIES]: {
@@ -63,7 +65,9 @@ export const domainObjectsQueryMap = {
         return function dispose() {
           repository.child(ACTIVITIES_REF).off('value', processActivitiesSnapshot)
         }
-      });
+      })
+      // NOTE : it is a behaviour
+        .shareReplay(1);
     })
   },
   [USER]: {
