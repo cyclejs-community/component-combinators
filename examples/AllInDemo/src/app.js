@@ -9,6 +9,9 @@ import { pipe, values } from 'ramda'
 import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
 import { m } from "../../../src/components/m/m"
+import 'user-area.scss'
+
+// TODO : import css for each component : configure webpack! Do I need koala??
 
 const $ = Rx.Observable;
 
