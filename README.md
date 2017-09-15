@@ -171,37 +171,43 @@ Please note that library is still wildly under development :
 
 The current roadmap stands as :
 
-- [x] Testing library `runTestScenario`
-- [x] Generic combinator `m`
-- [x] Routing combinator `onRoute`
-- [x] Switch combinator 
-  - [x] `Switch`
-  - [x] `Case`
-- [x] State machine combinator `FSM`
-- [x] ForEach combinator `ForEach`
-- [x] List combinator `ListOf`
-- [x] Injection combinator 
-  - [x] `InjectSources`
-  - [x] `InjectSourcesAndSettings`
-- [ ] Event combinator `WithEvents`
-- [ ] Action combinator `MakeActions`
-- [ ] Tabbed component combinator `OneOf`
-- [ ] vNode combinator `VT`
-- [x] Query driver 
-- [x] Action driver 
-
-
-Other things to think about : 
-
-- demo site
-  - all in demo
-  - 
-- distribution
+- Testing
+    - [x] Testing library `runTestScenario`
+    - [x] Mocks for DOM and document driver
+    - [x] Mock for domain query driver
+    - [ ] Model-based testing for FSM, i.e. automatic test cases generation
+- Combinators
+    - [x] Generic combinator `m`
+    - [x] Routing combinator `onRoute`
+    - [x] Switch combinator 
+      - [x] `Switch`
+      - [x] `Case`
+    - [x] State machine combinator `FSM`
+      - [ ] convert FSM structure to graphml or dot or tgf format
+      - [ ] automatic generation of graphical representation of the FSM
+      - [ ] refactor the asynchronous FSM into synchronous EHFSM + async module
+        - this adds the hierarchical part, improvement in core library are automatically translated in improvement to this library, and closed/open principle advantages
+      - [ ] investigate prior art
+        - https://github.com/jbeard4/SCION
+        - http://blog.sproutcore.com/statecharts-in-sproutcore/ 
+    - [x] ForEach combinator `ForEach`
+    - [x] List combinator `ListOf`
+    - [x] Injection combinator 
+      - [x] `InjectSources`
+      - [x] `InjectSourcesAndSettings`
+    - [ ] Event combinator `WithEvents`
+    - [ ] Action combinator `MakeActions`
+    - [ ] Tabbed component combinator `OneOf`
+    - [ ] vNode combinator `VT`
+    - [x] Query driver 
+    - [x] Action driver 
+- Core
+    - [ ] DOM merge with slot assignment (a la web component)
+- Demo
+  - [ ] nice demo site : github pages? 
+- Distribution
   - monorepo?
   - individual combinator packages?
-- write a better README
-	- sell the FSM better, it is life changing
-- do a live dmeo github pages site : https://pages.github.com/  
 
 # Installation
 ## Running tests
@@ -235,4 +241,3 @@ Other things to think about :
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
-

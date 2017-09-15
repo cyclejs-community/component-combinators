@@ -962,14 +962,19 @@ const wrapIfDebug = cond([
 // ---- cf. https://github.com/patrick-steele-idem/morphdom,
 // ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
 // -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
-// TODO : 7. can use https://codepen.io/davidkpiano/pen/ayWKJO/ ?
+// TODO : 7. can use https://codepen.io/davidkpiano/pen/ayWKJO/ ? YYYEESS
 // TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
-// - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
-// - - allows to have more than flowchart, more kind of diagrams
-// - - use specific text format (dagre-d3)
-// - - css seems to be easy to modify, but little interactivity (tooltip etc.)
-// - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
-// - - use graphLib for inputting graph data :
+// - cytoscape looks like the best so far
+// - cytoscape with cytoscape-cose-bilkent plugin for compund graph visualization
+//    - https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js
+//    - https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.1.4/cytoscape.min.js
+//    - can zoom in/out, move, click the graph
+// - dagre layout
+//   - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
+//   - use specific text format (dagre-d3)
+//   - css seems to be easy to modify, but little interactivity (tooltip etc.)
+//   - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
+//   - use graphLib for inputting graph data :
 // https://github.com/cpettitt/graphlib/wiki/API-Reference viz.js :
 // https://github.com/mdaines/viz.js/ - - use graphviz/DOT language - - - howto :
 // http://graphs.grevian.org/example - - - formal def :
@@ -982,8 +987,23 @@ const wrapIfDebug = cond([
 // customize anything with D3 BUT graphlib not exportable Conversion
 // http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
 // - graphML is used by yed but also http://igraph.org/redirect.html
-// TODO: can be used to have state chart logic for free :
-// https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js but I
-// will have to add the events and change the formats (add transitions in objects instead of
-// imperative this.go(state) ) and so on And also I should write tests, there are none... for
-// google cloud spark back-end C:\Users\toshiba\AppData\Local\Google\Cloud SDK
+// TODO: Investigate state chart logic for free (best are first two):
+// - https://github.com/jbeard4/SCION
+//   - pretty advanced
+//     - simulation step-by-step, test framework, visualization, standard spec so very documented
+//   - has concurrency and history
+// - https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js
+//   - http://blog.sproutcore.com/statecharts-in-sproutcore/
+//   - http://guides.sproutcore.com/getting_started_2.html
+//   - http://docs.sproutcore.com/symbols/SC.StatechartManager.html
+//   - http://docs.sproutcore.com/symbols/SC.State.html
+// - https://github.com/etgryphon/stativus
+//   - documentation hard to get but seems in current development
+//     - however tests could help figure out details
+//   - shitty demo too
+//   - have concurrent state and history
+// - https://github.com/DavidDurman/statechart
+//   - only hierarchical, no parallel OR states, no history
+//   - no asynchronous handling, or life-cycle events
+//   - also model is implicitly linked to this, actions etc. are passed event
+// -
