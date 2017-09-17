@@ -204,7 +204,9 @@ The current roadmap stands as :
 - Core
     - [ ] DOM merge with slot assignment (a la web component)
 - Demo
-  - [ ] nice demo site : github pages? 
+  - [ ] nice demo site : github pages?
+    - example : cf. https://viperhtml.js.org/hyperhtml/documentation/ 
+  - [ ] demo from Angular2 book
 - Distribution
   - monorepo?
   - individual combinator packages?

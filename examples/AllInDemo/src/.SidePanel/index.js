@@ -68,6 +68,7 @@ function NavSectionContainer(sources, settings){
     [DOM_SINK] : $.of(ul('.navigation-section__list',[]))
   }
 }
+
 function Section(settings, childrenComponents){
   // TODO : add a contract that this is a childrenComponent not a componentTree!!
   // TODO : express this with the slot mechanism somehow

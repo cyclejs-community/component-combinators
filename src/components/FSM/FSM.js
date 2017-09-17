@@ -988,7 +988,7 @@ const wrapIfDebug = cond([
 // http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
 // - graphML is used by yed but also http://igraph.org/redirect.html
 // TODO: Investigate state chart logic for free (best are first two):
-// - https://github.com/jbeard4/SCION
+// - https://github.com/jbeard4/SCION (similar to https://github.com/Touffy/JSSCxml)
 //   - pretty advanced
 //     - simulation step-by-step, test framework, visualization, standard spec so very documented
 //   - has concurrency and history
@@ -1006,4 +1006,12 @@ const wrapIfDebug = cond([
 //   - only hierarchical, no parallel OR states, no history
 //   - no asynchronous handling, or life-cycle events
 //   - also model is implicitly linked to this, actions etc. are passed event
-// -
+// - https://github.com/Touffy/JSSCxml
+//   - similar to the top SCION, but doc pretty bad, BUT
+//   - visual debugger wonderful!
+//   - http://www.jsscxml.org/thesis.pdf explains difference between the two
+// TODO : feature : if action does not return output, it should return NO_OUTPUT to distinguish
+// from returning undefined...
+// terms :
+// - Finite memory finite-state machines, Finite-Memory Automata, register automata, Guarded
+// Variable Automata, data automata, variable automata,  fresh-variable automata
