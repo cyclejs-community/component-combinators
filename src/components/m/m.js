@@ -41,10 +41,11 @@
 import {
   assertContract, assertSinksContracts, assertSourcesContracts, emitNullIfEmpty, format,
   getSinkNamesFromSinksArray, isArray, isArrayOf, isArrayOptSinks, isFunction, isMergeSinkFn,
-  isOptSinks, isVNode, projectSinksOn, removeEmptyVNodes, removeNullsFromArray, traceSinks
+  isOptSinks, isUndefined, isVNode, projectSinksOn, removeNullsFromArray, traceSinks, traverseTree, isEmptyArray
 } from "../../utils"
 import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, reduce, either, both, complement, isNil
+  addIndex, always, clone, concat, defaultTo, flatten, is, isNil, keys, map, merge, mergeWith,
+  reduce, prop, uniq
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
@@ -66,6 +67,81 @@ const defaultMergeSinkConfig = {
 
 //////
 // Helpers
+function isSlotHole(vnode) {
+  return (isUndefined(vnode.children) || isEmptyArray(vnode.children))
+    && isUndefined(vnode.elm)
+    && isUndefined(vnode.key)
+    && isUndefined(vnode.sel)
+    && isUndefined(vnode.text)
+    && vnode.data && vnode.data.slot && true
+}
+
+const StoreConstructor = Array;
+
+function pushFn(arr, node) {arr.push(node)}
+
+function popFn(arr) {return arr.pop()}
+
+function isEmptyStoreFn(arr) {return arr.length === 0}
+
+function getChildrenFn(vnode) {return vnode.children ? vnode.children : []}
+
+function visitFn({ vnode, parent, index }) {
+  // NOTE: {parent, index} = undefined iff vnode is root
+  return isSlotHole(vnode)
+    ? isUndefined(parent)
+      // Edge case: we can have a parent vTree which is only the root node, being a slot hole
+      ? { childrenVnodes: undefined, index: undefined, slotName : vnode.data.slot }
+      : { childrenVnodes: parent.children, index, slotName : vnode.data.slot }
+    : null
+}
+
+/**
+ *
+ * @param vNode
+ * @returns {Array.<{parent:Array, index:Number}>} returns an array of whatever
+ * structure `visitFn`
+ * is returning
+ */
+function getSlotHoles(vNode) {
+  if (!vNode) throw `getSlotHoles : internal error, vNode cannot be falsy!`
+
+  const slotHoles =  removeNullsFromArray(
+    traverseTree({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, getChildrenFn, visitFn }, vNode)
+  );
+
+  const slotNames = slotHoles.map(prop('slotName'));
+  if (uniq(slotNames).length !== slotHoles.length){
+    // Edge case : at least one slot name has more than one corresponding slot hole
+    // NOTE : I could perfectly allow such duplication - children content with the duplicated
+    // slot would be copied once in several locations, that could be a feature too, but not for now
+    throw `m > getSlotHoles : at least one slot name has more than one corresponding slot hole! For information : array of slot names should show duplicated - ${slotNames}`
+  }
+  else {
+    // Main case : no given slot name has more than one corresponding slot hole
+    return slotHoles
+  }
+
+
+}
+
+/**
+ * Returns a hashmap associating a slot with an array of vnode featuring that slot
+ * A vnode will be considered to belong to a slot if at the top level of its node tree it has
+ * a truthy slot property (should be a string, NOT CHECKED here) in its `vnode.data` object
+ * @param {Array.<*>} childrenVNode
+ */
+function rankChildrenBySlot(childrenVNode) {
+  return childrenVNode.reduce((acc, vnode) => {
+    if (vnode && vnode.data && vnode.data.slot) {
+      acc[vnode.data.slot] = acc[vnode.data.slot] || [];
+      acc[vnode.data.slot].push(vnode)
+    }
+
+    return acc
+  }, {})
+}
+
 /**
  * Merges the DOM nodes produced by a parent component with the DOM nodes
  * produced by children components, such that the parent DOM nodes
@@ -111,16 +187,106 @@ function computeSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   return $.merge(removeNullsFromArray(allSinks))
 }
 
+// TODO : test tree traversal getSlotHoles
+// TODO : test rankChildrenBySlot
+// TODO : test mergeChildrenIntoParentDOM : add to m tests if not already there
+// TODO : test normal merge still working - should be just running the current tests
+// TODO : test EDGE case : parent slot hole at root level, + children with slot content
+// TODO : test EDGE case : parent slot hole at root level, + no children
+// TODO : test EDGE case : parent slot hole at root level, + children but mix slot content/other
+// TODO : test MAIN case : parent slot hole at children level, + children with slot content
+// TODO : test EDGE case : parent slot hole at children level, + no children
+// TODO : test EDGE case : parent slot hole at children level, + children but mix slot content/other
+// TODO : refactor to reduce line number, refactor by branch cases, taht will separate slot
+// functionaliy naturally
+// TODO : also all this is tree manipulation, would be nice to have a functional tree library...
+
 function mergeChildrenIntoParentDOM(parentDOMSink) {
   return function mergeChildrenIntoParentDOM(arrayVNode) {
     // We remove null elements from the array of vNode
     // We can have a null vNode emitted by a sink if that sink is empty
-    let _arrayVNode = removeEmptyVNodes(removeNullsFromArray(arrayVNode))
+    let _arrayVNode = removeNullsFromArray(arrayVNode)
     assertContract(isArrayOf(isVNode), [_arrayVNode], 'DOM sources must' +
       ' stream VNode objects! Got ' + _arrayVNode)
 
-    if (parentDOMSink) {
-      // Case : the parent sinks have a DOM sink
+    if (!parentDOMSink) {
+      // Case : the parent sinks does not have a DOM sink
+      // That's simple : no slotting, no nothing, just pass the children on if any
+      switch (_arrayVNode.length) {
+        case 0 :
+          return null
+        /*
+         // To avoid putting an extra `div` when there is only one vNode
+         // we put the extra `div` only when there are several vNodes
+         // that did not work though... `insertBefore : error...`
+         // KEPT AS ADR i.e. documenting past choices
+         case 1 :
+         return _arrayVNode[0]
+         */
+        default :
+          return div(_arrayVNode)
+      }
+    }
+    else {
+      let parentVNode = clone(_arrayVNode.shift());
+      let childrenVNode = _arrayVNode;
+      parentVNode.children = clone(parentVNode.children) || [];
+      const slotHoles = getSlotHoles(parentVNode);
+
+      // ALG : if the parent vTree has some slot holes, then try to fill them in with the children
+      // slot content, if any can be found
+      if (!isEmptyArray(slotHoles)) {
+        const slotChildrenHashmap = rankChildrenBySlot(childrenVNode);
+
+        // the parent vTree is updated in place : slot holes replaced with children slot content
+        slotHoles.forEach(slotHole => {
+          // childrenVnodes is the array of children, such that `childrenVnodes[index]` is one
+          // of the holes in the parent vTree
+          const { childrenVnodes: childrenVnodesOnParentVtree, index, slotName } = slotHole;
+          if (childrenVnodesOnParentVtree) {
+            // Main case : the parent vNode has children, some of which have slot holes
+            const childrenSlots = slotChildrenHashmap[slotName] || [];
+
+/*
+            // remove holedVnode from childrenVnodes
+            childrenVnodesOnParentVtree.splice(index, 1);
+            // insrt childrenVnode there instead
+            childrenVnodesOnParentVtree.splice(index, 0, ...childrenSlots);
+*/
+ // I do it this way so other possible indices are not changed by the insertion
+            // Of course, that means we have to flatten later
+            childrenVnodesOnParentVtree[index] = slotChildrenHashmap[slotName] || [];
+
+          }
+          else {
+            // Edge case : the parent vNode has no children, but has a UNIQUE hole in its only node
+            // so the forEach is executed only once
+            const slotName = parentVNode.data.slot;
+            const childrenSlots = slotChildrenHashmap[slotName] || [];
+            switch (childrenSlots.length) {
+              // Edge case 1 : parent has a slot but no children filling that slot
+              case 0 :
+                parentVNode = null;
+                break;
+              // Edge case 2 : parent has a slot but only one child filling that slot
+              case 1 :
+                parentVNode = childrenSlots[0];
+                break;
+              // Edge case 3 : parent has a slot and several children filling that slot
+              default :
+                parentVNode = div(childrenSlots)
+            }
+          }
+        });
+        // Now flatten the inserted children arrays of vnodes by traversing the parent
+        // TODO : that is a tad inefficient - write this without redundancy
+        traverseTree({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, getChildrenFn,
+        visitFn : ({ vnode, parent, index }) => {
+          if ( parent.children && isArray(vnode)){parent.children = flatten(parent.children)}
+        } }, parentVNode);
+      }
+
+      // ALG : for all children content that is not slotted, insert into parent vTree at the end
       // We want to put the children's DOM **inside** the parent's DOM
       // Two cases here :
       // - The parent's vNode has a `text` property :
@@ -131,12 +297,6 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
       //   we just add the children's DOM in last position of the exisitng
       //   parent's children
       // Note that this is specific to the snabbdom vNode data structure
-      // Note that we defensively clone vNodes so the original vNode remains
-      // immuted
-      let parentVNode = clone(_arrayVNode.shift())
-      let childrenVNode = _arrayVNode
-      parentVNode.children = clone(parentVNode.children) || []
-
       // childrenVNode could be null if all children sinks are empty
       // observables, in which case we just return the parentVNode
       if (childrenVNode) {
@@ -156,23 +316,6 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
       }
 
       return parentVNode
-    }
-    else {
-      // Case : the parent sinks does not have a DOM sink
-      switch (_arrayVNode.length) {
-        case 0 :
-          return null
-        /*
-         // To avoid putting an extra `div` when there is only one vNode
-         // we put the extra `div` only when there are several vNodes
-         // that did not work though... `insertBefore : error...`
-         // KEPT AS ADR i.e. documenting past choices
-         case 1 :
-         return _arrayVNode[0]
-         */
-        default :
-          return div(_arrayVNode)
-      }
     }
   }
 }
@@ -298,11 +441,11 @@ function m(componentDef, _settings, componentTree) {
 
   // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
   // DOC : [null, [child]] is allowed
-  if (isNil(componentTree[1])){
+  if (isNil(componentTree[1])) {
     parentComponent = always(null);
     childrenComponents = componentTree;
   }
-  else if (isArray(componentTree[1])){
+  else if (isArray(componentTree[1])) {
     parentComponent = defaultTo(always(null), componentTree[0]);
     childrenComponents = componentTree[1];
   }
@@ -433,4 +576,6 @@ function m(componentDef, _settings, componentTree) {
   }
 }
 
-export { m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDOM, computeReducedSink }
+export {
+  m, defaultMergeSinkFn, computeDOMSinkDefault, mergeChildrenIntoParentDOM, computeReducedSink, getSlotHoles
+}

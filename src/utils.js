@@ -1082,6 +1082,34 @@ function DummyComponent(sources, settings){
   }
 }
 
+/**
+ * Iterative tree traversal generic algorithm
+ * @param StoreConstructor a constructor for either a queue (breadth-first) or a stack
+ * structure (depth-first)
+ * @param {Function} pushFn queue or push instruction
+ * @param {Function} popFn dequeue or pop instruction
+ * @param {Function} isEmptyStoreFn check if the data structure used to store node to
+ * process is empty
+ * @param {Function} visitFn the visiting function on the node. Its results are accumulated
+ * into the
+ * final result of the traverseTree function
+ * @param {Function} getChildrenFn give the children for a given node
+ * @param root the root node of the tree to traverse
+ */
+function traverseTree({StoreConstructor, pushFn, popFn, isEmptyStoreFn, visitFn, getChildrenFn}, root) {
+  const traversalResult = [];
+  const store = new StoreConstructor();
+  pushFn(store, {vnode:root, parent : undefined, index : undefined});
+  while (!isEmptyStoreFn(store)) {
+    const {vnode, parent, index} = popFn(store) ;
+    debugger;
+    traversalResult.push(visitFn({vnode, parent, index}));
+    getChildrenFn(vnode).forEach((child, index) => pushFn(store, {vnode:child, parent : vnode, index}));
+  }
+
+  return traversalResult
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1157,5 +1185,6 @@ export {
   DOM_SINK,
   ERROR_MESSAGE_PREFIX,
   EmptyComponent,
-  DummyComponent
+  DummyComponent,
+  traverseTree
 }

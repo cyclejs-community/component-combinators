@@ -90,15 +90,59 @@ function Section(settings, childrenComponents){
   // Then I would write Section as
   // m({}, {}, [NavSectionContainer, [childrenComponents])
   // where childrenComponents are slotted, and NavSectionContainer is slot-holed
+  // Ex : Parent =
+  //  const vNode = {
+  // "children": undefined,
+  //  "data": {slot:'slotname'},
+  //  "elm": undefined,
+  //   "key": undefined,
+  //  "sel": undefined,
+  //  "text": undefined
+  //};
+  // Children :
+  // vNode = {
+  // "children": [...],
+  //  "data": {slot:'slotname'},
+  //  "elm": 'sth',
+  //   "key": ...,
+  //  "sel": ...,
+  //  "text": ...
+  //};
+  // -> substitute, parent becomes children (top -> 1 case)
+  // if several children with same slotname AND parent just 1 vNode no children
+  // parent = div([..children with slotname]) (top -> many case)
+  // if parent hole not at top
+  // 1 child with slotname cf top -> 1 case, simple substitution
+  // if parent hole not at top AND several children
+  // then that parent hole already in an array, insert the children at that position of the array
+  // above the slot so the hole slot always last, then remove it at the end
 
-  /*
-    <h2 class="navigation-section__title">{{title}}</h2>
-  <ul class="navigation-section__list">
-    <ng-content select="ngc-navigation-item"></ng-content>
-  <ngc-navigation-item *ngFor="let item of items"
-    [title]="item.title"
-    [link]="item.link"></ngc-navigation-item>
-    </ul>
+  // So algorithm :
+  // if !parentDOMSink -> same as usual
+  // if parentDomSink :
+  // getHoles -> [Hole] where Hole : {siblingArray, holeIndex} where siblingArray undefined if top
+  // if no holes -> merge as usual
+  // for each hole in parent-> getChildrenWithHole() -> [childrenWithHole]
+  // if parent has no children ()
+  //     if no children with that (unique) hole -> NEW PARENT DOM nodes = Null
+  //     if one child only with thath hole -> substitute and NEW PARENT DOM nodes
+  //     if several children, children = NEW PARENT DOM nodes
+  //    so in fact there is only one case not three
+  // if parent has children
+  //   for each hole in parent
+  //     replace that hole as pos holeIndex with the array of children with the same hole
+  // -> NEW PARENT DOM Nodes
+  // Now only left, the children with no slot
+  // merge as usual
+
+/*
+  <h2 class="navigation-section__title">{{title}}</h2>
+<ul class="navigation-section__list">
+  <ng-content select="ngc-navigation-item"></ng-content>
+<ngc-navigation-item *ngFor="let item of items"
+  [title]="item.title"
+  [link]="item.link"></ngc-navigation-item>
+  </ul>
 */
 
 }

@@ -4,7 +4,7 @@ import { always } from 'ramda';
 import * as Rx from 'rx';
 import h from 'snabbdom/h';
 import { div } from 'cycle-snabbdom';
-import { m } from '../src/components/m/m';
+import { getSlotHoles, m } from '../src/components/m/m';
 import { makeDivVNode, projectSinksOn } from '../src/utils';
 import { runTestScenario } from '../src/runTestScenario';
 
@@ -874,5 +874,97 @@ QUnit.test(
       tickDuration: 5,
       waitForFinishDelay: 10
     })
+
+  });
+
+QUnit.module("Testing getSlotHoles(vNode) : Array.<{parent:Array, index:Number}>", {});
+
+const A_SLOT = 'a slot';
+const ANOTHER_SLOT = 'another slot';
+const YET_ANOTHER_SLOT = 'yet another slot';
+const parentVNodeSlotAtRoot = {
+  children: [],
+  data: { slot: A_SLOT },
+  elm: undefined,
+  key: undefined,
+  sel: undefined,
+  text: undefined
+};
+const childrenVNodeWithASlot = {
+  children: [],
+  data: { slot: A_SLOT },
+  elm: undefined,
+  key: undefined,
+  sel: undefined,
+  text: undefined
+};
+const childrenVNodeWithAnotherSlot = {
+  children: [],
+  data: { slot: ANOTHER_SLOT },
+  elm: undefined,
+  key: undefined,
+  sel: undefined,
+  text: undefined
+}
+const childrenVNodeWithNoSlotAndNoChildren = {
+  children: [],
+  data: {},
+  elm: undefined,
+  key: undefined,
+  sel: undefined,
+  text: 'this is childrenVNodeWithNoSlotAndNoChildren'
+}
+const childrenVNodeWithNoSlotAndChildWithAnotherSlot = {
+  children: [
+    childrenVNodeWithNoSlotAndNoChildren,
+    childrenVNodeWithAnotherSlot,
+  ],
+  data: {},
+  elm: undefined,
+  key: undefined,
+  sel: ANOTHER_SELECTOR,
+  text: undefined
+}
+const A_SELECTOR = 'a_div_selector'
+const ANOTHER_SELECTOR = 'another_div_selector'
+
+QUnit.test("main cases - parent slot hole at root level", function exec_test(assert) {
+  assert.deepEqual(getSlotHoles(parentVNodeSlotAtRoot),
+    [{ childrenVnodes: undefined, index: undefined, slotName: "a slot" }], `error`);
+});
+
+QUnit.test(`main cases - holes at parent and children levels - 3 different slots - 1x1 + 1x2 + 1 content`,
+  function exec_test(assert) {
+    const parentVNodeSlotAt2ChildrenLevelsAndParentLevel = {
+      children: [
+        childrenVNodeWithASlot,
+        childrenVNodeWithNoSlotAndNoChildren,
+        childrenVNodeWithNoSlotAndChildWithAnotherSlot
+      ],
+      data: { slot: A_SLOT },
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    }
+    // TODO : rethink the whole logic to have slot with default content for if the slot is not
+    // found, that expands the test space...
+    assert.deepEqual(getSlotHoles(parentVNodeSlotAt2ChildrenLevelsAndParentLevel),
+      [
+        { childrenVnodes: undefined, index: undefined },
+        { childrenVnodes: parentVNodeSlotAt2ChildrenLevelsAndParentLevel.children, index: 0 },
+        { childrenVnodes: parentVNodeSlotAt2ChildrenLevelsAndParentLevel.children[2].children, index: 1 }
+      ],
+      `error`);
+
+  });
+
+QUnit.test(`edge cases - parent slot hole at children level - 2 same slots - 1 + 1 content`,
+  function exec_test(assert) {
+
+  });
+
+QUnit.test(`main cases - parent slot hole at children level - 2 different slots at same level - 1x2 + 1 content`,
+  function exec_test(assert) {
 
   });
