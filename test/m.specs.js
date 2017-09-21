@@ -882,12 +882,15 @@ QUnit.module("Testing getSlotHoles(vNode) : Array.<{parent:Array, index:Number}>
 const A_SLOT = 'a slot';
 const ANOTHER_SLOT = 'another slot';
 const YET_ANOTHER_SLOT = 'yet another slot';
+const A_SELECTOR = 'a_div_selector'
+const ANOTHER_SELECTOR = 'another_div_selector'
+
 const parentVNodeSlotAtRoot = {
   children: [],
   data: { slot: A_SLOT },
   elm: undefined,
   key: undefined,
-  sel: undefined,
+  sel: A_SELECTOR,
   text: undefined
 };
 const childrenVNodeWithASlot = {
@@ -895,7 +898,7 @@ const childrenVNodeWithASlot = {
   data: { slot: A_SLOT },
   elm: undefined,
   key: undefined,
-  sel: undefined,
+  sel: A_SELECTOR,
   text: undefined
 };
 const childrenVNodeWithAnotherSlot = {
@@ -903,7 +906,7 @@ const childrenVNodeWithAnotherSlot = {
   data: { slot: ANOTHER_SLOT },
   elm: undefined,
   key: undefined,
-  sel: undefined,
+  sel: ANOTHER_SELECTOR,
   text: undefined
 }
 const childrenVNodeWithNoSlotAndNoChildren = {
@@ -925,13 +928,13 @@ const childrenVNodeWithNoSlotAndChildWithAnotherSlot = {
   sel: ANOTHER_SELECTOR,
   text: undefined
 }
-const A_SELECTOR = 'a_div_selector'
-const ANOTHER_SELECTOR = 'another_div_selector'
 
 QUnit.test("main cases - parent slot hole at root level", function exec_test(assert) {
   assert.deepEqual(getSlotHoles(parentVNodeSlotAtRoot),
-    [{ childrenVnodes: undefined, index: undefined, slotName: "a slot" }], `error`);
+    [parentVNodeSlotAtRoot], `error`);
 });
+// TODO : rethink the whole logic to have slot with default content for if the slot is not
+// found, that expands the test space...
 
 QUnit.test(`main cases - holes at parent and children levels - 3 different slots - 1x1 + 1x2 + 1 content`,
   function exec_test(assert) {
@@ -941,19 +944,17 @@ QUnit.test(`main cases - holes at parent and children levels - 3 different slots
         childrenVNodeWithNoSlotAndNoChildren,
         childrenVNodeWithNoSlotAndChildWithAnotherSlot
       ],
-      data: { slot: A_SLOT },
+      data: { slot: YET_ANOTHER_SLOT },
       elm: undefined,
       key: undefined,
       sel: A_SELECTOR,
       text: undefined
     }
-    // TODO : rethink the whole logic to have slot with default content for if the slot is not
-    // found, that expands the test space...
     assert.deepEqual(getSlotHoles(parentVNodeSlotAt2ChildrenLevelsAndParentLevel),
       [
-        { childrenVnodes: undefined, index: undefined },
-        { childrenVnodes: parentVNodeSlotAt2ChildrenLevelsAndParentLevel.children, index: 0 },
-        { childrenVnodes: parentVNodeSlotAt2ChildrenLevelsAndParentLevel.children[2].children, index: 1 }
+        parentVNodeSlotAt2ChildrenLevelsAndParentLevel,
+        childrenVNodeWithASlot,
+        childrenVNodeWithAnotherSlot,
       ],
       `error`);
 
@@ -961,10 +962,38 @@ QUnit.test(`main cases - holes at parent and children levels - 3 different slots
 
 QUnit.test(`edge cases - parent slot hole at children level - 2 same slots - 1 + 1 content`,
   function exec_test(assert) {
-
+    const testData = {
+      children: [
+        childrenVNodeWithASlot,
+        childrenVNodeWithASlot,
+      ],
+      data: {},
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    }
+    assert.throws(function(){getSlotHoles(testData)},
+      /getSlotHoles/, `Contract : slot name must correspond to a unique location!`);
   });
 
 QUnit.test(`main cases - parent slot hole at children level - 2 different slots at same level - 1x2 + 1 content`,
   function exec_test(assert) {
-
+    const testData = {
+      children: [
+        childrenVNodeWithASlot,
+        childrenVNodeWithAnotherSlot,
+      ],
+      data: {},
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    }
+    assert.deepEqual(getSlotHoles(testData),
+      [
+        childrenVNodeWithASlot,
+        childrenVNodeWithAnotherSlot,
+      ],
+      `error`);
   });

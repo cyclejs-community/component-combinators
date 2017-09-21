@@ -3,7 +3,7 @@ import {
   isHashMap, isObject,
   isString
 } from "../../utils"
-import { both, complement, either, isNil, pipe, prop } from 'ramda'
+import { both, complement, either, isNil, pipe, prop, uniq } from 'ramda'
 
 function hasValidComponentDefProperty(componentDef, _settings, children) {
   return eitherE(
@@ -78,3 +78,7 @@ export const hasMsignature = checkAndGatherErrors([
   [hasValidSettingsProperty, `m > hasMsignature > hasValidSettingsProperty : invalid settings parameter !`],
   [hasValidChildrenProperty, `m > hasMsignature > hasValidChildrenProperty : children components must be an array of components!`]
 ], `hasMsignature : fails!`);
+
+export function hasNoTwoSlotsSameName(slotHoles, slotNames){
+  return uniq(slotNames).length !== slotHoles.length
+}

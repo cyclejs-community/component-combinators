@@ -45,11 +45,11 @@ import {
 } from "../../utils"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, isNil, keys, map, merge, mergeWith,
-  reduce, prop, uniq
+  reduce, prop, uniq, path
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import * as Rx from "rx"
-import { hasMsignature } from "./types"
+import { hasMsignature, hasNoTwoSlotsSameName } from "./types"
 
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable
@@ -68,38 +68,34 @@ const defaultMergeSinkConfig = {
 //////
 // Helpers
 function isSlotHole(vnode) {
-  return (isUndefined(vnode.children) || isEmptyArray(vnode.children))
-    && isUndefined(vnode.elm)
-    && isUndefined(vnode.key)
-    && isUndefined(vnode.sel)
-    && isUndefined(vnode.text)
-    && vnode.data && vnode.data.slot && true
+  return vnode && vnode.data && vnode.data.slot && true
 }
 
 const StoreConstructor = Array;
 
 function pushFn(arr, node) {arr.push(node)}
 
-function popFn(arr) {return arr.pop()}
+// NOTE : we use `shift` here to simulate a queue structure, so we traverse breadth-first
+// Breadth-first traversal is important to reflect the precedency of each slot
+// However depth-first would give the same end result, just less efficient
+// For instance `{slot0, children: [slot1]]` with content for all slots, content for
+// `slot0` will erase all content put in `slot1`, so it is better to set `slot0` content first
+function popFn(arr) {return arr.shift()}
 
 function isEmptyStoreFn(arr) {return arr.length === 0}
 
 function getChildrenFn(vnode) {return vnode.children ? vnode.children : []}
 
-function visitFn({ vnode, parent, index }) {
-  // NOTE: {parent, index} = undefined iff vnode is root
+function visitFn(vnode) {
   return isSlotHole(vnode)
-    ? isUndefined(parent)
-      // Edge case: we can have a parent vTree which is only the root node, being a slot hole
-      ? { childrenVnodes: undefined, index: undefined, slotName : vnode.data.slot }
-      : { childrenVnodes: parent.children, index, slotName : vnode.data.slot }
+    ? vnode
     : null
 }
 
 /**
  *
  * @param vNode
- * @returns {Array.<{parent:Array, index:Number}>} returns an array of whatever
+ * @returns {Array.<VNode>} returns an array of whatever
  * structure `visitFn`
  * is returning
  */
@@ -110,19 +106,16 @@ function getSlotHoles(vNode) {
     traverseTree({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, getChildrenFn, visitFn }, vNode)
   );
 
-  const slotNames = slotHoles.map(prop('slotName'));
-  if (uniq(slotNames).length !== slotHoles.length){
-    // Edge case : at least one slot name has more than one corresponding slot hole
-    // NOTE : I could perfectly allow such duplication - children content with the duplicated
-    // slot would be copied once in several locations, that could be a feature too, but not for now
-    throw `m > getSlotHoles : at least one slot name has more than one corresponding slot hole! For information : array of slot names should show duplicated - ${slotNames}`
-  }
-  else {
+  const slotNames = slotHoles.map(path(['data', 'slot']));
+
+  // Edge case : at least one slot name has more than one corresponding slot hole
+  // NOTE : I could perfectly allow such duplication - children content with the duplicated
+  // slot would be copied once in several locations, that could be a feature too, but not for now
+  assertContract(hasNoTwoSlotsSameName, [slotHoles, slotNames],
+    `m > getSlotHoles : at least one slot name has more than one corresponding slot hole! For information : array of slot names should show duplicated - ${slotNames}`);
+
     // Main case : no given slot name has more than one corresponding slot hole
     return slotHoles
-  }
-
-
 }
 
 /**

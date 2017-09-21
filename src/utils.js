@@ -1099,12 +1099,11 @@ function DummyComponent(sources, settings){
 function traverseTree({StoreConstructor, pushFn, popFn, isEmptyStoreFn, visitFn, getChildrenFn}, root) {
   const traversalResult = [];
   const store = new StoreConstructor();
-  pushFn(store, {vnode:root, parent : undefined, index : undefined});
+  pushFn(store, root);
   while (!isEmptyStoreFn(store)) {
-    const {vnode, parent, index} = popFn(store) ;
-    debugger;
-    traversalResult.push(visitFn({vnode, parent, index}));
-    getChildrenFn(vnode).forEach((child, index) => pushFn(store, {vnode:child, parent : vnode, index}));
+    const vnode = popFn(store) ;
+    traversalResult.push(visitFn(vnode));
+    getChildrenFn(vnode).forEach((child, index) => pushFn(store, child));
   }
 
   return traversalResult
