@@ -80,5 +80,5 @@ export const hasMsignature = checkAndGatherErrors([
 ], `hasMsignature : fails!`);
 
 export function hasNoTwoSlotsSameName(slotHoles, slotNames){
-  return uniq(slotNames).length !== slotHoles.length
+  return uniq(slotNames).length === slotHoles.length
 }

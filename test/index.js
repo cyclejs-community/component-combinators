@@ -1,4 +1,6 @@
 window.$ = window.jQuery = require('jquery');
+import * as QUnit from 'qunitjs';
+QUnit.dump.maxDepth = 200;
 
 import './m.specs'
 // import './FSM.specs'

@@ -1,10 +1,12 @@
 // let Qunit = require('qunitjs');
 import * as QUnit from 'qunitjs';
-import { always } from 'ramda';
+import { always, clone, flatten } from 'ramda';
 import * as Rx from 'rx';
 import h from 'snabbdom/h';
 import { div } from 'cycle-snabbdom';
-import { getSlotHoles, m } from '../src/components/m/m';
+import {
+  getSlotHoles, m, mergeChildrenIntoParentDOM, rankChildrenBySlot
+} from '../src/components/m/m';
 import { makeDivVNode, projectSinksOn } from '../src/utils';
 import { runTestScenario } from '../src/runTestScenario';
 
@@ -682,21 +684,12 @@ QUnit.test(
                 "text": c
               },
               {
-                "children": [
-                  {
-                    "children": [],
-                    "data": {},
-                    "elm": undefined,
-                    "key": undefined,
-                    "sel": undefined,
-                    "text": gc
-                  },
-                ],
+                "children": [],
                 "data": {},
                 "elm": undefined,
                 "key": undefined,
                 "sel": "div",
-                "text": undefined
+                "text": gc
               }
             ],
             "data": {},
@@ -882,8 +875,11 @@ QUnit.module("Testing getSlotHoles(vNode) : Array.<{parent:Array, index:Number}>
 const A_SLOT = 'a slot';
 const ANOTHER_SLOT = 'another slot';
 const YET_ANOTHER_SLOT = 'yet another slot';
-const A_SELECTOR = 'a_div_selector'
-const ANOTHER_SELECTOR = 'another_div_selector'
+const YET_YET_ANOTHER_SLOT = 'yet yet another slot';
+const A_SELECTOR = 'a_div_selector';
+const ANOTHER_SELECTOR = 'another_div_selector';
+const YET_ANOTHER_SELECTOR = 'yet_another_div_selector';
+const YET_YET_ANOTHER_SELECTOR = 'yet_yet_another_div_selector';
 
 const parentVNodeSlotAtRoot = {
   children: [],
@@ -929,6 +925,127 @@ const childrenVNodeWithNoSlotAndChildWithAnotherSlot = {
   text: undefined
 }
 
+function getVNodeWithOnlyText(text) {
+  return {
+    children: [],
+    data: {},
+    elm: undefined,
+    key: undefined,
+    sel: undefined,
+    text: text
+  }
+}
+
+// TODO : add contract check that if sel is not set, cannot have slot in data
+function getVNodeWithUndefinedSlot(selector) {
+  return {
+    children: [],
+    data: { slot: undefined },
+    elm: undefined,
+    key: undefined,
+    sel: selector,
+    text: undefined
+  }
+}
+
+function getVNodeWithNoSlot(selector) {
+  return {
+    children: [],
+    data: {},
+    elm: undefined,
+    key: undefined,
+    sel: selector,
+    text: undefined
+  }
+}
+
+const PARENT_DOM_SINK_NOT_NULL = 'anything';
+const ParentVNode_0_0_0 = getVNodeWithOnlyText('ParentVNode_0_0_0');
+const ParentVNode_0_0_1 = {
+  "children": [],
+  "data": { slot: YET_YET_ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": YET_YET_ANOTHER_SELECTOR,
+  "text": ""
+};
+const ParentVNode_0_0 = {
+  "children": [ParentVNode_0_0_0, ParentVNode_0_0_1],
+  "data": { slot: ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": ANOTHER_SELECTOR,
+  "text": ""
+};
+const ParentVNode_0_1 = getVNodeWithOnlyText('ParentVNode_0_1');
+const ParentVNode_0_2 = {
+  "children": [],
+  "data": { slot: YET_ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": ANOTHER_SELECTOR,
+  "text": ""
+};
+const ParentVNode_0_3 = getVNodeWithUndefinedSlot(YET_ANOTHER_SELECTOR);
+const ParentVNode_0 = {
+  "children": [
+    ParentVNode_0_0, ParentVNode_0_1, ParentVNode_0_2, ParentVNode_0_3
+  ],
+  "data": { slot: A_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": A_SELECTOR,
+  "text": ""
+};
+const ParentVNode_0_default_slot = {
+  "children": [
+    ParentVNode_0_0, ParentVNode_0_1, ParentVNode_0_2
+  ],
+  "data": { slot: A_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": A_SELECTOR,
+  "text": ""
+};
+
+const ChildVNode_0_0 = {
+  "children": [],
+  "data": { slot: ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": ANOTHER_SELECTOR + '.child',
+  "text": "ChildVNode_0_0"
+};
+const ChildVNode_0 = {
+  "children": [],
+  "data": { slot: A_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": A_SELECTOR + '.child',
+  "text": "ChildVNode_0"
+};
+// NOTE : these **MUST** be two diffrent objects, because the snabdom modifies these object in
+// place and so do we.
+const ChildWithNoSlotA = getVNodeWithNoSlot(A_SELECTOR + '.noslot.A');
+const ChildWithNoSlotB = getVNodeWithNoSlot(A_SELECTOR + '.noslot.B');
+const ChildWithNoSlotC = getVNodeWithNoSlot(A_SELECTOR + '.noslot.C');
+const ChildVNode_0_0_1 = {
+  "children": [],
+  "data": { slot: YET_YET_ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": YET_YET_ANOTHER_SELECTOR + '.child',
+  "text": "ChildVNode_0_0_1"
+};
+const ChildVNode_0_2 = {
+  "children": [],
+  "data": { slot: YET_ANOTHER_SLOT },
+  "elm": undefined,
+  "key": undefined,
+  "sel": ANOTHER_SELECTOR + '.child',
+  "text": "ChildVNode_0_2"
+};
+
 QUnit.test("main cases - parent slot hole at root level", function exec_test(assert) {
   assert.deepEqual(getSlotHoles(parentVNodeSlotAtRoot),
     [parentVNodeSlotAtRoot], `error`);
@@ -973,7 +1090,7 @@ QUnit.test(`edge cases - parent slot hole at children level - 2 same slots - 1 +
       sel: A_SELECTOR,
       text: undefined
     }
-    assert.throws(function(){getSlotHoles(testData)},
+    assert.throws(function () {getSlotHoles(testData)},
       /getSlotHoles/, `Contract : slot name must correspond to a unique location!`);
   });
 
@@ -997,3 +1114,162 @@ QUnit.test(`main cases - parent slot hole at children level - 2 different slots 
       ],
       `error`);
   });
+
+QUnit.module("Testing rankChildrenBySlot(childrenVNode) : Object.<string, Array.<VNode>>", {});
+
+QUnit.test(`main cases - holes at parent and children levels - 3 different slots - 1x1 + 1x2 + 1 content`,
+  function exec_test(assert) {
+    const yetAnotherSlotChild1 = {
+      children: [
+        childrenVNodeWithASlot,
+        childrenVNodeWithNoSlotAndNoChildren,
+        childrenVNodeWithNoSlotAndChildWithAnotherSlot
+      ],
+      data: { slot: YET_ANOTHER_SLOT },
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    };
+    const yetAnotherSlotChild2 = {
+      children: [
+        childrenVNodeWithASlot,
+        childrenVNodeWithNoSlotAndNoChildren,
+      ],
+      data: { slot: YET_ANOTHER_SLOT },
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    };
+    const aSlotChild = {
+      children: [
+        childrenVNodeWithNoSlotAndNoChildren,
+        childrenVNodeWithNoSlotAndChildWithAnotherSlot
+      ],
+      data: { slot: A_SLOT },
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    };
+    const noSlotChild = {
+      children: [
+        childrenVNodeWithNoSlotAndNoChildren,
+      ],
+      data: {},
+      elm: undefined,
+      key: undefined,
+      sel: A_SELECTOR,
+      text: undefined
+    };
+    const testData = [yetAnotherSlotChild1, yetAnotherSlotChild2, aSlotChild, noSlotChild];
+    assert.deepEqual(rankChildrenBySlot(testData),
+      {
+        [A_SLOT]: [aSlotChild],
+        [YET_ANOTHER_SLOT]: [yetAnotherSlotChild1, yetAnotherSlotChild2],
+        "undefined": [
+          {
+            "children": [
+              {
+                "children": [],
+                "data": {},
+                "elm": undefined,
+                "key": undefined,
+                "sel": undefined,
+                "text": "this is childrenVNodeWithNoSlotAndNoChildren"
+              }
+            ],
+            "data": {},
+            "elm": undefined,
+            "key": undefined,
+            "sel": "a_div_selector",
+            "text": undefined
+          }
+        ],
+      },
+      `error`);
+  });
+
+QUnit.module("Testing mergeChildrenIntoParentDOM(parentDOMSink)(arrayVNode) : VNode", {});
+
+// Parent: 0a, 0.0b, 0.0.1c, 0.2d: slot ; 0.3: undefined ; 0.1, 0.0.0: no slot
+// 1. Children: [b, -, a, c, d] // testing override, should only remain a,
+// 2. Children: [-, -, b, c, d] // testing default and override, should remain b and d, - -
+// in 0.3
+// 3. Children: [-, -, -, c, d] // testing default, override deeper level, should remain
+// 0.0.0, c and d
+QUnit.test(`main cases - testing parent root slot (override) - undefined slot`,
+  function exec_test(assert) {
+    const childrenDOMs = [
+      ChildVNode_0_0, ChildWithNoSlotA, ChildVNode_0, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
+    const arrayVNode = flatten([ParentVNode_0, childrenDOMs]);
+
+    let result = clone(ParentVNode_0);
+    result.children = [clone(ChildVNode_0)];
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });
+
+QUnit.test(`main cases - testing default and override - undefined slot`,
+  function exec_test(assert) {
+    const childrenDOMs = [
+      ChildWithNoSlotB, ChildWithNoSlotA, ChildVNode_0_0, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
+    /*
+        const childrenDOMs = [
+          ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC, ChildVNode_0_0_1, ChildVNode_0_2
+        ];
+    */
+
+    const arrayVNode = flatten([ParentVNode_0, childrenDOMs]);
+
+    let result = clone(ParentVNode_0);
+    result.children[0].children = [ChildVNode_0_0];
+    result.children[2].children = [ChildVNode_0_2];
+    result.children[3].children = [ChildWithNoSlotB, ChildWithNoSlotA];
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });
+
+QUnit.test(`main cases - testing default, and override deeper level - undefined slot`,
+  function exec_test(assert) {
+        const childrenDOMs = [
+          ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC, ChildVNode_0_0_1, ChildVNode_0_2
+        ];
+
+    const arrayVNode = flatten([ParentVNode_0, childrenDOMs]);
+
+    let result = clone(ParentVNode_0);
+    result.children[0].children[1].children = [ChildVNode_0_0_1];
+    result.children[2].children = [ChildVNode_0_2];
+    result.children[3].children = [ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC];
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });
+
+// Same with Parent: 0, 0.0b, 0.0.1c, 0.2d: slot ; 0.1, 0.0.0: no slot
+// 1. Children: [b, -, a, c, d] // testing override, should only remain a,
+QUnit.test(`main cases - testing parent root slot (override) - default slot`,
+  function exec_test(assert) {
+    const childrenDOMs = [
+      ChildVNode_0_0, ChildWithNoSlotA, ChildVNode_0, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
+    const arrayVNode = flatten([ParentVNode_0_default_slot, childrenDOMs]);
+
+    let result = clone(ParentVNode_0_default_slot);
+    result.children[0].children = ChildVNode_0_0;
+    result.children[2].children = ChildVNode_0_2;
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });
+// TODO : BUG!!!
