@@ -14,10 +14,11 @@ If the user does not supply a merge function through the `ComponentDef` paramete
 ### Regular DOM merge
 Let's consider `m({}, {}, [ParentComponent, [SiblingComponent1, SiblingComponent2]` with the following DOMs being produced :
 
-- component's DOM
+- ParentComponent
 ```html
 <div id='#parent'>
-  <h2> This is some content included in the parent component's DOM </h2>
+  <h2> This is some content included in the parent component's DOM 
+  </h2>
 </div>
 ```
 
@@ -38,20 +39,21 @@ Let's consider `m({}, {}, [ParentComponent, [SiblingComponent1, SiblingComponent
 The merged result will be similar to :
 ```html
 <div id='#parent'>
-  <h2> This is some content included in the parent component's DOM </h2>
-	<div id='#sibling1'>
-	  <span> first sibling component's DOM </span>
-	</div>
-	<div id='#sibling2'>
-	  <span> second sibling component's DOM </span>
-	</div>
+  <h2> This is some content included in the parent component's DOM 
+  </h2>
+  <div id='#sibling1'>
+    <span> first sibling component's DOM </span>
+  </div>
+  <div id='#sibling2'>
+    <span> second sibling component's DOM </span>
+  </div>
 </div>
 ```
 
-** NOTE ** : for the edge case when the parent component does not have a selector for the children to be included within (for instance if it is a text node), a dummy `div` selector is created, whose first children is the text node, and next children are the children DOM trees. For more details look at the tests.
+**NOTE** : for the edge case when the parent component does not have a selector for the children to be included within (for instance if it is a text node), a dummy `div` selector is created, whose first children is the text node, and next children are the children DOM trees. For more details look at the tests.
 
 ### Slotted DOM merge
-The slotted DOM merge is a powerful, albeit complex functionality which allows to build the parent DOM from the children DOM according to a redistribution logic specified by a slot mechanism similar to the one used for `Web Components`.
+The slotted DOM merge is a powerful, albeit complex functionality which allows to build the parent DOM from the children DOM according to a redistribution logic specified by a [slot mechanism](https://developers.google.com/web/fundamentals/architecture/building-components/shadowdom#slots) similar to the one used for [Web Components](https://developers.google.com/web/fundamentals/architecture/building-components/).
 
 Let's assume :
 
@@ -86,7 +88,6 @@ Let's assume :
 
 That parent DOM has several features:
 
-- it has a `<style>` element with a set of CSS styles that are scoped just to the document fragment.
 - it uses `<slot>` and its name attribute to make three named slots:
   - `<slot name="element-name">`
   - `<slot name="description">`
@@ -159,9 +160,9 @@ The merged DOM should hence be :
 </div>
 ```
 
-In short, the general case is that the parent defines some slots by name, and replace those slots by the corresponding DOM slots found in the children DOM's. In this example, all slots are filled, as they can all be found in the children DOMs. 
+In short, the general case is that the parent defines some slots by name, and replace those slots by the corresponding DOM content found in the children DOM's slots. In this example, all slots are filled, as they can all be found in the children DOMs. 
 
-When a slot cannot be filled in by a corresponding children DOM (the children DOM simply does not define content for that slot), the slotted content of the parent is used as default. The following describes that behaviour, with the same parent component, but this time children component which will not define content for the `attributes` slot.
+When a slot cannot be filled in by a corresponding children DOM (the children DOM simply does not define content for that slot), the slotted content of the parent is used as default. The following describes that behaviour, with the same parent component, but this time children components which will not define content for the `attributes` slot.
 
  2. child with slot `element-name`
  
@@ -216,7 +217,7 @@ In that case, the merged DOM should be :
 ```
 
 ### Rules
-- in the parent component's DOM, slots can be repeated. For example, this is a valid proposition :
+- there can be several children defining content for one given slot. For example, this is a valid proposition :
 ```html
 <fancy-tabs>
   <button slot="title">Title</button>
@@ -273,8 +274,8 @@ See same previous example as a demo of this (`<slot id="panelsSlot">`). Note tha
 
 - Children DOM contents which are not assigned to any slot (including the unnamed slot) are merged into the parent's DOM using the mechanism described in the `standard merge` section.
 
-- If there's more than one unnamed or named slots, the corresponding children content will be replicated in all corresponding slots.
-	- this is a difference with the web component slot mechanism where if there's more than one default slot, the first is used.
+- ~~If there's more than one unnamed or named slots, the corresponding children content will be replicated in all corresponding slots.~~
+	- ~~this is a difference with the web component slot mechanism where if there's more than one default slot, the first is used.~~
 
 ### vTree transcription
 In a `vNode` context, `<slot name="element-name">NEED NAME</slot>` would correspond to `{children : [none], sel:'div', data : {slot : 'attributes'}}`, where `none` is the `vNode` corresponding to `<p>None</p>`.

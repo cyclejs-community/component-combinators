@@ -207,6 +207,9 @@ The current roadmap stands as :
     - [ ] recursive component combinator ?
       - [svelte](https://svelte.technology/guide)
       - [vue](unknownlink)
+- component library
+  - [web components](https://bosonic.github.io/elements/dialogs-modals.html)
+  - cf. materializecss
 - Demo
   - [ ] nice demo site : github pages?
     - example : cf. https://viperhtml.js.org/hyperhtml/documentation/
