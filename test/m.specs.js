@@ -1265,11 +1265,50 @@ QUnit.test(`main cases - testing parent root slot (override) - default slot`,
     const arrayVNode = flatten([ParentVNode_0_default_slot, childrenDOMs]);
 
     let result = clone(ParentVNode_0_default_slot);
-    result.children[0].children = ChildVNode_0_0;
-    result.children[2].children = ChildVNode_0_2;
+    result.children = [ChildVNode_0];
+    result.children.push(ChildWithNoSlotA);
 
     assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
       result,
       ``);
   });
-// TODO : BUG!!!
+
+// Same with Parent: 0, 0.0b, 0.0.1c, 0.2d: slot ; 0.1, 0.0.0: no slot
+// 2. Children: [-, -, b, c, d] // testing default and override, should remain b and d, - -
+QUnit.test(`main cases - testing default and override - default slot`,
+  function exec_test(assert) {
+    const childrenDOMs = [
+      ChildWithNoSlotB, ChildWithNoSlotA, ChildVNode_0_0, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
+    const arrayVNode = flatten([ParentVNode_0_default_slot, childrenDOMs]);
+
+    let result = clone(ParentVNode_0_default_slot);
+    result.children[0].children = [ChildVNode_0_0];
+    result.children[2].children = [ChildVNode_0_2];
+    result.children.push(ChildWithNoSlotB, ChildWithNoSlotA);
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });
+
+// Same with Parent: 0, 0.0b, 0.0.1c, 0.2d: slot ; 0.1, 0.0.0: no slot
+// 3. Children: [-, -, -, c, d] // testing default, override deeper level, should remain
+// 0.0.0, c and d
+QUnit.test(`main cases - testing default, and override deeper level - default slot`,
+  function exec_test(assert) {
+    const childrenDOMs = [
+      ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
+
+    const arrayVNode = flatten([ParentVNode_0_default_slot, childrenDOMs]);
+
+    let result = clone(ParentVNode_0_default_slot);
+    result.children[0].children[1].children = [ChildVNode_0_0_1];
+    result.children[2].children = [ChildVNode_0_2];
+    result.children.push(ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC);
+
+    assert.deepEqual(mergeChildrenIntoParentDOM(PARENT_DOM_SINK_NOT_NULL)(arrayVNode),
+      result,
+      ``);
+  });

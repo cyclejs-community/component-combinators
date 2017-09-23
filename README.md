@@ -203,10 +203,20 @@ The current roadmap stands as :
     - [x] Action driver 
 - Core
     - [ ] DOM merge with slot assignment (a la web component)
+    - [ ] type contracts error handling for component's settings
+    - [ ] recursive component combinator ?
+      - [svelte](https://svelte.technology/guide)
+      - [vue](unknownlink)
 - Demo
   - [ ] nice demo site : github pages?
-    - example : cf. https://viperhtml.js.org/hyperhtml/documentation/ 
+    - example : cf. https://viperhtml.js.org/hyperhtml/documentation/
+    - https://vuetifyjs.com/components/alerts
+    - https://vuetifyjs.com/components/alerts 
   - [ ] demo from Angular2 book
+  - [ ] [7 very common small apps with common gui problems](https://github.com/eugenkiss/7guis/wiki#counter)
+  - [ ] [flux challenge?](https://github.com/staltz/flux-challenge)
+  - [ ] documentation slot
+    - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or https://skyronic.com/blog/vue-slots-example 
 - Distribution
   - monorepo?
   - individual combinator packages?
