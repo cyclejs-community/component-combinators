@@ -114,7 +114,7 @@ For reactive systems which can be specified by their set of traces over the spac
 
 For practical purposes, the set of traces being generally infinite, gray-box testing techniques can be used to reduce considerably the set of traces under test.
 
-## ... but communicate poorly the user interface design
+## ... but stream-based implementations often obfuscate the user interface design
 However, the functional reactive programming with streams approach suffers from two key issues:
 
 - linear, one-way dataflows are expressed easily through combining higher-order stream operators (`map`, `flatMap`), simple control flow is made possible by specific operators (`filter`, `switch`, `fold`), complex control flow often requires ad-hoc solutions (jumping, interrupts, conditional branching, looping, etc.)
