@@ -70,7 +70,7 @@ export const App = InjectSourcesAndSettings({
   OnRoute({ route: '', trace: 'OnRoute (/)' }, [
     HomePage
   ]),
-  OnRoute({ route: 'aspirational', trace: 'OnRoute  (aspirational)' }, [
+  OnRoute({ route: 'aspirational', trace: 'OnRoute  (/aspirational)' }, [
     InjectSourcesAndSettings({ settings: { breadcrumbs: ['aspirational'] } }, [
       AspirationalPageHeader, [
         Card(BLACBIRD_CARD_INFO),

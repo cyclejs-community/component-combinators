@@ -9,8 +9,8 @@ import { pipe, values } from 'ramda'
 import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
 import { m } from "../../../src/components/m/m"
-import 'user-area.scss'
 import { SidePanel } from "./.SidePanel"
+import "app.scss"
 
 const $ = Rx.Observable;
 
@@ -33,8 +33,10 @@ export const App = InjectSourcesAndSettings({
         // starts with home route
         .startWith('')
         .share(),
+      // NOTE : domain driver always send behaviour observables (i.e. sharedReplayed already)
       user$ : sources.domainQuery.getCurrent(USER),
-      projects$: sources.domainQuery.getCurrent(PROJECTS)
+      // NOTE : `values` to get the actual array because firebase wraps it around indices
+      projects$: sources.domainQuery.getCurrent(PROJECTS).map(values)
     }
   },
   settings: {

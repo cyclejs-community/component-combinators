@@ -1,17 +1,28 @@
 import * as Rx from "rx";
-import { ROUTE_SOURCE } from "../properties"
-import { ForEach } from "../../../src/components/ForEach/ForEach"
-import { ListOf } from "../../../src/components/ListOf/ListOf"
-import { InjectSources } from "../../../src/components/Inject/InjectSources"
-import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift,firebaseListToArray } from "../../../src/utils"
-import { pipe, values, always } from 'ramda'
-import { PROJECTS, USER } from "../domain/index"
+import { ForEach } from "../../../../src/components/ForEach/ForEach"
+import { ListOf } from "../../../../src/components/ListOf/ListOf"
+import { InjectSources } from "../../../../src/components/Inject/InjectSources"
+import { InjectSourcesAndSettings } from "../../../../src/components/Inject/InjectSourcesAndSettings"
+import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift,firebaseListToArray } from "../../../../src/utils"
+import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
-import { m } from "../../../src/components/m/m"
+import { m } from "../../../../src/components/m/m"
 import 'user-area.scss'
 
 const $ = Rx.Observable;
+
+function getProjectNavigationItems$(sources, settings) {
+  return sources.projects$
+    .map(filter(project => !project.deleted))
+    .map(map(project => ({
+        title: project.title,
+        link: ['projects', project._id]
+    })))
+    .tap(x => console.log(`getProjectNavigationItems$:`, x))
+    // NOTE : this is a behaviour
+    .shareReplay(1)
+    ;
+}
 
 export const SidePanel = m({}, {}, [Div('.app__l-side'), [
   m({},{}, [Navigation, [
@@ -20,17 +31,18 @@ export const SidePanel = m({}, {}, [Div('.app__l-side'), [
       ]
     ]),
     m({},{ title: 'Projects' }, [
-      InjectSources({ userProjectList$: void 1 }, [// TODO $.Array<{title, link}> : userProjectList$
-        ForEach({ from: 'userProjectList$', as: 'userProjectList' }, [
-          ListOf({ list: 'userProjectList', as: 'project' }, [
+      InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+        // TODO : that could be refactored in (userProjectList$ : ..., project, NavigationItem)
+        // TODO : like ForEachOf({listName$:listdefFn, itemProp:string, comp:Component})
+        ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+          ListOf({ list: 'projectList', as: 'project' }, [
             EmptyComponent,
             NavigationItem
           ])
         ])
       ])
     ]),
-    m({},{ title: 'Admin' }, [
-      NavigationSection, [
+    m({},{ title: 'Admin' }, [ NavigationSection, [
         m({},{project : { title: 'Manage Plugins', link: 'plugins' }}, [NavigationItem])
       ]
     ]),
@@ -50,7 +62,8 @@ function Navigation(sources, settings){
     [DOM_SINK]: state$.map(state => {
       return div([
         renderTasksSummary(state),
-        nav('', { slot: 'navigation-section' }, [])
+        // NOTE : nav('', {..}, []) does not work, '' is not recognized as valid selector
+        nav({ slot: 'navigation-section' }, [])
       ])
     })
   }
@@ -61,7 +74,7 @@ function NavigationSection(sources, settings){
 
   return {
     [DOM_SINK] : $.of(
-      div('', {slot : 'navigation-section'}, [
+      div({slot : 'navigation-section'}, [
       h2('.navigation-section__title', title),
         ul('.navigation-section__list', {slot : 'navigation-item'},[])
       ])
@@ -70,7 +83,7 @@ function NavigationSection(sources, settings){
 }
 
 function NavigationItem(sources, settings){
-  const {title, link} = settings;
+  const {project : {title, link}} = settings;
   const isLinkActive = link ? '.navigation-section__link--active' : ''
 
   return {
