@@ -8,6 +8,7 @@ import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
 import 'user-area.scss'
+import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
 
 const $ = Rx.Observable;
 
@@ -16,7 +17,7 @@ function getProjectNavigationItems$(sources, settings) {
     .map(filter(project => !project.deleted))
     .map(map(project => ({
         title: project.title,
-        link: ['projects', project._id]
+        link: ['projects', project._id].join('/')
     })))
     .tap(x => console.log(`getProjectNavigationItems$:`, x))
     // NOTE : this is a behaviour
@@ -30,7 +31,7 @@ export const SidePanel = m({}, {}, [Div('.app__l-side'), [
         m({},{project : { title: 'Dashboard', link: 'dashboard' }}, [NavigationItem])
       ]
     ]),
-    m({},{ title: 'Projects' }, [
+    m({},{ title: 'Projects' }, [ NavigationSection, [
       InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
         // TODO : that could be refactored in (userProjectList$ : ..., project, NavigationItem)
         // TODO : like ForEachOf({listName$:listdefFn, itemProp:string, comp:Component})
@@ -41,14 +42,14 @@ export const SidePanel = m({}, {}, [Div('.app__l-side'), [
           ])
         ])
       ])
-    ]),
+    ]]),
     m({},{ title: 'Admin' }, [ NavigationSection, [
         m({},{project : { title: 'Manage Plugins', link: 'plugins' }}, [NavigationItem])
       ]
     ]),
   ]])
 ]
-])
+]);
 
 function Navigation(sources, settings){
   // NOTE : the `Div('.app__l-side')` could also be moved in the top level div below. I however
@@ -84,15 +85,21 @@ function NavigationSection(sources, settings){
 
 function NavigationItem(sources, settings){
   const {project : {title, link}} = settings;
-  const isLinkActive = link ? '.navigation-section__link--active' : ''
+  // TODO : finish logic later, when link is clicked, route changes, and read route to set
+  // active class
+  const isLinkActive = ROUTE_PARAMS in settings ? '.navigation-section__link--active' : ''
+  const linkSanitized = link.replace(/\//i, '.');
 
   return {
     [DOM_SINK] : $.of(
-      a(`.navigation-section__link.${link}${isLinkActive}`, {slot: 'navigation-item'}, title)
+      a(
+        `.navigation-section__link.${linkSanitized}${isLinkActive}`,
+        {attrs : {href : link}, slot: 'navigation-item'},
+        title)
     ),
   // NOTE : we avoid havign to isolate by using the link which MUST be unique over the whole
     // application (unicity of a route)
-  router : sources.DOM.select(`.navigation-section__link.${link}`).events('click')
+  router : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
     .map(always(link))
     }
 }
@@ -111,7 +118,7 @@ function renderTasksSummary({ user, projects }) {
       }, [])
     ]),
     div('.user-area__l-information', [
-      p('.user-area__welcome-text', `Hi ${user.name}}}`),
+      p('.user-area__welcome-text', `Hi ${user.name}`),
       openTasksCount
         ? p([`You got `, strong(openTasksCount), ` open tasks.`])
         : p('No open tasks. Hooray!')

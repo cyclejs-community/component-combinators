@@ -23,3 +23,5 @@
 // one function call factory(sources, settings) -> {sources : {sources hash}, settings: new
 // settings}
 // TODO : cleanup utils, too many thignsthere, look for cohesion
+// TODO : InSlot combinator which takes a component and adds a given slot to its vdom sink
+// - InSlot({slot : ''navigation-section'}, [NavigationSection()],
