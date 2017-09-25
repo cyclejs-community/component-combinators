@@ -10,11 +10,10 @@ import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
 import { m } from "../../../src/components/m/m"
 import { SidePanel } from "./.SidePanel"
+import { MainPanel } from "./.MainPanel"
 import "app.scss"
 
 const $ = Rx.Observable;
-
-const MainPanel = DummyComponent;
 
 const UI = [SidePanel, MainPanel];
 
