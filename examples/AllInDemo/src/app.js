@@ -4,7 +4,7 @@ import { ForEach } from "../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format } from "../../../src/utils"
+import { DOM_SINK, EmptyComponent, DummyComponent, format, Div } from "../../../src/utils"
 import { pipe, values } from 'ramda'
 import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
@@ -13,13 +13,6 @@ import 'user-area.scss'
 import { SidePanel } from "./.SidePanel"
 
 const $ = Rx.Observable;
-
-function AppContainer(sources, settings) {
-
-  return {
-    [DOM_SINK]: $.of(div('.app', []))
-  }
-}
 
 const MainPanel = DummyComponent;
 
@@ -48,5 +41,4 @@ export const App = InjectSourcesAndSettings({
     sinkNames: ['domainQuery', 'domainAction$', DOM_SINK, 'router'],
     routeSource: ROUTE_SOURCE
   }
-}, [AppContainer, UI]);
-
+}, [Div('.app'), UI]);

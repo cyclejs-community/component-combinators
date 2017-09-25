@@ -5,7 +5,7 @@ import {
   values, where
 } from "ramda"
 import * as Rx from "rx"
-import { div } from "cycle-snabbdom"
+import { div, nav } from "cycle-snabbdom"
 // TODO https://github.com/moll/js-standard-error
 // TODO : define custom error types
 import toHTML from "snabbdom-to-html"
@@ -1109,6 +1109,31 @@ function traverseTree({StoreConstructor, pushFn, popFn, isEmptyStoreFn, visitFn,
   return traversalResult
 }
 
+function vLift(vNode){
+  return function vLift(sources, settings){
+    return {
+      [DOM_SINK]: $.of(vNode)
+    }
+  }
+}
+
+/**
+ * Lifts a div function into a Div component which only has a DOM sink, whose only value emitted
+ * is computed from the arguments passed
+ * @returns {Component}
+ */
+function Div(){
+  return vLift(div.apply(null, arguments))
+}
+function Nav(){
+  return vLift(nav.apply(null, arguments))
+}
+
+function firebaseListToArray(fbList){
+  // will have {key1:element, key2...}
+  return values(fbList)
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1185,5 +1210,9 @@ export {
   ERROR_MESSAGE_PREFIX,
   EmptyComponent,
   DummyComponent,
-  traverseTree
+  traverseTree,
+  vLift,
+  Div,
+  Nav,
+  firebaseListToArray
 }

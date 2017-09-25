@@ -22,3 +22,4 @@
 // TODO : change InjectSourcesAndSettings so that factory returns both sources and settings so
 // one function call factory(sources, settings) -> {sources : {sources hash}, settings: new
 // settings}
+// TODO : cleanup utils, too many thignsthere, look for cohesion
