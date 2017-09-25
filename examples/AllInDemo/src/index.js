@@ -81,7 +81,7 @@ fbRoot.once('value')
   })
   .then(() => {
     const { sources, sinks } = run(App, {
-      [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
+      [DOM_SINK]: filterNull(makeDOMDriver('#appp', { transposition: false, modules })),
       document: documentDriver,
       firebase: makeFirebaseDriver(fbRoot, {debug : true}),
       queue$: makeQueueDriver(fbRoot.child('!queue'), 'responses', 'tasks', {debug : true}),
