@@ -3,7 +3,7 @@ import { ForEach } from "../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift,firebaseListToArray } from "../../../../src/utils"
+import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../src/utils"
 import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
@@ -100,6 +100,7 @@ function NavigationItem(sources, settings){
   // NOTE : we avoid havign to isolate by using the link which MUST be unique over the whole
     // application (unicity of a route)
   router : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
+    .do(preventDefault)
     .map(always(link))
     }
 }
