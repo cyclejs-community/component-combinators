@@ -4,8 +4,8 @@ import { ForEach } from "../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div } from "../../../src/utils"
-import { pipe, values } from 'ramda'
+import { Div, DOM_SINK, format } from "../../../src/utils"
+import { values } from 'ramda'
 import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
 import { m } from "../../../src/components/m/m"
@@ -33,7 +33,7 @@ export const App = InjectSourcesAndSettings({
         .startWith('')
         .share(),
       // NOTE : domain driver always send behaviour observables (i.e. sharedReplayed already)
-      user$ : sources.domainQuery.getCurrent(USER),
+      user$: sources.domainQuery.getCurrent(USER),
       // NOTE : `values` to get the actual array because firebase wraps it around indices
       projects$: sources.domainQuery.getCurrent(PROJECTS).map(values)
     }
@@ -42,4 +42,12 @@ export const App = InjectSourcesAndSettings({
     sinkNames: ['domainQuery', 'domainAction$', DOM_SINK, 'router'],
     routeSource: ROUTE_SOURCE
   }
-}, [Div('.app'), UI]);
+}, [
+  // NOTE :
+  // 1. url$ is derived from `ROUTE_SOURCE`, hence must be injected after
+  // 2. we need both the changed route EVENT and the current route BEHAVIOUR (url$)
+  // Note that url$ is always the full route in the browser, i.e. no nested route here
+  InjectSources({ url$: (sources, settings) => sources[ROUTE_SOURCE].shareReplay(1) }, [
+    Div('.app'), UI
+  ])
+]);

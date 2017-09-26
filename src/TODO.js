@@ -25,3 +25,4 @@
 // TODO : cleanup utils, too many thignsthere, look for cohesion
 // TODO : InSlot combinator which takes a component and adds a given slot to its vdom sink
 // - InSlot({slot : ''navigation-section'}, [NavigationSection()],
+// TODO : tabs component - it is a FSM!! so write it like that

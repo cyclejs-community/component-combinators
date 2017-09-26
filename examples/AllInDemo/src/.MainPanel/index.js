@@ -8,7 +8,6 @@ import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, 
 import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
-import 'user-area.scss'
 import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
 import {Project} from './..Project'
 import {ProjectsDashboard} from './..ProjectsDashboard'
@@ -30,3 +29,5 @@ export const MainPanel = m({}, {}, [Div('.app__l-main'), [
 
 // TODO : issue with side panel, I don't see the route params, onRoute('') will not match
 // always, when it actually should... well confirm it first
+// TODO : also issue with the ngc classes at host level.. how to incorporate them...
+// TODO : route only displays the tab, then click leads to new route, which displays the tab
