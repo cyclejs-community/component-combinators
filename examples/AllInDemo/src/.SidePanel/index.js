@@ -61,7 +61,7 @@ function Navigation(sources, settings){
 
   return {
     [DOM_SINK]: state$.map(state => {
-      return div([
+      return div('.navigation', [
         renderTasksSummary(state),
         // NOTE : nav('', {..}, []) does not work, '' is not recognized as valid selector
         nav({ slot: 'navigation-section' }, [])
@@ -75,7 +75,7 @@ function NavigationSection(sources, settings){
 
   return {
     [DOM_SINK] : $.of(
-      div({slot : 'navigation-section'}, [
+      div('.navigation-section', {slot : 'navigation-section'}, [
       h2('.navigation-section__title', title),
         ul('.navigation-section__list', {slot : 'navigation-item'},[])
       ])
@@ -93,7 +93,7 @@ function NavigationItem(sources, settings){
   return {
     [DOM_SINK] : $.of(
       a(
-        `.navigation-section__link.${linkSanitized}${isLinkActive}`,
+        `${isLinkActive}.navigation-item.navigation-section__link.${linkSanitized}`,
         {attrs : {href : link}, slot: 'navigation-item'},
         title)
     ),
@@ -110,7 +110,7 @@ function renderTasksSummary({ user, projects }) {
   const openTasksCount = firebaseListToArray(projects)
     .reduce((count, project) => count + project.tasks.filter((task) => !task.done).length, 0);
 
-  return div([
+  return div('.user-area', [
     div('.user-area__l-profile', [
       img({
         attrs: {
