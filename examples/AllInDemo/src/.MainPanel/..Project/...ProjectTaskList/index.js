@@ -24,12 +24,22 @@ const ProjectTaskListContainer = vLift(
     ])
 ]));
 
+const ToggleButton = ListOf({}, [EmptyComponent, Button('.button.button--toggle', {})])
+
+/*
+<button class="button button--toggle"
+*ngFor="let button of buttonList"
+  [class.button--active]="button === selectedButton"
+(click)="onButtonActivate(button)">{{button}}</button>
+*/
+
 /*
 <ngc-task-list [tasks]="project.tasks"
   [activitySubject]="project"
 (tasksUpdated)="updateTasks($event)"></ngc-task-list>
 */
-export const ProjectTaskList = m({},{},[ProjectTaskListContainer, [
+export const ProjectTaskList =
+  m({},{buttonList : ['all', 'open', 'done'], selectedButton: 'all'},[ProjectTaskListContainer, [
   ToggleButton,
   EnterTask,
   TaskList
