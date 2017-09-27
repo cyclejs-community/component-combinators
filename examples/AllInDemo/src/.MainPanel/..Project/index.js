@@ -33,9 +33,7 @@ export const Project = m({},{}, [Div('.project'), [
     // TODO : put the slot 'tab', not clear if onRoute keeps the slot or wraps in a div
     // mmm no, check onRoute accepts parent component as well, and add the slot in the parent
     // TODO : check that Div(2 args no children) is valid
-    OnRoute({route : 'tasks'}, [Div('.task-list.task-list__l-container', {slot : 'tab'}),[
-      ProjectTaskList
-    ]]),
+    OnRoute({route : 'tasks'}, [      ProjectTaskList    ]),
     OnRoute({route : 'task/:nr'}, [Div('.task-details', {slot : 'tab'}),[
       ProjectTaskDetails
     ]]),
