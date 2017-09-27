@@ -4,7 +4,7 @@ import { ForEach } from "../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../src/utils"
+import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault, DummyComponent } from "../../../../src/utils"
 import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
@@ -29,5 +29,3 @@ export const MainPanel = m({}, {}, [Div('.app__l-main'), [
 
 // TODO : issue with side panel, I don't see the route params, onRoute('') will not match
 // always, when it actually should... well confirm it first
-// TODO : also issue with the ngc classes at host level.. how to incorporate them...
-// TODO : route only displays the tab, then click leads to new route, which displays the tab

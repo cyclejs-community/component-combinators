@@ -98,10 +98,10 @@ function ProjectHeader(sources, settings){
       return {title, description}
     })
       .map(({title, description}) => {
-      return $.of(div('.project__l-header', [
+      return div('.project__l-header', [
         h2('.project__title', title),
         p(description)
-      ]))
+      ])
     })
   }
 }

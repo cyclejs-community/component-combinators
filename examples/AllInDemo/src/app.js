@@ -19,19 +19,32 @@ const UI = [SidePanel, MainPanel];
 
 export const App = InjectSourcesAndSettings({
   sourceFactory: function (sources, settings) {
+    // NOTE : we need the current route which is a behaviour
+    const currentRouteBehaviour = sources.router
+      .map(location => {
+        const route = location.pathname;
+        return (route && route[0] === '/') ? route.substring(1) : route
+      })
+      .tap(
+        x => console.debug(`App > InjectSourcesAndSettings > ${ROUTE_SOURCE} emits :`, format(x))
+      )
+      // starts with home route
+      .startWith('')
+      .shareReplay(1);
+    // NOTE : we need the route change event
+    // Now it was important to do this in that order, because we want currentRouteBehaviour to
+    // be subscribed before (no route change before having a current route)
+    // A former implementation url$ = incomingRouteEvents$.shareReplay(1) failed as url$ was not
+    // subscribed till after the route had changed, and by then the new route value was already
+    // emitted, so url$ would not emit anything... One has to be very careful dealing with
+    // streams and ordering
+    const incomingRouteEvents$ = currentRouteBehaviour
+        .share();
+
     return {
       // router
-      [ROUTE_SOURCE]: sources.router
-        .map(location => {
-          const route = location.pathname;
-          return (route && route[0] === '/') ? route.substring(1) : route
-        })
-        .tap(
-          x => console.debug(`App > InjectSourcesAndSettings > ${ROUTE_SOURCE} emits :`, format(x))
-        )
-        // starts with home route
-        .startWith('')
-        .share(),
+      url$ : currentRouteBehaviour,
+      [ROUTE_SOURCE]: incomingRouteEvents$,
       // NOTE : domain driver always send behaviour observables (i.e. sharedReplayed already)
       user$: sources.domainQuery.getCurrent(USER),
       // NOTE : `values` to get the actual array because firebase wraps it around indices
@@ -42,12 +55,5 @@ export const App = InjectSourcesAndSettings({
     sinkNames: ['domainQuery', 'domainAction$', DOM_SINK, 'router'],
     routeSource: ROUTE_SOURCE
   }
-}, [
-  // NOTE :
-  // 1. url$ is derived from `ROUTE_SOURCE`, hence must be injected after
-  // 2. we need both the changed route EVENT and the current route BEHAVIOUR (url$)
-  // Note that url$ is always the full route in the browser, i.e. no nested route here
-  InjectSources({ url$: (sources, settings) => sources[ROUTE_SOURCE].shareReplay(1) }, [
-    Div('.app'), UI
-  ])
-]);
+},  [    Div('.app'), UI  ]
+);
