@@ -101,7 +101,7 @@ function NavigationItem(sources, settings){
     // application (unicity of a route)
   router : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
     .do(preventDefault)
-    .map(always(link))
+    .map(always('/'+ link+'/'))
     }
 }
 

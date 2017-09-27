@@ -15,7 +15,7 @@ import {ProjectComments} from "./...ProjectComments"
 import {ProjectActivities} from "./...ProjectActivities"
 import { ROUTE_SOURCE } from "../../../src/properties"
 
-// TODO : should be finished NOW TEST!!
+// TODO : tabs not showign the right active tab, route change seems to be ok
 
 const $ = Rx.Observable;
 
@@ -24,6 +24,8 @@ const tabItems = [
   {title: 'Comments', link: 'comments'},
   {title: 'Activities', link: 'activities'}
 ];
+
+const parentRoute = projectId => `projects/${projectId}`;
 
 export const Project = m({},{}, [Div('.project'), [
   ProjectHeader,
@@ -34,7 +36,6 @@ export const Project = m({},{}, [Div('.project'), [
     OnRoute({route : 'tasks'}, [Div('.task-list.task-list__l-container', {slot : 'tab'}),[
       ProjectTaskList
     ]]),
-    // TODO : check that Div(1 arg no sel, no children) is valid
     OnRoute({route : 'task/:nr'}, [Div('.task-details', {slot : 'tab'}),[
       ProjectTaskDetails
     ]]),
@@ -49,7 +50,7 @@ export const Project = m({},{}, [Div('.project'), [
 
 function TabContainer(sources, settings){
   const {url$} = sources;
-  const {tabItems} = settings;
+  const {tabItems, [ROUTE_PARAMS] : {projectId}} = settings;
   const state$ = url$.map(url => {
     // Reminder : leading '/' was removed
     // returns the index for which the link of the tab item can be found in the url
@@ -78,8 +79,15 @@ function TabContainer(sources, settings){
         div('.tabs__l-container', {slot : 'tab'}, [])
       ])
     }),
-    // TODO : debug url, could be some '/' missing on the edges
-    router : intents$.withLatestFrom(url$, (nestedRoute, url) => [url,nestedRoute].join('/'))
+    // NOTE : apparently, the router driver requires to pass fully formed routes (i.e. starting
+    // from the root) to avoid miscellaneous issues.
+    // - Given current url a/b/c, passing 'route' will give a/b/route
+    // - Given current url a/b/c/, passing 'route' will give a/b/c/route
+    // - However for some reasons the router source does not read the location correctly...
+    // So full routes everywhere for this application.
+    // Now that kind of defeats the idea behind nested routing as you need to know the parent route
+    router : intents$
+      .map(nestedRoute => ['', parentRoute(projectId), nestedRoute].join('/'))
   }
 }
 
