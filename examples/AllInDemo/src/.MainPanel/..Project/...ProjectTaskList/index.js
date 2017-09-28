@@ -10,21 +10,85 @@ import { a, p, div, img, nav, strong, h2, ul, li, button } from "cycle-snabbdom"
 import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import { ROUTE_SOURCE } from "../../../../src/properties"
+import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore/index"
 
-const ToggleButton = DummyComponent;
-const EnterTask = DummyComponent;
-const TaskList = DummyComponent;
+const $ = Rx.Observable;
 
-const ProjectTaskListContainer = vLift(
-  div('.task-list.task-list__l-container', {slot: 'tab'}, [
-  div('.task-list__l-box-a', {slot: 'toggle'}, []),
-    div('.task-list__l-box-b', {slot : 'enter-task'},[]),
-    div('.task-list__l-box-c', [
-      div('.task-list__tasks', {slot : 'task'}, [])
-    ])
-]));
+const tasksButtonGroupSettings = {
+  labels : ['all', 'open', 'done'],
+  buttonClasses : computeTasksButtonGroupClasses,
+  namespace:'tasksButtonGroup'
+}
+const tasksButtonGroupInitialState = {label : 'all'};
 
-const ToggleButton = ListOf({}, [EmptyComponent, Button('.button.button--toggle', {})])
+function isButtonActive (buttonGroupState, label){
+  return label === buttonGroupState.label
+}
+
+function makeButtonGroupSelector({label, index, namespace}){
+  return `.${namespace}.${[label,index].join('-')}`
+}
+
+function tasksButtonGroupState$(sources, settings){
+  // NOTE : we skip the basic assertions for this demo
+  // - labels MUST be non-empty array (logically should even be more than one element)
+  const {buttonGroup : {labels, namespace}} = settings;
+
+  return $.merge(labels.map((label, index) => {
+    return sources[DOM_SINK].select(makeButtonGroupSelector({label, index, namespace})).events('click')
+      .do(preventDefault)
+      .map(ev => ({label, index}))
+      .startWith(tasksButtonGroupInitialState)
+  }))
+    // those are events
+    .share()
+}
+
+function computeTasksButtonGroupClasses(buttonGroupState, label){
+  const staticClasses = ['button', 'button--toggle'];
+  const buttonClasses = isButtonActive (buttonGroupState, label) ? staticClasses.concat(['button--active']) : staticClasses
+
+  return buttonClasses
+}
+
+function ButtonFromGroup(sources, settings) {
+  const {buttonGroupState, label, buttonClasses} = settings;
+  // NOTE : need to update non-persisted app state (task tab state more precisely)
+  // This is related but distinct from the state carried by tasksButtonGroupState$
+  // The state of the button group is part of the non-persisted app state, the same as the
+  // button group is part of the tab which is part of the application
+  // NOTE : once we used a ForEach on an EVENT source, we cannot reuse that source anymore, the
+  // event will already have been emitted!! This is a VERY common source of annoying bugs
+  const classes = buttonClasses(buttonGroupState, label).join(' ');
+
+  return {
+    [DOM_SINK] : $.of(
+      button(classes, {}, label)
+    ),
+    storeUpdate$: isButtonActive (buttonGroupState, label)
+      ? $.of({
+      context : TASK_TAB_BUTTON_GROUP_STATE,
+      command : PATCH,
+      payload : [
+        { op: "add", path: '/filter', value: label },
+      ]
+    })
+      : $.empty()
+  }
+}
+
+// Kind of states
+// - Persisted
+//   - Persisted locally
+//     - copy of remote data
+//     - original data, whose scope of use is only local
+//       - app state
+//       - session state?
+//     - ui state
+//     - route
+//   - Persisted remotely
+// - Not persisted
+//   - transient, disappear when some object become out of scope, cannot be recovered
 
 /*
 <button class="button button--toggle"
@@ -32,6 +96,27 @@ const ToggleButton = ListOf({}, [EmptyComponent, Button('.button.button--toggle'
   [class.button--active]="button === selectedButton"
 (click)="onButtonActivate(button)">{{button}}</button>
 */
+const ToggleButton =
+  InjectSourcesAndSettings({buttonGroupState$: tasksButtonGroupState$, settings : tasksButtonGroupSettings}, [
+    ForEach({from : 'buttonGroupState$', as : 'buttonGroupState'}, [
+      ListOf({list : 'labels', as : 'label'}, [
+        EmptyComponent,
+        ButtonFromGroup
+      ])
+    ])
+  ]);
+
+const EnterTask = DummyComponent;
+const TaskList = DummyComponent;
+
+const ProjectTaskListContainer = vLift(
+  div('.task-list.task-list__l-container', {slot: 'tab'}, [
+    div('.task-list__l-box-a', {slot: 'toggle'}, []),
+    div('.task-list__l-box-b', {slot : 'enter-task'},[]),
+    div('.task-list__l-box-c', [
+      div('.task-list__tasks', {slot : 'tasks'}, [])
+    ])
+]));
 
 /*
 <ngc-task-list [tasks]="project.tasks"
@@ -39,20 +124,21 @@ const ToggleButton = ListOf({}, [EmptyComponent, Button('.button.button--toggle'
 (tasksUpdated)="updateTasks($event)"></ngc-task-list>
 */
 export const ProjectTaskList =
-  m({},{buttonList : ['all', 'open', 'done'], selectedButton: 'all'},[ProjectTaskListContainer, [
-  ToggleButton,
-  EnterTask,
-  TaskList
-]
-]);
+  m({},{},[ProjectTaskListContainer, [
+  InSlot('toggle', ToggleButton),
+    InSlot('enter-task', EnterTask),
+    InSlot('tasks', TaskList)
+]]);
 
-  /*
+// TODO : InSlot combinator which only adds a slot on a vNode
+
+/*
   <div class="task-list__l-box-a">
     <ngc-toggle [buttonList]="taskFilterList" [selectedButton]="selectedTaskFilter"
   (selectedButtonChange)="taskFilterChange($event)">
     </ngc-toggle>
   </div>
-  */
+*/
 /*
   <div class="task-list__l-box-b">
 <ngc-enter-task (taskEntered)="addTask($event)"></ngc-enter-task>

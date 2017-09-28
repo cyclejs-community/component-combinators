@@ -83,7 +83,6 @@ export const domainObjectsQueryMap = {
 
 };
 
-// TODO
 export const domainActionsConfig = {
   [PROJECTS]: {
     [UPDATE]: function updateUserApplication(repository, context, payload) {

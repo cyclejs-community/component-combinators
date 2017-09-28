@@ -13,6 +13,7 @@ import { run } from "@cycle/core"
 import { makeDOMDriver } from "cycle-snabbdom"
 import { makeHistoryDriver} from '@cycle/history';
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
+import { inMemoryStoreQueryMap, inMemoryStoreActionsConfig } from './inMemoryStore';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver/index';
 // Fixtures
@@ -59,8 +60,9 @@ try {
     messagingSenderId: "758278666357"
   })
 }
-const fbRoot = firebase.database().ref()
-const repository = fbRoot
+const fbRoot = firebase.database().ref();
+const repository = fbRoot;
+const inMemoryStore = {};
 
 // Initialize database if empty
 fbRoot.once('value')
@@ -87,6 +89,8 @@ fbRoot.once('value')
       queue$: makeQueueDriver(fbRoot.child('!queue'), 'responses', 'tasks', {debug : true}),
       domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
       domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
+      storeAccess: makeDomainQueryDriver(inMemoryStore, inMemoryStoreQueryMap),
+      storeUpdate$: makeDomainActionDriver(inMemoryStore, inMemoryStoreActionsConfig),
       router: historyDriver,
     });
 

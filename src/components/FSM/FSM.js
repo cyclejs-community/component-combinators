@@ -9,8 +9,7 @@ import {
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkStateEntryComponentFnMustReturnComponent,
-  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, isArrayUpdateOperations,
-  isEntryComponent, isEntryComponentFactory, isFsmEntryComponents, isFsmEvents, isFsmSettings,
+  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, isEntryComponent, isEntryComponentFactory, isFsmEntryComponents, isFsmEvents, isFsmSettings,
   isFsmTransitions
 } from "./types"
 import * as Rx from "rx"
@@ -26,6 +25,7 @@ import {
 import {
   decorateEventsWithLog, decorateStateEntryWithLog, decorateTransitionsWithLog
 } from "./utils"
+import { isArrayUpdateOperations } from "main/WebstormProjects/component-combinators/src/components/types"
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
 // model object

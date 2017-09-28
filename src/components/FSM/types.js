@@ -1,13 +1,13 @@
 import {
-  either, isNil, allPass, complement, isEmpty, where, pipe, values, any, propEq, tap, both, flatten,
-  map, prop, flip, all, identity, filter, equals, cond, T
+  all, allPass, any, both, complement, either, equals, filter, flatten, flip, identity, isEmpty,
+  isNil, map, pipe, prop, propEq, T, values
 } from "ramda"
 import {
-  isHashMap, isStrictRecord, isFunction, isString, isArrayOf, isObject, isEmptyArray, isBoolean,
-  isObservable, isComponent
+  isArrayOf, isBoolean, isComponent, isEmptyArray, isFunction, isHashMap, isObject, isObservable,
+  isStrictRecord, isString
 } from "../../utils"
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
-import { isNotEmpty, isSources, isSettings } from "../types"
+import { isNotEmpty, isSettings, isSources, isArrayUpdateOperations } from "../types"
 
 ////////
 // Types FSM
@@ -176,19 +176,6 @@ export const isOpTest = isStrictRecord({
   path: isJsonPointer,
   value: T
 });
-// Works but evaluates all the functions...
-// export const isUpdateOperation = converge(any(identity), isOpAdd, isOpRemove, isOpReplace,
-// isOpMove, isOpCopy, isOpTest, isOpNone)
-export const isUpdateOperation = cond([
-  [isOpNone, T],
-  [isOpAdd, T],
-  [isOpRemove, T],
-  [isOpReplace, T],
-  [isOpMove, T],
-  [isOpCopy, T],
-  [isOpTest, T],
-]);
-export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
 
 export const checkStateEntryComponentFnMustReturnComponent = isComponent;
 

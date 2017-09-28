@@ -1,8 +1,9 @@
-import {
-  either, isNil, allPass, complement, isEmpty, where, pipe, values, any, propEq, tap, both, flatten,
-  map, prop, flip, all, identity, filter, equals, cond, T
-} from "ramda"
+import { both, complement, cond, either, isEmpty, T } from "ramda"
 import { isFunction, isString } from "../utils"
+import {
+  isOpAdd, isOpCopy, isOpMove, isOpNone, isOpRemove, isOpReplace, isOpTest
+} from "../../src/components/FSM/types"
+import { isArrayOf, isEmptyArray } from "../../src/utils"
 
 export const isNotEmpty = complement(isEmpty);
 export const isComponent = isFunction;
@@ -12,3 +13,17 @@ export const isSources = T;
 export function isEventName (x){
   return both(isString, isNotEmpty)(x);
 }
+
+// Works but evaluates all the functions...
+// export const isUpdateOperation = converge(any(identity), isOpAdd, isOpRemove, isOpReplace,
+// isOpMove, isOpCopy, isOpTest, isOpNone)
+export const isUpdateOperation = cond([
+  [isOpNone, T],
+  [isOpAdd, T],
+  [isOpRemove, T],
+  [isOpReplace, T],
+  [isOpMove, T],
+  [isOpCopy, T],
+  [isOpTest, T],
+]);
+export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
