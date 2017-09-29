@@ -52,7 +52,7 @@ export const App = InjectSourcesAndSettings({
     }
   },
   settings: {
-    sinkNames: ['domainQuery', 'domainAction$', DOM_SINK, 'router'],
+    sinkNames: ['domainAction$', 'storeUpdate$', DOM_SINK, 'router'],
     routeSource: ROUTE_SOURCE
   }
 },  [    Div('.app'), UI  ]

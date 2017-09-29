@@ -2,7 +2,7 @@
   "name": "rx-component-combinators",
   "version": "0.2.2",
   "description": "Library providing combinators for reactive components",
-  "author": "Olivier Couriol <olivier.couriol@gmail.com>",
+  "author": "Olivier Couriol",
   "license": "Apache-2.0",
   "repository": "https://github.com/brucou/rxcc.git",
   "main": "dist-node/index.js",

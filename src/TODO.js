@@ -26,3 +26,23 @@
 // TODO : InSlot combinator which takes a component and adds a given slot to its vdom sink
 // - InSlot({slot : ''navigation-section'}, [NavigationSection()],
 // TODO : tabs component - it is a FSM!! so write it like that
+// TODO : add examples for :
+// - authentication : take it from firebase sparks
+// - lists/pagination (almost done but very simple)
+// - navigation (done)
+// When trying to expand this example to a proper app, it quickly becomes an avalanche
+// of unsolvable questions:
+//
+//   How do I keep track of all the streams?
+//   Where do I keep state?
+//   Where and how do I propagate my HTTP requests?
+//   How do my child components communicate with parents and vice versa?
+//   How do I deal with lists of things?
+//   How do I communicate between components in different parts of the page?
+//   How do I respond to and possibly propagate errors (anywhere: HTTP responses, form field
+// values etc.)?
+//   How do I do forms and form validation?
+//   How do I...?
+//   //
+// TODO : see how to translate that https://github.com/Shopify/draggable?
+// TODO : what about animations? How does that play with vDom?

@@ -3,6 +3,7 @@ import { memoizeWith } from 'ramda'
 import * as Rx from "rx";
 import * as jsonpatch from "fast-json-patch"
 import { isArrayUpdateOperations } from "../../../../src/components/types"
+import { assertContract } from "../../../../src/utils"
 
 const $ = Rx.Observable;
 
@@ -25,6 +26,7 @@ export const inMemoryStoreActionsConfig = {
       // payload is an array of JSON patch format { op, path, value }
       assertContract(isArrayUpdateOperations, [payload],
         `domainActionsConfig > updateUserApplication : payload is not a valid jsonpatch object!`);
+      repository[context] = repository[context] || {};
 
       jsonpatch.apply(repository[context], payload);
 

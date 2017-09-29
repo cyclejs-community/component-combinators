@@ -4,3 +4,6 @@
   - it is relatively easy to see data flow, but when the problem is that the data does not flow it gets hairy, as this is often due to subscription not happening, and there is no way to trace subscription (unsubscription is possible to trace somehow due to `finally`).
   - NOTE : onSubscribe possible. cf. https://stackoverflow.com/questions/41883339/observable-onsubscribe-equivalent-in-rxjs
 - in the example aplication, interesting how important to think that Switch is disconnection a component sinks, so here the router never gets to emit a route
+- DO NOT FORGET THE SINKS in SINKNAMES
+  - adding a sink in `run` but not in settings.sinkNames will lead to hard to trace bugs!!
+  - Look if I can issue a warning if a component emits a sink not part of sinknames

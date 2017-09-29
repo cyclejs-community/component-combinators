@@ -29,7 +29,7 @@ function isButtonActive (buttonGroupState, label){
 }
 
 function makeButtonGroupSelector({label, index, namespace}){
-  return `.${namespace}.${[label,index].join('-')}`
+  return `.${namespace}.${[label, index].join('-')}`
 }
 
 function tasksButtonGroupState$(sources, settings){
@@ -57,27 +57,31 @@ function computeTasksButtonGroupClasses(buttonGroupState, label){
 }
 
 function ButtonFromGroup(sources, settings) {
-  const {buttonGroupState, label, buttonGroup : {buttonClasses}} = settings;
+  const {buttonGroupState, label, listIndex, buttonGroup : {labels, namespace, buttonClasses}} = settings;
   // NOTE : need to update non-persisted app state (task tab state more precisely)
   // This is related but distinct from the state carried by tasksButtonGroupState$
   // The state of the button group is part of the non-persisted app state, the same as the
   // button group is part of the tab which is part of the application
   // NOTE : once we used a ForEach on an EVENT source, we cannot reuse that source anymore, the
   // event will already have been emitted!! This is a VERY common source of annoying bugs
-  const classes = [''].concat(buttonClasses(buttonGroupState, label)).join('.');
+  const classes =     ['']
+    .concat(buttonClasses(buttonGroupState, label))
+    .join('.') + makeButtonGroupSelector({label, index:listIndex, namespace});
+  const updateTaskTabButtonGroupStateAction = {
+    context : TASK_TAB_BUTTON_GROUP_STATE,
+    command : PATCH,
+    payload : [
+      { op: "add", path: '/filter', value: label },
+    ]
+  };
+  console.log(`is button active`, isButtonActive (buttonGroupState, label))
 
   return {
     [DOM_SINK] : $.of(
       button(classes,label)
     ),
     storeUpdate$: isButtonActive (buttonGroupState, label)
-      ? $.of({
-      context : TASK_TAB_BUTTON_GROUP_STATE,
-      command : PATCH,
-      payload : [
-        { op: "add", path: '/filter', value: label },
-      ]
-    })
+      ? $.of(updateTaskTabButtonGroupStateAction)
       : $.empty()
   }
 }
