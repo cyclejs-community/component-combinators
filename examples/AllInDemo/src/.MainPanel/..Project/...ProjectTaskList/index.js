@@ -2,9 +2,10 @@ import * as Rx from "rx";
 import { OnRoute} from "../../../../../../src/components/Router/Router"
 import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
+import { InSlot} from "../../../../../../src/components/InSlot"
 import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../../../src/utils"
+import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault } from "../../../../../../src/utils"
 import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li, button } from "cycle-snabbdom"
 import { m } from "../../../../../../src/components/m/m"
@@ -77,19 +78,6 @@ function ButtonFromGroup(sources, settings) {
   }
 }
 
-// Kind of states
-// - Persisted
-//   - Persisted locally
-//     - copy of remote data
-//     - original data, whose scope of use is only local
-//       - app state
-//       - session state?
-//     - ui state
-//     - route
-//   - Persisted remotely
-// - Not persisted
-//   - transient, disappear when some object become out of scope, cannot be recovered
-
 /*
 <button class="button button--toggle"
 *ngFor="let button of buttonList"
@@ -125,12 +113,10 @@ const ProjectTaskListContainer = vLift(
 */
 export const ProjectTaskList =
   m({},{},[ProjectTaskListContainer, [
-  InSlot('toggle', ToggleButton),
-    InSlot('enter-task', EnterTask),
-    InSlot('tasks', TaskList)
+  InSlot('toggle', [ToggleButton]),
+    InSlot('enter-task', [EnterTask]),
+    InSlot('tasks', [TaskList])
 ]]);
-
-// TODO : InSlot combinator which only adds a slot on a vNode
 
 /*
   <div class="task-list__l-box-a">
@@ -159,4 +145,3 @@ export const ProjectTaskList =
   </div>
 </div>
 */
-

@@ -9,7 +9,6 @@ export const isNotEmpty = complement(isEmpty);
 export const isComponent = isFunction;
 export const isSettings = T;
 // dont want to go through the trouble of typing this as it is notoriously shapeshifting
-export const isSources = T;
 export function isEventName (x){
   return both(isString, isNotEmpty)(x);
 }

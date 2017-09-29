@@ -1168,6 +1168,7 @@ export {
   isPromise,
   isObservable,
   isSource,
+  isSources,
   isOptSinks,
   isMergeSinkFn,
   isArrayOptSinks,
