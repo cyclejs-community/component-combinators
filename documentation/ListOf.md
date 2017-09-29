@@ -44,7 +44,7 @@ The behaviour is as follows :
 - `ListEmptyComponent :: Component`
 - `ListNonEmptyComponent :: Component`
 - `ListOfSettings :: Record {`
-- `  list :: SourceName` **Mandatory**
+- `  list :: SettingsPropertyPath` **Mandatory**
 - `  as :: SettingsPropertyName` **Mandatory**
 - `  buildActionsFromChildrenSinks :: (cf. m)` **Optional**
 - `  actionsMap :: HashMap<SinkName, SinkName>` **Optional**
@@ -52,7 +52,7 @@ The behaviour is as follows :
 - `SinkName :: String`
 
 ### Contracts
-- for a given configuration of the `list` setting property, there MUST be a matching property in the same settings object. That property must correspond to an array. That is, if `list` is `'items'`, then there must be an array in `settings.items`.
+- for a given configuration of the `list` setting property, there MUST be a matching property in the same settings object. That property must correspond to an array. That is, if `list` is `'items.info'`, then there must be an array in `settings.items.info`.
 - there MUST be exactly two children component
 
 # Example

@@ -4,8 +4,12 @@ import {
   assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString
 } from "../../utils"
 import { m } from '../m/m'
-import { keys, merge, reduce, either, isNil } from 'ramda'
+import { keys, merge, reduce, either, isNil, path } from 'ramda'
 import { isComponent } from "../types"
+
+function getPathFromString(list){
+  return list.split('.');
+}
 
 function isListOfSettings(settings) {
   return 'list' in settings && 'as' in settings
@@ -13,9 +17,9 @@ function isListOfSettings(settings) {
 }
 
 function isListAnArray(sources, settings) {
-  return isArray(settings[settings.list])
+  return isArray(path(getPathFromString(settings.list), settings))
 }
-- `mergeSinks :: HashMap<SinkName, SinkMergeFn>`
+
 function hasValidBuildActionsFromChildrenSinks(sources, settings) {
   return (!('buildActionsFromChildrenSinks' in settings)
     || either(isNil, either(isObject, isFunction))(settings.buildActionsFromChildrenSinks))
@@ -43,7 +47,7 @@ const isValidListOfSettings =
 
 function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   const { list, buildActionsFromChildrenSinks, actionsMap } = settings;
-  const items = settings[list];
+  const items = path(getPathFromString(list), settings);
   const childComponent = items.length ? childrenComponents[1] : childrenComponents[0];
 
   const indexedChildrenComponents = items.length

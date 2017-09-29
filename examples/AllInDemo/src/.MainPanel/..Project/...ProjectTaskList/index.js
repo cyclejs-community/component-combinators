@@ -16,9 +16,11 @@ import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStor
 const $ = Rx.Observable;
 
 const tasksButtonGroupSettings = {
+  buttonGroup:{
   labels : ['all', 'open', 'done'],
   buttonClasses : computeTasksButtonGroupClasses,
   namespace:'tasksButtonGroup'
+}
 }
 const tasksButtonGroupInitialState = {label : 'all'};
 
@@ -35,14 +37,16 @@ function tasksButtonGroupState$(sources, settings){
   // - labels MUST be non-empty array (logically should even be more than one element)
   const {buttonGroup : {labels, namespace}} = settings;
 
-  return $.merge(labels.map((label, index) => {
+  return {
+    buttonGroupState$ : $.merge(labels.map((label, index) => {
     return sources[DOM_SINK].select(makeButtonGroupSelector({label, index, namespace})).events('click')
       .do(preventDefault)
       .map(ev => ({label, index}))
-      .startWith(tasksButtonGroupInitialState)
   }))
+    .startWith(tasksButtonGroupInitialState)
     // those are events
     .share()
+  }
 }
 
 function computeTasksButtonGroupClasses(buttonGroupState, label){
@@ -53,18 +57,18 @@ function computeTasksButtonGroupClasses(buttonGroupState, label){
 }
 
 function ButtonFromGroup(sources, settings) {
-  const {buttonGroupState, label, buttonClasses} = settings;
+  const {buttonGroupState, label, buttonGroup : {buttonClasses}} = settings;
   // NOTE : need to update non-persisted app state (task tab state more precisely)
   // This is related but distinct from the state carried by tasksButtonGroupState$
   // The state of the button group is part of the non-persisted app state, the same as the
   // button group is part of the tab which is part of the application
   // NOTE : once we used a ForEach on an EVENT source, we cannot reuse that source anymore, the
   // event will already have been emitted!! This is a VERY common source of annoying bugs
-  const classes = buttonClasses(buttonGroupState, label).join(' ');
+  const classes = [''].concat(buttonClasses(buttonGroupState, label)).join('.');
 
   return {
     [DOM_SINK] : $.of(
-      button(classes, {}, label)
+      button(classes,label)
     ),
     storeUpdate$: isButtonActive (buttonGroupState, label)
       ? $.of({
@@ -85,10 +89,10 @@ function ButtonFromGroup(sources, settings) {
 (click)="onButtonActivate(button)">{{button}}</button>
 */
 const ToggleButton =
-  InjectSourcesAndSettings({buttonGroupState$: tasksButtonGroupState$, settings : tasksButtonGroupSettings}, [
+  InjectSourcesAndSettings({sourceFactory: tasksButtonGroupState$, settings : tasksButtonGroupSettings}, [
     ForEach({from : 'buttonGroupState$', as : 'buttonGroupState'}, [
-      ListOf({list : 'labels', as : 'label'}, [
-        EmptyComponent,
+      ListOf({list : 'buttonGroup.labels', as : 'label'}, [
+        DummyComponent,
         ButtonFromGroup
       ])
     ])
@@ -114,8 +118,8 @@ const ProjectTaskListContainer = vLift(
 export const ProjectTaskList =
   m({},{},[ProjectTaskListContainer, [
   InSlot('toggle', [ToggleButton]),
-    InSlot('enter-task', [EnterTask]),
-    InSlot('tasks', [TaskList])
+//    InSlot('enter-task', [EnterTask]),
+//    InSlot('tasks', [TaskList])
 ]]);
 
 /*
