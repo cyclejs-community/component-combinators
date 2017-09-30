@@ -5,7 +5,7 @@ import { ListOf } from "../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
 import { Div, DOM_SINK, format } from "../../../src/utils"
-import { values } from 'ramda'
+import { values, keys } from 'ramda'
 import { PROJECTS, USER } from "./domain/index"
 import { p, div, img, nav, strong } from "cycle-snabbdom"
 import { m } from "../../../src/components/m/m"
@@ -48,7 +48,8 @@ export const App = InjectSourcesAndSettings({
       // NOTE : domain driver always send behaviour observables (i.e. sharedReplayed already)
       user$: sources.domainQuery.getCurrent(USER),
       // NOTE : `values` to get the actual array because firebase wraps it around indices
-      projects$: sources.domainQuery.getCurrent(PROJECTS).map(values)
+      projects$: sources.domainQuery.getCurrent(PROJECTS).map(values),
+      projectsFb$: sources.domainQuery.getCurrent(PROJECTS)
     }
   },
   settings: {

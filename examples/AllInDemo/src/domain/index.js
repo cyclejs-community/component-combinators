@@ -10,6 +10,8 @@ export const ACTIVITIES = 'ACTIVITIES';
 export const PROJECTS_REF = 'projects';
 export const ACTIVITIES_REF = 'activities';
 export const UPDATE = 'Update';
+export const TASKS = 'tasks';
+export const ADD_NEW_TASK = 'add_new_task';
 
 function generateQueryCacheKey(repository, context, payload) {
   return JSON.stringify({ context, payload })
@@ -96,4 +98,14 @@ export const domainActionsConfig = {
       return repository.setItem(localforageKey, payload);
     }
   },
+  [TASKS] : {
+    [ADD_NEW_TASK] : {
+      // TODO
+{
+  context : TASKS,
+    command : ADD_NEW_TASK,
+  payload : {fbIndex, newTask: void 0}//TODO
+};
+    }
+  }
 };

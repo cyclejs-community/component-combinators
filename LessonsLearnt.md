@@ -7,3 +7,20 @@
 - DO NOT FORGET THE SINKS in SINKNAMES
   - adding a sink in `run` but not in settings.sinkNames will lead to hard to trace bugs!!
   - Look if I can issue a warning if a component emits a sink not part of sinknames
+
+# State management
+## from button group
+// NOTE : Here we present a case of optimistic update for local state. This is fundamented in
+// the fact that local state update cannot fail, that is the key difference vs. remotely persisted
+// state.
+// So: user clicks on a tab from the tab group, that updates the local state for the tab group,
+// the ui updates, and then that local state is translated into a state update action for
+// the corresponding app level piece of state (i.e. task filter)
+// Note again that we have two semantically distinct concepts, which belong to two distinct
+// layers :
+// - which button of the button group is clicked
+//   - that is UI state corresponding to the UI layer
+//    - that state is not visible out of the specific portion of the UI it is declared in
+// - what is the current filter for the tasks
+//   - that is non-persisted local app state corresponding to the domain layer
+//   - that is visible by the whole app
