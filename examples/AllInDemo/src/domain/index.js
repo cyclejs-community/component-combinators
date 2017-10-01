@@ -1,6 +1,7 @@
 import { NO_VALUE } from "../properties"
 import { memoizeWith } from 'ramda'
 import * as Rx from "rx";
+import Moment from 'moment';
 
 const $ = Rx.Observable;
 
@@ -12,6 +13,24 @@ export const ACTIVITIES_REF = 'activities';
 export const UPDATE = 'Update';
 export const TASKS = 'tasks';
 export const ADD_NEW_TASK = 'add_new_task';
+export const LOG_NEW_ACTIVITY = 'log_new_activity';
+
+export function taskFactory(description, position, nr) {
+  const now = Moment(new Date());
+
+  return {
+    type: 'task',
+    nr: nr,
+    position: position,
+    title: description,
+    done: false,
+    created: +Moment(now),
+  }
+}
+
+export function activityFactory({ user, time, subject, category, title, message }) {
+  return { user, time, subject, category, title, message, type: 'activity' }
+}
 
 function generateQueryCacheKey(repository, context, payload) {
   return JSON.stringify({ context, payload })
@@ -86,26 +105,20 @@ export const domainObjectsQueryMap = {
 };
 
 export const domainActionsConfig = {
-  [PROJECTS]: {
-    [UPDATE]: function updateUserApplication(repository, context, payload) {
-      void context;
+  [TASKS]: {
+    [ADD_NEW_TASK]: function addNewTaskToProject(repository, context, payload) {
+      const { fbIndex, newTask, newTaskPosition } = payload;
+      const path = `${PROJECTS_REF}/${fbIndex}/tasks/${newTaskPosition}`;
 
-      const { page } = payload;
-      const localforageKey = PROJECTS_REF;
-
-      console.log('update page: ', context, localforageKey, payload);
-
-      return repository.setItem(localforageKey, payload);
+      return repository.child(path).set(newTask)
     }
   },
-  [TASKS] : {
-    [ADD_NEW_TASK] : {
-      // TODO
-{
-  context : TASKS,
-    command : ADD_NEW_TASK,
-  payload : {fbIndex, newTask: void 0}//TODO
-};
+  [ACTIVITIES]:{
+    [LOG_NEW_ACTIVITY] : function logNewActivity(repository, context, payload){
+      const activity = payload;
+      const path = `${ACTIVITIES_REF}`
+
+      return repository.child(path).push(activity)
     }
   }
 };

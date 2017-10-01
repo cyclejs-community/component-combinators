@@ -12,9 +12,7 @@ export const PATCH = 'patch';
 
 export const inMemoryStoreQueryMap = {
   [TASK_TAB_BUTTON_GROUP_STATE]: {
-    getCurrent: function get(repository, context, payload) {
-      if (!payload) throw `inMemoryStateDriver > inMemoryStoreQueryMap > ${TASK_TAB_BUTTON_GROUP_STATE} > get : payload should not be null!`
-
+    get: function get(repository, context, payload) {
       return $.of(repository[context])
     }
   },

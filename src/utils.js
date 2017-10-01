@@ -1134,6 +1134,11 @@ function firebaseListToArray(fbList){
   return values(fbList)
 }
 
+function getInputValue(document, sel) {
+  const el = document.querySelector(sel);
+  return el ? el.value : ''
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1215,5 +1220,6 @@ export {
   vLift,
   Div,
   Nav,
-  firebaseListToArray
+  firebaseListToArray,
+  getInputValue
 }

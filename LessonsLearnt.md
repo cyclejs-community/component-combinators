@@ -24,3 +24,17 @@
 // - what is the current filter for the tasks
 //   - that is non-persisted local app state corresponding to the domain layer
 //   - that is visible by the whole app
+
+# third-party bugs or strangeties
+cf. bug tags in the code. How to 
+
+- bug in snabbdom
+  - when using keys, weird, dont have the repro anymore
+  - when having a #selector after a .selector
+- desync. snabbdom vs. actual DOM
+  - in case of input for instance (a more elegant solution would be to have an input component??) ALWAYS USE A KEY FOR INPUTS
+
+- firebase
+  - cannot set a property to undefined
+    - `makeDomainActionDriver: an error occured Error: Firebase.set failed: First argument contains undefined in property 'projects.-KtxLeGQmuU5ViOm8XQO.tasks.4.done'  `
+  - cannot set a property to null : it means remove
