@@ -15,8 +15,6 @@ import {ProjectComments} from "./...ProjectComments"
 import {ProjectActivities} from "./...ProjectActivities"
 import { ROUTE_SOURCE } from "../../../src/properties"
 
-// TODO : tabs not showign the right active tab, route change seems to be ok
-
 const $ = Rx.Observable;
 
 const tabItems = [
@@ -30,9 +28,6 @@ const parentRoute = projectId => `projects/${projectId}`;
 export const Project = m({},{}, [Div('.project'), [
   ProjectHeader,
   m({}, {tabItems}, [TabContainer, [
-    // TODO : put the slot 'tab', not clear if onRoute keeps the slot or wraps in a div
-    // mmm no, check onRoute accepts parent component as well, and add the slot in the parent
-    // TODO : check that Div(2 args no children) is valid
     OnRoute({route : 'tasks'}, [      ProjectTaskList    ]),
     OnRoute({route : 'task/:nr'}, [Div('.task-details', {slot : 'tab'}),[
       ProjectTaskDetails
@@ -111,7 +106,3 @@ function ProjectHeader(sources, settings){
     })
   }
 }
-//  <div class="project__l-header">
-//    <h2 class="project__title">{{title}}</h2>
-//    <p>{{description}}</p>
-//  </div>

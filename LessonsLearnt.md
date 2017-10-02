@@ -38,3 +38,7 @@ cf. bug tags in the code. How to
   - cannot set a property to undefined
     - `makeDomainActionDriver: an error occured Error: Firebase.set failed: First argument contains undefined in property 'projects.-KtxLeGQmuU5ViOm8XQO.tasks.4.done'  `
   - cannot set a property to null : it means remove
+
+# containers
+- are the constant part of the rendering function
+- holes are for the variable part

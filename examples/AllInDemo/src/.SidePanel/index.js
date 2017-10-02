@@ -7,7 +7,6 @@ import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, 
 import { pipe, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
-import 'user-area.scss'
 import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
 
 const $ = Rx.Observable;

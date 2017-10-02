@@ -1,5 +1,5 @@
 import { NO_VALUE } from "../properties"
-import { memoizeWith } from 'ramda'
+import { memoizeWith, always } from 'ramda'
 import * as Rx from "rx";
 import Moment from 'moment';
 
@@ -119,6 +119,8 @@ export const domainActionsConfig = {
       const path = `${ACTIVITIES_REF}`
 
       return repository.child(path).push(activity)
+      // Pass back the modified repository - if fails, error will be passed
+        .then(always(repository[context]))
     }
   }
 };
