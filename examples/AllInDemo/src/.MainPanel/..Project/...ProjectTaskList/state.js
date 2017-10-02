@@ -3,7 +3,7 @@ import { InSlot} from "../../../../../../src/components/InSlot"
 import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
 import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault, getInputValue } from "../../../../../../src/utils"
-import { pipe, values, keys, always, filter, path, map } from 'ramda'
+import { pipe, values, keys, always, filter, path, map, prop } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-snabbdom"
 import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
@@ -32,14 +32,24 @@ export function tasksButtonGroupState$(sources, settings){
   // NOTE : we skip the basic assertions for this demo
   // - labels MUST be non-empty array (logically should even be more than one element)
   const {buttonGroup : {labels, namespace}} = settings;
+  const {projects$, storeAccess, storeUpdate$} = sources;
+  // Initial button state is in the in-memory store
+  const initialButtonGroupState$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
+  // slice out the relevant part of the state
+    .map(prop('filter'))
+    .map(x => ({label: x}))
+  ;
 
   return {
-    buttonGroupState$ : $.merge(labels.map((label, index) => {
-      return sources[DOM_SINK].select(makeButtonGroupSelector({label, index, namespace})).events('click')
-        .do(preventDefault)
-        .map(ev => ({label, index}))
-    }))
-      .startWith(tasksButtonGroupInitialState)
+    buttonGroupState$ : $.concat(
+      initialButtonGroupState$,
+      // NOTE: that is one way to merge a group of component's event. The other way is in the ListOf
+      $.merge(labels.map((label, index) => {
+          return sources[DOM_SINK].select(makeButtonGroupSelector({label, index, namespace})).events('click')
+            .do(preventDefault)
+            .map(ev => ({label, index}))
+        }))
+      )
       // those are events
       .share()
   }
@@ -53,7 +63,8 @@ export function taskListStateFactory(sources, settings){
   const taskFilter$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
     .concat(storeUpdate$.getResponse(TASK_TAB_BUTTON_GROUP_STATE).map(path(['response'])))
     // NOTE : this is a behaviour
-    .shareReplay(1);
+    .shareReplay(1)
+  ;
 
   const filteredTasks$ = projects$
   // NOTE : `combineLatest`, not `withLatestFrom` as we want to update also when the filter changes
@@ -61,8 +72,8 @@ export function taskListStateFactory(sources, settings){
     .combineLatest(taskFilter$, (projects, {filter: taskFilter}) => {
       return projects
         .filter(project => project._id === projectId)
-        .map(projects => projects[0].tasks)
-        .map(tasks => filterTasks(tasks, taskFilter))
+        .map(project => filterTasks(project.tasks, taskFilter))
+      [0]
     })
     // NOTE : this is a behaviour
     .shareReplay(1);

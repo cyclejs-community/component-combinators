@@ -42,3 +42,12 @@ cf. bug tags in the code. How to
 # containers
 - are the constant part of the rendering function
 - holes are for the variable part
+
+# state
+- initialize all source of truth before starting the app
+  - for instance filter tasks starts with ALL, so put 'all' there BEFORE starting
+- initialize all dependent sources of state when building state/behaviour
+  - for instance task button group state is connected to in-memory task-button-state/filter.
+    - the connection is made through stream, EXCEPT for 
+      - the initial value where the connection has to be done by hand
+      - OR linked to the current value of the source of truth

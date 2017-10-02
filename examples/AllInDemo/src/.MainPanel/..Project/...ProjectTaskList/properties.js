@@ -13,6 +13,7 @@ import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties
 import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
 import { TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
 import {filterTasks, isButtonActive, makeButtonGroupSelector, computeTasksButtonGroupClasses} from './helpers'
+import { TASK_TAB_BUTTON_GROUP_INIT_FILTER } from "../../../../src/properties"
 
 const $ = Rx.Observable;
 
@@ -21,7 +22,7 @@ const $ = Rx.Observable;
 export const taskEnterInputSelector = "#title_input.enter-task__title-input";
 export const taskEnterButtonSelector = ".button.enter-task__l-box-b";
 
-export const tasksButtonGroupInitialState = {label : 'all'};
+export const tasksButtonGroupInitialState = {label : TASK_TAB_BUTTON_GROUP_INIT_FILTER};
 export const tasksButtonGroupSettings = {
   buttonGroup:{
     labels : ['all', 'open', 'done'],

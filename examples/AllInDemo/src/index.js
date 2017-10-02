@@ -16,11 +16,13 @@ import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { inMemoryStoreQueryMap, inMemoryStoreActionsConfig } from './inMemoryStore';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver/index';
+import {TASK_TAB_BUTTON_GROUP_INIT_FILTER} from './properties'
 // Fixtures
 import { INITIAL_DATA } from "../fixtures"
 // utils
 import { DOM_SINK } from "../../../src/utils"
 import { merge, keys, map,flatten } from "ramda"
+import { TASK_TAB_BUTTON_GROUP_STATE } from "./inMemoryStore/index"
 
 const $ = Rx.Observable;
 const modules = defaultModules;
@@ -62,25 +64,47 @@ try {
 }
 const fbRoot = firebase.database().ref();
 const repository = fbRoot;
-const inMemoryStore = {};
+const inMemoryStore = initLocalNonPersistedState();
+
+function initRemotelyPersistedState(repository){
+  // in this case, firebase is the repository
+  return repository.once('value')
+    .then(dataSnapshot => {
+      if (keys(dataSnapshot.val()).length === 0){
+        console.log('Firebase database not initialized... Initializing it!')
+        return Promise.all(flatten(map(entity => { // for instance, projects
+          const entityRef =fbRoot.child(entity);
+          return INITIAL_DATA[entity].map(record => {// set in database
+            entityRef.push().set(record);
+          })
+        }, keys(INITIAL_DATA))))
+      }
+      else {
+        console.log('Firebase database already initialized!')
+        return Promise.resolve()
+      }
+    })
+}
+
+function initLocallyPersistedState(repository){
+  // for now there is nothing here
+  return true
+}
+
+
+function initLocalNonPersistedState(){
+  // IN-PLACE update!! This is an in-memory store
+  return {
+    [TASK_TAB_BUTTON_GROUP_STATE] : {
+      filter : TASK_TAB_BUTTON_GROUP_INIT_FILTER
+    }
+  }
+}
 
 // Initialize database if empty
-fbRoot.once('value')
-  .then(dataSnapshot => {
-    if (keys(dataSnapshot.val()).length === 0){
-      console.log('Firebase database not initialized... Initializing it!')
-      return Promise.all(flatten(map(entity => { // for instance, projects
-        const entityRef =fbRoot.child(entity);
-        return INITIAL_DATA[entity].map(record => {// set in database
-          entityRef.push().set(record);
-        })
-      }, keys(INITIAL_DATA))))
-    }
-    else {
-      console.log('Firebase database already initialized!')
-      return Promise.resolve()
-    }
-  })
+initRemotelyPersistedState(repository)
+  .then(initLocallyPersistedState())
+  .then(initLocalNonPersistedState())
   .then(() => {
     const { sources, sinks } = run(App, {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
