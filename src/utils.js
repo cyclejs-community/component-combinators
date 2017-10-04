@@ -1072,7 +1072,7 @@ function traceFn(fn, text) {
 
 function EmptyComponent(sources, settings){
   return {
-    [DOM_SINK] : $.of(null)
+    [DOM_SINK] : $.of(div(''))
   }
 }
 

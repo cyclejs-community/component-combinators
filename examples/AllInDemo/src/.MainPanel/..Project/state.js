@@ -33,4 +33,5 @@ export function projectsStateFactory(sources, settings){
           project
         }
       })
+    .shareReplay(1)
 }

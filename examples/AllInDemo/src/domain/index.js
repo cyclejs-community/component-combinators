@@ -117,8 +117,9 @@ export const domainActionsConfig = {
       const { isChecked, project, projectFbIndex , filteredTask } = payload;
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/done`;
+      const updatedValue = isChecked? +Date.now() : false;
 
-      return repository.child(path).set(+Date.now())
+      return repository.child(path).set(updatedValue)
     }
   },
   [ACTIVITIES]:{

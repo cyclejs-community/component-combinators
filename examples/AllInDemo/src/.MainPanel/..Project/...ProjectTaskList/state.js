@@ -78,7 +78,8 @@ export function taskListStateFactory(sources, settings){
       [0]
     })
     // NOTE : this is a behaviour
-    .shareReplay(1);
+    .shareReplay(1)
+  ;
 
   return     filteredTasks$
 }
