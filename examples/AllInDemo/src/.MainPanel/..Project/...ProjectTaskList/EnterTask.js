@@ -36,7 +36,8 @@ function render(key) {
 
 export function EnterTask(sources, settings) {
   let key = 0;
-  const { projectsFb$, user$, document } = sources;
+  const { projectFb$, user$, document } = sources;
+  debugger
   const taskEnterButtonClick$ = sources[DOM_SINK].select(taskEnterButtonSelector).events('click')
   // NOTE : is event -> share
     .share();
@@ -54,12 +55,11 @@ export function EnterTask(sources, settings) {
       .do(preventDefault)
       // In a normal case, I would have to do both update, remote state and duplicated local state
       // and then listen on both for optimistic auto-correct updates
-      .withLatestFrom(projectsFb$, user$, (ev, projectsFb, user) => {
+      .withLatestFrom(projectFb$, user$, (ev, projectFb, user) => {
         // TODO : update with now the new source injected projectFb$ = {fbIndex,
         // project}
-        const index = values(projectsFb).findIndex(project => project._id === projectId);
-        const fbIndex = keys(projectsFb)[index];
-        const tasks = projectsFb[fbIndex].tasks;
+        const {fbIndex, project} = projectFb;
+        const tasks = project.tasks;
         const newTaskPosition = tasks.length;
         const nr = tasks.reduce((maxNr, task) => task.nr > maxNr ? task.nr : maxNr, 0) + 1;
         // NOTE : has to be computed just before it is used, otherwise might not get the current

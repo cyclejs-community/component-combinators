@@ -47,7 +47,6 @@ const TaskInfo = DummyComponent;
 const Task = InjectSourcesAndSettings({
   settings : function(settings){
     const {filteredTask : {done}} = settings;
-    debugger
 
     return {
       checkBox : {
