@@ -14,6 +14,7 @@ export const UPDATE = 'Update';
 export const TASKS = 'tasks';
 export const ADD_NEW_TASK = 'add_new_task';
 export const LOG_NEW_ACTIVITY = 'log_new_activity';
+export const UPDATE_TASK_COMPLETION_STATUS = 'update_task_completion_status';
 
 export function taskFactory(description, position, nr) {
   const now = Moment(new Date());
@@ -111,6 +112,13 @@ export const domainActionsConfig = {
       const path = `${PROJECTS_REF}/${fbIndex}/tasks/${newTaskPosition}`;
 
       return repository.child(path).set(newTask)
+    },
+    [UPDATE_TASK_COMPLETION_STATUS]: function updateTaskCompletionStatus(repository, context, payload) {
+      const { isChecked, project, projectFbIndex , filteredTask } = payload;
+      const taskIndex = filteredTask.position;
+      const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/done`;
+
+      return repository.child(path).set(isChecked)
     }
   },
   [ACTIVITIES]:{

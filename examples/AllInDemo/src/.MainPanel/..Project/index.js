@@ -5,7 +5,7 @@ import { ListOf } from "../../../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../../src/components/Inject/InjectSourcesAndSettings"
 import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../../src/utils"
-import { pipe, values, always, filter, map } from 'ramda'
+import { pipe, keys, values, always, filter, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li, button } from "cycle-snabbdom"
 import { m } from "../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../src/components/Router/properties"
@@ -13,6 +13,7 @@ import {ProjectTaskList} from "./...ProjectTaskList"
 import {ProjectTaskDetails} from "./...ProjectTaskDetails"
 import {ProjectComments} from "./...ProjectComments"
 import {ProjectActivities} from "./...ProjectActivities"
+import {projectsStateFactory} from "./state"
 import { ROUTE_SOURCE } from "../../../src/properties"
 
 const $ = Rx.Observable;
@@ -25,7 +26,7 @@ const tabItems = [
 
 const parentRoute = projectId => `projects/${projectId}`;
 
-export const Project = m({},{}, [Div('.project'), [
+export const Project = InjectSourcesAndSettings({  sourceFactory : projectsStateFactory  }, [Div('.project'), [
   ProjectHeader,
   m({}, {tabItems}, [TabContainer, [
     OnRoute({route : 'tasks'}, [      ProjectTaskList    ]),

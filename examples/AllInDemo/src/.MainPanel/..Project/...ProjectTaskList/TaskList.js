@@ -11,12 +11,13 @@ import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-sn
 import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
-import { TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
+import { UPDATE_TASK_COMPLETION_STATUS, TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
 import {filterTasks, isButtonActive, makeButtonGroupSelector, computeTasksButtonGroupClasses} from './helpers'
 import {taskEnterButtonSelector, taskEnterInputSelector} from './properties'
 import {taskListStateFactory} from './state'
 import {CheckBox} from '../../../UI/CheckBox'
 import {Editor} from '../../../UI/Editor'
+import { InjectStateInSinks } from "../../../../../../src/components/Inject/InjectStateInSinks"
 
 const $ = Rx.Observable;
 
@@ -43,11 +44,21 @@ const TaskContainer = vLift(
 const TaskLink = DummyComponent;
 const TaskInfo = DummyComponent;
 
-const Task = m({},{}, [TaskContainer, [
-  // TODO : I AM here, do the checkbox first it is easy
-  // dont forget they are all indexed and I can use actionMap to map the actions
-  // do use it so there is one example
-  CheckBox, // actionsmap if I can
+const Task = InjectSourcesAndSettings({
+  settings : function(settings){
+    const {filteredTask : {done}} = settings;
+
+    return {
+      checkBox : {
+        isChecked : done,
+        namespace : TASKS,
+        label : undefined
+      }
+    }
+  }
+}, [TaskContainer, [
+  InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox),
+  // TODO : I AM here soon
   Editor,
   TaskInfo,
   TaskLink
@@ -56,7 +67,25 @@ const Task = m({},{}, [TaskContainer, [
 export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFactory}, [TaskListContainer,  [
   InSlot('task', [
     ForEach({from : 'filteredTasks$', as : 'filteredTasks'}, [
-      ListOf({list : 'filteredTasks', as : 'filteredTask'}, [
+      ListOf({list : 'filteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
+        isChecked$: function (ownSink, childrenSinks, settings){
+          const {filteredTask } = settings;
+
+          // NOTE: when using ListOf, ownSink is always null
+          return $.merge(childrenSinks.map(childIsCheckedSink => {
+            return childIsCheckedSink.map(({isChecked, projectFb}) => {
+              const {fbIndex, project} = projectFb;
+
+              return {
+                context: TASKS,
+                command: UPDATE_TASK_COMPLETION_STATUS,
+                payload: {isChecked, project, projectFbIndex : fbIndex, filteredTask}
+              }
+            })
+          }))
+        }
+        // TODO
+      }, actionsMap : {'isChecked$' : 'storeUpdate$'}}, [
         EmptyComponent,
         Task
       ])])

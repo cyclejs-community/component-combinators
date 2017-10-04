@@ -66,6 +66,8 @@ export function taskListStateFactory(sources, settings){
     .shareReplay(1)
   ;
 
+  // Type : Array<Tasks> array of tasks taken for the selected project and filtered by selected
+  // filter
   const filteredTasks$ = projects$
   // NOTE : `combineLatest`, not `withLatestFrom` as we want to update also when the filter changes
   // so taskFilter$ is a behaviour resulting from the combination of two behaviours
