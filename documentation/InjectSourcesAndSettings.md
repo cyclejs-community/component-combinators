@@ -54,7 +54,7 @@ It is important to understand well the mechanism of settings inheritance to so t
 The parametrization is as follows :
 
 - the `sourcesFactory` parameter maps to a function which creates a hash of sources from the current sources and settings
-- the `settings` property merges together with the existing settings to create new settings that will be passed to the `[Component]`
+- the `settings` property (or the object resulting from executing the setting factory if that applies) merges together with the existing settings to create new settings that will be passed to the `[Component]`
 
 The behaviour is as follows :
 
@@ -69,13 +69,14 @@ The behaviour is as follows :
 - `InjectSourcesComponent:: Component`
 - `InjectSourcesSettings :: Record {`
 - `  sourcesFactory :: SourcesFactory,`
-- `  settings :: Settings`
+- `  settings :: Settings || SettingsFactory`
 - `}`
 - `SourcesFactory :: Sources -> Settings -> Sources`
+- `SettingsFactory :: Settings -> Settings`
 - `Sources :: HashMap<SourceName, Source>`
 
 ### Contracts
-- mostly types contract
+- one of `sourcesFactory ` or `settings` must be present in `InjectSourcesSettings `
 
 # Example
 **TODO TESTS showing the settings inheritance..., no demo**

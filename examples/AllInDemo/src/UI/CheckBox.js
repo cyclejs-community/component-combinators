@@ -24,13 +24,15 @@ export function CheckBox(sources, settings) {
   const { checkBox: { label:_label, namespace, isChecked } } = settings;
   const checkBoxSelector = '.' + [defaultTo(defaultNamespace, namespace), ++counter].join('-');
   const __label = defaultTo('', _label);
-  debugger
 
   assertContract(isCheckBoxSettings, [settings.checkBox], `CheckBox : Invalid check box settings! : ${format(settings.checkBox)}`)
 
   const events = {
     'change' : sources[DOM_SINK].select(checkBoxSelector).events('change')
       .map(ev => ev.target.checked)
+      .tap(x=>{
+        debugger
+      })
   };
 
   return {
@@ -42,6 +44,7 @@ export function CheckBox(sources, settings) {
                     "checked": isChecked,
                   }
                 }),
+                // NOTE : !! snabbdom overload selection algorithm fails if last input is undefined
                 span(checkBoxTextSelector, __label)
               ])
     ])),

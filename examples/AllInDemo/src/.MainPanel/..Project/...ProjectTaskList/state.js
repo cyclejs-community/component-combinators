@@ -61,14 +61,17 @@ export function taskListStateFactory(sources, settings){
 
   // NOTE:  filter will be in {filter: ...}
   const taskFilter$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
+    .tap(x=>{debugger})
     .concat(storeUpdate$.getResponse(TASK_TAB_BUTTON_GROUP_STATE).map(path(['response'])))
     // NOTE : this is a behaviour
+    .tap(x=>{debugger})
     .shareReplay(1)
   ;
 
   // Type : Array<Tasks> array of tasks taken for the selected project and filtered by selected
   // filter
   const filteredTasks$ = projects$
+    .tap(x=>{debugger})
   // NOTE : `combineLatest`, not `withLatestFrom` as we want to update also when the filter changes
   // so taskFilter$ is a behaviour resulting from the combination of two behaviours
     .combineLatest(taskFilter$, (projects, {filter: taskFilter}) => {
@@ -77,11 +80,14 @@ export function taskListStateFactory(sources, settings){
         .map(project => filterTasks(project.tasks, taskFilter))
       [0]
     })
+    .tap(x=>{
+      debugger
+    })
     // NOTE : this is a behaviour
     .shareReplay(1);
 
   return {
-    taskFilter$,
+//    taskFilter$,
     filteredTasks$
   }
 }
