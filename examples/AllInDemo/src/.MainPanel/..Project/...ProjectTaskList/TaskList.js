@@ -93,6 +93,7 @@ export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [T
       ])])
   ])]]);
 
+// TODO : not done, infinite scroll and draggable...
 /*
 <div class="task-list__l-box-c">
   <div class="task-list__tasks">
