@@ -28,7 +28,7 @@ const $ = Rx.Observable;
 // - what is the current filter for the tasks
 //   - that is non-persisted local app state corresponding to the domain layer
 //   - that is visible by the whole app
-export function tasksButtonGroupState$(sources, settings){
+export function tasksButtonGroupStateChange$(sources, settings){
   // NOTE : we skip the basic assertions for this demo
   // - labels MUST be non-empty array (logically should even be more than one element)
   const {buttonGroup : {labels, namespace}} = settings;
@@ -41,7 +41,7 @@ export function tasksButtonGroupState$(sources, settings){
   ;
 
   return {
-    buttonGroupState$ : $.concat(
+    buttonGroupStateChange$ : $.concat(
       initialButtonGroupState$,
       // NOTE: that is one way to merge a group of component's event. The other way is in the ListOf
       $.merge(labels.map((label, index) => {
@@ -80,8 +80,6 @@ export function taskListStateFactory(sources, settings){
     // NOTE : this is a behaviour
     .shareReplay(1);
 
-  return {
-    filteredTasks$
-  }
+  return     filteredTasks$
 }
 

@@ -64,7 +64,7 @@ const Task = InjectSourcesAndSettings({
   TaskLink
 ]]);
 
-export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFactory}, [TaskListContainer,  [
+export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [TaskListContainer,  [
   InSlot('task', [
     ForEach({from : 'filteredTasks$', as : 'filteredTasks'}, [
       ListOf({list : 'filteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
@@ -77,7 +77,7 @@ export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFa
               const {fbIndex, project} = projectFb;
               // NOTE : the index of the child correspond to the index of the item in the list
               const filteredTask = filteredTasks[index];
-debugger
+
               return {
                 context: TASKS,
                 command: UPDATE_TASK_COMPLETION_STATUS,

@@ -26,7 +26,7 @@ const tabItems = [
 
 const parentRoute = projectId => `projects/${projectId}`;
 
-export const Project = InjectSourcesAndSettings({  sourceFactory : projectsStateFactory  }, [Div('.project'), [
+export const Project = InjectSources({  projectFb$ : projectsStateFactory  }, [Div('.project'), [
   ProjectHeader,
   m({}, {tabItems}, [TabContainer, [
     OnRoute({route : 'tasks'}, [      ProjectTaskList    ]),

@@ -20,8 +20,7 @@ const $ = Rx.Observable;
 export function projectsStateFactory(sources, settings){
   const { [ROUTE_PARAMS]: { projectId } } = settings;
 
-  return {
-    projectFb$: sources.projectsFb$
+  return sources.projectsFb$
       .map(projectsFb => {
         const fbKeys = keys(projectsFb);
         const _values = values(projectsFb);
@@ -34,5 +33,4 @@ export function projectsStateFactory(sources, settings){
           project
         }
       })
-  }
 }

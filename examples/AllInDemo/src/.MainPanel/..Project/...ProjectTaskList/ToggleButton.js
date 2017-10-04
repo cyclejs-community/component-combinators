@@ -12,7 +12,7 @@ import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStor
 import { TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
 import {filterTasks, isButtonActive, makeButtonGroupSelector, computeTasksButtonGroupClasses} from './helpers'
 import {tasksButtonGroupSettings} from './properties'
-import {tasksButtonGroupState$} from './state'
+import {tasksButtonGroupStateChange$} from './state'
 
 const $ = Rx.Observable;
 
@@ -39,6 +39,11 @@ function ButtonFromGroup(sources, settings) {
     [DOM_SINK] : $.of(
       button(classes,label)
     ),
+    // NOTE : this is state synchronization through state change events :
+    // click -> button group state -> in-memory store. Source of truth here is button group state
+    // The best option is to have the in-memory store as a source of truth, and update that
+    // first, and have all the rest expressed as a function of the in-memory store state
+    // This is left here as a showcase that this is also a possible technique
     storeUpdate$: isButtonActive (buttonGroupState, label)
       ? $.of(updateTaskTabButtonGroupStateAction)
       : $.empty()
@@ -46,8 +51,9 @@ function ButtonFromGroup(sources, settings) {
 }
 
 export const ToggleButton =
-  InjectSourcesAndSettings({sourceFactory: tasksButtonGroupState$, settings : tasksButtonGroupSettings}, [
-    ForEach({from : 'buttonGroupState$', as : 'buttonGroupState'}, [
+  // NOTE : this is an example in which we add an EVENT source, not a behaviour source as usual
+  InjectSourcesAndSettings({sourceFactory: tasksButtonGroupStateChange$, settings : tasksButtonGroupSettings}, [
+    ForEach({from : 'buttonGroupStateChange$', as : 'buttonGroupState'}, [
       ListOf({list : 'buttonGroup.labels', as : 'label'}, [
         EmptyComponent,
         ButtonFromGroup
