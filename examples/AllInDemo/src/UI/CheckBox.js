@@ -23,6 +23,8 @@ function isCheckBoxSettings(settings){
 export function CheckBox(sources, settings) {
   const { checkBox: { label:_label, namespace, isChecked } } = settings;
   const checkBoxSelector = '.' + [defaultTo(defaultNamespace, namespace), ++counter].join('-');
+  const __label = defaultTo('', _label);
+  debugger
 
   assertContract(isCheckBoxSettings, [settings.checkBox], `CheckBox : Invalid check box settings! : ${format(settings.checkBox)}`)
 
@@ -34,14 +36,14 @@ export function CheckBox(sources, settings) {
   return {
     [DOM_SINK]: $.of(div('.checkbox', [
       label(labelSelector, [
-        input([inputSelector, checkBoxSelector].join(''), {
-          "attrs": {
-            "type": "checkbox",
-            "checked": isChecked,
-          }
-        }),
-        span(checkBoxTextSelector, _label)
-      ])
+                input([inputSelector, checkBoxSelector].join(''), {
+                  "attrs": {
+                    "type": "checkbox",
+                    "checked": isChecked,
+                  }
+                }),
+                span(checkBoxTextSelector, __label)
+              ])
     ])),
     isChecked$: events.change
   }
