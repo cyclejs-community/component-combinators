@@ -69,13 +69,15 @@ export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFa
     ForEach({from : 'filteredTasks$', as : 'filteredTasks'}, [
       ListOf({list : 'filteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
         isChecked$: function (ownSink, childrenSinks, settings){
-          const {filteredTask } = settings;
+          const {filteredTasks } = settings;
 
           // NOTE: when using ListOf, ownSink is always null
-          return $.merge(childrenSinks.map(childIsCheckedSink => {
+          return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
             return childIsCheckedSink.map(({isChecked, projectFb}) => {
               const {fbIndex, project} = projectFb;
-
+              // NOTE : the index of the child correspond to the index of the item in the list
+              const filteredTask = filteredTasks[index];
+debugger
               return {
                 context: TASKS,
                 command: UPDATE_TASK_COMPLETION_STATUS,
@@ -85,7 +87,7 @@ export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFa
           }))
         }
         // TODO
-      }, actionsMap : {'isChecked$' : 'storeUpdate$'}}, [
+      }, actionsMap : {'isChecked$' : 'domainAction$'}}, [
         EmptyComponent,
         Task
       ])])

@@ -30,9 +30,6 @@ export function CheckBox(sources, settings) {
   const events = {
     'change' : sources[DOM_SINK].select(checkBoxSelector).events('change')
       .map(ev => ev.target.checked)
-      .tap(x=>{
-        debugger
-      })
   };
 
   return {
