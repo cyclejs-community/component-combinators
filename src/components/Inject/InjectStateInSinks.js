@@ -1,4 +1,4 @@
-import { assertContract } from "../../utils"
+import { format , assertContract , isObservable} from "../../utils"
 import { fromPairs, keys, merge, mergeAll, values } from 'ramda'
 
 // TODO : change InjectSources -> InjectStateInSources, and do the shareReplay automatically
@@ -15,6 +15,28 @@ function isInjectStateInSinksSettings(settings) {
       return 'as' in setting
         && 'inject' in setting
     })
+}
+
+function isValidInjectStateInSinksSettings(injectSettings, sources, settings){
+  const sinksToInject = keys(injectSettings);
+  const sinkToInjectContractValue = sinksToInject.every(sinkToInject => {
+    return sources[sinkToInject] && isObservable(sources[sinkToInject])
+  });
+  if (!sinkToInjectContractValue){
+    return `isValidInjectStateInSinksSettings > found a sink to inject which is either not existing or not an observable! ${format(sinksToInject)} vs. ${keys(sources)}`
+  }
+
+  const stateSourcesToInjectContractValue = sinksToInject.every(sinkToInject => {
+    const { as, inject } = injectSettings[sinkToInject];
+    const behavioursNames = keys(inject);
+
+    return behavioursNames.every(behavioursName => sources[behavioursName] && isObservable(sources[behavioursName]))
+  });
+  if (!stateSourcesToInjectContractValue){
+    return `isValidInjectStateInSinksSettings > found a state source to inject which is either not existing or not an observable!`
+  }
+
+  return true
 }
 
 /**
@@ -40,6 +62,8 @@ export function InjectStateInSinks(injectSettings, component) {
   assertContract(isInjectStateInSinksSettings, [injectSettings], `properties 'as' and 'inject' are mandatory!`);
 
   return function InjectStateInSinks(sources, settings) {
+    assertContract(isValidInjectStateInSinksSettings, [injectSettings, sources, settings], `InjectStateInSinks > invalid settings!`);
+
     let sinks = component(sources, settings);
     const sinksToInject = keys(injectSettings);
 

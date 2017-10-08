@@ -56,8 +56,6 @@ export function EnterTask(sources, settings) {
       // In a normal case, I would have to do both update, remote state and duplicated local state
       // and then listen on both for optimistic auto-correct updates
       .withLatestFrom(projectFb$, user$, (ev, projectFb, user) => {
-        // TODO : update with now the new source injected projectFb$ = {fbIndex,
-        // project}
         const {fbIndex, project} = projectFb;
         const tasks = project.tasks;
         const newTaskPosition = tasks.length;

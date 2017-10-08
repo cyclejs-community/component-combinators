@@ -15,6 +15,7 @@ export const TASKS = 'tasks';
 export const ADD_NEW_TASK = 'add_new_task';
 export const LOG_NEW_ACTIVITY = 'log_new_activity';
 export const UPDATE_TASK_COMPLETION_STATUS = 'update_task_completion_status';
+export const UPDATE_TASK_DESCRIPTION = 'update_task_description';
 
 export function taskFactory(description, position, nr) {
   const now = Moment(new Date());
@@ -118,6 +119,14 @@ export const domainActionsConfig = {
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/done`;
       const updatedValue = isChecked? +Date.now() : false;
+
+      return repository.child(path).set(updatedValue)
+    },
+    [UPDATE_TASK_DESCRIPTION]: function updateTaskDescription(repository, context, payload) {
+      const { newTitle, projectFbIndex , filteredTask } = payload;
+      const taskIndex = filteredTask.position;
+      const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/title`;
+      const updatedValue = newTitle;
 
       return repository.child(path).set(updatedValue)
     }
