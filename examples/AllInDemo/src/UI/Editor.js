@@ -1,9 +1,8 @@
 import * as Rx from "rx";
 import { Div, DOM_SINK, preventDefault } from "../../../../src/utils"
 import { a, p, div, img, nav, strong, h2, ul, li, button, input, label, span } from  "cycle-snabbdom"
-import {defaultTo, always} from 'ramda'
-import { InjectSources } from "../../../../src/components/Inject/InjectSources"
-import { TASKS, UPDATE_TASK_DESCRIPTION } from "../domain/index"
+import {merge, defaultTo, always} from 'ramda'
+import { m } from "../../../../src/components/m/m"
 
 const $ = Rx.Observable;
 
@@ -52,10 +51,21 @@ function Editor_(sources, settings) {
   };
   const state$ = $.merge(
     events.edit$.map(always({editMode: true})),
-    events.save$.map(always({editMode: false, textContent : getTextContent(document, editableContentElementSelector)})),
+    events.save$.map(_ => ({editMode: false, textContent : getTextContent(document, editableContentElementSelector)})),
     events.cancel$.map(always({editMode: false}))
   ).scan((acc, stateUpdate) => merge(acc, stateUpdate), initialState)
     .startWith(initialState);
+
+  // TODO : add
+/*
+@HostListener('click')
+  focusEditableContent() {
+    if (this.editMode) {
+      this.editableContentElement.nativeElement.focus();
+    }
+  }
+*/
+
 
   return {
     [DOM_SINK]: state$.map(({editMode, textContent}) => (
@@ -72,9 +82,4 @@ function Editor_(sources, settings) {
 }
 
 export const Editor = m({},{}, [ Editor_ ]);
-
-// editor state : { editMode, textContent} starting with settings {editMode default false; content
-// from task$ or whatever the name}
-
-//
 

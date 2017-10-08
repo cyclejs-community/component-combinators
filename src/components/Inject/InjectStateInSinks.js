@@ -17,12 +17,13 @@ function isInjectStateInSinksSettings(settings) {
     })
 }
 
-function isValidInjectStateInSinksSettings(injectSettings, sources, settings){
+function isValidInjectStateInSinksSettings(injectSettings, sinks, sources, settings){
   const sinksToInject = keys(injectSettings);
   const sinkToInjectContractValue = sinksToInject.every(sinkToInject => {
-    return sources[sinkToInject] && isObservable(sources[sinkToInject])
+    return sinks[sinkToInject] && isObservable(sinks[sinkToInject])
   });
   if (!sinkToInjectContractValue){
+    debugger
     return `isValidInjectStateInSinksSettings > found a sink to inject which is either not existing or not an observable! ${format(sinksToInject)} vs. ${keys(sources)}`
   }
 
@@ -62,9 +63,8 @@ export function InjectStateInSinks(injectSettings, component) {
   assertContract(isInjectStateInSinksSettings, [injectSettings], `properties 'as' and 'inject' are mandatory!`);
 
   return function InjectStateInSinks(sources, settings) {
-    assertContract(isValidInjectStateInSinksSettings, [injectSettings, sources, settings], `InjectStateInSinks > invalid settings!`);
-
     let sinks = component(sources, settings);
+    assertContract(isValidInjectStateInSinksSettings, [injectSettings, sinks, sources, settings], `InjectStateInSinks > invalid settings!`);
     const sinksToInject = keys(injectSettings);
 
     const injectedSinks = sinksToInject.map(sinkToInject => {

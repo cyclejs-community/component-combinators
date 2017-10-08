@@ -37,7 +37,6 @@ function render(key) {
 export function EnterTask(sources, settings) {
   let key = 0;
   const { projectFb$, user$, document } = sources;
-  debugger
   const taskEnterButtonClick$ = sources[DOM_SINK].select(taskEnterButtonSelector).events('click')
   // NOTE : is event -> share
     .share();

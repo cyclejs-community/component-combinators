@@ -11,7 +11,7 @@ import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-sn
 import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
-import { TASKS, UPDATE_TASK_DESCRIPTION, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
+import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
 
 const $ = Rx.Observable;
 
