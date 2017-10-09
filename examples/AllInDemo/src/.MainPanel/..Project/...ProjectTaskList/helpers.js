@@ -70,7 +70,6 @@ export function computeSaveUpdatedTaskActions(ownSink, childrenSinks, settings){
 
   return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
     return childIsCheckedSink.map(({save : {editMode, textContent}, projectFb}) => {
-      debugger
       const {fbIndex, project} = projectFb;
       // NOTE : the index of the child correspond to the index of the item in the list
       const filteredTask = filteredTasks[index];

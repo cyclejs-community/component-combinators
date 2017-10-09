@@ -42,6 +42,7 @@ const TaskInfo = DummyComponent;
 // NOTE : Because Editor and CheckBox are reusable UI component, they are unaware of any domain
 // model, and can only be parameterized through settings. `InjectSourcesAndSettings` is used to
 // compute the necessary settings for those components
+// TODO : less refresh, put some untilChanged or something somewhere
 const Task = InjectSourcesAndSettings({
   settings : function(settings){
     const {filteredTask : {done, title}, listIndex} = settings;

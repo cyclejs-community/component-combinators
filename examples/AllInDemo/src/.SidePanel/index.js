@@ -18,6 +18,7 @@ function getProjectNavigationItems$(sources, settings) {
         title: project.title,
         link: ['projects', project._id].join('/')
     })))
+    .distinctUntilChanged()
     .tap(x => console.log(`getProjectNavigationItems$:`, x))
     // NOTE : this is a behaviour
     .shareReplay(1)
@@ -32,8 +33,6 @@ export const SidePanel = m({}, {}, [Div('.app__l-side'), [
     ]),
     m({},{ title: 'Projects' }, [ NavigationSection, [
       InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
-        // TODO : that could be refactored in (userProjectList$ : ..., project, NavigationItem)
-        // TODO : like ForEachOf({listName$:listdefFn, itemProp:string, comp:Component})
         ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
           ListOf({ list: 'projectList', as: 'project' }, [
             EmptyComponent,
@@ -84,8 +83,6 @@ function NavigationSection(sources, settings){
 
 function NavigationItem(sources, settings){
   const {project : {title, link}} = settings;
-  // TODO : finish logic later, when link is clicked, route changes, and read route to set
-  // active class
   const isLinkActive = ROUTE_PARAMS in settings ? '.navigation-section__link--active' : ''
   const linkSanitized = link.replace(/\//i, '.');
 
@@ -96,7 +93,7 @@ function NavigationItem(sources, settings){
         {attrs : {href : link}, slot: 'navigation-item'},
         title)
     ),
-  // NOTE : we avoid havign to isolate by using the link which MUST be unique over the whole
+  // NOTE : we avoid having to isolate by using the link which MUST be unique over the whole
     // application (unicity of a route)
   router : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
     .do(preventDefault)
@@ -125,17 +122,3 @@ function renderTasksSummary({ user, projects }) {
     ])
   ])
 }
-
-// NOTE : To compare with
-//   <div class="app__l-side">
-//     <ngc-navigation [openTasksCount]="openTaskCount">
-//       <ngc-navigation-section title="Main">
-//         <ngc-navigation-item title="Dashboard" [link]="['/dashboard']"></ngc-navigation-item>
-//       </ngc-navigation-section>
-//       <ngc-navigation-section title="Projects" [items]="projectNavigationItems">
-//       </ngc-navigation-section>
-//       <ngc-navigation-section title="Admin">
-//         <ngc-navigation-item title="Manage Plugins" [link]="['/plugins']"></ngc-navigation-item>
-//       </ngc-navigation-section>
-//     </ngc-navigation>
-//   </div>

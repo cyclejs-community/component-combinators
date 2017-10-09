@@ -20,6 +20,7 @@ function getTextContent(document, selector){
   return document.querySelector(selector).textContent || ''
 }
 
+// TODO : disable task title when done
 function Editor_(sources, settings) {
   const {[DOM_SINK]:DOM, document} = sources;
   const {
@@ -100,4 +101,3 @@ function Editor_(sources, settings) {
 }
 
 export const Editor = m({},{}, [ Editor_ ]);
-
