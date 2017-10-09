@@ -70,7 +70,7 @@ export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [T
         isChecked$: computeTaskCheckedActions,
         save$ : computeSaveUpdatedTaskActions
         // TODO
-      }, actionsMap : {'isChecked$' : 'domainAction$'}, 'save$' : 'domainAction$'}, [
+      }, actionsMap : {'isChecked$' : 'domainAction$', 'save$' : 'domainAction$'}}, [
         EmptyComponent,
         Task
       ])])

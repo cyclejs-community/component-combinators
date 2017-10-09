@@ -48,7 +48,7 @@ initRemotelyPersistedState(repository)
       storeAccess: makeDomainQueryDriver(inMemoryStore, inMemoryStoreQueryMap),
       storeUpdate$: makeDomainActionDriver(inMemoryStore, inMemoryStoreActionsConfig),
       router: makeHistoryDriver(createHistory(), { capture: true }),
-      focus : focusDriver
+      focus : focusDriver,
     });
 
     // Webpack specific code

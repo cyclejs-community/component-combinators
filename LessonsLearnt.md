@@ -4,9 +4,13 @@
   - it is relatively easy to see data flow, but when the problem is that the data does not flow it gets hairy, as this is often due to subscription not happening, and there is no way to trace subscription (unsubscription is possible to trace somehow due to `finally`).
   - NOTE : onSubscribe possible. cf. https://stackoverflow.com/questions/41883339/observable-onsubscribe-equivalent-in-rxjs
 - in the example aplication, interesting how important to think that Switch is disconnection a component sinks, so here the router never gets to emit a route
-- DO NOT FORGET THE SINKS in SINKNAMES
+- DO NOT FORGET THE SINKS in SINKNAMES (3x)
   - adding a sink in `run` but not in settings.sinkNames will lead to hard to trace bugs!!
   - Look if I can issue a warning if a component emits a sink not part of sinknames
+- WHEN USING DIRECT DOM READ, dont do it twice at two different times, values will be different, 
+and some time error will be launched
+  - case where first time dom element exists and value read ok, then removed, then read again : 
+  boom! read ONCE for all the time it is needed! no multicast with direct read! 
 
 # State management
 ## from button group
@@ -51,3 +55,7 @@ cf. bug tags in the code. How to
     - the connection is made through stream, EXCEPT for 
       - the initial value where the connection has to be done by hand
       - OR linked to the current value of the source of truth
+
+# cycle stuff
+- order of drivers not predictable
+  - problem when one driver must execute after another one

@@ -8,7 +8,7 @@ const $ = Rx.Observable;
 let counter = 0;
 
 const defaultNamespace = 'editor';
-const editableContentElementSelector = editorSelector => editorSelector + `.editableContentElement`;
+const editorEditableContentSelector = editorSelector => editorSelector + '.editor__editable-content';
 const saveButtonSelector = editorSelector => editorSelector + ".editor__icon-save";
 const cancelButtonSelector = editorSelector => editorSelector + ".editor__icon-cancel";
 const editButtonSelector = editorSelector => editorSelector + ".editor__icon-edit";
@@ -20,14 +20,6 @@ function getTextContent(document, selector){
   return document.querySelector(selector).textContent || ''
 }
 
-// TODO : two bugs
-// - no focus when click edit icon
-// - no content when click edit icon
-//  - review carefully angular2 application - not two elements visible at the same time
-// editor_output and editable element!! how?? also maybe focus does not work because I focus on
-// the wrong element
-//  - also all icons shows - probably issue with selector not specific enough!! add index or
-// namepsace
 function Editor_(sources, settings) {
   const {[DOM_SINK]:DOM, document} = sources;
   const {
@@ -55,9 +47,20 @@ function Editor_(sources, settings) {
 
   // NOTE : shared defensively because they are events (only save$ is mandatory to be shared)
   const events = {
-    edit$ : DOM.select(editButtonSelector(editorSelector)).events('click').do(preventDefault).share(),
-    save$ :DOM.select(saveButtonSelector(editorSelector)).events('click').do(preventDefault).share(),
-    cancel$ : DOM.select(cancelButtonSelector(editorSelector)).events('click').do(preventDefault).share()
+    edit$ : DOM.select(editButtonSelector(editorSelector)).events('click').do(preventDefault)
+      .map(_ => ({
+        editMode: true, editableTextContent : getTextContent(document, editorOutputSelector(editorSelector))
+      }      ))
+      .share(),
+    save$ :DOM.select(saveButtonSelector(editorSelector)).events('click').do(preventDefault)
+      .map(_ => ({
+        editMode: false, textContent : getTextContent(document, editorEditableContentSelector(editorSelector)),
+        editableTextContent : ''
+      }      ))
+      .share(),
+    cancel$ : DOM.select(cancelButtonSelector(editorSelector)).events('click').do(preventDefault)
+      .map(always({editMode: false, editableTextContent:''}))
+      .share()
   };
 
   const initialState = {
@@ -65,21 +68,16 @@ function Editor_(sources, settings) {
     editMode : initialEditMode
   };
   const state$ = $.merge(
-    events.edit$.map(_ => ({
-      editMode: true, editableTextContent : getTextContent(document, editorOutputSelector(editorSelector))
-    }      )),
-    events.save$.map(_ => ({
-      editMode: false, textContent : getTextContent(document, editableContentElementSelector(editorSelector)),
-      editableTextContent : ''
-    }      )),
-    events.cancel$.map(always({editMode: false, editableTextContent:''}))
+    events.edit$,
+    events.save$,
+    events.cancel$
   ).scan((acc, stateUpdate) => merge(acc, stateUpdate), initialState)
     .startWith(initialState);
 
   return {
     [DOM_SINK]: state$.map(({editMode, textContent, editableTextContent}) => (
       div(`${editorEditModeSelector(editMode, editorSelector)}.editor`, [
-        div(`${editableContentElementSelector(editorSelector)}.editor__editable-content`, {
+        div(`${editorEditableContentSelector(editorSelector)}`, {
           props: {textContent : editableTextContent},
           attrs: { contenteditable: "true" }
         }),
@@ -88,9 +86,13 @@ function Editor_(sources, settings) {
       ])
     )),
     save$ : events.save$,
-    focus : state$.map(({editMode, textContent}) => {
+    focus : state$.skip(1)
+      .filter(({editMode}) => Boolean(editMode))
+      .map(({editMode, textContent}) => {
       return editMode
-        ? {selector : editorEditModeSelector(editMode, editorSelector)}
+        // !! NOTE : have to delay here because focus driver executes before the DOM driver, so
+        // the element cannot be focused on as it is not displayed yet
+        ? $.of({selector : editorEditableContentSelector(editorSelector)}).delay(0)
         : $.empty()
     })
       .switch()

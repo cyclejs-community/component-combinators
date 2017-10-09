@@ -1,3 +1,5 @@
+import {assertContract} from '../../utils'
+
 export function focusDriver(sink$) {
   sink$.map(function focusDriver(sinkValue) {
     assertContract(isFocusDriverInput, [sinkValue], `focusDriver > fails contract!`);
@@ -8,7 +10,7 @@ export function focusDriver(sink$) {
   })
     .subscribe(
       function(){},
-      function (err){console.error(`focusDriver > Error!`, error)},
+      function (err){console.error(`focusDriver > Error!`, err)},
       function (){}
       );
 }
