@@ -44,10 +44,10 @@ const TaskInfo = DummyComponent;
 // compute the necessary settings for those components
 const Task = InjectSourcesAndSettings({
   settings : function(settings){
-    const {filteredTask : {done, title}} = settings;
+    const {filteredTask : {done, title}, listIndex} = settings;
 
     return {
-      checkBox : {        isChecked : !!done,        namespace : TASKS,       label : undefined      },
+      checkBox : { isChecked : !!done, namespace : [TASKS, listIndex].join('-'), label : undefined },
       editor : {showControls : true, initialEditMode : false, initialContent : title}
     }
   }
