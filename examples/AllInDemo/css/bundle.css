@@ -928,7 +928,7 @@ p {
 }
 
 .task__delete:before {
-  content: "âœ•";
+  content: "✕";
   font-family: entypo, sans-serif;
   text-decoration-skip: all;
   display: block;
@@ -1022,7 +1022,7 @@ p {
 }
 
 .auto-complete__item--selected:after {
-  content: "âœ“";
+  content: "✓";
   font-family: entypo, sans-serif;
   display: inline-block;
   margin-left: 5px;
@@ -1125,7 +1125,7 @@ p {
 }
 
 .checkbox__text:before {
-  content: "âœ“";
+  content: "✓";
   font-family: entypo, sans-serif;
   display: block;
   position: absolute;
@@ -1214,7 +1214,7 @@ p {
 }
 
 .editor__icon-edit:before {
-  content: "âœŽ";
+  content: "✎";
   font-family: entypo, sans-serif;
   text-decoration-skip: all;
   display: block;
@@ -1252,7 +1252,7 @@ p {
 }
 
 .editor__icon-save:before {
-  content: "âœ“";
+  content: "✓";
   font-family: entypo, sans-serif;
   text-decoration-skip: all;
   display: block;
@@ -1290,7 +1290,7 @@ p {
 }
 
 .editor__icon-cancel:before {
-  content: "ðŸš«";
+  content: "🚫";
   font-family: entypo, sans-serif;
   text-decoration-skip: all;
   display: block;

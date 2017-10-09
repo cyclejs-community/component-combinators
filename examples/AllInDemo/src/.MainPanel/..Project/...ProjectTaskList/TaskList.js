@@ -52,9 +52,13 @@ const Task = InjectSourcesAndSettings({
     }
   }
 }, [TaskContainer, [
-  InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox),
+  InSlot('checkbox', [
+    InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox)
+  ]),
   // TODO : I AM here soon, refactor
-  InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb'}}}, Editor),
+  InSlot('editor', [
+    InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb'}}}, Editor)
+  ]),
   TaskInfo, // TODO : should be noting to inject here? have it from the sources
   TaskLink
 ]]);
