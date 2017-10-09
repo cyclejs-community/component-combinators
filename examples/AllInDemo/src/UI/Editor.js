@@ -56,17 +56,6 @@ function Editor_(sources, settings) {
   ).scan((acc, stateUpdate) => merge(acc, stateUpdate), initialState)
     .startWith(initialState);
 
-  // TODO : add
-/*
-@HostListener('click')
-  focusEditableContent() {
-    if (this.editMode) {
-      this.editableContentElement.nativeElement.focus();
-    }
-  }
-*/
-
-
   return {
     [DOM_SINK]: state$.map(({editMode, textContent}) => (
       div(`.editor${editorEditModeSelector(editMode)}`, [
