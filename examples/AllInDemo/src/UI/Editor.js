@@ -78,6 +78,12 @@ function Editor_(sources, settings) {
       ])
     )),
     save$ : events.save$,
+    focus : state$.map(({editMode, textContent}) => {
+      return editMode
+        ? {selector : editorEditModeSelector(editMode)}
+        : $.empty()
+    })
+      .switch()
   }
 }
 

@@ -8,24 +8,18 @@ import {
   makeFirebaseDriver,
   makeQueueDriver,
 } from '@sparksnetwork/cyclic-fire'
-import * as Rx from "rx";
 import { run } from "@cycle/core"
 import { makeDOMDriver } from "cycle-snabbdom"
 import { makeHistoryDriver} from '@cycle/history';
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { inMemoryStoreQueryMap, inMemoryStoreActionsConfig } from './inMemoryStore';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
-import { makeDomainActionDriver } from './domain/actionDriver/index';
-import {TASK_TAB_BUTTON_GROUP_INIT_FILTER} from './properties'
-// Fixtures
-import { INITIAL_DATA } from "../fixtures"
+import { makeDomainActionDriver } from './domain/actionDriver';
+import { focusDriver } from '../../../src/drivers/focusDriver';
+import { documentDriver} from '../../../src/drivers/documentDriver';
+import {initLocallyPersistedState, initLocalNonPersistedState, initRemotelyPersistedState, initRepository} from './init'
 // utils
 import { DOM_SINK } from "../../../src/utils"
-import { merge, keys, map,flatten } from "ramda"
-import { TASK_TAB_BUTTON_GROUP_STATE } from "./inMemoryStore/index"
-
-const $ = Rx.Observable;
-const modules = defaultModules;
 
 // Helpers
 function filterNull(driver) {
@@ -36,78 +30,16 @@ function filterNull(driver) {
   }
 }
 
-// Make drivers
-// History driver
-const history = createHistory();
-const historyDriver = makeHistoryDriver(history, { capture: true })
-
-// Document driver
-function documentDriver(_) {
-  void _; // unused sink, this is a read-only driver
-
-  return document
-}
-
-// TODO : first use user dummy, then have a proper login page, maybe with firebase auth
-// TODO : NOTE firebase login auth already made in sparks-frontend branch forgot-pwd-w-combinator...
-try {
-  firebase.app()
-} catch (err) {
-  firebase.initializeApp({
-    apiKey: "AIzaSyC1Z28faFhKZqf0QBs0qSKBod3W_GZgwL8",
-    authDomain: "cycle-m-component-demo-app.firebaseapp.com",
-    databaseURL: "https://cycle-m-component-demo-app.firebaseio.com",
-    projectId: "cycle-m-component-demo-app",
-    storageBucket: "cycle-m-component-demo-app.appspot.com",
-    messagingSenderId: "758278666357"
-  })
-}
-const fbRoot = firebase.database().ref();
-const repository = fbRoot;
+const repository = initRepository(firebase);
+const fbRoot = repository;
 const inMemoryStore = initLocalNonPersistedState();
-
-function initRemotelyPersistedState(repository){
-  // in this case, firebase is the repository
-  return repository.once('value')
-    .then(dataSnapshot => {
-      if (keys(dataSnapshot.val()).length === 0){
-        console.log('Firebase database not initialized... Initializing it!')
-        return Promise.all(flatten(map(entity => { // for instance, projects
-          const entityRef =fbRoot.child(entity);
-          return INITIAL_DATA[entity].map(record => {// set in database
-            entityRef.push().set(record);
-          })
-        }, keys(INITIAL_DATA))))
-      }
-      else {
-        console.log('Firebase database already initialized!')
-        return Promise.resolve()
-      }
-    })
-}
-
-function initLocallyPersistedState(repository){
-  // for now there is nothing here
-  return true
-}
-
-
-function initLocalNonPersistedState(){
-  // IN-PLACE update!! This is an in-memory store
-  return {
-    [TASK_TAB_BUTTON_GROUP_STATE] : {
-      filter : TASK_TAB_BUTTON_GROUP_INIT_FILTER
-    }
-  }
-}
 
 // Initialize database if empty
 initRemotelyPersistedState(repository)
   .then(initLocallyPersistedState())
-  .then(initLocalNonPersistedState())
   .then(() => {
     const { sources, sinks } = run(App, {
-      [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
+      [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules : defaultModules})),
       document: documentDriver,
       firebase: makeFirebaseDriver(fbRoot, {debug : true}),
       queue$: makeQueueDriver(fbRoot.child('!queue'), 'responses', 'tasks', {debug : true}),
@@ -115,7 +47,8 @@ initRemotelyPersistedState(repository)
       domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
       storeAccess: makeDomainQueryDriver(inMemoryStore, inMemoryStoreQueryMap),
       storeUpdate$: makeDomainActionDriver(inMemoryStore, inMemoryStoreActionsConfig),
-      router: historyDriver,
+      router: makeHistoryDriver(createHistory(), { capture: true }),
+      focus : focusDriver
     });
 
     // Webpack specific code
@@ -129,8 +62,5 @@ initRemotelyPersistedState(repository)
     }
   })
   .catch(function (err) {
-    console.error(`error while initializing database`, err);
+    console.error(`error while initializing application`, err);
   });
-
-// NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/
-// ~~ attributes -> attrs
