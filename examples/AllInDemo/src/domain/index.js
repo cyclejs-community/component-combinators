@@ -1,5 +1,5 @@
 import { NO_VALUE } from "../properties"
-import { memoizeWith, always } from 'ramda'
+import { memoizeWith, always, isNil } from 'ramda'
 import * as Rx from "rx";
 import Moment from 'moment';
 
@@ -16,6 +16,7 @@ export const ADD_NEW_TASK = 'add_new_task';
 export const LOG_NEW_ACTIVITY = 'log_new_activity';
 export const UPDATE_TASK_COMPLETION_STATUS = 'update_task_completion_status';
 export const UPDATE_TASK_DESCRIPTION = 'update_task_description';
+export const DELETE_TASK = 'delete_task';
 
 export function taskFactory(description, position, nr) {
   const now = Moment(new Date());
@@ -129,6 +130,25 @@ export const domainActionsConfig = {
       const updatedValue = newTitle;
 
       return repository.child(path).set(updatedValue)
+    },
+    [DELETE_TASK]: function deleteTask(repository, context, payload) {
+      const { projectFbIndex , tasks, filteredTask } = payload;
+      // TODO : position in the tasks should move?? they don't so I wont either
+      // TODO : harmonize the payload parameter for all same context TASKS
+      const numberOfTasks = tasks.length;
+      const index = tasks.indexOf(filteredTask); // TODO : that works??
+      // The best is to remove the array and replace it, or can I also update with firebase
+      const clonedTasks = tasks.slice();
+      const removedTask = clonedTasks.splice(index, 1)[0];
+      const path = `${PROJECTS_REF}/${projectFbIndex}/tasks`;
+      const lastElementPath = [path, numberOfTasks].join('/');
+      debugger
+
+        repository.child(path).update(clonedTasks)
+        .then(_ => {
+          // array should have one element less, so now delete last element which is now obsolete
+          repository.child(lastElementPath).update(null)
+        })
     }
   },
   [ACTIVITIES]:{

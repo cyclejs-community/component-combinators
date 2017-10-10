@@ -793,7 +793,9 @@ function getValidKeys(obj) {
  * @returns {Observable|*}
  */
 function emitNullIfEmpty(sink) {
-  return $.create(function emitNullIfEmptyObs(observer) {
+  return isNil(sink)
+    ? null
+    : $.create(function emitNullIfEmptyObs(observer) {
     let isEmpty = true;
     sink.subscribe(function next(x) {
       isEmpty = false;

@@ -1,5 +1,6 @@
-import { mapObjIndexed, tryCatch, values } from 'ramda';
+import { mapObjIndexed, tryCatch, values, isNil } from 'ramda';
 import * as Rx from "rx"
+import { assertContract, format } from "../../../../../src/utils"
 
 const $ = Rx.Observable;
 
@@ -25,6 +26,10 @@ function eventEmitterFactory(_, context, __) {
   return new Rx.Subject()
 }
 
+function isDomainAction(action){
+  return Boolean(!(isNil(action) || isNil(action.context) || isNil(action.command)))
+}
+
 /**
  * Driver factory which takes a configuration object and returns a driver.
  * The returned driver will be handling action requests arriving on its input stream (sink) via:
@@ -42,6 +47,8 @@ export function makeDomainActionDriver(repository, config) {
 
   return function (sink$) {
     const source$ = sink$.map(function executeAction(action) {
+      assertContract(isDomainAction, [action], `actionDriver > Invalid action ! Expecting {context:truthy, command : truthy, payload : any} ; received ${format(action)}`);
+
       console.info('DOMAIN ACTION | ', action);
       const { context, command, payload } = action;
       const fnToExec = config[context][command];

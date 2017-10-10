@@ -90,7 +90,7 @@ function NavigationSection(sources, settings) {
 function NavigationItem(sources, settings){
   const {url$} = sources;
   const {project : {title, link}} = settings;
-  const linkSanitized = link.replace(/\//i, '.');
+  const linkSanitized = link.replace(/\//i, '_');
 
   const state$ = url$.map(url => {
     return url.indexOf(link) > -1

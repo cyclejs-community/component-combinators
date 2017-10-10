@@ -154,7 +154,7 @@ function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   // We want `combineLatest` to still emit the parent DOM sink, even when
   // one of its children sinks is empty, so we modify the children sinks
   // to emits ONE `Null` value if it is empty
-  // Note : in default function, settings parameter is not used
+  // NOTE : some of those children sinks could be null, that is filtered out
   const childrenDOMSinkOrNull = map(emitNullIfEmpty, childrenSink);
 
   const allSinks = flatten([parentDOMSinkOrNull, childrenDOMSinkOrNull]);
