@@ -18,7 +18,7 @@ function getProjectNavigationItems$(sources, settings) {
         title: project.title,
         link: ['projects', project._id].join('/')
     })))
-//    .distinctUntilChanged()
+    .distinctUntilChanged()
     .tap(x => console.log(`getProjectNavigationItems$:`, x))
     // NOTE : this is a behaviour
     .shareReplay(1)

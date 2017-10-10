@@ -24,8 +24,9 @@ const TaskListContainer = vLift(
   ])
 );
 
-const TaskContainer = vLift(
-  div('.task', [
+function  TaskContainer (sources, settings){
+  const {filteredTask : {done, title}, listIndex} = settings;
+  const coreVnodes =   div('.task', [
     div(".task__l-box-a", {slot : 'checkbox'}, []),
     div(".task__l-box-b", [
       div(".task__title", {slot : 'editor'}, []),
@@ -33,8 +34,16 @@ const TaskContainer = vLift(
       div('.task-infos', {slot : 'task-infos'}, []),
       div({slot: 'task-link'}, []),
     ])
-  ])
-);
+  ]);
+
+  return {
+    [DOM_SINK] : $.of(
+      done
+        ?  div(`.task--done`, [coreVnodes])
+        : coreVnodes
+    )
+  }
+}
 
 const TaskLink = DummyComponent;
 const TaskInfo = DummyComponent;
