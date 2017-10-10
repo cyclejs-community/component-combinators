@@ -5,7 +5,7 @@ import { ListOf } from "../../../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../../src/components/Inject/InjectSourcesAndSettings"
 import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../../src/utils"
-import { pipe, keys, values, always, filter, map } from 'ramda'
+import { pipe, keys, values, always, filter, map, prop } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li, button } from "cycle-snabbdom"
 import { m } from "../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../src/components/Router/properties"
@@ -33,5 +33,6 @@ export function projectsStateFactory(sources, settings){
           project
         }
       })
+    .distinctUntilChanged(prop('fbIndex'))
     .shareReplay(1)
 }

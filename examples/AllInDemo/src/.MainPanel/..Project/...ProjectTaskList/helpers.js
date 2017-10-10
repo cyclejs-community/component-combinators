@@ -55,6 +55,7 @@ export function computeTaskCheckedActions(ownSink, childrenSinks, settings){
       const {fbIndex, project} = projectFb;
       // NOTE : the index of the child correspond to the index of the item in the list
       const filteredTask = filteredTasks[index];
+      debugger
 
       return {
         context: TASKS,

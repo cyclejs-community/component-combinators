@@ -4,10 +4,13 @@ import {
   assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString
 } from "../../utils"
 import { m } from '../m/m'
-import { keys, merge, reduce, either, isNil, path } from 'ramda'
+import { either, isNil, keys, merge, path, reduce, uniq } from 'ramda'
 import { isComponent } from "../types"
+import * as Rx from "rx"
 
-function getPathFromString(list){
+const $ = Rx.Observable;
+
+function getPathFromString(list) {
   return list.split('.');
 }
 
@@ -53,12 +56,12 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   const indexedChildrenComponents = items.length
     // Case when the `items` array is not empty, we branch to the second child component
     ? items.map((item, index) => {
-    return function indexedChildComponent(sources, _settings) {
-      const childComponentSettings = merge(_settings, { [settings.as]: item, listIndex: index });
+      return function indexedChildComponent(sources, _settings) {
+        const childComponentSettings = merge(_settings, { [settings.as]: item, listIndex: index });
 
-      return childComponent(sources, childComponentSettings)
-    }
-  })
+        return childComponent(sources, childComponentSettings)
+      }
+    })
     // Case when the `items` array is empty, we branch to the first child component
     : [childComponent]
 
@@ -68,14 +71,16 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 
   const sinkNames = keys(reducedSinks);
 
-  const mappedAndReducedSinks = reduce(
-    function mapAndReduceSinks(acc, sinkName) {
+  const collectedReducedSinks = reduce(
+    function collectReducedSinks(acc, sinkName) {
       const mappedSinkName = (actionsMap || {})[sinkName];
       if (mappedSinkName) {
-        acc[mappedSinkName] = reducedSinks[sinkName];
+        acc[mappedSinkName] = acc[mappedSinkName] || [];
+        acc[mappedSinkName].push(reducedSinks[sinkName]);
       }
       else {
-        acc[sinkName] = reducedSinks[sinkName];
+        acc[sinkName] = acc[sinkName] || [];
+        acc[sinkName].push(reducedSinks[sinkName]);
       }
 
       return acc
@@ -84,7 +89,32 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     sinkNames
   );
 
-  return mappedAndReducedSinks
+  const mappedSinkNames = uniq(sinkNames.map(sinkName => {
+    const mappedSinkName = (actionsMap || {})[sinkName];
+
+    return mappedSinkName
+    ? mappedSinkName
+      : sinkName
+  }));
+
+  const finalSinks = reduce(function mergeReducedSinks(acc, sinkName) {
+    // This is an array by previous construction
+    const sinks = collectedReducedSinks[sinkName];
+    if (sinks.length === 1) {
+      // Case standard when there is only one reduced sink for a given sink name
+      acc[sinkName] = sinks[0];
+    }
+    else {
+      // Case advanced when there are several reduced sinks for a given sink name
+      // This can happen because of mapping several sinks into another given sink name,
+      // as a result of the mapping
+      acc[sinkName] = $.merge(sinks)
+    }
+
+    return acc
+  }, {}, mappedSinkNames);
+
+  return finalSinks
 }
 
 // Spec

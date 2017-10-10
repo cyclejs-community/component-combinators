@@ -48,7 +48,7 @@ const Task = InjectSourcesAndSettings({
     const {filteredTask : {done, title}, listIndex} = settings;
 
     return {
-      checkBox : { isChecked : !!done, namespace : [TASKS, listIndex].join('-'), label : undefined },
+      checkBox : { isChecked : !!done, namespace : [TASKS, listIndex].join('_'), label : undefined },
       editor : {showControls : true, initialEditMode : false, initialContent : title}
     }
   }

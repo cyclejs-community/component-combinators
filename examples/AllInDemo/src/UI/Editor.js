@@ -1,19 +1,20 @@
 import * as Rx from "rx";
 import { Div, DOM_SINK, preventDefault } from "../../../../src/utils"
 import { a, p, div, img, nav, strong, h2, ul, li, button, input, label, span } from  "cycle-snabbdom"
-import {merge, defaultTo, always} from 'ramda'
+import {merge, defaultTo, always, curry, cond, identity, T} from 'ramda'
 import { m } from "../../../../src/components/m/m"
 
 const $ = Rx.Observable;
 let counter = 0;
 
+const strcat = x => y => "" + x + y;
 const defaultNamespace = 'editor';
-const editorEditableContentSelector = editorSelector => editorSelector + '.editor__editable-content';
-const saveButtonSelector = editorSelector => editorSelector + ".editor__icon-save";
-const cancelButtonSelector = editorSelector => editorSelector + ".editor__icon-cancel";
-const editButtonSelector = editorSelector => editorSelector + ".editor__icon-edit";
+const editorEditableContentSelector = strcat('.editor__editable-content');
+const saveButtonSelector =  strcat(".editor__icon-save");
+const cancelButtonSelector =  strcat(".editor__icon-cancel");
+const editButtonSelector =  strcat(".editor__icon-edit");
 const editorEditModeSelector = (editMode, editorSelector) => editMode ? editorSelector + `.editor--edit-mode` : editorSelector ;
-const editorOutputSelector = editorSelector => editorSelector + '.editor__output';
+const editorOutputSelector =  strcat('.editor__output');
 
 function getTextContent(document, selector){
   // NOTE : the selector is for a div
