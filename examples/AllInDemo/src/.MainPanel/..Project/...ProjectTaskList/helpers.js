@@ -12,6 +12,7 @@ import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
 import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
+import Moment from 'moment';
 
 const $ = Rx.Observable;
 
@@ -83,4 +84,44 @@ export function computeSaveUpdatedTaskActions(ownSink, childrenSinks, settings){
   }))
 }
 
+export const UNITS = [{
+  short: 'w',
+  milliseconds: 5 * 8 * 60 * 60 * 1000
+}, {
+  short: 'd',
+  milliseconds: 8 * 60 * 60 * 1000
+}, {
+  short: 'h',
+  milliseconds: 60 * 60 * 1000
+}, {
+  short: 'm',
+  milliseconds: 60 * 1000
+}];
 
+export function formatDuration(timeSpan) {
+  return UNITS.reduce((str, unit) => {
+    const amount = timeSpan / unit.milliseconds;
+    if (amount >= 1) {
+      const fullUnits = Math.floor(amount);
+      const formatted = `${str} ${fullUnits}${unit.short}`;
+      timeSpan -= fullUnits * unit.milliseconds;
+      return formatted;
+    } else {
+      return str;
+    }
+  }, '').trim();
+}
+
+export function calendarTime(value){
+  if (value && (value instanceof Date || typeof value === 'number')) {
+    return new Moment(value).calendar();
+  }
+}
+
+export function formatEfforts(value){
+  if (value == null || typeof value !== 'object') {
+    return value;
+  }
+
+  return `${formatDuration(value.effective) || 'none'} of ${formatDuration(value.estimated) || 'un-estimated'}`;
+}

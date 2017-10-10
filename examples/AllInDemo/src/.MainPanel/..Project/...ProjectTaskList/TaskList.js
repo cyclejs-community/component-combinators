@@ -6,14 +6,15 @@ import { InjectSources } from "../../../../../../src/components/Inject/InjectSou
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
 import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault } from "../../../../../../src/utils"
 import { pipe, values, keys, always, filter, path, map } from 'ramda'
-import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-snabbdom"
+import { a, p, div, img, nav, h2, ul, li, button, input, strong } from "cycle-snabbdom"
 import { UPDATE_TASK_COMPLETION_STATUS, TASKS, taskFactory } from "../../../../src/domain"
-import {computeTaskCheckedActions, computeSaveUpdatedTaskActions, filterTasks} from './helpers'
+import {computeTaskCheckedActions, computeSaveUpdatedTaskActions, calendarTime, formatEfforts} from './helpers'
 import {taskEnterButtonSelector, taskEnterInputSelector} from './properties'
 import {taskListStateFactory} from './state'
 import {CheckBox} from '../../../UI/CheckBox'
 import {Editor} from '../../../UI/Editor'
 import { InjectStateInSinks } from "../../../../../../src/components/Inject/InjectStateInSinks"
+import {TaskInfo} from './TaskInfo'
 
 const $ = Rx.Observable;
 
@@ -46,7 +47,6 @@ function  TaskContainer (sources, settings){
 }
 
 const TaskLink = DummyComponent;
-const TaskInfo = DummyComponent;
 
 // NOTE : Because Editor and CheckBox are reusable UI component, they are unaware of any domain
 // model, and can only be parameterized through settings. `InjectSourcesAndSettings` is used to
@@ -65,10 +65,10 @@ const Task = InjectSourcesAndSettings({
   InSlot('checkbox', [
     InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox)
   ]),
-  // TODO : I AM here soon, refactor
   InSlot('editor', [
     InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb'}}}, Editor)
   ]),
+  // TODO : I AM here soon, refactor
   TaskInfo, // TODO : should be noting to inject here? have it from the sources
   TaskLink
 ]]);
