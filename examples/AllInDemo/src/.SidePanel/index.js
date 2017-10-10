@@ -2,12 +2,14 @@ import * as Rx from "rx";
 import { ForEach } from "../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../src/components/ListOf/ListOf"
 import { InjectSources } from "../../../../src/components/Inject/InjectSources"
-import { InjectSourcesAndSettings } from "../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, format, Div, Nav, vLift,firebaseListToArray, preventDefault } from "../../../../src/utils"
-import { pipe, values, always, filter, map } from 'ramda'
-import { a, p, div, img, nav, strong, h2, ul, li } from "cycle-snabbdom"
+import {
+  Div, DOM_SINK, EmptyComponent, firebaseListToArray, preventDefault
+} from "../../../../src/utils"
+import { always, filter, map } from 'ramda'
+import { a, div, h2, img, nav, p, strong, ul } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
+import { InSlot } from "../../../../src/components/InSlot"
 
 const $ = Rx.Observable;
 
@@ -15,8 +17,8 @@ function getProjectNavigationItems$(sources, settings) {
   return sources.projects$
     .map(filter(project => !project.deleted))
     .map(map(project => ({
-        title: project.title,
-        link: ['projects', project._id].join('/')
+      title: project.title,
+      link: ['projects', project._id].join('/')
     })))
     .distinctUntilChanged()
     .tap(x => console.log(`getProjectNavigationItems$:`, x))
@@ -26,30 +28,34 @@ function getProjectNavigationItems$(sources, settings) {
 }
 
 export const SidePanel = m({}, {}, [Div('.app__l-side'), [
-  m({},{}, [Navigation, [
-    m({},{ title: 'Main' }, [ NavigationSection, [
-        m({},{project : { title: 'Dashboard', link: 'dashboard' }}, [NavigationItem])
-      ]
+  m({}, {}, [Navigation, [
+    m({}, { title: 'Main' }, [NavigationSection, [
+      m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
+    ]
     ]),
-    m({},{ title: 'Projects' }, [ NavigationSection, [
-      InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
-        ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
-          ListOf({ list: 'projectList', as: 'project' }, [
-            EmptyComponent,
-            NavigationItem
-          ])
-        ])
+    m({}, { title: 'Projects' }, [NavigationSection, [
+      InSlot('navigation-item', [
+        InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+          ForEach({
+            from: 'projectNavigationItems$',
+            as: 'projectList'
+          }, [
+            ListOf({ list: 'projectList', as: 'project' }, [
+              EmptyComponent,
+              NavigationItem
+            ])
+          ])])
       ])
     ]]),
-    m({},{ title: 'Admin' }, [ NavigationSection, [
-        m({},{project : { title: 'Manage Plugins', link: 'plugins' }}, [NavigationItem])
-      ]
+    m({}, { title: 'Admin' }, [NavigationSection, [
+      m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
+    ]
     ]),
   ]])
 ]
 ]);
 
-function Navigation(sources, settings){
+function Navigation(sources, settings) {
   // NOTE : the `Div('.app__l-side')` could also be moved in the top level div below. I however
   // think it is more readable to expose the container class outside the navigation component
   // This is obviously arbitrary. On the downside, it will be less performant, and also adds an
@@ -68,37 +74,43 @@ function Navigation(sources, settings){
   }
 }
 
-function NavigationSection(sources, settings){
-  const {title} = settings;
+function NavigationSection(sources, settings) {
+  const { title } = settings;
 
   return {
-    [DOM_SINK] : $.of(
-      div('.navigation-section', {slot : 'navigation-section'}, [
-      h2('.navigation-section__title', title),
-        ul('.navigation-section__list', {slot : 'navigation-item'},[])
+    [DOM_SINK]: $.of(
+      div('.navigation-section', { slot: 'navigation-section' }, [
+        h2('.navigation-section__title', title),
+        ul('.navigation-section__list', { slot: 'navigation-item' }, [])
       ])
     )
   }
 }
 
 function NavigationItem(sources, settings){
+  const {url$} = sources;
   const {project : {title, link}} = settings;
-  const isLinkActive = ROUTE_PARAMS in settings ? '.navigation-section__link--active' : ''
   const linkSanitized = link.replace(/\//i, '.');
 
+  const state$ = url$.map(url => {
+    return url.indexOf(link) > -1
+  });
+
   return {
-    [DOM_SINK] : $.of(
-      a(
-        `${isLinkActive}.navigation-item.navigation-section__link.${linkSanitized}`,
-        {attrs : {href : link}, slot: 'navigation-item'},
+    [DOM_SINK]: state$.map(isLinkActive => {
+      const isLinkActiveClass = isLinkActive ? '.navigation-section__link--active' : '';
+
+      return a(
+        `${isLinkActiveClass}.navigation-item.navigation-section__link.${linkSanitized}`,
+        { attrs: { href: link }, slot: 'navigation-item' },
         title)
-    ),
-  // NOTE : we avoid having to isolate by using the link which MUST be unique over the whole
+    }),
+    // NOTE : we avoid having to isolate by using the link which MUST be unique over the whole
     // application (unicity of a route)
-  router : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
-    .do(preventDefault)
-    .map(always('/'+ link+'/'))
-    }
+    router: sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
+      .do(preventDefault)
+      .map(always('/' + link + '/'))
+  }
 }
 
 // Helper

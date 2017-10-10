@@ -59,3 +59,9 @@ cf. bug tags in the code. How to
 # cycle stuff
 - order of drivers not predictable
   - problem when one driver must execute after another one
+
+# general
+with using strings for identifiers of sources or else, it is easy to make a mistake that is not captured by js (but maybe ts would)
+
+# my components
+- InSlot has to be right after where the slot is asked, any other component combinator is wrapping over previous vnodes with a div without slot
