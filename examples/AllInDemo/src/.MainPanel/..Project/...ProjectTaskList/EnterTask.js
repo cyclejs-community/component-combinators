@@ -48,14 +48,14 @@ export function EnterTask(sources, settings) {
   // same vNodes and hence it does not do anything. So we have to force the update.
   return {
     [DOM_SINK]: taskEnterButtonClick$
-      .map(always(render(key++)))
-      .startWith(render(key++)),
+      .map(_ => render(++key))
+      .startWith(render(++key)),
     domainAction$: taskEnterButtonClick$
       .do(preventDefault)
       // In a normal case, I would have to do both update, remote state and duplicated local state
       // and then listen on both for optimistic auto-correct updates
       .withLatestFrom(projectFb$, user$, (ev, projectFb, user) => {
-        const {fbIndex, project} = projectFb;
+        const {fbIndex : projectFbIndex, project} = projectFb;
         const tasks = project.tasks;
         const newTaskPosition = tasks.length;
         const nr = tasks.reduce((maxNr, task) => task.nr > maxNr ? task.nr : maxNr, 0) + 1;
@@ -69,9 +69,9 @@ export function EnterTask(sources, settings) {
           context: TASKS,
           command: ADD_NEW_TASK,
           payload: {
-            fbIndex,
+            projectFbIndex,
             newTask: taskFactory(taskEnterDescription, newTaskPosition, nr),
-            newTaskPosition
+            tasks
           }
         }, {
           context: ACTIVITIES,

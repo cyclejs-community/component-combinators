@@ -33,6 +33,6 @@ export function projectsStateFactory(sources, settings){
           project
         }
       })
-    .distinctUntilChanged(prop('fbIndex'))
+//    .distinctUntilChanged(prop('fbIndex'))
     .shareReplay(1)
 }

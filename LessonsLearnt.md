@@ -65,6 +65,8 @@ cf. bug tags in the code. How to
 - don't replace links with . if it goes to classes, use _
 - also the equality used to recognize the route is obviously weak (indexOf) would be better to recognize the full route as a prefix oh well
 - bugs can update wrongly the database, which can create other bugs because one forgets to put back the database
+- be careful with Ramda that always will evaluate only once its operand. i.e. always(x++) will 
+only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated for each event
 
 # my components
 - InSlot has to be right after where the slot is asked, any other component combinator is wrapping over previous vnodes with a div without slot

@@ -110,8 +110,9 @@ export const domainObjectsQueryMap = {
 export const domainActionsConfig = {
   [TASKS]: {
     [ADD_NEW_TASK]: function addNewTaskToProject(repository, context, payload) {
-      const { fbIndex, newTask, newTaskPosition } = payload;
-      const path = `${PROJECTS_REF}/${fbIndex}/tasks/${newTaskPosition}`;
+      const { projectFbIndex, newTask, tasks } = payload;
+      const newTaskPosition = tasks.length;
+      const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${newTaskPosition}`;
 
       return repository.child(path).set(newTask)
     },
@@ -136,7 +137,7 @@ export const domainActionsConfig = {
       // TODO : position in the tasks should move?? they don't so I wont either
       // TODO : harmonize the payload parameter for all same context TASKS
       const numberOfTasks = tasks.length;
-      const index = tasks.indexOf(filteredTask); // TODO : that works??
+      const index = tasks.indexOf(filteredTask);
       // The best is to remove the array and replace it, or can I also update with firebase
       const clonedTasks = tasks.slice();
       const removedTask = clonedTasks.splice(index, 1)[0];

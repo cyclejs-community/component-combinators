@@ -23,7 +23,6 @@ function isValidInjectStateInSinksSettings(injectSettings, sinks, sources, setti
     return sinks[sinkToInject] && isObservable(sinks[sinkToInject])
   });
   if (!sinkToInjectContractValue){
-    debugger
     return `isValidInjectStateInSinksSettings > found a sink to inject which is either not existing or not an observable! ${format(sinksToInject)} vs. ${keys(sources)}`
   }
 
