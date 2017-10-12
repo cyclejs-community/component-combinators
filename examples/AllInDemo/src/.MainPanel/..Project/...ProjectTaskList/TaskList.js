@@ -8,7 +8,7 @@ import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, prev
 import { pipe, values, keys, always, filter, path, map } from 'ramda'
 import { a, p, div, img, nav, h2, ul, li, button, input, strong } from "cycle-snabbdom"
 import { UPDATE_TASK_COMPLETION_STATUS, TASKS, DELETE_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, activityFactory, taskFactory } from "../../../../src/domain"
-import {computeTaskCheckedActions, computeSaveUpdatedTaskActions, calendarTime, formatEfforts} from './helpers'
+import {computeTaskCheckedActions, computeSaveUpdatedTaskActions, filterTasks, formatEfforts} from './helpers'
 import {taskEnterButtonSelector, taskEnterInputSelector} from './properties'
 import {taskListStateFactory} from './state'
 import {CheckBox} from '../../../UI/CheckBox'
@@ -16,12 +16,11 @@ import {Editor} from '../../../UI/Editor'
 import { InjectStateInSinks } from "../../../../../../src/components/Inject/InjectStateInSinks"
 import {TaskInfo} from './TaskInfo'
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
+import {TaskDelete, taskDeleteSelector} from './TaskDelete'
 
 const $ = Rx.Observable;
 
 // Helpers
-const taskDeleteSelector = listIndex => `.task__delete.task__delete_${listIndex}`;
-
 const TaskListContainer = vLift(
   div('.task-list__l-box-c', [
     div('.task-list__tasks', {slot: 'task'}, [])
@@ -49,7 +48,17 @@ function  TaskContainer (sources, settings){
   }
 }
 
-const TaskLink = DummyComponent;
+function TaskLink(sources, settings){
+  const {filteredTask : {nr}, listIndex} = settings;
+  const filteredTaskDetailRoute = ['../task/', filterTasks ? filterTasks.nr : ''].join('');
+
+ return {
+   [DOM_SINK] : $.of(
+     a('.button.button--small', { attrs: { href: filteredTaskDetailRoute } }, 'Details')
+   ),
+   router : void 0 // TODO
+ }
+}
 
 // NOTE : Because Editor and CheckBox are reusable UI component, they are unaware of any domain
 // model, and can only be parameterized through settings. `InjectSourcesAndSettings` is used to
@@ -75,44 +84,6 @@ const Task = InjectSourcesAndSettings({
   // TODO : I AM here soon, refactor
   TaskLink
 ]]);
-
-function TaskDelete(sources, settings){
-  const {[DOM_SINK]: DOM, projectFb$, user$} = sources;
-  const {[ROUTE_PARAMS]: { projectId }, filteredTasks, listIndex} = settings;
-  const filteredTask = filteredTasks[listIndex];
-  const {title} = filteredTask;
-
-  const events = {
-    taskDelete : DOM.select(taskDeleteSelector(listIndex)).events('click').do(preventDefault)
-  };
-
-  // TODO : also add log ot activity service
-  // TODO : make sure activity service is also set when updating
-  return {
-    domainAction$ : events.taskDelete.withLatestFrom(projectFb$, user$, (_, {fbIndex, project}, user) => {
-
-      return $.from([{
-        context : TASKS,
-        command : DELETE_TASK,
-        payload : {projectFbIndex : fbIndex, tasks : project.tasks, filteredTask}
-      },
-        {
-          context: ACTIVITIES,
-          command: LOG_NEW_ACTIVITY,
-          payload: activityFactory({
-            user,
-            time: +Date.now(),
-            subject: projectId,
-            category: 'tasks',
-            title: 'A task was deleted',
-            message: `The task "${title}" was deleted from #${projectId}.`
-          })
-        }
-        ])
-    })
-        .switch()
-  }
-}
 
 export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [TaskListContainer,  [
   InSlot('task', [
