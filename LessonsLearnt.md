@@ -61,7 +61,10 @@ cf. bug tags in the code. How to
   - problem when one driver must execute after another one
 
 # general
-with using strings for identifiers of sources or else, it is easy to make a mistake that is not captured by js (but maybe ts would)
+- with using strings for identifiers of sources or else, it is easy to make a mistake that is not captured by js (but maybe ts would)
+- don't replace links with . if it goes to classes, use _
+- also the equality used to recognize the route is obviously weak (indexOf) would be better to recognize the full route as a prefix oh well
+- bugs can update wrongly the database, which can create other bugs because one forgets to put back the database
 
 # my components
 - InSlot has to be right after where the slot is asked, any other component combinator is wrapping over previous vnodes with a div without slot

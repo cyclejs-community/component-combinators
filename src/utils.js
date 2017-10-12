@@ -442,7 +442,11 @@ function isComponent(obj) {
 }
 
 function isPromise(obj){
-  return obj.then && isFunction(obj.then) && true
+  return obj && obj.then && isFunction(obj.then) && true
+}
+
+function isError(obj) {
+  return obj instanceof Error
 }
 
 function isObservable(obj) {
@@ -1173,6 +1177,7 @@ export {
   isEmptyArray,
   isArrayOf,
   isPromise,
+  isError,
   isObservable,
   isSource,
   isSources,

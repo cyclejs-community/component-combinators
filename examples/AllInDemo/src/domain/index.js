@@ -141,13 +141,13 @@ export const domainActionsConfig = {
       const clonedTasks = tasks.slice();
       const removedTask = clonedTasks.splice(index, 1)[0];
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks`;
-      const lastElementPath = [path, numberOfTasks].join('/');
-      debugger
+      const lastElementPath = [path, numberOfTasks-1].join('/');
 
-        repository.child(path).update(clonedTasks)
+        return repository.child(path).update(clonedTasks)
         .then(_ => {
           // array should have one element less, so now delete last element which is now obsolete
-          repository.child(lastElementPath).update(null)
+          // NOTE : apparent cannot be child(path/numerOfTasks-1).update(null)!!
+          repository.child(path).update({[numberOfTasks-1] : null})
         })
     }
   },

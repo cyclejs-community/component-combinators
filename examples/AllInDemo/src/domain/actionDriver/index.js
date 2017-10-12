@@ -1,6 +1,6 @@
 import { mapObjIndexed, tryCatch, values, isNil } from 'ramda';
 import * as Rx from "rx"
-import { assertContract, format } from "../../../../../src/utils"
+import { assertContract, format, isPromise, isError } from "../../../../../src/utils"
 
 const $ = Rx.Observable;
 
@@ -10,14 +10,6 @@ function errorHandler(e, repository, context, params) {
   console.warn('extra info: repository, context, params', repository, context, params);
 
   return e;
-}
-
-function isPromise(obj) {
-  return !!obj.then
-}
-
-function isError(obj) {
-  return obj instanceof Error
 }
 
 function eventEmitterFactory(_, context, __) {

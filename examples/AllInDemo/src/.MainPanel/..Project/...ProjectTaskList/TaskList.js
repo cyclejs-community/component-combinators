@@ -85,15 +85,15 @@ function TaskDelete(sources, settings){
     taskDelete : DOM.select(taskDeleteSelector(listIndex)).events('click').do(preventDefault)
   };
 
-
   // TODO : also add log ot activity service
   // TODO : make sure activity service is also set when updating
   return {
-    domainAction$ : events.taskDelete.withLatestFrom(projectFb$, (_, {projectFbIndex, project}) => {
+    domainAction$ : events.taskDelete.withLatestFrom(projectFb$, (_, {fbIndex, project}) => {
+
       return {
         context : TASKS,
         command : DELETE_TASK,
-        payload : {projectFbIndex, tasks : project.tasks, filteredTask}
+        payload : {projectFbIndex : fbIndex, tasks : project.tasks, filteredTask}
       }
     })
   }
