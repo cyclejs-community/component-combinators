@@ -50,7 +50,7 @@ function  TaskContainer (sources, settings){
 
 function TaskLink(sources, settings){
   const {filteredTask : {nr}, listIndex} = settings;
-  const filteredTaskDetailRoute = ['../task/', filterTasks ? filterTasks.nr : ''].join('');
+  const filteredTaskDetailRoute = ['../task/', nr ].join('');
 
  return {
    [DOM_SINK] : $.of(
@@ -79,10 +79,14 @@ const Task = InjectSourcesAndSettings({
   InSlot('editor', [
     InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb', user$:'user'}}}, Editor)
   ]),
+  InSlot('task-infos', [
   TaskInfo,
+  ]),
     TaskDelete,
   // TODO : I AM here soon, refactor
+  InSlot('task-link', [
   TaskLink
+  ]),
 ]]);
 
 export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [TaskListContainer,  [
