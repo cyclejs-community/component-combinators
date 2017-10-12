@@ -11,7 +11,7 @@ import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-sn
 import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
-import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
+import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY,ACTIVITIES, taskFactory, activityFactory } from "../../../../src/domain"
 import Moment from 'moment';
 
 const $ = Rx.Observable;
@@ -70,17 +70,30 @@ export function computeSaveUpdatedTaskActions(ownSink, childrenSinks, settings){
   const {filteredTasks } = settings;
 
   return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
-    return childIsCheckedSink.map(({save : {editMode, textContent}, projectFb}) => {
-      const {fbIndex, project} = projectFb;
+    return childIsCheckedSink.map(({save : {editMode, textContent}, projectFb, user}) => {
+      const {fbIndex, project : {_id : projectId}} = projectFb;
       // NOTE : the index of the child correspond to the index of the item in the list
       const filteredTask = filteredTasks[index];
 
-      return {
+      return $.from([{
         context: TASKS,
         command: UPDATE_TASK_DESCRIPTION,
         payload: {newTitle : textContent, projectFbIndex : fbIndex, filteredTask}
-      }
+      },
+        {
+          context: ACTIVITIES,
+          command: LOG_NEW_ACTIVITY,
+          payload: activityFactory({
+            user,
+            time: +Date.now(),
+            subject: projectId,
+            category: 'tasks',
+            title: 'A task was updated',
+            message: `The task "'A task was added'" was updated on #${projectId}.`
+          })
+        }        ])
     })
+      .switch()
   }))
 }
 

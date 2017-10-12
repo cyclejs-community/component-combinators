@@ -54,7 +54,6 @@ const TaskLink = DummyComponent;
 // NOTE : Because Editor and CheckBox are reusable UI component, they are unaware of any domain
 // model, and can only be parameterized through settings. `InjectSourcesAndSettings` is used to
 // compute the necessary settings for those components
-// TODO : less refresh, put some untilChanged or something somewhere
 const Task = InjectSourcesAndSettings({
   settings : function(settings){
     const {filteredTask : {done, title}, listIndex} = settings;
@@ -69,7 +68,7 @@ const Task = InjectSourcesAndSettings({
     InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox)
   ]),
   InSlot('editor', [
-    InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb'}}}, Editor)
+    InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb', user$:'user'}}}, Editor)
   ]),
   TaskInfo,
     TaskDelete,
@@ -121,7 +120,6 @@ export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [T
       ListOf({list : 'filteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
         isChecked$: computeTaskCheckedActions,
         save$ : computeSaveUpdatedTaskActions
-        // TODO
       }, actionsMap : {'isChecked$' : 'domainAction$', 'save$' : 'domainAction$'}}, [
         EmptyComponent,
         Task
