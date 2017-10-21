@@ -138,3 +138,14 @@ export function formatEfforts(value){
 
   return `${formatDuration(value.effective) || 'none'} of ${formatDuration(value.estimated) || 'un-estimated'}`;
 }
+
+export function findScrollableParent(element) {
+  while (element != document.documentElement) {
+    if (getComputedStyle(element).overflowY !== 'visible') {
+      break;
+    }
+    element = element.parentElement;
+  }
+
+  return element;
+}

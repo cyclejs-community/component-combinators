@@ -1,11 +1,11 @@
-import { NO_VALUE } from "../properties"
-import { memoizeWith } from 'ramda'
 import * as Rx from "rx";
 import * as jsonpatch from "fast-json-patch"
 import { isArrayUpdateOperations } from "../../../../src/components/types"
 import { assertContract } from "../../../../src/utils"
 
 const $ = Rx.Observable;
+
+export {getStateInStore} from './helpers'
 
 export const TASK_TAB_BUTTON_GROUP_STATE = 'task_tab_button_group_state';
 export const PATCH = 'patch';

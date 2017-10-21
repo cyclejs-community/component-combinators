@@ -35,10 +35,10 @@ const DOM_SINK = 'DOM';
  * @typedef {String} SinkName
  */
 /**
- * @typedef {Observable} Source
+ * @typedef {Rx.Observable} Source
  */
 /**
- * @typedef {Observable|Null} Sink
+ * @typedef {Rx.Observable|Null} Sink
  */
 /**
  * @typedef {Object.<string, Source>} Sources
@@ -165,12 +165,12 @@ function assertSignatureContract(fnName, args, signatureDef) {
  * Test against a predicate, and throws an exception if the predicate
  * is not satisfied
  * @param {function(*): (Boolean|String)} contractFn Predicate that must be
- * satisfy. Returns true if predicate is satisfied, otherwise return a
+ * satisfied. Returns true if predicate is satisfied, otherwise return a
  * string to report about the predicate failure
- * @param {Array<*>} contractArgs
- * @param {String} errorMessage
+ * @param {Array<*>} contractArgs arguments for the predicate
+ * @param {String} errorMessage error message to report in case of failure
  * @returns {Boolean}
- * @throws
+ * @throws if the contract fails
  */
 function assertContract(contractFn, contractArgs, errorMessage) {
   const boolOrError = contractFn.apply(null, contractArgs)
@@ -385,10 +385,10 @@ function isVNode(obj) {
 
 /**
  *
- * @param {Predicate} predicateKey
- * @param {Predicate} predicateValue
+ * @param {Predicate} predicateKey predicate which keys of hashmap must satisfy
+ * @param {Predicate} predicateValue predicate which values of hash map must satisfy
  * @returns {Predicate}
- * @throws when either predicate is not a function
+ * @throws when either one predicate is not a function
  */
 function isHashMap(predicateKey, predicateValue) {
   assertContract(isFunction, [predicateKey], 'isHashMap : first argument must be a' +
@@ -1145,6 +1145,15 @@ function getInputValue(document, sel) {
   return el ? el.value : ''
 }
 
+/**
+ *
+ * @param {String} label
+ * @param {Rx.Observable} source
+ */
+function labelSourceWith(label, source){
+  return source.map(x => ({[label] : x}))
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1228,5 +1237,6 @@ export {
   Div,
   Nav,
   firebaseListToArray,
-  getInputValue
+  getInputValue,
+  labelSourceWith
 }

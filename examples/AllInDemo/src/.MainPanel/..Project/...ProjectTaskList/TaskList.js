@@ -4,30 +4,30 @@ import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
 import { InSlot} from "../../../../../../src/components/InSlot"
 import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault } from "../../../../../../src/utils"
+import { DOM_SINK, EmptyComponent, format, Div, vLift, preventDefault } from "../../../../../../src/utils"
 import { pipe, values, keys, always, filter, path, map } from 'ramda'
 import { a, p, div, img, nav, h2, ul, li, button, input, strong } from "cycle-snabbdom"
-import { UPDATE_TASK_COMPLETION_STATUS, TASKS, DELETE_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, activityFactory, taskFactory } from "../../../../src/domain"
-import {computeTaskCheckedActions, computeSaveUpdatedTaskActions, filterTasks, formatEfforts} from './helpers'
-import {taskEnterButtonSelector, taskEnterInputSelector} from './properties'
+import { UPDATE_TASK_COMPLETION_STATUS, TASKS, DELETE_TASK } from "../../../../src/domain"
+import {computeTaskCheckedActions, computeSaveUpdatedTaskActions } from './helpers'
 import {taskListStateFactory} from './state'
 import {CheckBox} from '../../../UI/CheckBox'
 import {Editor} from '../../../UI/Editor'
 import { InjectStateInSinks } from "../../../../../../src/components/Inject/InjectStateInSinks"
 import {TaskInfo} from './TaskInfo'
-import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
 import {TaskDelete, taskDeleteSelector} from './TaskDelete'
+import {TaskLink} from './TaskLink'
+import {TaskListContainerSelector} from './properties'
 
 const $ = Rx.Observable;
 
 // Helpers
 const TaskListContainer = vLift(
-  div('.task-list__l-box-c', [
+  div(TaskListContainerSelector, [
     div('.task-list__tasks', {slot: 'task'}, [])
   ])
 );
 
-function  TaskContainer (sources, settings){
+function TaskContainer (sources, settings){
   const {filteredTask : {done, title}, listIndex} = settings;
   const coreVnodes =   div('.task', [
     div(".task__l-box-a", {slot : 'checkbox'}, []),
@@ -46,24 +46,6 @@ function  TaskContainer (sources, settings){
         : coreVnodes
     )
   }
-}
-
-function TaskLink(sources, settings){
-  const {filteredTask : {nr}, listIndex} = settings;
-  // NOTE : with this router, if url is x/y then passing task/nr will give x/tasks/nr
-  // NOTE : Here we show an example of nested route change, i.e. where a route is defined
-  // RELATIVELY to the current route.
-  const filteredTaskDetailRoute = ['task/', nr ].join('');
-
-  // NOTE : here we show an example of using the default behaviour of the `a` element, instead
-  // of listening on `a` element clicks and routing manually and preventing default event processing
-  // It is so much simpler. However, one must be sure that the default behaviour will always be
-  // the one expected.
- return {
-   [DOM_SINK] : $.of(
-     a('.button.button--small', { attrs: { href: filteredTaskDetailRoute } }, 'Details')
-   ),
- }
 }
 
 // NOTE : Because Editor and CheckBox are reusable UI component, they are unaware of any domain
@@ -89,16 +71,17 @@ const Task = InjectSourcesAndSettings({
   TaskInfo,
   ]),
     TaskDelete,
-  // TODO : I AM here soon, refactor
   InSlot('task-link', [
   TaskLink
   ]),
 ]]);
 
-export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [TaskListContainer,  [
+// TODO : blog on the progresse of app, example here before scroll/after scroll show incremental dev
+// how easy vs. angular
+export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFactory}, [TaskListContainer,  [
   InSlot('task', [
-    ForEach({from : 'filteredTasks$', as : 'filteredTasks'}, [
-      ListOf({list : 'filteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
+    ForEach({from : 'visibleFilteredTasks$', as : 'visibleFilteredTasks'}, [
+      ListOf({list : 'visibleFilteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
         isChecked$: computeTaskCheckedActions,
         save$ : computeSaveUpdatedTaskActions
       }, actionsMap : {'isChecked$' : 'domainAction$', 'save$' : 'domainAction$'}}, [
@@ -107,7 +90,7 @@ export const TaskList = InjectSources({filteredTasks$: taskListStateFactory}, [T
       ])])
   ])]]);
 
-// TODO : not done, infinite scroll and draggable... and tags : DO THE TAGS dont know about scroll
+// TODO : not done, draggable... and tags : DO THE TAGS dont know about scroll
 // TODO : do the drag and drop : good exercise, useful in the general case, example of reusable
 // component
 // TODO : need to read more about the scroll but could be interesting to do

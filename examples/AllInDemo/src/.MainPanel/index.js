@@ -12,10 +12,15 @@ import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
 import {Project} from './..Project'
 import {ProjectsDashboard} from './..ProjectsDashboard'
 import {ManagePlugins} from './..ManagePlugins'
+// TODO : DOC : NOTE : that is a coupling between child and parent, the scroll bar of task list
+// is actually at main panel level... This appears because we don't want to compute at run-time
+// the element to put the scroll event handler on. Cycle Dom source works only with selectors,
+// not element!  TODO find a nicer solution : write my own dom source??
+import {TaskListScrollBarSelector} from './..Project/...ProjectTaskList/properties'
 
 const $ = Rx.Observable;
 
-export const MainPanel = m({}, {}, [Div('.app__l-main'), [
+export const MainPanel = m({}, {}, [Div(`${TaskListScrollBarSelector}.app__l-main`), [
   OnRoute({route : 'dashboard'}, [
     ProjectsDashboard
   ]),

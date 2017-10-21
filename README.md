@@ -176,6 +176,7 @@ The current roadmap stands as :
     - [x] Mocks for DOM and document driver
     - [x] Mock for domain query driver
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
+    - [ ] study testing with pupeeteer.js (chrome headless browser)
 - Combinators
     - [x] Generic combinator `m`
     - [x] Routing combinator `onRoute`

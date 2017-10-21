@@ -70,3 +70,12 @@ only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated fo
 
 # my components
 - InSlot has to be right after where the slot is asked, any other component combinator is wrapping over previous vnodes with a div without slot
+- best way to equiv. templates is to isolate components and then use Container and slots, and pass the slots as children
+  - this is equiv. to container = f(state_container, children) where children = sum:f(state_child, events)
+  - or container = f(children), and children = f(state, events)
+  - and dom from children will be assembled to according to slot logic, and sinks reduced according to default merge
+    - + state injected in the form of InjectSources
+    - + for standard components, adapters in the form of InjectSettings, or InjectSourcesAndSettings if the standard component has also requirement (signature) about sources too 
+    - + slot injected via InSlot
+    - Basically child = standardComponent(Settings), i.e. is a specialization of the standard component
+- when refactoring state stream names, be careful to refactor also the strings... for instance ForEach(from : 'stream name in string')

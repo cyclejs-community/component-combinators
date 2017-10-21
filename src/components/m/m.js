@@ -182,18 +182,6 @@ function computeSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
   return $.merge(removeNullsFromArray(allSinks))
 }
 
-// TODO : test mergeChildrenIntoParentDOM : add to m tests if not already there
-// TODO : test normal merge still working - should be just running the current tests
-// TODO : test EDGE case : parent slot hole at root level, + children with slot content
-// TODO : test EDGE case : parent slot hole at root level, + no children
-// TODO : test EDGE case : parent slot hole at root level, + children but mix slot content/other
-// TODO : test MAIN case : parent slot hole at children level, + children with slot content
-// TODO : test EDGE case : parent slot hole at children level, + no children
-// TODO : test EDGE case : parent slot hole at children level, + children but mix slot content/other
-// TODO : refactor to reduce line number, refactor by branch cases, taht will separate slot
-// functionaliy naturally
-// TODO : also all this is tree manipulation, would be nice to have a functional tree library...
-
 function mergeChildrenIntoParentDOM(parentDOMSink) {
   return function mergeChildrenIntoParentDOM(arrayVNode) {
     // We remove null elements from the array of vNode
@@ -209,7 +197,7 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
         case 0 :
           return null
         /*
-         // To avoid putting an extra `div` when there is only one vNode
+         // To avoid putting an extra `div` when there is only one vNode,
          // we put the extra `div` only when there are several vNodes
          // that did not work though... `insertBefore : error...`
          // KEPT AS ADR i.e. documenting past choices
@@ -223,7 +211,7 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
     else {
       let parentVNode = clone(_arrayVNode.shift()); // TODO:need! why?? where is that ever modified?
       let childrenVNode = _arrayVNode;
-      // parentVNode.children = clone(parentVNode.children) || []; // don't need?
+      // parentVNode.children = clone(parentVNode.children) || []; // TODO : don't need? mystery
       parentVNode.children = parentVNode.children || [];
       const slotHoles = getSlotHoles(parentVNode);
 

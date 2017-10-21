@@ -1,16 +1,10 @@
-import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
-import { InSlot} from "../../../../../../src/components/InSlot"
-import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
-import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault, getInputValue } from "../../../../../../src/utils"
+import { DOM_SINK, format, Div, preventDefault, labelSourceWith } from "../../../../../../src/utils"
 import { pipe, values, keys, always, filter, path, map, prop } from 'ramda'
-import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-snabbdom"
-import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
-import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
+import { TASK_TAB_BUTTON_GROUP_STATE, getStateInStore } from "../../../../src/inMemoryStore"
 import { TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
-import {filterTasks, isButtonActive, makeButtonGroupSelector, computeTasksButtonGroupClasses} from './helpers'
-import {tasksButtonGroupInitialState} from './properties'
+import {filterTasks, isButtonActive, makeButtonGroupSelector, findScrollableParent} from './helpers'
+import {TaskListContainerSelector, INITIAL_SHOWN_TASK_COUNT, TaskListScrollBarSelector, SCROLL_INCREMENT} from './properties'
 
 const $ = Rx.Observable;
 
@@ -55,32 +49,77 @@ export function tasksButtonGroupStateChange$(sources, settings){
   }
 }
 
-export function taskListStateFactory(sources, settings){
-  const {projects$, storeAccess, storeUpdate$} = sources;
-  const {[ROUTE_PARAMS] : {projectId}} = settings;
-
+function getTaskFilter(sources, settings){
   // NOTE:  filter will be in {filter: ...}
-  const taskFilter$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
-    .concat(storeUpdate$.getResponse(TASK_TAB_BUTTON_GROUP_STATE).map(path(['response'])))
-    // NOTE : this is a behaviour
-    .shareReplay(1)
-  ;
+  return getStateInStore(TASK_TAB_BUTTON_GROUP_STATE, sources, settings)
+}
+
+// Checks if an element with scrollbars is fully scrolled to the bottom
+function isScrolledBottom(element) {
+  return element.scrollHeight - element.scrollTop === element.clientHeight
+}
+
+function getShowMoreItemsEvent (sources, settings){
+  const {document} = sources;
+  const scrollableElement = document.querySelector(TaskListScrollBarSelector);
+  const scroll$ = sources[DOM_SINK].select(TaskListScrollBarSelector).events('scroll').share();
+
+  return scroll$
+    .map(_ => scrollableElement && isScrolledBottom(scrollableElement))
+    .filter(Boolean)
+  // TODO : check it works, hopefully won't fire too much, if not add a throttle
+  // TODO : beware if scroll will bubble, depends on cycle DOM version cf.
+  // https://github.com/cyclejs/cyclejs/issues/308 : SHOULD BE WORKING!!
+}
+
+export function taskListStateFactory(sources, settings){
+  const {projects$} = sources;
+  const {[ROUTE_PARAMS] : {projectId}} = settings;
 
   // Type : Array<Tasks> array of tasks taken for the selected project and filtered by selected
   // filter
   const filteredTasks$ = projects$
   // NOTE : `combineLatest`, not `withLatestFrom` as we want to update also when the filter changes
   // so taskFilter$ is a behaviour resulting from the combination of two behaviours
-    .combineLatest(taskFilter$, (projects, {filter: taskFilter}) => {
-      return projects
+    .combineLatest(
+      getTaskFilter(sources, settings),
+      (projects, {filter: taskFilter}) => {
+        return projects
         .filter(project => project._id === projectId)
-        .map(project => filterTasks(project.tasks, taskFilter))
-      [0]
+        .map(project => filterTasks(project.tasks, taskFilter))[0]
     })
+    // NOTE : this is an EVENT! which is filtered task value change event
+    .share();
+
+  const visibleFilteredTasks$ = $.merge(
+    labelSourceWith ('filteredTasks',filteredTasks$) ,
+    labelSourceWith ('hasScrolledBottom', getShowMoreItemsEvent(sources, settings))
+    )
+    // Now show only the computed number of visible items
+    .scan((acc, labelledEvent)=> {
+    let {shownItemCount, filteredTasks} = acc;
+    if ('hasScrolledBottom' in labelledEvent){
+      // NOTE : labelledEvent.hasScrolledBottom true by construction
+      shownItemCount = Math.min(filteredTasks.length, shownItemCount + SCROLL_INCREMENT);
+    }
+    if ('filteredTasks' in labelledEvent) {
+      filteredTasks = labelledEvent.filteredTasks;
+    }
+
+    return {
+      shownItemCount,
+      filteredTasks,
+      visibleFilteredTasks : filteredTasks.slice(0, this.shownItemCount)
+    }
+    }, {shownItemCount : INITIAL_SHOWN_TASK_COUNT, filteredTasks : [], visibleFilteredTasks : []})
+    .map(prop('visibleFilteredTasks'))
+    // NOTE : no need for distinctUntilChanged as it always changes when an event occurs
     // NOTE : this is a behaviour
     .shareReplay(1)
   ;
 
-  return     filteredTasks$
+  return     {
+    visibleFilteredTasks$
+  }
 }
 
