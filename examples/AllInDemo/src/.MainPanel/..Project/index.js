@@ -21,6 +21,7 @@ const tabItems = [
 
 const parentRoute = projectId => `projects/${projectId}`;
 
+// Component displaying and linking the tabs
 function TabContainer(sources, settings) {
   const { url$ } = sources;
   const { tabItems, [ROUTE_PARAMS]: { projectId } } = settings;
@@ -47,6 +48,7 @@ function TabContainer(sources, settings) {
       return div('.tabs', [
         ul('.tabs__tab-list', tabItems.map((tabItem, index) => {
           const tabActiveClass = (tabIndex === index) ? '.tabs__tab-button--active' : '';
+
           return li([
             button(`${tabActiveClass }.${tabItem.title}.tabs__tab-button`, [
               tabItem.title
@@ -68,21 +70,21 @@ function TabContainer(sources, settings) {
   }
 }
 
-// NOTE : could also be written with a ForEach(projects$ as projects)
-// That would let us with just a $.of, and no stream manipulation
-// TODO : refactor to use state$ in the view, use share and shareReplay
+// Component displaying project's description
 function ProjectHeader(sources, settings) {
   const { projects$ } = sources;
   const { [ROUTE_PARAMS]: { projectId } } = settings;
+  const state$ = projects$
+    .map(projects => {
+      const project = projects.find(project => project._id === projectId);
+      const { title, description } = project;
+
+      return { title, description }
+    })
+    .shareReplay(1);
 
   return {
-    [DOM_SINK]: projects$
-      .map(projects => {
-        const project = projects.find(project => project._id === projectId);
-        const { title, description } = project;
-
-        return { title, description }
-      })
+    [DOM_SINK]: state$
       .map(({ title, description }) => {
         return div('.project__l-header', [
           h2('.project__title', title),

@@ -89,3 +89,23 @@ only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated fo
   component anywhere we have pending
   - using less levels of streams, as we make use of settings. This decreases the potential for 
   error and unintended concurrency
+- separation of variable and constants
+  - DOM is a function of state (the part that can change) and some fixed settings, which can be 
+  given at configuration time, or at run time.
+  - in other component frameworks, components are parameterized through props, which can either 
+  change dynamically (linked to the change of the state of the parent who is passing them) OR be 
+  constant. In this framework, we separate both
+  - i.e. we isolate the parameterization concern from the state dependency concern
+
+# good practices
+- identify state$, event$, intent$ if any, and actions$
+  - make it so final sinks is one liner
+- state$ should be the closest to where it is applied (cohesion)
+  - BUT when state has to be shared between components pass it at the closest common ancestor 
+  with InjectSources
+    - in that case it should be in a separate file
+- ?? write ad-hoc combinators
+- always have last the component definition as a function of other components
+  - helpers above or in a separate files if there are many
+    - or if there are used by several components, in which they go in separate file at common 
+    ancestor level
