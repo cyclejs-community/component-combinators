@@ -202,6 +202,9 @@ The current roadmap stands as :
     - [ ] vNode combinator `VT`
     - [x] Query driver 
     - [x] Action driver 
+    - [ ] renaming?
+      - InjectSources -> InjectState? InjectStateInSources? WithState? WithStateInSources? 
+      WithBehaviours?
 - Core
     - [x] DOM merge with slot assignment (a la web component)
     - [ ] type contracts error handling for component's settings

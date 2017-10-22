@@ -8,10 +8,31 @@ import {
 import { always, filter, map } from 'ramda'
 import { a, div, h2, img, nav, p, strong, ul } from "cycle-snabbdom"
 import { m } from "../../../../src/components/m/m"
-import { ROUTE_PARAMS } from "../../../../src/components/Router/properties"
 import { InSlot } from "../../../../src/components/InSlot"
 
 const $ = Rx.Observable;
+
+// Helpers
+function renderTasksSummary({ user, projects }) {
+  const openTasksCount = firebaseListToArray(projects)
+    .reduce((count, project) => count + project.tasks.filter((task) => !task.done).length, 0);
+
+  return div('.user-area', [
+    div('.user-area__l-profile', [
+      img({
+        attrs: {
+          src: user.pictureDataUri
+        }
+      }, [])
+    ]),
+    div('.user-area__l-information', [
+      p('.user-area__welcome-text', `Hi ${user.name}`),
+      openTasksCount
+        ? p([`You got `, strong(openTasksCount), ` open tasks.`])
+        : p('No open tasks. Hooray!')
+    ])
+  ])
+}
 
 function getProjectNavigationItems$(sources, settings) {
   return sources.projects$
@@ -27,34 +48,8 @@ function getProjectNavigationItems$(sources, settings) {
     ;
 }
 
-export const SidePanel = m({}, {}, [Div('.app__l-side'), [
-  m({}, {}, [Navigation, [
-    m({}, { title: 'Main' }, [NavigationSection, [
-      m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
-    ]
-    ]),
-    m({}, { title: 'Projects' }, [NavigationSection, [
-      InSlot('navigation-item', [
-        InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
-          ForEach({
-            from: 'projectNavigationItems$',
-            as: 'projectList'
-          }, [
-            ListOf({ list: 'projectList', as: 'project' }, [
-              EmptyComponent,
-              NavigationItem
-            ])
-          ])])
-      ])
-    ]]),
-    m({}, { title: 'Admin' }, [NavigationSection, [
-      m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
-    ]
-    ]),
-  ]])
-]
-]);
-
+// Components
+// Navigation(..., [NavigationSection(..., [NavigationItem(...,[])])])
 function Navigation(sources, settings) {
   // NOTE : the `Div('.app__l-side')` could also be moved in the top level div below. I however
   // think it is more readable to expose the container class outside the navigation component
@@ -87,9 +82,9 @@ function NavigationSection(sources, settings) {
   }
 }
 
-function NavigationItem(sources, settings){
-  const {url$} = sources;
-  const {project : {title, link}} = settings;
+function NavigationItem(sources, settings) {
+  const { url$ } = sources;
+  const { project: { title, link } } = settings;
   const linkSanitized = link.replace(/\//i, '_');
 
   const state$ = url$.map(url => {
@@ -113,24 +108,31 @@ function NavigationItem(sources, settings){
   }
 }
 
-// Helper
-function renderTasksSummary({ user, projects }) {
-  const openTasksCount = firebaseListToArray(projects)
-    .reduce((count, project) => count + project.tasks.filter((task) => !task.done).length, 0);
+export const SidePanel =
+  m({}, {}, [Div('.app__l-side'), [
+    m({}, {}, [Navigation, [
+      // NOTE : this is the same as having NavigatinoSection({title}, componentTree)
+      // except that we do not have to define that AD-HOC combinator
+      // I'd rather have for now only the GENERAL combinator as combinators
+      // TODO : but maybe that's the way to go??
+      m({}, { title: 'Main' }, [NavigationSection, [
+        m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
+      ]]),
+      m({}, { title: 'Projects' }, [NavigationSection, [
+        InSlot('navigation-item', [
+          InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+            ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+              ListOf({ list: 'projectList', as: 'project' }, [
+                EmptyComponent,
+                NavigationItem
+              ])
+            ])
+          ])
+        ])
+      ]]),
+      m({}, { title: 'Admin' }, [NavigationSection, [
+        m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
+      ]]),
+    ]])
+  ]]);
 
-  return div('.user-area', [
-    div('.user-area__l-profile', [
-      img({
-        attrs: {
-          src: user.pictureDataUri
-        }
-      }, [])
-    ]),
-    div('.user-area__l-information', [
-      p('.user-area__welcome-text', `Hi ${user.name}`),
-      openTasksCount
-        ? p([`You got `, strong(openTasksCount), ` open tasks.`])
-        : p('No open tasks. Hooray!')
-    ])
-  ])
-}

@@ -79,3 +79,13 @@ only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated fo
     - + slot injected via InSlot
     - Basically child = standardComponent(Settings), i.e. is a specialization of the standard component
 - when refactoring state stream names, be careful to refactor also the strings... for instance ForEach(from : 'stream name in string')
+
+
+# Advantages of this
+- incremental development which helps debugging
+  - we have a tree. At any moment we can replace a whole branch with dummy component, to isolate 
+  the part which is failing
+  - we don' have to do everything at the same time. Get the structure of the tree, and put dummy 
+  component anywhere we have pending
+  - using less levels of streams, as we make use of settings. This decreases the potential for 
+  error and unintended concurrency

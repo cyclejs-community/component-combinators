@@ -3,11 +3,7 @@ import defaultModules from "cycle-snabbdom/lib/modules"
 import { createHistory } from "history"
 import firebase from 'firebase'
 // drivers
-import {
-  makeAuthDriver,
-  makeFirebaseDriver,
-  makeQueueDriver,
-} from '@sparksnetwork/cyclic-fire'
+import {  makeAuthDriver,  makeFirebaseDriver,  makeQueueDriver,} from '@sparksnetwork/cyclic-fire'
 import { run } from "@cycle/core"
 import { makeDOMDriver } from "cycle-snabbdom"
 import { makeHistoryDriver} from '@cycle/history';

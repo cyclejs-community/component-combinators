@@ -41,3 +41,83 @@ App = ForEach ({from, as}, [
 
 HOW WOULD I DO AN ACCORDEON COMPONENT?
 ???
+
+# What is best API?
+- exposing m
+- simple semantic wrapper around m
+- ad-hoc combinator : more readable, but more work to write
+
+export const SidePanel =
+  m({}, {}, [Div('.app__l-side'), [
+    m({}, {}, [Navigation, [
+      // NOTE : this is the same as having NavigatinoSection({title}, componentTree)
+      // except that we do not have to define that AD-HOC combinator
+      // I'd rather have for now only the GENERAL combinator as combinators
+      // TODO : but maybe that's the way to go??
+      m({}, { title: 'Main' }, [NavigationSection, [
+        m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
+      ]]),
+      m({}, { title: 'Projects' }, [NavigationSection, [
+        InSlot('navigation-item', [
+          InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+            ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+              ListOf({ list: 'projectList', as: 'project' }, [
+                EmptyComponent,
+                NavigationItem
+              ])
+            ])
+          ])
+        ])
+      ]]),
+      m({}, { title: 'Admin' }, [NavigationSection, [
+        m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
+      ]]),
+    ]])
+  ]]);
+
+
+// not including the header
+Navigation({}, [NavigationHeader, [
+  NavigationSection({ title: 'Main' }, [NavigationSectionHeader, [
+    NavigationItem( { project: { title: 'Dashboard', link: 'dashboard' } }, [])
+  ]]),
+  NavigationSection({ title: 'Projects' }, [NavigationSectionHeader, [
+    // NOTE : necessary because `InjectSources` does not allow to set the slot by way of settings
+    InSlot('navigation-item', [
+      InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+        ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+          ListOf({ list: 'projectList', as: 'project' }, [
+            EmptyComponent,
+            NavigationItem
+          ])
+        ])
+      ])
+    ])
+  ]]),
+  NavigationSection({ title: 'Admin' }, [NavigationSectionHeader, [
+    NavigationItem( { project: { title: 'Manage Plugins', link: 'plugins' } }, [])
+  ]]),
+]])
+
+// BETTER!!! no duplication of Headers, more readable too, though more work to write...
+// including the header in the combinator definition
+Navigation({}, [
+  NavigationSection({ title: 'Main' }, [
+    NavigationItem( { project: { title: 'Dashboard', link: 'dashboard' } }, [])
+  ]),
+  NavigationSection({ title: 'Projects' }, [
+    InSlot('navigation-item', [
+      InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+        ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+          ListOf({ list: 'projectList', as: 'project' }, [
+            EmptyComponent,
+            NavigationItem
+          ])
+        ])
+      ])
+    ])
+  ]),
+  NavigationSection({ title: 'Admin' }, [
+    NavigationItem( { project: { title: 'Manage Plugins', link: 'plugins' } }, [])
+  ]),
+])

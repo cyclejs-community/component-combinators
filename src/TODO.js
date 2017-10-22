@@ -1,3 +1,5 @@
+// TODO : combinator ForEachOfList
+// TODO : combinator same as ListOf for processing children actions and mapping them
 // TODO : all : think about work around for isolation, components need to pass their click free of
 // concerns
 // TODO : m : write a better doc to explain settings inheritance, and put in the docs not in te code
