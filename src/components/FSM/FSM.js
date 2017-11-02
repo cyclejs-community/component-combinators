@@ -25,7 +25,7 @@ import {
 import {
   decorateEventsWithLog, decorateStateEntryWithLog, decorateTransitionsWithLog
 } from "./utils"
-import { isArrayUpdateOperations } from "main/WebstormProjects/component-combinators/src/components/types"
+import { isArrayUpdateOperations } from "../../../src/components/types"
 // NOTE1 : dont use observe functionality for generating patches
 // it uses JSON stringify which makes it impossible to have functions in the
 // model object

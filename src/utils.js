@@ -1154,6 +1154,12 @@ function labelSourceWith(label, source){
   return source.map(x => ({[label] : x}))
 }
 
+function filterNull(driver) {
+  return function filteredDOMDriver(sink$) {
+    return driver(sink$.filter(Boolean))
+  }
+}
+
 export {
   makeDivVNode,
   handleError,
@@ -1238,5 +1244,6 @@ export {
   Nav,
   firebaseListToArray,
   getInputValue,
-  labelSourceWith
+  labelSourceWith,
+  filterNull
 }

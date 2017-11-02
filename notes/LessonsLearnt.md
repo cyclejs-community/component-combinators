@@ -96,6 +96,12 @@ only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated fo
   change dynamically (linked to the change of the state of the parent who is passing them) OR be 
   constant. In this framework, we separate both
   - i.e. we isolate the parameterization concern from the state dependency concern
+- readability!!
+   - this isolates very nicely the structure of the app, allowing to understand it more quickly 
+   but also to nail down faster source of issues
+- maintainability!!
+  - because concerns are isolated, it is easy to narrow down the modification targets, and 
+  discard/replace/change the implementation of such
 
 # good practices
 - identify state$, event$, intent$ if any, and actions$
@@ -109,3 +115,55 @@ only evalue x++ once, so event$.map(always(x++)) will not work, not evaluated fo
   - helpers above or in a separate files if there are many
     - or if there are used by several components, in which they go in separate file at common 
     ancestor level
+- construct the UI piece by piece
+  - side panel
+  - main panel
+    - three sections
+    - etc...
+  - i.e. do the structure first and then fill in the details
+    - what does the component do
+    - which state do I need
+- write components so that they are small and take care of a minimum of concerns
+
+# methodology
+- app shell
+  - initial state
+  - drivers, etc.
+  - configuration
+    - app sink names, etc.
+- recursive breakdown
+  - write the target breakdown
+    - final formula
+      - mix of components, ad-hoc and general component combinators
+    - specifications of components
+  - write the components
+    - identify component type from specs
+      - component?
+      - component combinator?
+        - component tree?
+        - children components?
+    - identify inputs from source
+    - identify outputs to sinks
+    - IF COMPONENT
+      - specify the reactive function as actions = f(events)
+        - identify the events
+        - identify the actions
+        - write the formula f for each sink
+          - identify state
+          - keep it local if possible
+          - keep it as close as possible to where it is used
+    - IF COMPONENT COMBINATOR
+      - specify inputs
+        - contracts
+          - settings, sources, others
+          - children components (type, slot, etc.)
+        - component tree vs. children components
+      - specify output         
+        - specification how the children are reduced into sinks
+      - turn it into `m` and other combinators
+        - choose one of the three `m` patterns
+        - for each pattern, fill in the blank
+          - sinks reducing formula
+    - test vs. specifications
+    - refactor
+      - inject state above the component when shared by sibling, i.e. up to common ancestor

@@ -97,6 +97,7 @@ function ProjectHeader(sources, settings) {
 export const Project =
   InjectSources({ projectFb$: projectsStateFactory }, [Div('.project'), [
     ProjectHeader,
+    // TODO : refactor to Tab ad-hoc component combinator, or should it be UI.Tab???
     m({}, { tabItems }, [TabContainer, [
       OnRoute({ route: 'tasks' }, [ProjectTaskList]),
       OnRoute({ route: 'task/:nr' }, [Div('.task-details', { slot: 'tab' }), [ProjectTaskDetails]]),
