@@ -8,7 +8,9 @@ import {
 } from "../../utils"
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 import { isNotEmpty, isSettings, isArrayUpdateOperations } from "../types"
-import {  } from "../types"
+import {
+  isOpAdd, isOpCopy, isOpMove, isOpNone, isOpRemove, isOpReplace, isOpTest
+} from "../types"
 
 ////////
 // Types FSM
@@ -147,36 +149,6 @@ export function checkIsObservable(obj) {
 // `Op_Copy :: Record { op: "copy", from: JSON_Pointer, path: JSON_Pointer}`
 // `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
 // `Op_None :: {} | Null`
-
-export const isJsonPointer = isString;
-export const isOpNone = both(isObject, isEmpty);
-export const isOpAdd = isStrictRecord({
-  op: both(isString, equals('add')),
-  path: isJsonPointer,
-  value: T
-});
-export const isOpRemove = isStrictRecord({
-  op: both(isString, equals('remove')),
-  path: isJsonPointer,
-});
-export const isOpReplace = isStrictRecord({
-  op: both(isString, equals('replace')),
-  path: isJsonPointer,
-  value: T
-});
-export const isOpMove = isStrictRecord({
-  op: both(isString, equals('move')),
-  path: isJsonPointer,
-});
-export const isOpCopy = isStrictRecord({
-  op: both(isString, equals('copy')),
-  path: isJsonPointer,
-});
-export const isOpTest = isStrictRecord({
-  op: both(isString, equals('test')),
-  path: isJsonPointer,
-  value: T
-});
 
 export const checkStateEntryComponentFnMustReturnComponent = isComponent;
 

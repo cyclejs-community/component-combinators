@@ -234,9 +234,11 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf no it
   ];
 
   /** @type TestResults */
+    // First <div/> is the empty component, surrounding div is the ListOf wrapper, same as if
+    // there would be x > 0 items in the list
   const expected = {
     DOM: {
-      outputs: [null      ],
+      outputs: ["<div><div></div></div>"],
       successMessage: 'sink DOM produces the expected values',
       transform: pipe(convertVNodesToHTML)
     },

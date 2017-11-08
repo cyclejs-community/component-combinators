@@ -12,6 +12,9 @@ and some time error will be launched
   - case where first time dom element exists and value read ok, then removed, then read again : 
   boom! read ONCE for all the time it is needed! no multicast with direct read! 
 
+# dependencies
+- if a imports from b, and b imports from a, then it could happen that some imports are undefined at the time of evaluation. AVOID THAT SITUATION!!
+
 # State management
 ## from button group
 // NOTE : Here we present a case of optimistic update for local state. This is fundamented in

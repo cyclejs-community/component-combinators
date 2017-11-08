@@ -29,7 +29,6 @@ export function initLocallyPersistedState(repository) {
 }
 
 export function initLocalNonPersistedState() {
-  // IN-PLACE update!! This is an in-memory store
   return {
     [TASK_TAB_BUTTON_GROUP_STATE]: {
       filter: TASK_TAB_BUTTON_GROUP_INIT_FILTER

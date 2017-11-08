@@ -1,48 +1,46 @@
 import * as Rx from "rx";
 import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
-import { InSlot} from "../../../../../../src/components/InSlot"
-import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
+import { InSlot } from "../../../../../../src/components/InSlot"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, format, Div, vLift, preventDefault } from "../../../../../../src/utils"
-import { pipe, values, keys, always, filter, path, map } from 'ramda'
-import { a, p, div, img, nav, h2, ul, li, button, input, strong } from "cycle-snabbdom"
-import { UPDATE_TASK_COMPLETION_STATUS, TASKS, DELETE_TASK } from "../../../../src/domain"
-import {computeTaskCheckedActions, computeSaveUpdatedTaskActions } from './helpers'
-import {taskListStateFactory} from './state'
-import {CheckBox} from '../../../UI/CheckBox'
-import {Editor} from '../../../UI/Editor'
+import { DOM_SINK, EmptyComponent, vLift } from "../../../../../../src/utils"
+import { button, div } from "cycle-snabbdom"
+import { TASKS } from "../../../../src/domain"
+import { computeSaveUpdatedTaskActions, computeTaskCheckedActions } from './helpers'
+import { taskListStateFactory } from './state'
+import { CheckBox } from '../../../UI/CheckBox'
+import { Editor } from '../../../UI/Editor'
 import { InjectStateInSinks } from "../../../../../../src/components/Inject/InjectStateInSinks"
-import {TaskInfo} from './TaskInfo'
-import {TaskDelete, taskDeleteSelector} from './TaskDelete'
-import {TaskLink} from './TaskLink'
-import {TaskListContainerSelector} from './properties'
+import { TaskInfo } from './TaskInfo'
+import { TaskDelete, taskDeleteSelector } from './TaskDelete'
+import { TaskLink } from './TaskLink'
+import { TaskListContainerSelector } from './properties'
 
 const $ = Rx.Observable;
 
 // Helpers
 const TaskListContainer = vLift(
   div(TaskListContainerSelector, [
-    div('.task-list__tasks', {slot: 'task'}, [])
+    div('.task-list__tasks', { slot: 'task' }, [])
   ])
 );
 
-function TaskContainer (sources, settings){
-  const {filteredTask : {done, title}, listIndex} = settings;
-  const coreVnodes =   div('.task', [
-    div(".task__l-box-a", {slot : 'checkbox'}, []),
+function TaskContainer(sources, settings) {
+  const { filteredTask: { done, title }, listIndex } = settings;
+  const coreVnodes = div('.task', [
+    div(".task__l-box-a", { slot: 'checkbox' }, []),
     div(".task__l-box-b", [
-      div(".task__title", {slot : 'editor'}, []),
+      div(".task__title", { slot: 'editor' }, []),
       button(taskDeleteSelector(listIndex)),
-      div('.task-infos', {slot : 'task-infos'}, []),
-      div({slot: 'task-link'}, []),
+      div('.task-infos', { slot: 'task-infos' }, []),
+      div({ slot: 'task-link' }, []),
     ])
   ]);
 
   return {
-    [DOM_SINK] : $.of(
+    [DOM_SINK]: $.of(
       done
-        ?  div(`.task--done`, [coreVnodes])
+        ? div(`.task--done`, [coreVnodes])
         : coreVnodes
     )
   }
@@ -52,39 +50,51 @@ function TaskContainer (sources, settings){
 // model, and can only be parameterized through settings. `InjectSourcesAndSettings` is used to
 // compute the necessary settings for those components
 const Task = InjectSourcesAndSettings({
-  settings : function(settings){
-    const {filteredTask : {done, title}, listIndex} = settings;
+  settings: function (settings) {
+    const { filteredTask: { done, title }, listIndex } = settings;
 
     return {
-      checkBox : { isChecked : !!done, namespace : [TASKS, listIndex].join('_'), label : undefined },
-      editor : {showControls : true, initialEditMode : false, initialContent : title}
+      checkBox: { isChecked: !!done, namespace: [TASKS, listIndex].join('_'), label: undefined },
+      editor: { showControls: true, initialEditMode: false, initialContent: title }
     }
   }
 }, [TaskContainer, [
   InSlot('checkbox', [
-    InjectStateInSinks({ isChecked$ : {as : 'isChecked', inject : {projectFb$ : 'projectFb'}}}, CheckBox)
+    InjectStateInSinks({
+      isChecked$: {
+        as: 'isChecked',
+        inject: { projectFb$: 'projectFb' }
+      }
+    }, CheckBox)
   ]),
   InSlot('editor', [
-    InjectStateInSinks({ save$ : {as : 'save', inject : {projectFb$ : 'projectFb', user$:'user'}}}, Editor)
+    InjectStateInSinks({
+      save$: {
+        as: 'save',
+        inject: { projectFb$: 'projectFb', user$: 'user' }
+      }
+    }, Editor)
   ]),
   InSlot('task-infos', [
-  TaskInfo,
+    TaskInfo,
   ]),
-    TaskDelete,
+  TaskDelete,
   InSlot('task-link', [
-  TaskLink
+    TaskLink
   ]),
 ]]);
 
 // TODO : blog on the progresse of app, example here before scroll/after scroll show incremental dev
 // how easy vs. angular
-export const TaskList = InjectSourcesAndSettings({sourceFactory: taskListStateFactory}, [TaskListContainer,  [
+export const TaskList = InjectSourcesAndSettings({ sourceFactory: taskListStateFactory }, [TaskListContainer, [
   InSlot('task', [
-    ForEach({from : 'visibleFilteredTasks$', as : 'visibleFilteredTasks'}, [
-      ListOf({list : 'visibleFilteredTasks', as : 'filteredTask', buildActionsFromChildrenSinks : {
-        isChecked$: computeTaskCheckedActions,
-        save$ : computeSaveUpdatedTaskActions
-      }, actionsMap : {'isChecked$' : 'domainAction$', 'save$' : 'domainAction$'}}, [
+    ForEach({ from: 'visibleFilteredTasks$', as: 'visibleFilteredTasks' }, [
+      ListOf({
+        list: 'visibleFilteredTasks', as: 'filteredTask', buildActionsFromChildrenSinks: {
+          isChecked$: computeTaskCheckedActions,
+          save$: computeSaveUpdatedTaskActions
+        }, actionsMap: { 'isChecked$': 'domainAction$', 'save$': 'domainAction$' }
+      }, [
         EmptyComponent,
         Task
       ])])
