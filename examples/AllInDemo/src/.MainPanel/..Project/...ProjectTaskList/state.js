@@ -62,9 +62,12 @@ function isScrolledBottom(element) {
 function getShowMoreItemsEvent (sources, settings){
   const {document} = sources;
   const scrollableElement = document.querySelector(TaskListScrollBarSelector);
-  const scroll$ = sources[DOM_SINK].select(TaskListScrollBarSelector).events('scroll').share();
+  const scroll$ = sources[DOM_SINK].select(TaskListScrollBarSelector).events('scroll', {useCapture: true}).share();
 
   return scroll$
+    .tap(x=>{
+      debugger
+    })
     .map(_ => scrollableElement && isScrolledBottom(scrollableElement))
     .filter(Boolean)
   // TODO : check it works, hopefully won't fire too much, if not add a throttle
@@ -109,7 +112,7 @@ export function taskListStateFactory(sources, settings){
     return {
       shownItemCount,
       filteredTasks,
-      visibleFilteredTasks : filteredTasks.slice(0, this.shownItemCount)
+      visibleFilteredTasks : filteredTasks.slice(0, shownItemCount)
     }
     }, {shownItemCount : INITIAL_SHOWN_TASK_COUNT, filteredTasks : [], visibleFilteredTasks : []})
     .map(prop('visibleFilteredTasks'))
