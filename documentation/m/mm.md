@@ -83,7 +83,7 @@ In addition to the combining function specification, the `m` factory also receiv
 - the component returned by the `m` factory will be called combined component.
 - We will use `Sinks` as a type synonym for `Actions`, and `Sink` as a type synonym for `ActionStream`. This is to reuse the terminology put in vogue by `cyclejs`.
 
-## `m :: CombineGenericSpecs -> Settings -> ComponentTree`
+## `m :: CombineGenericSpecs -> Settings -> ComponentTree -> Component`
 ### Types
 - `Component :: Sources -> Settings -> Sinks`
 - `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
