@@ -156,6 +156,7 @@ The proposed library has the following combinators :
 | [Switch](./documentation/Switch.md)  | Activate component(s) depending on the incoming value of a source| 
 | [ForEach](./documentation/ForEach.md)     |   Activate component for each incoming value of a source| 
 | [ListOf](./documentation/ListOf.md)      |    Activate a list of a given component based on an array of items |
+| [Pipe](./documentation/Pipe.md)      |    Sequentially compose components |
 | [InjectSources](./documentation/InjectSources.md)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](./documentation/InjectSourcesAndSettings.md)      |    Activate a component which will receive extra sources and extra settings |
 | [m](documentation/m_.md)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |

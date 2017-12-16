@@ -44,3 +44,23 @@ The behaviour is as follows :
 `sources` object.
 - at the end of iteration, the sinks for the last component are returned as sinks of the 
 `PipedComponent`
+
+### Types
+- `PipeSettings :: Record {`
+- `  overwrite :: Boolean` **Optional - default : false**
+- `}`
+- `PipedComponent :: Component`
+
+### Contracts
+- if `settings.overwrite` is set to false, a component cannot return a sink whose sink name is 
+equal to a source name - unless it is the final component in the component sequence.
+
+# Example
+**TODO**
+
+# Tips
+All components have the ability to include contracts in their definition. It is recommended to 
+use those for some basic error management. A common risk in the sequential composition 
+formulation is that the interface between components do not match, or match erronously. The 
+appropriate contracts can check the relevant conditions prior to executing the component (<em>fail 
+fast</em>).

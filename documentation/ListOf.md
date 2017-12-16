@@ -53,7 +53,7 @@ The behaviour is as follows :
 
 ### Contracts
 - for a given configuration of the `list` setting property, there MUST be a matching property in the same settings object. That property must correspond to an array. That is, if `list` is `'items.info'`, then there must be an array in `settings.items.info`.
-- there MUST be exactly two children component
+- there MUST be exactly two children components
 
 # Example
 cf. demo and tests
