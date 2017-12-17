@@ -56,7 +56,7 @@ The behaviour is as follows :
 equal to a source name - unless it is the final component in the component sequence.
 
 # Example
-**TODO**
+cf. tests
 
 # Tips
 All components have the ability to include contracts in their definition. It is recommended to 
