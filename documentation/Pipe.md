@@ -63,4 +63,9 @@ All components have the ability to include contracts in their definition. It is 
 use those for some basic error management. A common risk in the sequential composition 
 formulation is that the interface between components do not match, or match erronously. The 
 appropriate contracts can check the relevant conditions prior to executing the component (<em>fail 
-fast</em>).
+fast</em>). For instance, one can :
+
+- check that the expected sources are present
+- if necessary, also check that there are no extra sources (to use carefully, as it might be 
+normal to have extra sources...) 
+

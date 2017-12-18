@@ -101,4 +101,5 @@ function Editor_(sources, settings) {
   }
 }
 
+// TODO : why not directly Editor ? m is not doing anything here. cf CheckBox
 export const Editor = m({},{}, [ Editor_ ]);

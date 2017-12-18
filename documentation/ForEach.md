@@ -48,6 +48,33 @@ The behaviour is as follows :
 # Example
 cf. demo
 
+```javascript
+export const App = InjectSources({
+  fetchedCardsInfo$: fetchCardsInfo,
+  fetchedPageNumber$: fetchPageNumber
+}, [
+  ForEach({
+      from: 'fetchedCardsInfo$',
+      as: 'items',
+      sinkNames: [DOM_SINK],
+      trace: 'ForEach card'
+    }, [AspirationalPageHeader, [
+      ListOf({ list: 'items', as: 'cardInfo', trace: 'ForEach card > ListOf' }, [
+        EmptyComponent,
+        Card,
+      ])
+    ]]
+  ),
+  ForEach({
+    from: 'fetchedPageNumber$',
+    as: 'pageNumber',
+    sinkNames: [DOM_SINK, 'domainAction$']
+  }, [
+    Pagination
+  ])
+]);
+
+```
 # Tips
 - If it is necessary to implement a logic by which the component switching should only trigger on **CHANGES** of the incoming value, that logic could be implemented with appending a `distinctUntilChanged` to the `ForEach` source.
 - For each incoming value of the source, the component is switched off and then on again. This means any non-persisted state local to the component will be reinitialized. In this case this behaviour is not desired, a turn-around is to persist the local state to retrieve it between switches.
