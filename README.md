@@ -233,27 +233,34 @@ The current roadmap stands as :
 - then open with a local webserver the `index.html` in `test` directory 
 
 ## Demos
+### Example application
+The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components).
+
+- sits in `examples/AllInDemo` directory
+- `npm install`
+- `npm run wbuild`
+- then open with a local webserver the `index.html` in `$HOMEDIR/examples/AllInDemo` directory 
+
 ### State Machine
+- go to `$HOMEDIR/examples/volunteerApplication`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory 
 
 ### Switch
+- go to `$HOMEDIR/examples/SwitchLogin`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/SwitchLogin` directory
 
 ### OnRoute
+- go to `$HOMEDIR/examples/NestedRoutingDemo`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/NestedRoutingDemo` directory
 
 ### ForEach and List
-- `npm install`
-- `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
-
-### 
+- go to `$HOMEDIR/examples/ForEachListDemo`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
