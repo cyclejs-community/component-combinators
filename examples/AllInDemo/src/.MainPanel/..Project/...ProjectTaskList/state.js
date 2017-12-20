@@ -122,7 +122,8 @@ export function taskListStateFactory(sources, settings){
   ;
 
   return     {
-    visibleFilteredTasks$
+    visibleFilteredTasks$,
+    filteredTasks$
   }
 }
 

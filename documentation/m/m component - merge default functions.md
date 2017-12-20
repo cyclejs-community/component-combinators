@@ -1,6 +1,6 @@
 
 # Motivation
-We want in this section to describe the default merge function used by the `m` component factory, when no such merge function is supplied by the user.
+We want in this section to describe the default merge functions used by the `m` component factory, when no such merge function is supplied by the user.
 
 ## DOM merge
 The `DOM` merge function relating to `m :: ComponentDef -> Settings -> [ParentComponent, Array<ChildComponent>])` has the following signature : `DOMDefaultMerge :: Nullable<ParentDOMSink>, Array<DOMSink>, Settings`, where :

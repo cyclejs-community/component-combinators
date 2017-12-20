@@ -88,9 +88,9 @@ const Task = InjectSourcesAndSettings({
 // how easy vs. angular
 export const TaskList = InjectSourcesAndSettings({ sourceFactory: taskListStateFactory }, [TaskListContainer, [
   InSlot('task', [
-    ForEach({ from: 'visibleFilteredTasks$', as: 'visibleFilteredTasks' }, [
+    ForEach({ from: 'filteredTasks$', as: 'filteredTasks' }, [
       ListOf({
-        list: 'visibleFilteredTasks', as: 'filteredTask', buildActionsFromChildrenSinks: {
+        list: 'filteredTasks', as: 'filteredTask', buildActionsFromChildrenSinks: {
           isChecked$: computeTaskCheckedActions,
           save$: computeSaveUpdatedTaskActions
         }, actionsMap: { 'isChecked$': 'domainAction$', 'save$': 'domainAction$' }

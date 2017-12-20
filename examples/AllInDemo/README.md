@@ -47,4 +47,7 @@ No wireframes are available, however the following screenshot from the Angular2 
 
 ![screenshot](https://i.imgur.com/NXgJV2c.png) 
 
-
+# Running the demo
+- npm run wbuild (once)
+- npm run serve (as many times as necessary)
+- open `index.html` in a local webserver

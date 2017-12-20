@@ -24,8 +24,8 @@ export const taskDeleteSelector = listIndex => `.task__delete.task__delete_${lis
 
 export function TaskDelete(sources, settings){
   const {[DOM_SINK]: DOM, projectFb$, user$} = sources;
-  const {[ROUTE_PARAMS]: { projectId }, visibleFilteredTasks, listIndex} = settings;
-  const filteredTask = visibleFilteredTasks[listIndex];
+  const {[ROUTE_PARAMS]: { projectId }, filteredTasks, listIndex} = settings;
+  const filteredTask = filteredTasks[listIndex];
   const {title} = filteredTask;
 
   const events = {
