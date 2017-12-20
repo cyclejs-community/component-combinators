@@ -210,22 +210,16 @@ The current roadmap stands as :
 - Core
     - [x] DOM merge with slot assignment (a la web component)
     - [ ] type contracts error handling for component's settings
-    - [ ] recursive component combinator ?
-      - [svelte](https://svelte.technology/guide)
-      - [vue](unknownlink)
 - component library
   - [web components](https://bosonic.github.io/elements/dialogs-modals.html)
   - cf. materializecss
 - Demo
-  - [~] nice demo site : github pages?
+  - [x] nice demo site : github pages?
     - [x] select static site generator (Jekyll, Hexo, Hugo)
-    - [ ] demo site content
-    - [ ] doc site architecture
-      - example : cf. https://viperhtml.js.org/hyperhtml/documentation/, https://vuetifyjs.com/components/alerts
-      - [ ] Add documentation for combinators
+    - [x] demo site content
   - [ ] demo from Angular2 book
   - [ ] [flux challenge?](https://github.com/staltz/flux-challenge)
-  - [ ] documentation slot
+  - [x] documentation slot
     - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or https://skyronic.com/blog/vue-slots-example 
 - Distribution
   - monorepo?
