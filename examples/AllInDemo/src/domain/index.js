@@ -126,6 +126,7 @@ export const domainActionsConfig = {
     },
     [UPDATE_TASK_DESCRIPTION]: function updateTaskDescription(repository, context, payload) {
       const { newTitle, projectFbIndex , filteredTask } = payload;
+      // TODO : Dont read it from position... if data is corrupted will not work, not robust enough
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/title`;
       const updatedValue = newTitle;

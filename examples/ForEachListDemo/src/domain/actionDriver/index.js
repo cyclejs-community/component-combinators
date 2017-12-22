@@ -72,7 +72,6 @@ export function makeDomainActionDriver(repository, config) {
         }
         else {
           setTimeout(function () {
-            debugger
             eventEmitters[context].onNext({
               request: action,
               err: null,

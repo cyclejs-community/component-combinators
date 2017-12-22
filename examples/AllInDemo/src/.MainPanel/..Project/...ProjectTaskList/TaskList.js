@@ -90,6 +90,8 @@ export const TaskList = InjectSourcesAndSettings({ sourceFactory: taskListStateF
   InSlot('task', [
     ForEach({ from: 'filteredTasks$', as: 'filteredTasks' }, [
       ListOf({
+        // TODO : this would be a good case for using PIPE combinator right? That would avoid
+        // injectStateInSinks usage
         list: 'filteredTasks', as: 'filteredTask', buildActionsFromChildrenSinks: {
           isChecked$: computeTaskCheckedActions,
           save$: computeSaveUpdatedTaskActions

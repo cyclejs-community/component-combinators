@@ -1,10 +1,9 @@
-import { DOM_SINK, format, Div, preventDefault, labelSourceWith } from "../../../../../../src/utils"
-import { pipe, values, keys, always, filter, path, map, prop } from 'ramda'
+import { DOM_SINK, labelSourceWith, preventDefault } from "../../../../../../src/utils"
+import { prop } from 'ramda'
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
-import { TASK_TAB_BUTTON_GROUP_STATE, getStateInStore } from "../../../../src/inMemoryStore"
-import { TASKS, ADD_NEW_TASK, ACTIVITIES, LOG_NEW_ACTIVITY, taskFactory, activityFactory } from "../../../../src/domain"
-import {filterTasks, isButtonActive, makeButtonGroupSelector, findScrollableParent} from './helpers'
-import {TaskListContainerSelector, INITIAL_SHOWN_TASK_COUNT, TaskListScrollBarSelector, SCROLL_INCREMENT} from './properties'
+import { getStateInStore, TASK_TAB_BUTTON_GROUP_STATE } from "../../../../src/inMemoryStore"
+import { filterTasks, makeButtonGroupSelector } from './helpers'
+import { INITIAL_SHOWN_TASK_COUNT, SCROLL_INCREMENT, TaskListScrollBarSelector } from './properties'
 
 const $ = Rx.Observable;
 
@@ -22,34 +21,38 @@ const $ = Rx.Observable;
 // - what is the current filter for the tasks
 //   - that is non-persisted local app state corresponding to the domain layer
 //   - that is visible by the whole app
-export function tasksButtonGroupStateChange$(sources, settings){
+export function tasksButtonGroupStateChange$(sources, settings) {
   // NOTE : we skip the basic assertions for this demo
   // - labels MUST be non-empty array (logically should even be more than one element)
-  const {buttonGroup : {labels, namespace}} = settings;
-  const {projects$, storeAccess, storeUpdate$} = sources;
+  const { buttonGroup: { labels, namespace } } = settings;
+  const { projects$, storeAccess, storeUpdate$ } = sources;
   // Initial button state is in the in-memory store
   const initialButtonGroupState$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
-  // slice out the relevant part of the state
-    .map(prop('filter'))
-    .map(x => ({label: x}))
+    // slice out the relevant part of the state
+      .map(prop('filter'))
+      .map(x => ({ label: x }))
   ;
 
   return {
-    buttonGroupStateChange$ : $.concat(
+    buttonGroupStateChange$: $.concat(
       initialButtonGroupState$,
       // NOTE: that is one way to merge a group of component's event. The other way is in the ListOf
       $.merge(labels.map((label, index) => {
-          return sources[DOM_SINK].select(makeButtonGroupSelector({label, index, namespace})).events('click')
-            .do(preventDefault)
-            .map(ev => ({label, index}))
-        }))
-      )
-      // those are events
+        return sources[DOM_SINK].select(makeButtonGroupSelector({
+          label,
+          index,
+          namespace
+        })).events('click')
+          .do(preventDefault)
+          .map(ev => ({ label, index }))
+      }))
+    )
+    // those are events
       .share()
   }
 }
 
-function getTaskFilter(sources, settings){
+function getTaskFilter(sources, settings) {
   // NOTE:  filter will be in {filter: ...}
   return getStateInStore(TASK_TAB_BUTTON_GROUP_STATE, sources, settings)
 }
@@ -59,13 +62,13 @@ function isScrolledBottom(element) {
   return element.scrollHeight - element.scrollTop === element.clientHeight
 }
 
-function getShowMoreItemsEvent (sources, settings){
-  const {document} = sources;
+function getShowMoreItemsEvent(sources, settings) {
+  const { document } = sources;
   const scrollableElement = document.querySelector(TaskListScrollBarSelector);
-  const scroll$ = sources[DOM_SINK].select(TaskListScrollBarSelector).events('scroll', {useCapture: true}).share();
+  const scroll$ = sources[DOM_SINK].select(TaskListScrollBarSelector).events('scroll', { useCapture: true }).share();
 
   return scroll$
-    .tap(x=>{
+    .tap(x => {
       debugger
     })
     .map(_ => scrollableElement && isScrolledBottom(scrollableElement))
@@ -75,9 +78,9 @@ function getShowMoreItemsEvent (sources, settings){
   // https://github.com/cyclejs/cyclejs/issues/308 : SHOULD BE WORKING!!
 }
 
-export function taskListStateFactory(sources, settings){
-  const {projects$} = sources;
-  const {[ROUTE_PARAMS] : {projectId}} = settings;
+export function taskListStateFactory(sources, settings) {
+  const { projects$ } = sources;
+  const { [ROUTE_PARAMS]: { projectId } } = settings;
 
   // Type : Array<Tasks> array of tasks taken for the selected project and filtered by selected
   // filter
@@ -86,43 +89,15 @@ export function taskListStateFactory(sources, settings){
   // so taskFilter$ is a behaviour resulting from the combination of two behaviours
     .combineLatest(
       getTaskFilter(sources, settings),
-      (projects, {filter: taskFilter}) => {
+      (projects, { filter: taskFilter }) => {
         return projects
-        .filter(project => project._id === projectId)
-        .map(project => filterTasks(project.tasks, taskFilter))[0]
-    })
+          .filter(project => project._id === projectId)
+          .map(project => filterTasks(project.tasks, taskFilter))[0]
+      })
     // NOTE : this is an EVENT! which is filtered task value change event
     .share();
 
-  const visibleFilteredTasks$ = $.merge(
-    labelSourceWith ('filteredTasks',filteredTasks$) ,
-    labelSourceWith ('hasScrolledBottom', getShowMoreItemsEvent(sources, settings))
-    )
-    // Now show only the computed number of visible items
-    .scan((acc, labelledEvent)=> {
-    let {shownItemCount, filteredTasks} = acc;
-    if ('hasScrolledBottom' in labelledEvent){
-      // NOTE : labelledEvent.hasScrolledBottom true by construction
-      shownItemCount = Math.min(filteredTasks.length, shownItemCount + SCROLL_INCREMENT);
-    }
-    if ('filteredTasks' in labelledEvent) {
-      filteredTasks = labelledEvent.filteredTasks;
-    }
-
-    return {
-      shownItemCount,
-      filteredTasks,
-      visibleFilteredTasks : filteredTasks.slice(0, shownItemCount)
-    }
-    }, {shownItemCount : INITIAL_SHOWN_TASK_COUNT, filteredTasks : [], visibleFilteredTasks : []})
-    .map(prop('visibleFilteredTasks'))
-    // NOTE : no need for distinctUntilChanged as it always changes when an event occurs
-    // NOTE : this is a behaviour
-    .shareReplay(1)
-  ;
-
-  return     {
-    visibleFilteredTasks$,
+  return {
     filteredTasks$
   }
 }

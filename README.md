@@ -100,7 +100,7 @@ The nested routing switching logic is hidden behind the `OnRoute` combinator.
 The following implementation corresponds to :
 
 - Functional specifications
-    - display a list of card reflecting input information from a card database
+    - display a list of cards reflecting input information from a card database
     - a pagination section allows to display X cards at a time
 - Technical specifications
     - `Card` is parameterized by its card content, and is in charge of implementing the card logic
@@ -159,7 +159,8 @@ The proposed library has the following combinators :
 | [Pipe](./documentation/Pipe.md)      |    Sequentially compose components |
 | [InjectSources](./documentation/InjectSources.md)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](./documentation/InjectSourcesAndSettings.md)      |    Activate a component which will receive extra sources and extra settings |
-| [m](documentation/m_.md)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
+| [InjectStateInSinks](./documentation/InjectStateInSinks.md) | **TODO documentation**|
+| [m](./documentation/m_.md)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
@@ -234,7 +235,7 @@ The current roadmap stands as :
 
 ## Demos
 ### Example application
-The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components).
+The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components). Cf. [screenshot](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/#example) here.
 
 - sits in `examples/AllInDemo` directory
 - `npm install`

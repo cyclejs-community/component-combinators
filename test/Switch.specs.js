@@ -425,7 +425,6 @@ QUnit.test("main cases - 2 matches - 3 cases - switch on source - without case c
   const done = assert.async(4);
 
   const childComponent1 = function childComponent1(sources, settings) {
-    debugger
     return {
       DOM: sources.DOM1.take(4)
         .tap(console.warn.bind(console, 'DOM : component 1: '))
