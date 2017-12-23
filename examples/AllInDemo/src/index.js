@@ -24,6 +24,7 @@ const fbRoot = repository;
 const inMemoryStore = initLocalNonPersistedState();
 
 // Initialize database if empty
+// NOTE: state initialization could be done in parallel instead of sequentially
 initRemotelyPersistedState(repository)
   .then(initLocallyPersistedState())
   .then(() => {

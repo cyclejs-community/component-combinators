@@ -68,6 +68,17 @@ const Task = InjectSourcesAndSettings({
     }, CheckBox)
   ]),
   InSlot('editor', [
+    // TODO : school case for using Pipe
+    // TODO: Pipe ({}, [Editor, ({save$, projectFb$, user$}) => {save$ : $.combineLatest([save$,
+    // projectFb$, user$], (save, projectDb, user) => {save, projectDb, user})})])
+    // TODO : or Pipe({}, [Editor, collapseSources({target:[save$, save],
+    // TODO :                                       objects:[[user$, user], [...], ...]})])
+    // TODO : collapseSources generic COMPONENT (not combinator) for INTERFACE ADAPTATION concern
+    // DOC : this responnds to the desire to enrich generic components with data from additional
+    // concerns
+    // TODO : do the sink name napping here : Pipe({}, Editor, coll..., renameSinks({save$ ->
+    // domainAction})), and then what is several sources for one target? apply merge default??
+    // not customizable? should also add as parameter the same syntax than `m` for merge functions
     InjectStateInSinks({
       save$: {
         as: 'save',
@@ -92,6 +103,21 @@ export const TaskList = InjectSourcesAndSettings({ sourceFactory: taskListStateF
       ListOf({
         // TODO : this would be a good case for using PIPE combinator right? That would avoid
         // injectStateInSinks usage
+        // TODO Task has events who should be as sources of ListOf, and then actions should be
+        // derived from this, so need for buildActions... and InjectStatesFromSinks
+        // but then I have to separate DOM display and events? to think about how to do nicely
+        // maybe with pipe
+        // TODO : change buildActionsFromChildrenSinks to `foldChildrenSinks`
+        // TODO : remove the actionsMap and use Pipe (ListOf..., ), but if I do that, I need to
+        // pass the mapped sinks explicitly as is logical but also explicity the sinks now in
+        // sources and which I want to pass... I am in favor of expliciting sinks as little as
+        // ncessary, because it can only be string and that cant be typed. Also less robust, if
+        // below sinks change, we have to update the list also there : hidden dependency... or
+        // the opposite : explicit make it visible and less possible to forget?
+        // TODO : rather use special combinator for interface mapping purposes.
+        // SinkMap({map: ...}, Task} : could be extended to a postprocessing function of `m`
+        // m, preconditions, preprocessing (makeExtraSources...), main, postconditions,
+        // postprocessing (to be named)
         list: 'filteredTasks', as: 'filteredTask', buildActionsFromChildrenSinks: {
           isChecked$: computeTaskCheckedActions,
           save$: computeSaveUpdatedTaskActions
