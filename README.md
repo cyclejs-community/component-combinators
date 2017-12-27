@@ -265,3 +265,11 @@ The example application is taken from the book [Mastering Angular2 components](h
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
+
+# Contribute
+Contribution is welcome in the following areas :
+
+- devops
+  - monorepos
+  - whatever makes sense to make the repository more manageable
+- reducing build size
