@@ -209,8 +209,11 @@ The current roadmap stands as :
       WithBehaviours?
     - [x] sequential composition combinator (`Pipe`)
 - Core
+    - [x] component model
     - [x] DOM merge with slot assignment (a la web component)
     - [ ] type contracts error handling for component's settings
+    - [ ] error management
+    - [ ] logging and visualization (!)
 - component library
   - [web components](https://bosonic.github.io/elements/dialogs-modals.html)
   - cf. materializecss
