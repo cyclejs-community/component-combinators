@@ -34,7 +34,6 @@ initRemotelyPersistedState(repository)
         modules: defaultModules
       })),
       document: documentDriver,
-      firebase: makeFirebaseDriver(fbRoot, { debug: true }),
       queue$: makeQueueDriver(fbRoot.child('!queue'), 'responses', 'tasks', { debug: true }),
       domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
       domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
