@@ -276,3 +276,17 @@ Contribution is welcome in the following areas :
   - monorepos
   - whatever makes sense to make the repository more manageable
 - reducing build size
+
+# Known issues
+TODO review this, it has changed
+- type safety.
+  we have seen how components are combined through component combinators. type of what is in the
+  sinks, should propagate through prisms up but we don't have that, so we let anything flow.
+  Advantage is we wrote a very generic merge function
+- expressivity allowed by the syntax
+  - For instance, nothing prevents `NavigationSection({},
+  [NavigationSection({), [NavigationItem]])` would not give the expected result
+    - or would it?
+- syntax checking
+  - `NavigationSection` could be only permitted to have `NavigationItem` as children or nest other `NavigationSection` and we would not be able to check that the parameters are in line with the
+  expected syntax
