@@ -10,7 +10,7 @@ import { taskEnterButtonSelector, taskEnterInputSelector } from './properties'
 
 const $ = Rx.Observable;
 
-function render(key) {
+function renderTaskEntryArea(key) {
   return div('.enter-task', [
     div(".enter-task__l-container", [
       div(".enter-task__l-box-a", [
@@ -37,23 +37,25 @@ function render(key) {
 export function EnterTask(sources, settings) {
   let key = 0;
   const { projectFb$, user$, document } = sources;
+  const { [ROUTE_PARAMS]: { projectId } } = settings;
   const taskEnterButtonClick$ = sources[DOM_SINK].select(taskEnterButtonSelector).events('click')
   // NOTE : is event -> share
     .share();
-  const { [ROUTE_PARAMS]: { projectId } } = settings;
 
   // NOTE :: we use a key here which changes all the time to force snabbdom to always render the
   // input vNodes. Because we read from the actual DOM, the input vNodes are no longer the
-  // soruce of truth for the input state. From a snabbdom point of view, we render two exact
-  // same vNodes and hence it does not do anything. So we have to force the update.
+  // soruce of truth for the input state. From a snabbdom point of view, without that key, we
+  // render two exact same vNodes and hence it does not do anything. So we have to force the
+  // update by making the successive vNodes differ.
   return {
     [DOM_SINK]: taskEnterButtonClick$
-      .map(_ => render(++key))
-      .startWith(render(++key)),
+      .map(_ => renderTaskEntryArea(++key))
+      .startWith(renderTaskEntryArea(++key)),
     domainAction$: taskEnterButtonClick$
       .do(preventDefault)
-      // In a normal case, I would have to do both update, remote state and duplicated local state
-      // and then listen on both for optimistic auto-correct updates
+      // Optimistic implementation. In the real word, we should check that the domain udpate went
+      // through successfully and react appropriately if not. Just as the original Angular2
+      // application does, we do not bother here
       .withLatestFrom(projectFb$, user$, (ev, projectFb, user) => {
         const {fbIndex : projectFbIndex, project} = projectFb;
         const tasks = project.tasks;

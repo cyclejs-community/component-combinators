@@ -7,11 +7,11 @@ const $ = Rx.Observable;
 
 export {getStateInStore} from './helpers'
 
-export const TASK_TAB_BUTTON_GROUP_STATE = 'task_tab_button_group_state';
+export const TASKS_FILTER = 'task_tab_button_group_state';
 export const PATCH = 'patch';
 
 export const inMemoryStoreQueryMap = {
-  [TASK_TAB_BUTTON_GROUP_STATE]: {
+  [TASKS_FILTER]: {
     get: function get(repository, context, payload) {
       return $.of(repository[context])
     }
@@ -19,7 +19,7 @@ export const inMemoryStoreQueryMap = {
 };
 
 export const inMemoryStoreActionsConfig = {
-  [TASK_TAB_BUTTON_GROUP_STATE]: {
+  [TASKS_FILTER]: {
     [PATCH]: function patch(repository, context, payload) {
       // payload is an array of JSON patch format { op, path, value }
       assertContract(isArrayUpdateOperations, [payload],

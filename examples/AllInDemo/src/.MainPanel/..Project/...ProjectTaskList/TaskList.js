@@ -15,6 +15,7 @@ import { TaskInfo } from './TaskInfo'
 import { TaskDelete, taskDeleteSelector } from './TaskDelete'
 import { TaskLink } from './TaskLink'
 import { TaskListContainerSelector } from './properties'
+import { DummyComponent } from "../../../../../../src"
 
 const $ = Rx.Observable;
 

@@ -1,9 +1,9 @@
-import { DOM_SINK, labelSourceWith, preventDefault } from "../../../../../../src/utils"
+import { DOM_SINK, preventDefault } from "../../../../../../src/utils"
 import { prop } from 'ramda'
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
-import { getStateInStore, TASK_TAB_BUTTON_GROUP_STATE } from "../../../../src/inMemoryStore"
+import { getStateInStore, TASKS_FILTER } from "../../../../src/inMemoryStore"
 import { filterTasks, makeButtonGroupSelector } from './helpers'
-import { INITIAL_SHOWN_TASK_COUNT, SCROLL_INCREMENT, TaskListScrollBarSelector } from './properties'
+import { TaskListScrollBarSelector } from './properties'
 
 const $ = Rx.Observable;
 
@@ -27,7 +27,7 @@ export function tasksButtonGroupStateChange$(sources, settings) {
   const { buttonGroup: { labels, namespace } } = settings;
   const { projects$, storeAccess, storeUpdate$ } = sources;
   // Initial button state is in the in-memory store
-  const initialButtonGroupState$ = storeAccess.getCurrent(TASK_TAB_BUTTON_GROUP_STATE)
+  const initialButtonGroupState$ = storeAccess.getCurrent(TASKS_FILTER)
     // slice out the relevant part of the state
       .map(prop('filter'))
       .map(x => ({ label: x }))
@@ -36,13 +36,10 @@ export function tasksButtonGroupStateChange$(sources, settings) {
   return {
     buttonGroupStateChange$: $.concat(
       initialButtonGroupState$,
-      // NOTE: that is one way to merge a group of component's event. The other way is in the ListOf
       $.merge(labels.map((label, index) => {
-        return sources[DOM_SINK].select(makeButtonGroupSelector({
-          label,
-          index,
-          namespace
-        })).events('click')
+        return sources[DOM_SINK]
+          .select(makeButtonGroupSelector({ label, index, namespace }))
+          .events('click')
           .do(preventDefault)
           .map(ev => ({ label, index }))
       }))
@@ -52,9 +49,16 @@ export function tasksButtonGroupStateChange$(sources, settings) {
   }
 }
 
+export function tasksFilter$(sources, settings) {
+  return {
+    taskFilter$: getStateInStore(TASKS_FILTER, sources, settings)
+      .map(prop('filter'))
+  }
+}
+
 function getTaskFilter(sources, settings) {
   // NOTE:  filter will be in {filter: ...}
-  return getStateInStore(TASK_TAB_BUTTON_GROUP_STATE, sources, settings)
+  return getStateInStore(TASKS_FILTER, sources, settings)
 }
 
 // Checks if an element with scrollbars is fully scrolled to the bottom

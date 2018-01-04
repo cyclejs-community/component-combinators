@@ -1,7 +1,7 @@
-import { TASK_TAB_BUTTON_GROUP_INIT_FILTER } from './properties'
+import { TASKS_INIT_FILTER } from './properties'
 import { INITIAL_DATA } from "../fixtures"
 import { flatten, keys, map } from "ramda"
-import { TASK_TAB_BUTTON_GROUP_STATE } from "./inMemoryStore/index"
+import { TASKS_FILTER } from "./inMemoryStore/index"
 
 export function initRemotelyPersistedState(repository) {
   // in this case, firebase is the repository
@@ -30,8 +30,8 @@ export function initLocallyPersistedState(repository) {
 
 export function initLocalNonPersistedState() {
   return {
-    [TASK_TAB_BUTTON_GROUP_STATE]: {
-      filter: TASK_TAB_BUTTON_GROUP_INIT_FILTER
+    [TASKS_FILTER]: {
+      filter: TASKS_INIT_FILTER
     }
   }
 }

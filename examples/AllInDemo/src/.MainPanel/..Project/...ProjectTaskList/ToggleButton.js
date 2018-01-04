@@ -1,59 +1,63 @@
-import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
-import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent } from "../../../../../../src/utils"
+import { DOM_SINK } from "../../../../../../src/utils"
 import { button } from "cycle-snabbdom"
-import { PATCH, TASK_TAB_BUTTON_GROUP_STATE } from "../../../../src/inMemoryStore"
-import { isButtonActive, makeButtonGroupSelector } from './helpers'
+import { PATCH, TASKS_FILTER } from "../../../../src/inMemoryStore"
+import { makeButtonGroupSelector } from './helpers'
 import { tasksButtonGroupSettings } from './properties'
-import { tasksButtonGroupStateChange$ } from './state'
+import { tasksFilter$ } from './state'
+import { always, merge, prop } from 'ramda'
 
 const $ = Rx.Observable;
 
-function ButtonFromGroup(sources, settings) {
-  const { buttonGroupState, label, listIndex, buttonGroup: { labels, namespace, buttonClasses } } = settings;
-  // NOTE : need to update non-persisted app state (task tab state more precisely)
-  // This is related but distinct from the state carried by tasksButtonGroupState$
-  // The state of the button group is part of the non-persisted app state, the same as the
-  // button group is part of the tab which is part of the application
-  // NOTE : once we used a ForEach on an EVENT source, we cannot reuse that source anymore, the
-  // event will already have been emitted!! This is a VERY common source of annoying bugs
-  const classes = ['']
-    .concat(buttonClasses(buttonGroupState, label))
-    .join('.') + makeButtonGroupSelector({ label, index: listIndex, namespace });
-  const updateTaskTabButtonGroupStateAction = {
-    context: TASK_TAB_BUTTON_GROUP_STATE,
+// Displays a button with parameterized label, with status depending on tasks filter
+function ButtonFromButtonGroup(sources, settings) {
+  const { taskFilter$ } = sources;
+  const { buttonLabel, index, buttonGroup: { labels, namespace, buttonClasses } } = settings;
+  const buttonGroupSelector = makeButtonGroupSelector({ label: buttonLabel, index, namespace });
+
+  const events = {
+    click: sources[DOM_SINK].select(buttonGroupSelector).events('click')
+      .map(always(buttonLabel))
+  };
+  const state$ = taskFilter$;
+  const updateTaskTabButtonGroupStateAction = label => ({
+    context: TASKS_FILTER,
     command: PATCH,
     payload: [
       { op: "add", path: '/filter', value: label },
     ]
-  };
+  });
 
   return {
-    [DOM_SINK]: $.of(
-      button(classes, label)
-    ),
-    // NOTE : this is state synchronization through state change events :
-    // click -> button group state -> in-memory store. Source of truth here is button group state
-    // The best option is to have the in-memory store as a source of truth, and update that
-    // first, and have all the rest expressed as a function of the in-memory store state
-    // This is left here as a showcase that this is also a possible technique
-    storeUpdate$: isButtonActive(buttonGroupState, label)
-      ? $.of(updateTaskTabButtonGroupStateAction)
-      : $.empty()
+    [DOM_SINK]: state$.map(taskFilter => {
+      const classes = ['']
+        .concat(buttonClasses(taskFilter, buttonLabel))
+        .join('.') + buttonGroupSelector;
+
+      return button(classes, buttonLabel)
+    }),
+    storeUpdate$: events.click
+      .withLatestFrom(state$, (label, taskFilter) => ({ label, taskFilter }))
+      .tap(x => {
+        debugger
+      })
+      // no need to do anything if clicking on a button already active
+      .filter(x => x.label !== x.taskFilter)
+      .map(prop('label'))
+      .map(updateTaskTabButtonGroupStateAction)
   }
 }
 
 export const ToggleButton =
-  // NOTE : this is an example in which we add an EVENT source, not a behaviour source as usual
   InjectSourcesAndSettings({
-    sourceFactory: tasksButtonGroupStateChange$,
-    settings: tasksButtonGroupSettings
-  }, [
-    ForEach({ from: 'buttonGroupStateChange$', as: 'buttonGroupState' }, [
-      ListOf({ list: 'buttonGroup.labels', as: 'label' }, [
-        EmptyComponent,
-        ButtonFromGroup
-      ])
-    ])
-  ]);
+      sourceFactory: tasksFilter$,
+      settings: tasksButtonGroupSettings
+    }, tasksButtonGroupSettings.buttonGroup.labels.map((buttonLabel, index) => {
+      return function (sources, settings) {
+        return ButtonFromButtonGroup(sources, merge(settings, {
+          buttonLabel,
+          index
+        }))
+      }
+    })
+  );

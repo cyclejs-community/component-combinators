@@ -1,16 +1,9 @@
 import * as Rx from "rx";
-import { OnRoute} from "../../../../../../src/components/Router/Router"
-import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
-import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
-import { InSlot} from "../../../../../../src/components/InSlot"
-import { InjectSources } from "../../../../../../src/components/Inject/InjectSources"
-import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
 import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault, getInputValue } from "../../../../../../src/utils"
 import { pipe, values, keys, always, filter, path, map } from 'ramda'
 import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-snabbdom"
-import { m } from "../../../../../../src/components/m/m"
 import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
-import { TASK_TAB_BUTTON_GROUP_STATE, PATCH } from "../../../../src/inMemoryStore"
+import { TASKS_FILTER, PATCH } from "../../../../src/inMemoryStore"
 import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY,ACTIVITIES, taskFactory, activityFactory } from "../../../../src/domain"
 import Moment from 'moment';
 
@@ -30,17 +23,17 @@ export function filterTasks(tasks, taskFilter){
     : []
 }
 
-export function isButtonActive (buttonGroupState, label){
-  return label === buttonGroupState.label
+export function isButtonActive (taskFilter, label){
+  return label === taskFilter
 }
 
 export function makeButtonGroupSelector({label, index, namespace}){
   return `.${namespace}.${[label, index].join('-')}`
 }
 
-export function computeTasksButtonGroupClasses(buttonGroupState, label){
+export function computeTaskFilterTabClasses(taskFilter, label){
   const staticClasses = ['button', 'button--toggle'];
-  const buttonClasses = isButtonActive (buttonGroupState, label)
+  const buttonClasses = isButtonActive (taskFilter, label)
     ? staticClasses.concat(['button--active'])
     : staticClasses;
 
