@@ -9,6 +9,15 @@ import { always, merge, prop } from 'ramda'
 
 const $ = Rx.Observable;
 
+// Helpers
+const updateTaskTabButtonGroupStateAction = label => ({
+  context: TASKS_FILTER,
+  command: PATCH,
+  payload: [
+    { op: "add", path: '/filter', value: label },
+  ]
+});
+
 // Displays a button with parameterized label, with status depending on tasks filter
 function ButtonFromButtonGroup(sources, settings) {
   const { taskFilter$ } = sources;
@@ -20,14 +29,6 @@ function ButtonFromButtonGroup(sources, settings) {
       .map(always(buttonLabel))
   };
   const state$ = taskFilter$;
-  const updateTaskTabButtonGroupStateAction = label => ({
-    context: TASKS_FILTER,
-    command: PATCH,
-    payload: [
-      { op: "add", path: '/filter', value: label },
-    ]
-  });
-
   return {
     [DOM_SINK]: state$.map(taskFilter => {
       const classes = ['']
@@ -38,9 +39,6 @@ function ButtonFromButtonGroup(sources, settings) {
     }),
     storeUpdate$: events.click
       .withLatestFrom(state$, (label, taskFilter) => ({ label, taskFilter }))
-      .tap(x => {
-        debugger
-      })
       // no need to do anything if clicking on a button already active
       .filter(x => x.label !== x.taskFilter)
       .map(prop('label'))

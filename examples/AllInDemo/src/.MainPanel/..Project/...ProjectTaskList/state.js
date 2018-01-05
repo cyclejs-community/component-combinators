@@ -53,6 +53,8 @@ export function tasksFilter$(sources, settings) {
   return {
     taskFilter$: getStateInStore(TASKS_FILTER, sources, settings)
       .map(prop('filter'))
+      // In case the `TASKS_FILTER` entity has changed but the tasks filter property has not
+      .distinctUntilChanged()
   }
 }
 
