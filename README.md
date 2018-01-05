@@ -165,8 +165,7 @@ The proposed library has the following combinators :
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
 # Background
-The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou
-.github.io/) :
+The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou.github.io/) :
 
 - [user interfaces as reactive systems](https://brucou.github.io/posts/user-interfaces-as-reactive-systems/)
 - [componentization against complexity](https://brucou.github.io/posts/componentization-against-complexity/)
