@@ -39,9 +39,6 @@ function getProjectNavigationItems$(sources, settings) {
     .map(filter(project => !project.deleted))
     .map(map(project => ({
       title: project.title,
-      // TODO : refactor with a makeRoute such that I can make a route from context and params
-      // and I can also take a current url and return the context and params
-      // TODO : very important as this is a coupling between SidePanel and MainPanel
       link: ['projects', project._id].join('/')
     })))
     .distinctUntilChanged()
@@ -53,26 +50,26 @@ function getProjectNavigationItems$(sources, settings) {
 
 // Components
 // Navigation(..., [NavigationSection(..., [NavigationItem(...,[])])])
-function Navigation(sources, settings) {
-  // NOTE : the `Div('.app__l-side')` could also be moved in the top level div below. I however
-  // think it is more readable to expose the container class outside the navigation component
-  // This is obviously arbitrary. On the downside, it will be less performant, and also adds an
-  // extra div only because snabbdom only accepts `VNode`, not `[VNode]`, so we wrap in `div`
+function NavigationContainerComponent(sources, settings) {
   const { user$, projects$ } = sources;
+  // combineLatest allows to construct a behaviour from other behaviours
   const state$ = $.combineLatest(user$, projects$, (user, projects) => ({ user, projects }))
 
   return {
     [DOM_SINK]: state$.map(state => {
       return div('.navigation', [
         renderTasksSummary(state),
-        // NOTE : nav('', {..}, []) does not work, '' is not recognized as valid selector
         nav({ slot: 'navigation-section' }, [])
       ])
     })
   }
 }
 
-function NavigationSection(sources, settings) {
+function Navigation(navigationSettings, componentArray) {
+  return m({}, navigationSettings, [NavigationContainerComponent, componentArray])
+}
+
+function NavigationSectionContainerComponent(sources, settings) {
   const { title } = settings;
 
   return {
@@ -83,6 +80,10 @@ function NavigationSection(sources, settings) {
       ])
     )
   }
+}
+
+function NavigationSection(navigationSectionSettings, componentArray) {
+  return m({}, navigationSectionSettings, [NavigationSectionContainerComponent, componentArray])
 }
 
 function NavigationItem(sources, settings) {
@@ -111,26 +112,27 @@ function NavigationItem(sources, settings) {
   }
 }
 
+const ListOfItemsComponent =
+  InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+    ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+      ListOf({ list: 'projectList', as: 'project' }, [
+        EmptyComponent,
+        NavigationItem
+      ])
+    ])
+  ]);
+
 export const SidePanel =
   m({}, {}, [Div('.app__l-side'), [
-    m({}, {}, [Navigation, [
-      m({}, { title: 'Main' }, [NavigationSection, [
+    Navigation({}, [
+      NavigationSection({ title: 'Main' }, [
         m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
-      ]]),
-      m({}, { title: 'Projects' }, [NavigationSection, [
-        InSlot('navigation-item', [
-          InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
-            ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
-              ListOf({ list: 'projectList', as: 'project' }, [
-                EmptyComponent,
-                NavigationItem
-              ])
-            ])
-          ])
-        ])
-      ]]),
-      m({}, { title: 'Admin' }, [NavigationSection, [
+      ]),
+      NavigationSection({ title: 'Projects' }, [
+        InSlot('navigation-item', [ListOfItemsComponent])
+      ]),
+      NavigationSection({ title: 'Admin' }, [
         m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
-      ]]),
-    ]])
+      ]),
+    ])
   ]]);
