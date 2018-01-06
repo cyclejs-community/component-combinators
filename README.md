@@ -176,6 +176,7 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
 
 # Roadmaps
+
 ## Roadmap v0.5
 The core target of this release will be to prepare the architecture for visual tracing, and 
 specify the (visual) shape that this should take. A small proof of concept should be produced. A 
