@@ -59,35 +59,63 @@ export function computeTaskCheckedActions(ownSink, childrenSinks, settings){
   }))
 }
 
-export function computeSaveUpdatedTaskActions(ownSink, childrenSinks, settings){
-  const {filteredTasks } = settings;
+export function ComputeCheckBoxActions(sources, settings) {
+  // NOTE : I now have DOM, save$, focus sources from Editor sinks, thanks to Pipe
+  const { isChecked$, projectFb$ } = sources;
+  const { filteredTask } = settings;
 
-  return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
-    return childIsCheckedSink.map(({save : {editMode, textContent}, projectFb, user}) => {
-      const {fbIndex, project : {_id : projectId}} = projectFb;
-      // NOTE : the index of the child correspond to the index of the item in the list
-      const filteredTask = filteredTasks[index];
+  debugger; // check that filtred Task exsists in settings
+  // NOTE : common mistake is to forget to pass the sinks from the previous component in the pipe
+  return {
+    [DOM_SINK]: sources[DOM_SINK],
+    domainAction$: isChecked$.withLatestFrom(projectFb$, (isChecked, projectFb) => {
+      const {fbIndex, project} = projectFb;
 
-      return $.from([{
+      return   {
         context: TASKS,
-        command: UPDATE_TASK_DESCRIPTION,
-        payload: {newTitle : textContent, projectFbIndex : fbIndex, filteredTask}
-      },
-        {
-          context: ACTIVITIES,
-          command: LOG_NEW_ACTIVITY,
-          payload: activityFactory({
-            user,
-            time: +Date.now(),
-            subject: projectId,
-            category: 'tasks',
-            title: 'A task was updated',
-            message: `The task "'A task was added'" was updated on #${projectId}.`
-          })
-        }        ])
+        command: UPDATE_TASK_COMPLETION_STATUS,
+        payload: {isChecked, project, projectFbIndex : fbIndex, filteredTask}
+      }
     })
+  }
+}
+
+export function ComputeEditorActions(sources, settings) {
+  // NOTE : I now have DOM, save$, focus sources from Editor sinks, thanks to Pipe
+  const { save$, focus, projectFb$, user$ } = sources;
+  const { filteredTask } = settings;
+
+  // NOTE : common mistake is to forget to pass the sinks from the previous component in the pipe
+  return {
+    [DOM_SINK]: sources[DOM_SINK],
+    focus,
+    domainAction$: save$
+      .withLatestFrom(projectFb$, user$, (save, projectFb, user) => {
+        const { fbIndex, project: { _id: projectId } } = projectFb;
+        // NOTE : the index of the child correspond to the index of the item in the list
+
+        return $.from([
+          {
+            context: TASKS,
+            command: UPDATE_TASK_DESCRIPTION,
+            payload: { newTitle: textContent, projectFbIndex: fbIndex, filteredTask }
+          },
+          {
+            context: ACTIVITIES,
+            command: LOG_NEW_ACTIVITY,
+            payload: activityFactory({
+              user,
+              time: +Date.now(),
+              subject: projectId,
+              category: 'tasks',
+              title: 'A task was updated',
+              message: `The task "'A task was added'" was updated on #${projectId}.`
+            })
+          }
+        ])
+      })
       .switch()
-  }))
+  }
 }
 
 export const UNITS = [{

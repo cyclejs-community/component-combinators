@@ -25,12 +25,12 @@ function isColliding(sources, sinks) {
 
 function computeSinks(parentComponent, childrenComponents, sources, settings) {
   // NOTE : parentComponent is undefined by construction
-  let { overwrite } = settings;
+  const throwIfSinkSourceConflict = settings && settings.Pipe && settings.Pipe.throwIfSinkSourceConflict;
 
   const acc = childrenComponents.reduce((acc, component) => {
     const sinks = component(acc.sources, acc.settings);
 
-    if ((!overwrite) && isColliding(sources, sinks)) {
+    if ((throwIfSinkSourceConflict) && isColliding(sources, sinks)) {
       throw `Pipe : Error when merging sinks of component ${component.name} with Pipe sources! A sink may override a source, check source/sink : ${intersection(keys(sources), keys(sinks))}`
     }
 
