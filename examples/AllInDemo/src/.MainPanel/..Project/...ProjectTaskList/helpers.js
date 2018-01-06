@@ -1,15 +1,14 @@
 import * as Rx from "rx";
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift, preventDefault, getInputValue } from "../../../../../../src/utils"
-import { pipe, values, keys, always, filter, path, map } from 'ramda'
-import { a, p, div, img, nav, strong, h2, ul, li, button, input } from "cycle-snabbdom"
-import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
-import { TASKS_FILTER, PATCH } from "../../../../src/inMemoryStore"
-import { TASKS, UPDATE_TASK_DESCRIPTION, UPDATE_TASK_COMPLETION_STATUS, LOG_NEW_ACTIVITY,ACTIVITIES, taskFactory, activityFactory } from "../../../../src/domain"
+import { DOM_SINK } from "../../../../../../src/utils"
+import {
+  ACTIVITIES, activityFactory, LOG_NEW_ACTIVITY, TASKS, UPDATE_TASK_COMPLETION_STATUS,
+  UPDATE_TASK_DESCRIPTION
+} from "../../../../src/domain"
 import Moment from 'moment';
 
 const $ = Rx.Observable;
 
-export function filterTasks(tasks, taskFilter){
+export function filterTasks(tasks, taskFilter) {
   return tasks
     ? tasks.filter((task) => {
       if (taskFilter === 'all') {
@@ -23,37 +22,37 @@ export function filterTasks(tasks, taskFilter){
     : []
 }
 
-export function isButtonActive (taskFilter, label){
+export function isButtonActive(taskFilter, label) {
   return label === taskFilter
 }
 
-export function makeButtonGroupSelector({label, index, namespace}){
+export function makeButtonGroupSelector({ label, index, namespace }) {
   return `.${namespace}.${[label, index].join('-')}`
 }
 
-export function computeTaskFilterTabClasses(taskFilter, label){
+export function computeTaskFilterTabClasses(taskFilter, label) {
   const staticClasses = ['button', 'button--toggle'];
-  const buttonClasses = isButtonActive (taskFilter, label)
+  const buttonClasses = isButtonActive(taskFilter, label)
     ? staticClasses.concat(['button--active'])
     : staticClasses;
 
   return buttonClasses
 }
 
-export function computeTaskCheckedActions(ownSink, childrenSinks, settings){
-  const {filteredTasks } = settings;
+export function computeTaskCheckedActions(ownSink, childrenSinks, settings) {
+  const { filteredTasks } = settings;
 
   // NOTE: when using ListOf, ownSink is always null
   return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
-    return childIsCheckedSink.map(({isChecked, projectFb}) => {
-      const {fbIndex, project} = projectFb;
+    return childIsCheckedSink.map(({ isChecked, projectFb }) => {
+      const { fbIndex, project } = projectFb;
       // NOTE : the index of the child correspond to the index of the item in the list
       const filteredTask = filteredTasks[index];
 
       return {
         context: TASKS,
         command: UPDATE_TASK_COMPLETION_STATUS,
-        payload: {isChecked, project, projectFbIndex : fbIndex, filteredTask}
+        payload: { isChecked, project, projectFbIndex: fbIndex, filteredTask }
       }
     })
   }))
@@ -69,12 +68,12 @@ export function ComputeCheckBoxActions(sources, settings) {
   return {
     [DOM_SINK]: sources[DOM_SINK],
     domainAction$: isChecked$.withLatestFrom(projectFb$, (isChecked, projectFb) => {
-      const {fbIndex, project} = projectFb;
+      const { fbIndex, project } = projectFb;
 
-      return   {
+      return {
         context: TASKS,
         command: UPDATE_TASK_COMPLETION_STATUS,
-        payload: {isChecked, project, projectFbIndex : fbIndex, filteredTask}
+        payload: { isChecked, project, projectFbIndex: fbIndex, filteredTask }
       }
     })
   }
@@ -146,13 +145,13 @@ export function formatDuration(timeSpan) {
   }, '').trim();
 }
 
-export function calendarTime(value){
+export function calendarTime(value) {
   if (value && (value instanceof Date || typeof value === 'number')) {
     return new Moment(value).calendar();
   }
 }
 
-export function formatEfforts(value){
+export function formatEfforts(value) {
   if (value == null || typeof value !== 'object') {
     return value;
   }
@@ -161,7 +160,7 @@ export function formatEfforts(value){
 }
 
 export function findScrollableParent(element) {
-  while (element != document.documentElement) {
+  while ( element != document.documentElement ) {
     if (getComputedStyle(element).overflowY !== 'visible') {
       break;
     }

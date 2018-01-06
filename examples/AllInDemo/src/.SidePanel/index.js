@@ -111,14 +111,9 @@ function NavigationItem(sources, settings) {
   }
 }
 
-// TODO : refactor TaskSummary somehow into the same level than NavigationSection
 export const SidePanel =
   m({}, {}, [Div('.app__l-side'), [
     m({}, {}, [Navigation, [
-      // NOTE : this is the same as having NavigatinoSection({title}, componentTree)
-      // except that we do not have to define that AD-HOC combinator
-      // I'd rather have for now only the GENERAL combinator as combinators
-      // TODO : but maybe that's the way to go??
       m({}, { title: 'Main' }, [NavigationSection, [
         m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
       ]]),

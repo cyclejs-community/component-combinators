@@ -68,12 +68,6 @@ const Task = InjectSourcesAndSettings({
     ]),
   ]),
   InSlot('editor', [
-    // TODO : Pipe({},[WithEvents(...), WithState(...), ComputeActions(...)]) would be any leaf
-    // component including generic or ad-hoc components.
-    // InjectSources would be state visible in all the hierarchy, while WithState only visible
-    // in Pipe - ComputeActions
-    // Those three components actually are the same component sources -> settings, what changes
-    // is meaning i.e. meta like log
     Pipe({}, [
       Editor,
       ComputeEditorActions
@@ -98,8 +92,3 @@ export const TaskList = InjectSourcesAndSettings({ sourceFactory: taskListStateF
     ])
   ])
 ]]);
-
-// TODO:  1. draggable first
-// TODO:  2. tags
-// TODO:  3. scroll
-// TODO : understand the plugin thing (used for task info)
