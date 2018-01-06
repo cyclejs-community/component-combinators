@@ -77,3 +77,46 @@ runTestScenario?)
 # Testing
 Well, testing is complicated by having impure functions, so not sure what to do here. Best is to 
 have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
+
+# to put somewhere in a new article
+We have seen while implementing the application how to address common issues arising when 
+implementing a web application :
+
+- **routing** : a quintessential requirement such as routing is very naturally expressed with 
+ the `OnRoute` combinator.
+- **state management** : state can be injected at any point of the component tree and becomes 
+visible to any component down the injection point. Alternatively, state can also be kept at the
+ global level, through the use of in-memory store.
+- **change propagation** : at the lowest level, using streams as the corner stone of our 
+architecture solves the issue of updating a variable (behaviour) when one of its dependencies 
+change. *Live queries* can then be built on top of read and write drivers as exemplified in the 
+sample application. Additionally, we offer the `ForEach` combinator, to execute a given logic on 
+a every change of a behaviour. 
+- **communication between components** : parent-child communication may occur through passing 
+settings and sources, child-parent communication and communication between components with no 
+direct ascendency relationship in the component tree may occur via shared state. 
+- **lists** : list of things are dealt with reactively with the `ListOf` and `ForEach` combinators. 
+
+While these were not encountered in the present sample application, our combinator library also 
+helps deal with :
+
+- **control flow** : Two combinators (`Switch` and `FSM`) allow to implement both simple and 
+complex control flow logic. A [realistic example](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication) for the `FSM` combinator showcases the advantage of state machines to that purpose.
+
+In summary,
+
+- So what?
+  - readable, i.e. understandable, the logic is immediately apparent from the use of combinators
+    - A projectTaskList is a list of tasks, and a task is ...
+    - compare that with chldren(sources) with lots of $ in settings, and then sinks this merge 
+    sinks that. The combination logic is abstracted into the combinator, that is what it is for.
+  - supports iterative development through refinement
+    - current approach does not, if you call children comp, you then have to merge the sinks, and
+     you don't know yet what are the sinks for your child, if you don't know what you will put 
+     there...
+   - make explicit a syntax tree for a DSL, in which combinators are the keywords, and components
+    are the variables, i.e. in the future the DSL could be extracted and code generated through 
+    parsing
+   - tracing and loggging should be easy and allow for visualization
+     - next release!! 
+

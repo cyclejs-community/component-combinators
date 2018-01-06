@@ -151,16 +151,16 @@ The proposed library has the following combinators :
 
 | Combinator      | Description | 
 | --------- | :-----|
-| [FSM](./documentation/EFSM.md)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
-| [OnRoute](./documentation/Router.md)      |    Activate a component based on the route changes. Allows nested routing. |
-| [Switch](./documentation/Switch.md)  | Activate component(s) depending on the incoming value of a source| 
-| [ForEach](./documentation/ForEach.md)     |   Activate component for each incoming value of a source| 
-| [ListOf](./documentation/ListOf.md)      |    Activate a list of a given component based on an array of items |
-| [Pipe](./documentation/Pipe.md)      |    Sequentially compose components |
-| [InjectSources](./documentation/InjectSources.md)      |    Activate a component which will be injected extra sources |
-| [InjectSourcesAndSettings](./documentation/InjectSourcesAndSettings.md)      |    Activate a component which will receive extra sources and extra settings |
-| [InjectStateInSinks](./documentation/InjectStateInSinks.md) | **TODO documentation**|
-| [m](./documentation/m_.md)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
+| [FSM](http://brucou.github.io/projects/component-combinators/efsm/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
+| [OnRoute](http://brucou.github.io/projects/component-combinators/router/)      |    Activate a component based on the route changes. Allows nested routing. |
+| [Switch](http://brucou.github.io/projects/component-combinators/switch/)  | Activate component(s) depending on the incoming value of a source| 
+| [ForEach](http://brucou.github.io/projects/component-combinators/foreach/)     |   Activate component for each incoming value of a source| 
+| [ListOf](http://brucou.github.io/projects/component-combinators/listof/)      |    Activate a list of a given component based on an array of items |
+| [Pipe](https://brucou.github.io/projects/component-combinators/pipe/)      |    Sequentially compose components |
+| [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
+| [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
+| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | **TODO documentation**|
+| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
