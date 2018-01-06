@@ -177,14 +177,24 @@ Documentation can be found in the [projects portion](https://brucou.github.io/pr
 
 # Roadmaps
 ## Roadmap v0.5
-Please note that library is still wildly under development :
-
-- APIs ~~might~~ will go through breaking changes
-- you might encounter problems in production
-- performance has not been investigated as of yet
+The core target of this release will be to prepare the architecture for visual tracing, and 
+specify the (visual) shape that this should take. A small proof of concept should be produced. A 
+secondary target is to start a very basic UI component library, not going over the proof of 
+concept level.
 
 The current roadmap for the v0.5 stands as :
 
+- Core
+    - [ ] type contracts error handling for component's settings
+    - [ ] error management
+    - [ ] logging and visualization (!)
+- Component library
+  - [ ] a small one with the basics - should be able to copy a lot from react?
+    - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
+    materializecss, etc.
+- Demo
+  - [ ] demo from Angular2 book on github site
+  - [ ] [Real world app?](https://github.com/gothinkster/realworld)
 - Testing
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
     - [ ] study testing with pupeeteer.js (chrome headless browser)
@@ -202,17 +212,6 @@ The current roadmap for the v0.5 stands as :
     - [ ] Event combinator `WithEvents`
     - [ ] State combinator `WithActions`
     - [ ] Action combinator `ComputeActions`
-- Core
-    - [ ] type contracts error handling for component's settings
-    - [ ] error management
-    - [ ] logging and visualization (!)
-- component library
-  - [ ] a small one with the basics - should be able to copy a lot from react?
-    - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
-    materializecss, etc.
-- Demo
-  - [ ] demo from Angular2 book on github site
-  - [ ] [Real world app?](https://github.com/gothinkster/realworld)
 - Distribution
   - [ ] monorepo?
   - [ ] individual combinator packages?
@@ -226,6 +225,18 @@ Please note that library is still wildly under development :
 
 The current roadmap for the v0.4 stands as :
 
+- Core
+    - [x] component model
+    - [x] DOM merge with slot assignment (a la web component)
+    - [x] documentation slot
+      - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or 
+     https://skyronic-Demo.com/blog/vue-slots-example 
+    - [x] documentation combinators
+    - [x] nice blog site : github pages?
+      - [x] select static site generator (Jekyll, Hexo, Hugo)
+      - [x] blog site architecture
+      - [x] theoretical underpinnings
+    - [x] demo from Angular2 book
 - Testing
     - [x] Testing library `runTestScenario`
     - [x] Mocks for DOM and document driver
@@ -245,18 +256,6 @@ The current roadmap for the v0.4 stands as :
     - [x] Query driver 
     - [x] Action driver 
     - [x] sequential composition combinator (`Pipe`)
-- Core
-    - [x] component model
-    - [x] DOM merge with slot assignment (a la web component)
-    - [x] documentation slot
-      - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or 
-     https://skyronic-Demo.com/blog/vue-slots-example 
-    - [x] documentation combinators
-    - [x] nice blog site : github pages?
-      - [x] select static site generator (Jekyll, Hexo, Hugo)
-      - [x] blog site architecture
-      - [x] theoretical underpinnings
-    - [x] demo from Angular2 book
 
 # Installation
 ## Running tests

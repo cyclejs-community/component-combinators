@@ -73,3 +73,7 @@ runTestScenario?)
 // TODO : understand the plugin thing (used for task info)
 
 - cf. react website https://reacttraining.com/react-router/web/guides/philosophy
+
+# Testing
+Well, testing is complicated by having impure functions, so not sure what to do here. Best is to 
+have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
