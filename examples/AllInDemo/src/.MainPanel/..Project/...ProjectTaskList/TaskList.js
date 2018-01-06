@@ -80,6 +80,17 @@ const Task = InjectSourcesAndSettings({
     // TODO : do the sink name napping here : Pipe({}, Editor, coll..., renameSinks({save$ ->
     // domainAction})), and then what is several sources for one target? apply merge default??
     // not customizable? should also add as parameter the same syntax than `m` for merge functions
+    // NOTE: the problem here is we mix events, event factory, and behaviours in sources
+    // sav$ is an event, we want to compute event data with the state in sources.
+    // No specific combinator? just a component Pipe(editor, computeEventData), do the rename in
+    // computeEventData, or directly Pipe(editor, computeActions) because after renaming, it is
+    // actions!!
+    // TODO : Pipe({},[WithEvents(...), WithState(...), ComputeActions(...)]) would be any leaf
+    // component including generic or ad-hoc components.
+    // InjectSources would be state visible in all the hierarchy, while WithState only visible
+    // in Pipe - ComputeActions
+    // Those three components actually are the same component sources -> settings, what changes
+    // is meaning i.e. meta like log
     InjectStateInSinks({
       save$: {
         as: 'save',
