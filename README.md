@@ -174,28 +174,24 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 
 # Documentation
 Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
-# Roadmap
+
+# Roadmaps
+## Roadmap v0.5
 Please note that library is still wildly under development :
 
 - APIs ~~might~~ will go through breaking changes
 - you might encounter problems in production
 - performance has not been investigated as of yet
 
-The current roadmap stands as :
+The current roadmap for the v0.5 stands as :
 
 - Testing
-    - [x] Testing library `runTestScenario`
-    - [x] Mocks for DOM and document driver
-    - [x] Mock for domain query driver
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
     - [ ] study testing with pupeeteer.js (chrome headless browser)
 - Combinators
-    - [x] Generic combinator `m`
-    - [x] Routing combinator `onRoute`
-    - [x] Switch combinator 
-      - [x] `Switch`
-      - [x] `Case`
-    - [x] State machine combinator `FSM`
+    - [ ] Switch combinator 
+      - [ ] cover the `default:` part of switch statement 
+    - [ ] State machine combinator `FSM`
       - [ ] convert FSM structure to graphml or dot or tgf format
       - [ ] automatic generation of graphical representation of the FSM
       - [ ] refactor the asynchronous FSM into synchronous EHFSM + async module
@@ -203,41 +199,64 @@ The current roadmap stands as :
       - [ ] investigate prior art
         - https://github.com/jbeard4/SCION
         - http://blog.sproutcore.com/statecharts-in-sproutcore/ 
+    - [ ] Event combinator `WithEvents`
+    - [ ] State combinator `WithActions`
+    - [ ] Action combinator `ComputeActions`
+- Core
+    - [ ] type contracts error handling for component's settings
+    - [ ] error management
+    - [ ] logging and visualization (!)
+- component library
+  - [ ] a small one with the basics - should be able to copy a lot from react?
+    - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
+    materializecss, etc.
+- Demo
+  - [ ] demo from Angular2 book on github site
+  - [ ] [Real world app?](https://github.com/gothinkster/realworld)
+- Distribution
+  - [ ] monorepo?
+  - [ ] individual combinator packages?
+
+## Roadmap v0.4
+Please note that library is still wildly under development :
+
+- APIs ~~might~~ will go through breaking changes
+- you might encounter problems in production
+- performance has not been investigated as of yet
+
+The current roadmap for the v0.4 stands as :
+
+- Testing
+    - [x] Testing library `runTestScenario`
+    - [x] Mocks for DOM and document driver
+    - [x] Mock for domain query driver
+- Combinators
+    - [x] Generic combinator `m`
+    - [x] Routing combinator `onRoute`
+    - [x] Switch combinator 
+      - [x] `Switch`
+      - [x] `Case`
+    - [x] State machine combinator `FSM`
     - [x] ForEach combinator `ForEach`
     - [x] List combinator `ListOf`
     - [x] Injection combinator 
       - [x] `InjectSources`
       - [x] `InjectSourcesAndSettings`
-    - [ ] Event combinator `WithEvents`
-    - [ ] Action combinator `MakeActions`
-    - [ ] Tabbed component combinator `OneOf`
-    - [ ] vNode combinator `VT`
     - [x] Query driver 
     - [x] Action driver 
-    - [ ] renaming?
-      - InjectSources -> InjectState? InjectStateInSources? WithState? WithStateInSources? 
-      WithBehaviours?
     - [x] sequential composition combinator (`Pipe`)
 - Core
     - [x] component model
     - [x] DOM merge with slot assignment (a la web component)
-    - [ ] type contracts error handling for component's settings
-    - [ ] error management
-    - [ ] logging and visualization (!)
-- component library
-  - [web components](https://bosonic.github.io/elements/dialogs-modals.html)
-  - cf. materializecss
-- Demo
-  - [x] nice demo site : github pages?
-    - [x] select static site generator (Jekyll, Hexo, Hugo)
-    - [x] demo site content
-  - [ ] demo from Angular2 book
-  - [ ] [flux challenge?](https://github.com/staltz/flux-challenge)
-  - [x] documentation slot
-    - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or https://skyronic.com/blog/vue-slots-example 
-- Distribution
-  - monorepo?
-  - individual combinator packages?
+    - [x] documentation slot
+      - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or 
+     https://skyronic-Demo.com/blog/vue-slots-example 
+    - [x] documentation combinators
+    - [x] nice blog site : github pages?
+      - [x] select static site generator (Jekyll, Hexo, Hugo)
+      - [x] blog site architecture
+      - [x] theoretical underpinnings
+    - [x] demo from Angular2 book
 
 # Installation
 ## Running tests
@@ -245,7 +264,7 @@ The current roadmap stands as :
 - `npm run node-build-test`
 - `npm run test`
 - then open with a local webserver the `index.html` in `test` directory 
-
+  
 ## Demos
 ### Example application
 The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components). Cf. [screenshot](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/#example) here.

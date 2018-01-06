@@ -33,6 +33,16 @@
 - TODO : see how to translate that https://github.com/Shopify/draggable?
 - TODO : what about animations? How does that play with vDom?
 
+# Routing
+cf. https://css-tricks.com/react-router-4/ and investigate if our router can do all these patterns :
+
+- Nested Layouts
+- Redirect
+- Exclusive Routing
+- Inclusive Routing
+- Conditional routing (Authorized Route)
+- Preventing transition
+
 # Build/devop
 - TODO : move to rollup? why lib/rxcc.min.js is so big ? because rx?
 - TODO : also review the structure of the repository (m_helpers? history_driver? where to put 
@@ -61,3 +71,5 @@ runTestScenario?)
 // TODO:  2. tags
 // TODO:  3. scroll
 // TODO : understand the plugin thing (used for task info)
+
+- cf. react website https://reacttraining.com/react-router/web/guides/philosophy
