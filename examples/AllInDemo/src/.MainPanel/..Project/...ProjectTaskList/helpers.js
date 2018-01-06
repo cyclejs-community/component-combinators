@@ -63,7 +63,6 @@ export function ComputeCheckBoxActions(sources, settings) {
   const { isChecked$, projectFb$ } = sources;
   const { filteredTask } = settings;
 
-  debugger; // check that filtred Task exsists in settings
   // NOTE : common mistake is to forget to pass the sinks from the previous component in the pipe
   return {
     [DOM_SINK]: sources[DOM_SINK],
