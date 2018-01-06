@@ -211,7 +211,7 @@ The current roadmap for the v0.5 stands as :
         - https://github.com/jbeard4/SCION
         - http://blog.sproutcore.com/statecharts-in-sproutcore/ 
     - [ ] Event combinator `WithEvents`
-    - [ ] State combinator `WithActions`
+    - [ ] State combinator `WithState`
     - [ ] Action combinator `ComputeActions`
 - Distribution
   - [ ] monorepo?
