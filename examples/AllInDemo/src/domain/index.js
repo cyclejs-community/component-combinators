@@ -126,7 +126,6 @@ export const domainActionsConfig = {
     },
     [UPDATE_TASK_DESCRIPTION]: function updateTaskDescription(repository, context, payload) {
       const { newTitle, projectFbIndex , filteredTask } = payload;
-      // TODO : Dont read it from position... if data is corrupted will not work, not robust enough
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/title`;
       const updatedValue = newTitle;
@@ -135,7 +134,6 @@ export const domainActionsConfig = {
     },
     [DELETE_TASK]: function deleteTask(repository, context, payload) {
       const { projectFbIndex , tasks, filteredTask } = payload;
-      // TODO : position in the tasks should move?? they don't so I wont either
       // TODO : harmonize the payload parameter for all same context TASKS
       const numberOfTasks = tasks.length;
       const index = tasks.indexOf(filteredTask);

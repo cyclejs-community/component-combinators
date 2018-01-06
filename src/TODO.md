@@ -6,6 +6,7 @@
       // Those three components actually are the same component sources -> settings, what changes
       // is meaning i.e. meta like log
 - make combinator ForEachOfList as shortcut for ForEach(...ListOf(...))
+- // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
 - think about work around for isolation, components need to pass their click free of concerns
