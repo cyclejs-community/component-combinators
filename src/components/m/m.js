@@ -209,9 +209,9 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
       }
     }
     else {
-      let parentVNode = clone(_arrayVNode.shift()); // TODO:need! why?? where is that ever modified?
+      // TODO:need! why?? where is that ever modified? deep cloning stuff kills performance
+      let parentVNode = clone(_arrayVNode.shift());
       let childrenVNode = _arrayVNode;
-      // parentVNode.children = clone(parentVNode.children) || []; // TODO : don't need? mystery
       parentVNode.children = parentVNode.children || [];
       const slotHoles = getSlotHoles(parentVNode);
 

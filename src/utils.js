@@ -1097,8 +1097,7 @@ function DummyComponent(sources, settings){
  * @param {Function} isEmptyStoreFn check if the data structure used to store node to
  * process is empty
  * @param {Function} visitFn the visiting function on the node. Its results are accumulated
- * into the
- * final result of the traverseTree function
+ * into the final result of the traverseTree function
  * @param {Function} getChildrenFn give the children for a given node
  * @param root the root node of the tree to traverse
  */

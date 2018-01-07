@@ -12,8 +12,8 @@ import { runTestScenario } from '../src/runTestScenario';
 
 let $ = Rx.Observable;
 
-// TODO : write the full test space, the test strategy (exporation and pruning of space), and
-// some test common components
+
+
 
 // Fixtures
 const PROVIDERS = {
@@ -936,7 +936,7 @@ function getVNodeWithOnlyText(text) {
   }
 }
 
-// TODO : add contract check that if sel is not set, cannot have slot in data
+
 function getVNodeWithUndefinedSlot(selector) {
   return {
     children: [],

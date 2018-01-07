@@ -1,14 +1,9 @@
-import * as Rx from "rx";
-import { InjectSources } from "./Inject/InjectSources"
-import { InjectSourcesAndSettings } from "./Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, DummyComponent, format, Div, Nav, vLift } from "../utils"
-import { pipe, values, always, filter, map } from 'ramda'
-import { a, p, div, img, nav, strong, h2, ul, li, button } from "cycle-snabbdom"
-import { m } from "./m/m"
+import { DOM_SINK } from "../utils"
 
-// TODO : use m and a merge function
-export function InSlot(slotName, [component]){
-  return function InSlot(sources, settings){
+// NOTE ADR: we don't use `m` here, we could but choose not to. As `m` will be use for logging, we
+// have no interest in having a log for `InSlot` operations.
+export function InSlot(slotName, [component]) {
+  return function InSlot(sources, settings) {
     const sinks = component(sources, settings);
     const vNodes$ = sinks[DOM_SINK];
 

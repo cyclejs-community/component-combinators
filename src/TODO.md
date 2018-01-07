@@ -78,7 +78,8 @@ runTestScenario?)
 Well, testing is complicated by having impure functions, so not sure what to do here. Best is to 
 have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
 
-# to put somewhere in a new article
+# write last summary article + comparison with angular 2/react <component settings>.children.
+.</component>
 We have seen while implementing the application how to address common issues arising when 
 implementing a web application :
 
