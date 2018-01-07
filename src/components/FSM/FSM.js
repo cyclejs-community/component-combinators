@@ -1015,3 +1015,6 @@ const wrapIfDebug = cond([
 // terms :
 // - Finite memory finite-state machines, Finite-Memory Automata, register automata, Guarded
 // Variable Automata, data automata, variable automata,  fresh-variable automata
+// TODO : add a resume function in connection with a initial_control_state parameter. This
+// basically allows to stop and resume a state machine, but also not to start from the
+// beginning. Start as a matter of fact does send INIT event, resume does not send any events.
