@@ -186,7 +186,8 @@ concept level.
 The current roadmap for the v0.5 stands as :
 
 - Core
-    - [ ] type contracts error handling for component's settings
+    - [ ] type contracts error handling for component's settings (which types of component 
+    combinator expects, types of settings, etc.)
     - [ ] error management : [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
     - [ ] logging and visualization (!)
     - [ ] conversion to web components
@@ -310,15 +311,4 @@ Contribution is welcome in the following areas :
 - reducing build size
 
 # Known issues
-TODO review this, it has changed
-- type safety.
-  we have seen how components are combined through component combinators. type of what is in the
-  sinks, should propagate through prisms up but we don't have that, so we let anything flow.
-  Advantage is we wrote a very generic merge function
-- expressivity allowed by the syntax
-  - For instance, nothing prevents `NavigationSection({},
-  [NavigationSection({), [NavigationItem]])` would not give the expected result
-    - or would it?
-- syntax checking
-  - `NavigationSection` could be only permitted to have `NavigationItem` as children or nest other `NavigationSection` and we would not be able to check that the parameters are in line with the
-  expected syntax
+TODO
