@@ -159,8 +159,7 @@ The proposed library has the following combinators :
 | [Pipe](https://brucou.github.io/projects/component-combinators/pipe/)      |    Sequentially compose components |
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
-| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content 
-to a slot|
+| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot|
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
