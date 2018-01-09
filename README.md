@@ -159,7 +159,8 @@ The proposed library has the following combinators :
 | [Pipe](https://brucou.github.io/projects/component-combinators/pipe/)      |    Sequentially compose components |
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
-| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | **TODO documentation**|
+| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content 
+to a slot|
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
@@ -187,8 +188,9 @@ The current roadmap for the v0.5 stands as :
 
 - Core
     - [ ] type contracts error handling for component's settings
-    - [ ] error management
+    - [ ] error management : [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
     - [ ] logging and visualization (!)
+    - [ ] conversion to web components
 - Component library
   - [ ] a small one with the basics - should be able to copy a lot from react?
     - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
@@ -200,6 +202,8 @@ The current roadmap for the v0.5 stands as :
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
     - [ ] study testing with pupeeteer.js (chrome headless browser)
 - Combinators
+    - [ ] [Portal](https://reactjs.org/docs/portals.html) combinator (render DOM in a specific location)
+    - [ ] `Catch` combinator? cf. Core -- error management
     - [ ] Switch combinator 
       - [ ] cover the `default:` part of switch statement 
     - [ ] State machine combinator `FSM`

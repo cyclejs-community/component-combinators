@@ -50,6 +50,23 @@ runTestScenario?)
 - TODO : get all working with latest version of snabdomm, and cycle-run etc.
 
 # Documentation/Example
+- blog : add ⇡ character for back to top cf. view-source:https://sarabander.github.io/sicp/html/1_002e3.xhtml#pagetop
+  - `<section><span class="top jump" title="Jump to top"><a href="#pagetop" accesskey="t">⇡</a></span><a id="pagetop"></a><a id="g_t1_002e3"></a>`
+  - code https://sarabander.github.io/sicp/html/js/footnotes.js
+  - and https://sarabander.github.io/sicp/html/js/footnotes.js
+  - http://www.leancrew.com/all-this/2010/05/popup-footnotes/
+  - http://www.leancrew.com/all-this/2010/05/a-small-popup-footnote-change/
+- blog: add those shortcodes
+  - https://learn.netlify.com/en/shortcodes/mermaid/
+  - https://learn.netlify.com/en/shortcodes/children/ (looked for long how to do this...)
+  - series : https://realjenius.com/2017/08/07/series-list-with-hugo/
+  - https://github.com/parsiya/Hugo-Shortcodes
+    - code caption (!)
+    - Octopress blockquote
+  - https://jpescador.com/blog/leverage-shortcodes-in-hugo/
+    - image post
+  - http://redhatgov.io/workshops/example/hugo_shortcodes/
+    - figure shortcode (better than markdown original as it has caption)
 - for new comers
 // When trying to expand this example to a proper app, it quickly becomes an avalanche
 // of unsolvable questions:
