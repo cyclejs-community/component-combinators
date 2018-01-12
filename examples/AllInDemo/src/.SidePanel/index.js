@@ -91,12 +91,23 @@ function NavigationItem(sources, settings) {
   const { project: { title, link } } = settings;
   const linkSanitized = link.replace(/\//i, '_');
 
+  const events = {
+    // NOTE : we avoid having to isolate by using the link which MUST be unique over the whole
+    // application (unicity of a route)
+    click : sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
+  };
+  // TODO : refactor to state = {isLinkActive$ : url$...}, it is more readable, and in line with
+  // the equational approach, that I will detail later in the blog
+  // TODO : search for `function NavigationItem` in blog and update example
+  // TODO : if have the courage, go through all components and impose the pattern
+  // TODO : copy the selector DRY approach from blog article Applying componentization to reactive systems - sample application.md
+  // TODO : if have the courage, go through all components and impose the pattern...
   const state$ = url$
     .map(url => url.indexOf(link) > -1)
     .shareReplay(1);
 
-  return {
-    [DOM_SINK]: state$.map(isLinkActive => {
+  const actions = {
+    domUpdate : state$.map(isLinkActive => {
       const isLinkActiveClass = isLinkActive ? '.navigation-section__link--active' : '';
 
       return a(
@@ -104,11 +115,14 @@ function NavigationItem(sources, settings) {
         { attrs: { href: link }, slot: 'navigation-item' },
         title)
     }),
-    // NOTE : we avoid having to isolate by using the link which MUST be unique over the whole
-    // application (unicity of a route)
-    router: sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
+    router : events.click
       .do(preventDefault)
       .map(always('/' + link + '/'))
+  }
+
+  return {
+    [DOM_SINK]: actions.domUpdate,
+    router: actions.router
   }
 }
 

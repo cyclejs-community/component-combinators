@@ -50,6 +50,7 @@ runTestScenario?)
 - TODO : get all working with latest version of snabdomm, and cycle-run etc.
 
 # Documentation/Example
+- blog : investigate highlighitn with ``` how to add new syntax, or what is the list```
 - blog : add ⇡ character for back to top cf. view-source:https://sarabander.github.io/sicp/html/1_002e3.xhtml#pagetop
   - `<section><span class="top jump" title="Jump to top"><a href="#pagetop" accesskey="t">⇡</a></span><a id="pagetop"></a><a id="g_t1_002e3"></a>`
   - code https://sarabander.github.io/sicp/html/js/footnotes.js
@@ -96,30 +97,6 @@ Well, testing is complicated by having impure functions, so not sure what to do 
 have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
 
 # write last summary article + comparison with angular 2/react <component settings>.children.
-.</component>
-We have seen while implementing the application how to address common issues arising when 
-implementing a web application :
-
-- **routing** : a quintessential requirement such as routing is very naturally expressed with 
- the `OnRoute` combinator.
-- **state management** : state can be injected at any point of the component tree and becomes 
-visible to any component down the injection point. Alternatively, state can also be kept at the
- global level, through the use of in-memory store.
-- **change propagation** : at the lowest level, using streams as the corner stone of our 
-architecture solves the issue of updating a variable (behaviour) when one of its dependencies 
-change. *Live queries* can then be built on top of read and write drivers as exemplified in the 
-sample application. Additionally, we offer the `ForEach` combinator, to execute a given logic on 
-a every change of a behaviour. 
-- **communication between components** : parent-child communication may occur through passing 
-settings and sources, child-parent communication and communication between components with no 
-direct ascendency relationship in the component tree may occur via shared state. 
-- **lists** : list of things are dealt with reactively with the `ListOf` and `ForEach` combinators. 
-
-While these were not encountered in the present sample application, our combinator library also 
-helps deal with :
-
-- **control flow** : Two combinators (`Switch` and `FSM`) allow to implement both simple and 
-complex control flow logic. A [realistic example](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication) for the `FSM` combinator showcases the advantage of state machines to that purpose.
 
 In summary,
 
@@ -138,3 +115,12 @@ In summary,
    - tracing and loggging should be easy and allow for visualization
      - next release!! 
 
+# doc user as reactive sytems
+- equations:
+  - states_i are behaviours
+  - sum of states_i = states
+  - each behaviour depends on some pieces of state and events
+  - actions depends on some pices of state and events
+  - so there is function i -> indices of events and pieces of state it depends on?
+  - better partition events into individual events, states into behaviours (variables) and 
+  rewrite the equations

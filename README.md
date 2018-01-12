@@ -186,6 +186,7 @@ concept level.
 The current roadmap for the v0.5 stands as :
 
 - Core
+    - see what can be done to have a better concurrency model (i.e. beyond FSM)
     - [ ] type contracts error handling for component's settings (which types of component 
     combinator expects, types of settings, etc.)
     - [ ] error management : [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
