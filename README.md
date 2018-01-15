@@ -171,6 +171,7 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 - [componentization against complexity](https://brucou.github.io/posts/componentization-against-complexity/)
 - [a componentization framework for cyclejs](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/)
 - [applying componentization to reactive systems : sample application](https://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/)
+- [Component models for user interfaces implementation - a comparison](http://brucou.github.io/posts/component-models-for-user-interfaces-implementation---a-comparison/)
 
 # Documentation
 Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.

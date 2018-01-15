@@ -124,3 +124,7 @@ In summary,
   - so there is function i -> indices of events and pieces of state it depends on?
   - better partition events into individual events, states into behaviours (variables) and 
   rewrite the equations
+
+# TODO TODO 
+- start working on logging and visualization -> architecture note
+- start working on the new cycle event/state handling-> architecture draft article to write
