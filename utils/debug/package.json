@@ -1,0 +1,82 @@
+{
+  "name": "ProjectManagementDemoApp",
+  "version": "0.0.1",
+  "description": "Misc. combinators demo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brucou/"
+  },
+  "keywords": [
+    "reactive",
+    "rxjs",
+    "componentization",
+    "components",
+    "functional programming"
+  ],
+  "scripts": {
+    "build-test": "babel test --source-maps --out-dir dist-node-test",
+    "test": "watchify -d --transform babelify dist-node-test -o test/bundle.js -v",
+    "wbuild": "webpack --display-error-details --progress --colors --watch --env dev",
+    "wserve": "webpack-dev-server --content-base=./ --hot --inline --watch"
+  },
+  "engines": {
+    "node": "6.3.0"
+  },
+  "author": "brucou",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "6.24.1",
+    "babel-core": "6.24.1",
+    "babel-eslint": "7.2.3",
+    "babel-loader": "7.0.0",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-class-properties": "^6.9.1",
+    "babel-plugin-transform-object-assign": "^6.8.0",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "browserify": "^11.2.0",
+    "webpack": "3.1.0",
+    "webpack-dev-server": "^2.6.1",
+    "webpack-hot-middleware": "^2.18.2",
+    "webpack-stream": "^3.1.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "css-loader": "^0.24.0",
+    "image-webpack-loader": "^2.0.0",
+    "postcss-loader": "^0.11.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.13.1",
+    "del": "^2.2.0",
+    "derequire": "^2.0.2",
+    "fmt-obj": "^2.0.0",
+    "jquery": "1.12.0",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "node-sass": "^4.5.3",
+    "nodemon": "^1.9.2",
+    "qunitjs": "^1.20.0",
+    "rimraf": "^2.4.3",
+    "run-sequence": "^1.1.5",
+    "surge": "^0.17.7",
+    "uglify-js": "^2.5.0",
+    "yargs": "7.1.0"
+  },
+  "dependencies": {
+    "@cycle/core": "^6.0.3",
+    "@cycle/isolate": "^1.2.0",
+    "@sparksnetwork/cyclic-fire": "^3.0.0-rc13",
+    "cycle-snabbdom": "1.2.0",
+    "cyclic-router": "^1.0.0",
+    "fast-memoize": "^2.2.8",
+    "fast-json-patch": "^1.1.3",
+    "firebase": "^3.3.0",
+    "history": "^2.0.1",
+    "localforage": "^1.5.0",
+    "moment": "^2.12.0",
+    "ramda": "^0.25.0",
+    "rx": "^4.1.0",
+    "snabbdom": "0.6.7",
+    "snabbdom-to-html": "^3.1.1",
+    "standard-error": "^1.1.0"
+  }
+}
