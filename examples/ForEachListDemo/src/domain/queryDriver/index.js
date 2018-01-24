@@ -1,6 +1,6 @@
 import { Observable as $ } from "rx"
 import { complement, isNil, tryCatch } from 'ramda';
-import { assertContract, isFunction } from "../../../../../src/utils"
+import { assertContract, isFunction } from "../../../../../utils/contracts/src/index"
 
 // Helper functions
 function errorHandler(e, repository, params) {

@@ -2,7 +2,7 @@ import {
   addIndex, all, allPass, both, curry, difference, either, flatten, flip, intersection, isEmpty,
   isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, values, where
 } from "ramda"
-import formatObj from 'pretty-format'
+import { format, formatArrayObj } from '../../debug/src/index'
 
 const mapIndexed = addIndex(map);
 
@@ -673,36 +673,6 @@ function hasNoCommonValues(eventSinkNames, childrenSinkNames) {
 
 function isNewKey(obj, key) {
   return keys(obj).indexOf(key) === -1
-}
-
-function formatArrayObj(arr, separator) {
-  return arr.map(format).join(separator)
-}
-
-function format(obj) {
-  // basically if obj is an object, use formatObj, else use toString
-  if (obj === 'null') {
-    return '<null>'
-  }
-  else if (obj === 'undefined') {
-    return '<undefined>'
-  }
-  else if (isString(obj) && obj.length === 0) {
-    return '<empty string>'
-  }
-  else if (isArray(obj)) {
-    return formatArrayObj(obj, ' ; ')
-  }
-  else if (isObject(obj)) {
-    if (keys(obj).length === 0) {
-      // i.e. object is {}
-      return '<empty object>'
-    }
-    else return formatObj(obj)
-  }
-  else {
-    return "" + obj
-  }
 }
 
 export {

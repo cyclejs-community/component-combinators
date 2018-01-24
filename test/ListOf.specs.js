@@ -37,7 +37,6 @@ QUnit.module("Testing ListOf component", {})
 QUnit.test("main case - each child generates its actions unhinged - ListOf several items", function exec_test(assert) {
   const done = assert.async(2);
 
-  // TODO
   const childComponent = function childComponent1(sources, settings) {
     return {
       [DOM_SINK]: sources.DOM1

@@ -1,11 +1,12 @@
 import * as Rx from "rx";
 import { a, div } from 'cycle-snabbdom'
-import { DOM_SINK, preventDefault } from "../../../src/utils"
+import { preventDefault } from "../../../utils/utils/src/index"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { always } from 'ramda'
 import { PAGE, UPDATE } from "./domain/index"
 
 const $ = Rx.Observable;
-const maxPages = 3;
+const maxPages = 2;
 const pageNumberArray = Array.apply(null, { length: maxPages }).map(Number.call, Number);
 
 function renderPagination(activePageNumber) {
