@@ -1,8 +1,3 @@
-# pretty-format vs. fmt-obj for pretty formatting of javascript objects 
-with rollup, this does not work because of `process` variable remaining in the `format` library 
-wrongly built by rollup?:
-
-```html
 <!doctype html>
 <html class="no-js" lang="">
 <head>
@@ -19,12 +14,8 @@ wrongly built by rollup?:
 </div>
 <div id="feedback"></div>
 <script type="text/javascript">
-  console.log('checking build', rxccDebug)
+  const rxccDebug = window['rxcc-debug'] || window['rxccDebug'];
+  console.log('checking build!', rxccDebug.format(2))
 </script>
 </body>
 </html>
-```
-
-so I switch the format library to the one used by facebook with jest: pretty-format
-
-However that adds at least 40Kb to the rollup build!!!

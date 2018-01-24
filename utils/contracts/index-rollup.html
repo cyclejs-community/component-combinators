@@ -1,9 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
 <!doctype html>
 <html class="no-js" lang="">
 <head>
     <meta charset="utf-8">
     <title></title>
-    <script src="./lib/rxcc-debug.js"></script>
+    <script src="./lib/rxcc-contracts-es5-umd-rollup.js"></script>
 </head>
 
 <body>
@@ -14,8 +24,8 @@
 </div>
 <div id="feedback"></div>
 <script type="text/javascript">
-    const rxccDebug = window['rxcc-debug'];
-  console.log('checking build!', rxccDebug.format(2))
+  const rxccContracts = window['rxccContracts'];
+  console.log('checking build!', rxccContracts.allE(function fals(x){return false})(["2"]))
 </script>
 </body>
 </html>

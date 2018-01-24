@@ -1,7 +1,7 @@
 import { keys, mapObjIndexed, pipe, tap } from "ramda"
 import toHTML from "snabbdom-to-html"
 // import { StandardError } from "standard-error"
-import formatObj from "fmt-obj"
+import formatObj from 'pretty-format'
 
 // Type checking typings
 /**

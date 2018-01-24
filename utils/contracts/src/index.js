@@ -2,7 +2,7 @@ import {
   addIndex, all, allPass, both, curry, difference, either, flatten, flip, intersection, isEmpty,
   isNil, keys, map, mapObjIndexed, pipe, reduce, reduced, values, where
 } from "ramda"
-import formatObj from "fmt-obj"
+import formatObj from 'pretty-format'
 
 const mapIndexed = addIndex(map);
 
