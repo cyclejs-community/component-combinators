@@ -120,13 +120,13 @@ function format(obj) {
   else if (obj === 'undefined') {
     return '<undefined>'
   }
-  else if (isString(obj) && obj.length === 0) {
+  else if (typeof(obj) === 'string' && obj.length === 0) {
     return '<empty string>'
   }
-  else if (isArray(obj)) {
+  else if (Array.isArray(obj)) {
     return formatArrayObj(obj, ' ; ')
   }
-  else if (isObject(obj)) {
+  else if (typeof(obj) === 'object') {
     if (keys(obj).length === 0) {
       // i.e. object is {}
       return '<empty object>'
