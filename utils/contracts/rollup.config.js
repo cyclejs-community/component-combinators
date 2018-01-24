@@ -14,7 +14,6 @@ export default {
       sourcemap: true,
     },
   plugins: [
-// fails with Error: Cannot split a chunk that has already been edited : Rx.Observable
     resolve({
       module: true,
       jsnext: true,

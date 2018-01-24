@@ -8,8 +8,8 @@ export default {
   input: 'src/index.js',
   output:
     {
-      file: 'lib/rxcc-debug-es5-umd-rollup.js',
-      name: 'rxccDebug',
+      file: 'lib/rxcc-helpers-es5-umd-rollup.js',
+      name: 'rxccHelpers',
       format: 'umd',
       sourcemap: true,
     },
