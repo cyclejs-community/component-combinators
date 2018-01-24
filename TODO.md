@@ -47,7 +47,6 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - TODO : get all working with latest version of snabdomm, and cycle-run etc.
 - update the tests to the new imports!!
 - InjectStateInSinks to remove
-- runTestScenario also rmove ./utils
 - delete utils and recheck everything
 - reissue patch for all utils (I modified format)
  

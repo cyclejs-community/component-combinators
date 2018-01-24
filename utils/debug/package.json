@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/debug",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "utility functions for debugging component combinators",
   "repository": {
     "type": "git",

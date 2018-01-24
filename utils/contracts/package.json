@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/contracts",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "utility functions for checking contracts",
   "repository": {
     "type": "git",
