@@ -1,8 +1,7 @@
 import {
   checkAndGatherErrors, eitherE, isArray, isArrayOf, isComponent, isEmptyArray, isFunction,
-  isHashMap, isObject,
-  isString
-} from "../../utils"
+  isHashMap, isObject, isString
+} from "../../../utils/contracts/src/index"
 import { both, complement, either, isNil, pipe, prop, uniq } from 'ramda'
 
 function hasValidComponentDefProperty(componentDef, _settings, children) {
@@ -50,7 +49,7 @@ function isParentAndComponentArray(children) {
   const parentCandidate = children[0];
   const childrenCandidate = children[1];
 
-  if (isNil(parentCandidate) && isEmptyArray(childrenCandidate)){
+  if (isNil(parentCandidate) && isEmptyArray(childrenCandidate)) {
     return `m > hasMsignature > hasValidChildrenProperty > isParentAndComponentArray : 'm' component requires sinks to merge. That means both parent and children cannot be null at the same time!`
   }
 
@@ -79,6 +78,6 @@ export const hasMsignature = checkAndGatherErrors([
   [hasValidChildrenProperty, `m > hasMsignature > hasValidChildrenProperty : children components must be an array of components!`]
 ], `hasMsignature : fails!`);
 
-export function hasNoTwoSlotsSameName(slotHoles, slotNames){
+export function hasNoTwoSlotsSameName(slotHoles, slotNames) {
   return uniq(slotNames).length === slotHoles.length
 }

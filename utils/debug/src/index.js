@@ -131,7 +131,7 @@ function format(obj) {
       // i.e. object is {}
       return '<empty object>'
     }
-    else return formatObj(obj)
+    else return formatObj(obj, {maxDepth : 3})
   }
   else {
     return "" + obj

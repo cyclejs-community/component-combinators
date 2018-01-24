@@ -1,5 +1,5 @@
 import { mapObjIndexed, tryCatch, values } from 'ramda';
-import * as Rx from "rx"
+import Rx from "rx"
 
 const $ = Rx.Observable;
 

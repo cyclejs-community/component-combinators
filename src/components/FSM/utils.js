@@ -1,17 +1,13 @@
 import {
-  evolve, map as mapR, reduce as reduceR, mapObjIndexed, uniq, flatten, values, find, equals, clone,
-  keys, filter, pick, curry, defaultTo, findIndex, allPass, pipe, both, isEmpty, all, either, isNil,
-  tryCatch, T, flip, identity, cond, always, prop
+  always, cond, evolve, flatten, identity, isNil, map as mapR, mapObjIndexed, pipe, T, values
 } from "ramda"
+import { assertContract, isFunction } from "../../../utils/contracts/src/index"
+import { logFnTrace } from "../../../utils/debug/src/index"
+import { assertFunctionContractDecoratorSpecs, decorateWith } from "../../../utils/utils/src/index"
 import {
-  checkSignature, assertContract, handleError, isBoolean, decorateWith,
-  assertFunctionContractDecoratorSpecs, logFnTrace, isFunction
-} from "../../utils"
-import {
-  isDefaultActionResponseHandlerConfig, isActionGuardDomain, isActionGuardCodomain,
-  isModelUpdateDomain, isModelUpdateCodomain, isEventGuardDomain, isEventGuardCodomain,
-  isActionRequestDomain, isActionRequestCodomain, isEventFactoryDomain, isEventFactoryCodomain,
-  isFsmModel
+  isActionGuardCodomain, isActionGuardDomain, isActionRequestCodomain, isActionRequestDomain,
+  isDefaultActionResponseHandlerConfig, isEventFactoryCodomain, isEventFactoryDomain,
+  isEventGuardCodomain, isEventGuardDomain, isFsmModel, isModelUpdateCodomain, isModelUpdateDomain
 } from "./types"
 
 export function modelUpdateIdentity() {
@@ -37,7 +33,7 @@ export function makeDefaultActionResponseProcessing(config) {
   );
 
   const {
-    success : { target_state : successTargetState, model_update : successModelUpdate },
+    success: { target_state: successTargetState, model_update: successModelUpdate },
     error: { target_state: errorTargetState, model_update: errorModelUpdate }
   } = config;
 
@@ -66,7 +62,8 @@ export const tapEventStreamOutput = eventName => ({
   after: result => result.tap(console.warn.bind(console, `Incoming user event! ${eventName}: `))
 });
 
-export const decorateStateEntryWithLog = mapObjIndexed((stateEntryComponent, state) => stateEntryComponent
+export const decorateStateEntryWithLog = mapObjIndexed((stateEntryComponent,
+                                                        state) => stateEntryComponent
   ? decorateWith([
     assertFunctionContractDecoratorSpecs({
       checkDomain: isEntryComponentDomain,

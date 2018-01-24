@@ -44,11 +44,13 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
-- TODO : move to rollup? why lib/rxcc.min.js is so big ? because rx?
-- TODO : also review the structure of the repository (m_helpers? history_driver? where to put 
-runTestScenario?)
 - TODO : get all working with latest version of snabdomm, and cycle-run etc.
-
+- update the tests to the new imports!!
+- InjectStateInSinks to remove
+- runTestScenario also rmove ./utils
+- delete utils and recheck everything
+- reissue patch for all utils (I modified format)
+ 
 # Documentation/Example
 - blog : investigate highlighitn with ``` how to add new syntax, or what is the list```
 - blog : add ⇡ character for back to top cf. view-source:https://sarabander.github.io/sicp/html/1_002e3.xhtml#pagetop

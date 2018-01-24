@@ -57,10 +57,12 @@ import {
   __, addIndex, all as allR, always, clone, curry, defaultTo, identity, isEmpty, isNil,
   keys as keysR, map, mapObjIndexed, reduce as reduceR, tryCatch, values
 } from "ramda"
+import { makeErrorMessage, removeNullsFromArray } from "../utils/utils/src/index"
 import {
-  assertContract, assertSignature, format, isArray, isArrayOf, isFunction, isNullableObject,
-  isOptSinks, isString, isUndefined, makeErrorMessage, removeNullsFromArray
-} from "./utils"
+  assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks,
+  isString, isUndefined
+} from "../utils/contracts/src/index"
+import { format } from "../utils/debug/src/index"
 import * as Rx from "rx"
 
 // NOTE : using $.of, just, amb, empty, from, tap, delay, concat, sample, merge, subscribe,
@@ -87,6 +89,7 @@ function isExpectedStruct(record) {
 function isExpectedRecord(obj) {
   return allR(isExpectedStruct, values(obj))
 }
+
 
 function isStreamSource(inputStr) {
   return !isMockSource(inputStr)
@@ -162,16 +165,16 @@ function getTestResults(testInputs$, expected, settings) {
       .scan(function buildResults(accumulatedResults, sinkValue) {
         console.log(`runTestScenario : ${sinkName} receives `, sinkValue);
         const transformFn = expected[sinkName].transform || identity;
-        const transformedResult = tryCatch(transformFn, function (err, ...args){
-          console.error (`runTestScenario > testAccumulatedResults$ > transformFn : ERROR!`, err);
-          console.warn (`while executing tranform function with args`, args);
+        const transformedResult = tryCatch(transformFn, function (err, ...args) {
+          console.error(`runTestScenario > testAccumulatedResults$ > transformFn : ERROR!`, err);
+          console.warn(`while executing tranform function with args`, args);
           return [
             `ERROR while executing transform function when computing sink ${sinkName}`,
             `Error message : ${err}`,
             `Function arguments : ${format(args)}`,
             `If there is an error message in the arguments, then the error occured before transform, in the sink!`,
             `Consult log for more details!`,
-        ].join('\n')
+          ].join('\n')
         })(clone(sinkValue));
         accumulatedResults.push(transformedResult);
 

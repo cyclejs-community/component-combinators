@@ -4,13 +4,15 @@ import {
   identity, isNil, keys, map as mapR, mapObjIndexed, pipe, prop, reduce as reduceR, T, tryCatch,
   uniq, values
 } from "ramda"
-import { assertContract, checkSignature, handleError, isBoolean } from "../../utils"
+import {
+  assertContract, checkSignature, handleError, isBoolean
+} from "../../../utils/contracts/src/index"
 import {
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,
   checkStateEntryComponentFnMustReturnComponent,
-  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, isEntryComponent, isEntryComponentFactory, isFsmEntryComponents, isFsmEvents, isFsmSettings,
-  isFsmTransitions
+  checkTargetStatesDefinedInTransitionsMustBeMappedToComponent, isEntryComponent,
+  isEntryComponentFactory, isFsmEntryComponents, isFsmEvents, isFsmSettings, isFsmTransitions
 } from "./types"
 import * as Rx from "rx"
 import * as jsonpatch from "fast-json-patch"

@@ -266,11 +266,17 @@ The current roadmap for the v0.4 stands as :
 
 # Installation
 ## Running tests
+Tests are performed with QUnit, i.e. in the browser. This allows debugging code in the browser, and 
+also the possbility in a debugging session to actually display some components' output directly in 
+the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in 
+the root directory, type : 
+
 - `npm install`
-- `npm run node-build-test`
+- `npm run build-node-test`
+- have a look at `/test/index.js` to pick up which test you want to run
 - `npm run test`
 - then open with a local webserver the `index.html` in `test` directory 
-  
+
 ## Demos
 ### Example application
 The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components). Cf. [screenshot](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/#example) here.

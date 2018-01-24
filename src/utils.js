@@ -965,6 +965,7 @@ function toHTMLorNull(x) {
 }
 
 function convertVNodesToHTML(vNodeOrVnodes) {
+  debugger
   if (isArray(vNodeOrVnodes)) {
     console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? toHTML(x) : null)}`)
     return vNodeOrVnodes.map(toHTMLorNull)
