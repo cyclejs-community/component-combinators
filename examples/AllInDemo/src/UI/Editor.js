@@ -1,8 +1,8 @@
 import * as Rx from "rx";
-import { Div, DOM_SINK, preventDefault } from "../../../../src/utils"
-import { a, p, div, img, nav, strong, h2, ul, li, button, input, label, span } from  "cycle-snabbdom"
-import {merge, defaultTo, always, curry, cond, identity, T} from 'ramda'
-import { m } from "../../../../src/components/m/m"
+import { preventDefault } from "../../../../utils/utils/src/index"
+import { DOM_SINK } from "../../../../utils/helpers/src/index"
+import { button, div } from "cycle-snabbdom"
+import { always, merge } from 'ramda'
 
 const $ = Rx.Observable;
 let counter = 0;
@@ -10,24 +10,25 @@ let counter = 0;
 const strcat = x => y => "" + x + y;
 const defaultNamespace = 'editor';
 const editorEditableContentSelector = strcat('.editor__editable-content');
-const saveButtonSelector =  strcat(".editor__icon-save");
-const cancelButtonSelector =  strcat(".editor__icon-cancel");
-const editButtonSelector =  strcat(".editor__icon-edit");
-const editorEditModeSelector = (editMode, editorSelector) => editMode ? editorSelector + `.editor--edit-mode` : editorSelector ;
-const editorOutputSelector =  strcat('.editor__output');
+const saveButtonSelector = strcat(".editor__icon-save");
+const cancelButtonSelector = strcat(".editor__icon-cancel");
+const editButtonSelector = strcat(".editor__icon-edit");
+const editorEditModeSelector = (editMode,
+                                editorSelector) => editMode ? editorSelector + `.editor--edit-mode` : editorSelector;
+const editorOutputSelector = strcat('.editor__output');
 
-function getTextContent(document, selector){
+function getTextContent(document, selector) {
   // NOTE : the selector is for a div
   return document.querySelector(selector).textContent || ''
 }
 
 // TODO : disable task title when task is checked as done !!
 function Editor_(sources, settings) {
-  const {[DOM_SINK]:DOM, document} = sources;
+  const { [DOM_SINK]: DOM, document } = sources;
   const {
     editor: { showControls, enableTags, initialEditMode, initialContent, namespace }
   } = settings;
-  const editorSelector =  namespace
+  const editorSelector = namespace
     ? ['', [defaultNamespace, ++counter].join('-'), namespace].join('.')
     : ['', [defaultNamespace, ++counter].join('-')].join('.')
   ;
@@ -49,25 +50,27 @@ function Editor_(sources, settings) {
 
   // NOTE : shared defensively because they are events (only save$ is mandatory to be shared)
   const events = {
-    edit$ : DOM.select(editButtonSelector(editorSelector)).events('click').do(preventDefault)
+    edit$: DOM.select(editButtonSelector(editorSelector)).events('click').do(preventDefault)
       .map(_ => ({
-        editMode: true, editableTextContent : getTextContent(document, editorOutputSelector(editorSelector))
-      }      ))
+        editMode: true,
+        editableTextContent: getTextContent(document, editorOutputSelector(editorSelector))
+      }))
       .share(),
-    save$ :DOM.select(saveButtonSelector(editorSelector)).events('click').do(preventDefault)
+    save$: DOM.select(saveButtonSelector(editorSelector)).events('click').do(preventDefault)
       .map(_ => ({
-        editMode: false, textContent : getTextContent(document, editorEditableContentSelector(editorSelector)),
-        editableTextContent : ''
-      }      ))
+        editMode: false,
+        textContent: getTextContent(document, editorEditableContentSelector(editorSelector)),
+        editableTextContent: ''
+      }))
       .share(),
-    cancel$ : DOM.select(cancelButtonSelector(editorSelector)).events('click').do(preventDefault)
-      .map(always({editMode: false, editableTextContent:''}))
+    cancel$: DOM.select(cancelButtonSelector(editorSelector)).events('click').do(preventDefault)
+      .map(always({ editMode: false, editableTextContent: '' }))
       .share()
   };
 
   const initialState = {
-    textContent : initialContent,
-    editMode : initialEditMode
+    textContent: initialContent,
+    editMode: initialEditMode
   };
   const state$ = $.merge(
     events.edit$,
@@ -77,26 +80,26 @@ function Editor_(sources, settings) {
     .startWith(initialState);
 
   return {
-    [DOM_SINK]: state$.map(({editMode, textContent, editableTextContent}) => (
+    [DOM_SINK]: state$.map(({ editMode, textContent, editableTextContent }) => (
       div(`${editorEditModeSelector(editMode, editorSelector)}.editor`, [
         div(`${editorEditableContentSelector(editorSelector)}`, {
-          props: {textContent : editableTextContent},
+          props: { textContent: editableTextContent },
           attrs: { contenteditable: "true" }
         }),
         div(`${editorOutputSelector(editorSelector)}`, textContent),
         showControlVTree(editMode)
       ])
     )),
-    save$ : events.save$,
-    focus : state$.skip(1)
-      .filter(({editMode}) => Boolean(editMode))
-      .map(({editMode, textContent}) => {
-      return editMode
-        // !! NOTE : have to delay here because focus driver executes before the DOM driver, so
-        // the element cannot be focused on as it is not displayed yet
-        ? $.of({selector : editorEditableContentSelector(editorSelector)}).delay(0)
-        : $.empty()
-    })
+    save$: events.save$,
+    focus: state$.skip(1)
+      .filter(({ editMode }) => Boolean(editMode))
+      .map(({ editMode, textContent }) => {
+        return editMode
+          // !! NOTE : have to delay here because focus driver executes before the DOM driver, so
+          // the element cannot be focused on as it is not displayed yet
+          ? $.of({ selector: editorEditableContentSelector(editorSelector) }).delay(0)
+          : $.empty()
+      })
       .switch()
   }
 }

@@ -17,7 +17,8 @@ import {
   initLocallyPersistedState, initLocalNonPersistedState, initRemotelyPersistedState, initRepository
 } from './init'
 // utils
-import { DOM_SINK, filterNull } from "../../../src/utils"
+import { filterNull } from "../../../utils/utils/src/index"
+import { DOM_SINK} from "../../../utils/helpers/src/index"
 
 const repository = initRepository(firebase);
 const fbRoot = repository;

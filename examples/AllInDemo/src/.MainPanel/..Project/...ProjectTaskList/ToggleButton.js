@@ -1,13 +1,11 @@
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK } from "../../../../../../src/utils"
+import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 import { button } from "cycle-snabbdom"
 import { PATCH, TASKS_FILTER } from "../../../../src/inMemoryStore"
 import { makeButtonGroupSelector } from './helpers'
 import { tasksButtonGroupSettings } from './properties'
 import { tasksFilter$ } from './state'
 import { always, merge, prop } from 'ramda'
-
-const $ = Rx.Observable;
 
 // Helpers
 const updateTaskTabButtonGroupStateAction = label => ({

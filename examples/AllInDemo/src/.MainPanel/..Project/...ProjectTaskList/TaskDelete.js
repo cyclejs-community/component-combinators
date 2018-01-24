@@ -1,5 +1,6 @@
 import * as Rx from "rx";
-import { DOM_SINK, preventDefault } from "../../../../../../src/utils"
+import { preventDefault } from "../../../../../../utils/utils/src/index"
+import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 import {
   ACTIVITIES, activityFactory, DELETE_TASK, LOG_NEW_ACTIVITY, TASKS
 } from "../../../../src/domain"

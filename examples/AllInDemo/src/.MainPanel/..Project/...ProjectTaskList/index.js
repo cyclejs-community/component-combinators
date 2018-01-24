@@ -1,5 +1,5 @@
 import { InSlot } from "../../../../../../src/components/InSlot"
-import { vLift } from "../../../../../../src/utils"
+import { vLift } from "../../../../../../utils/helpers/src/index"
 import { div } from "cycle-snabbdom"
 import { m } from "../../../../../../src/components/m/m"
 import { ToggleButton } from './ToggleButton'
