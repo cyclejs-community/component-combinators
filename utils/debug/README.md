@@ -6,9 +6,13 @@ applications implemented with component combinators.
 There is no documentation so far, except comments in the code.
 
 # Installation
-  
+
+# Test
+Not much in term of tests. Just tested the umd build in a browser environment (open the relevant 
+`index.html` in a local web server).
+
 # Contribute
-No need.
+Open an issue with your idea.
 
 # Known issues
-None
+Cf. `NOTES.md` if any
