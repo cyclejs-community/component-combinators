@@ -3,16 +3,14 @@ import { createHashHistory, createHistory } from "history"
 import { makeRouterDriver, supportsHistory } from 'cyclic-router'
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
-import * as Rx from "rx";
 // drivers
 import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { convertVNodesToHTML, DOM_SINK } from "../../../src/utils"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { makeAuthDriver } from "../drivers/auth"
 
-const $ = Rx.Observable;
 const repository = localForage;
 const modules = defaultModules;
 const history = supportsHistory() ? createHistory() : createHashHistory();

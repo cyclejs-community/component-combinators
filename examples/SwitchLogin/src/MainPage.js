@@ -1,24 +1,25 @@
 import * as Rx from "rx";
-import { DOM_SINK } from "../../../src/utils"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { a, div, form, h1, h4, i, img, input, label, option, select } from 'cycle-snabbdom'
 import { LOG_OUT } from "../drivers/auth"
-import {always} from "ramda"
+import { always } from "ramda"
 
 const $ = Rx.Observable;
 
 export function MainPage(sources, settings) {
-  const logoutIntent$ = sources[DOM_SINK].select('.logout').events('click').do(ev => ev.preventDefault());
+  const logoutIntent$ = sources[DOM_SINK].select('.logout').events('click').do(
+    ev => ev.preventDefault());
   const logoutAction$ = logoutIntent$.map(always({
-    context : '',
-    command : LOG_OUT,
-    payload : null
+    context: '',
+    command: LOG_OUT,
+    payload: null
   }))
     .share();
 
   return {
     [DOM_SINK]: $.of(render()),
-    auth$ : logoutAction$,
-    router : logoutAction$.map(always('/sth'))
+    auth$: logoutAction$,
+    router: logoutAction$.map(always('/sth'))
   }
 }
 

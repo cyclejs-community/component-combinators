@@ -1,3 +1,4 @@
+// NOTE : to avoid circular import, debug should remain without any dependency on other utils
 import { keys, mapObjIndexed, pipe, tap } from "ramda"
 import toHTML from "snabbdom-to-html"
 // import { StandardError } from "standard-error"
@@ -98,7 +99,7 @@ function toHTMLorNull(x) {
 }
 
 function convertVNodesToHTML(vNodeOrVnodes) {
-  if (isArray(vNodeOrVnodes)) {
+  if (Array.isArray(vNodeOrVnodes)) {
     console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? toHTML(x) : null)}`)
     return vNodeOrVnodes.map(toHTMLorNull)
   }

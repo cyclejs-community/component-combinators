@@ -2,16 +2,12 @@ import { IS_LOGGED_IN, IS_NOT_LOGGED_IN } from "./properties"
 import { Case, Switch } from "../../../src/components/Switch/Switch"
 import { MainPage } from "./MainPage"
 import { LoginPage } from "./LoginPage"
-import { DOM_SINK } from "../../../src/utils"
-import * as Rx from "rx";
-import { a, div, i } from 'cycle-snabbdom'
-
-const $ = Rx.Observable;
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 
 export const App = Switch({
   on: convertAuthToIsLoggedIn,
   sinkNames: ['auth$', DOM_SINK, 'router'],
-  as : 'switchedOn',
+  as: 'switchedOn',
   trace: 'Switch'
 }, [
   Case({ when: IS_NOT_LOGGED_IN, trace: 'LoginPage Case' }, [
