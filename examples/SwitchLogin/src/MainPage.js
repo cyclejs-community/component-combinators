@@ -1,5 +1,5 @@
 import * as Rx from "rx";
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/helpers"
 import { a, div, form, h1, h4, i, img, input, label, option, select } from 'cycle-snabbdom'
 import { LOG_OUT } from "../drivers/auth"
 import { always } from "ramda"

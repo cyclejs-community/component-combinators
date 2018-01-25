@@ -1,5 +1,5 @@
 import { equals, flatten, isNil, map, mapObjIndexed, reduce, uniq } from "ramda"
-import Rx from "rx"
+import * as Rx from "rx"
 import { div, nav } from "cycle-snabbdom"
 
 const $ = Rx.Observable;

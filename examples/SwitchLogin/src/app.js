@@ -2,7 +2,7 @@ import { IS_LOGGED_IN, IS_NOT_LOGGED_IN } from "./properties"
 import { Case, Switch } from "../../../src/components/Switch/Switch"
 import { MainPage } from "./MainPage"
 import { LoginPage } from "./LoginPage"
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/helpers"
 
 export const App = Switch({
   on: convertAuthToIsLoggedIn,
