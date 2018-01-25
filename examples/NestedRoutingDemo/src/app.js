@@ -1,5 +1,6 @@
 import { OnRoute } from "../../../src/components/Router/Router"
-import { DOM_SINK, format } from "../../../src/utils"
+import { format } from "../../../utils/debug/src/index"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
 import { AspirationalPageHeader, Card, CardDetail } from "./AspirationalPage"
@@ -13,10 +14,13 @@ const $ = Rx.Observable;
 const ROUTE_SOURCE = 'route$';
 
 function injectRouteSource(sources) {
-  const route$ = sources.router.observable.pluck('pathname').map(route => {
+  const { router } = sources;
+
+  const route$ = router
+    .map(location => {
+      const route = location.pathname;
       return (route && route[0] === '/') ? route.substring(1) : route
-    }
-  )
+    });
 
   return {
     [ROUTE_SOURCE]: route$

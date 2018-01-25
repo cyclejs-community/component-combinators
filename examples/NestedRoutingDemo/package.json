@@ -55,19 +55,20 @@
   },
   "dependencies": {
     "@cycle/core": "^6.0.3",
-    "@cycle/history": "5.0.0-rc.2",
+    "@cycle/history": "^2.0.2",
     "@cycle/isolate": "^1.2.0",
     "cycle-snabbdom": "1.2.0",
     "cyclic-router": "^1.0.0",
     "history": "^2.0.1",
+    "warning": "^2.0.0",
     "localforage": "^1.5.0",
-    "pretty-format": "^22.1.0",
-    "query-string": "^5.0.1",
+    "query-string": "^3.0.3",
     "ramda": "^0.21.0",
     "route-matcher": "*",
     "rx": "^4.1.0",
     "snabbdom": "0.6.7",
     "snabbdom-to-html": "^3.1.1",
-    "standard-error": "^1.1.0"
+    "standard-error": "^1.1.0",
+    "pretty-format": "^22.1.0"
   }
 }

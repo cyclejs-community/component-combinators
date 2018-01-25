@@ -1,6 +1,6 @@
 import { App } from "./app"
 import { createHistory } from "history"
-import { makeRouterDriver } from 'cyclic-router'
+import { makeHistoryDriver } from '@cycle/history';
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
 import * as Rx from "rx";
@@ -9,7 +9,7 @@ import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { DOM_SINK } from "../../../src/utils"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { merge } from "ramda"
 
 const $ = Rx.Observable;
@@ -24,11 +24,6 @@ function filterNull(driver) {
     )
   }
 }
-
-// Make drivers
-// History driver
-const history = createHistory();
-const historyDriver = makeRouterDriver(history, { capture: true })
 
 // Document driver
 function documentDriver(_) {
@@ -57,7 +52,7 @@ localForage.keys()
 
     const { sources, sinks } = run(init(App), {
       [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
-      router: historyDriver,
+      router: makeHistoryDriver(createHistory(), { capture: true }),
       document: documentDriver
     });
 
