@@ -48,8 +48,6 @@
     "style-loader": "^0.13.1",
     "del": "^2.2.0",
     "derequire": "^2.0.2",
-    "fmt-obj": "^2.0.0",
-    "jquery": "1.12.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-sass": "^4.5.3",
@@ -77,6 +75,8 @@
     "rx": "^4.1.0",
     "snabbdom": "0.6.7",
     "snabbdom-to-html": "^3.1.1",
-    "standard-error": "^1.1.0"
+    "standard-error": "^1.1.0",
+    "fmt-obj": "^2.0.0",
+    "pretty-format": "^22.1.0"
   }
 }

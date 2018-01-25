@@ -13,10 +13,13 @@ const $ = Rx.Observable;
 const ROUTE_SOURCE = 'route$';
 
 function injectRouteSource(sources) {
-  const route$ = sources.router.observable.pluck('pathname').map(route => {
+  const { router } = sources;
+
+  const route$ = router
+    .map(location => {
+      const route = location.pathname;
       return (route && route[0] === '/') ? route.substring(1) : route
-    }
-  )
+    });
 
   return {
     [ROUTE_SOURCE]: route$
