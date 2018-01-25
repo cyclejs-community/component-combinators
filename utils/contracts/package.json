@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/contracts",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "utility functions for checking contracts",
   "repository": {
     "type": "git",
@@ -79,6 +79,7 @@
   "dependencies": {
     "fmt-obj": "^2.0.0",
     "pretty-format": "^22.1.0",
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "snabbdom-to-html": "^3.3.0"
   }
 }

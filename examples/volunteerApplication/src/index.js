@@ -13,7 +13,8 @@ import { defaultUser, loadTestData } from '../fixtures';
 // domain
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 // utils
-import { convertVNodesToHTML, DOM_SINK } from "../../../src/utils"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { convertVNodesToHTML } from "../../../utils/debug/src/index"
 
 const history = supportsHistory() ? createHistory() : createHashHistory();
 const repository = localForage;

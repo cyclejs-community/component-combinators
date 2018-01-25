@@ -1,5 +1,7 @@
-import { allPass, flip, contains, values, isNil, complement, both, pipe, tap } from 'ramda';
-import { isStrictRecord, isString, isHashMap, isBoolean, isNumber } from '../../../../src/utils';
+import { allPass, both, complement, contains, flip, isNil, values } from 'ramda';
+import {
+  isBoolean, isHashMap, isNumber, isStrictRecord, isString
+} from "../../../../utils/contracts/src/index"
 import { applicationProcessSteps } from "../processApplication/properties/index"
 
 export const isApplicationAboutYouInfo = isStrictRecord({

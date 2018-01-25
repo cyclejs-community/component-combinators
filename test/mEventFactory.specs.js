@@ -70,11 +70,13 @@ import * as QUnit from "qunitjs"
 import * as Rx from "rx"
 import { values } from "ramda"
 import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/components/mEventFactory"
-import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
+import { addPrefix, noop } from "../utils/utils/src/index"
+import { convertVNodesToHTML, format } from "../utils/debug/src/index"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
 import { makeMockDOMSource } from "../src/mocks/mockDOM"
-import {DOM_SINK} from "../src/utils"
+import { DOM_SINK, EmptyComponent, makeDivVNode, projectSinksOn } from "../utils/helpers/src/index"
+
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
 

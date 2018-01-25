@@ -1,4 +1,4 @@
-import { assertContract } from '../../../../src/utils';
+import { assertContract } from "../../../../utils/contracts/src/index"
 import { checkUserApplicationContracts } from './contracts';
 
 export const OPPORTUNITY = 'OPPORTUNITY';
@@ -65,7 +65,7 @@ export const domainActionsConfig = {
       const { userKey, opportunityKey } = payload;
       const localforageKey = makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey);
 
-      console.log('update user application:', context, localforageKey , payload);
+      console.log('update user application:', context, localforageKey, payload);
 
       return repository.setItem(localforageKey, payload);
     }

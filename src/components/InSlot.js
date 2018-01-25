@@ -1,4 +1,6 @@
-import { DOM_SINK } from "../utils"
+import {
+  DOM_SINK,
+} from "../../utils/helpers/src/index"
 
 // NOTE ADR: we don't use `m` here, we could but choose not to. As `m` will be use for logging, we
 // have no interest in having a log for `InSlot` operations.

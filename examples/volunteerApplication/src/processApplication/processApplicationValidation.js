@@ -2,7 +2,7 @@ import { cond, curry, gt, isEmpty, length, mapObjIndexed, pipe, T } from 'ramda'
 import {
   FIELD_MIN_LENGTH, MANDATORY_PLEASE_FILL_IN_VALID_ERROR, MIN_LENGTH_VALID_ERROR
 } from "./properties"
-import { traceFn } from "../../../../src/utils"
+import { traceFn } from "../../../../utils/debug/src/index"
 
 //////
 // Form data validation

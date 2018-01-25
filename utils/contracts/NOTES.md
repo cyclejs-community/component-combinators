@@ -28,3 +28,15 @@ wrongly built by rollup?:
 so I switch the format library to the one used by facebook with jest: pretty-format
 
 However that adds at least 40Kb to the rollup build!!!
+
+# snabbdom-to-html plays bad with rollup
+mistery as always (fine if debug alone, but with contract importign from debug, we have error) : 
+
+```
+[!] Error: 'default' is not exported by ..\debug\node_modules\snabbdom-to-html\index.js
+https://github.com/rollup/rollup/wiki/Troubleshooting#name-is-not-exported-by-module
+..\debug\src\index.js (3:7)
+1: // NOTE : to avoid circular import, debug should remain without any dependency on other utils
+2: import { keys, mapObjIndexed, pipe, tap } from "ramda"
+3: import toHTML from "snabbdom-to-html"
+```

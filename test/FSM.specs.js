@@ -1,14 +1,15 @@
 // let Qunit = require('qunitjs');
 /** @typedef {*} TestResults*/
 import * as QUnit from "qunitjs"
-import { map, reduce, always, clone, curry, identity, flatten, match, T, F, __ } from "ramda"
+import { __, clone, curry, F, flatten, identity, match, T } from "ramda"
 import * as jsonpatch from "fast-json-patch"
 import * as Rx from "rx"
-import { makeErrorMessage } from "../src/utils"
+import { makeErrorMessage } from "../utils/utils/src/index"
 import { runTestScenario } from "../src/runTestScenario"
 import {
-  EV_GUARD_NONE, ACTION_REQUEST_NONE, ACTION_GUARD_NONE, DRIVER_PREFIX, INIT_EVENT_NAME, INIT_STATE,
-  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE
+  ACTION_GUARD_NONE, ACTION_REQUEST_NONE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
+  CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, DRIVER_PREFIX, EV_GUARD_NONE, INIT_EVENT_NAME,
+  INIT_STATE
 } from "../src/components/FSM/properties"
 import { makeFSM } from "../src/components/FSM/FSM"
 
@@ -68,7 +69,7 @@ const dummyDriverActionResponse2 = { request: dummyRequest, responseKey2: 'respo
 
 const sinkNames = ['sinkA', 'sinkB', 'sinkC', 'modelSink', dummyDriver];
 
-function modelUpdateIdentity(x){
+function modelUpdateIdentity(x) {
   return [];
 }
 
@@ -228,11 +229,11 @@ QUnit.test(
       return opsOnInitialModel
     }
 
-    function actionGuardPasses (model, actionResponse) {
+    function actionGuardPasses(model, actionResponse) {
       assert.deepEqual(model, initialModel,
         `The action guard is called with first parameter being 
           the model's current value i.e. before any update`);
-      assert.deepEqual(actionResponse.request , dummyRequest,
+      assert.deepEqual(actionResponse.request, dummyRequest,
         `The action guard is called with second parameter being 
           the action response returned by the action driver`);
 
@@ -456,7 +457,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -558,7 +559,7 @@ QUnit.test(
       [testEvent]: sources => sources.eventSource.take(1)
     };
 
-    function actionGuard (model, actionResponse) {
+    function actionGuard(model, actionResponse) {
       assert.ok(false, 'action guard should not be called when inside a transition evaluation' +
         ' record corresponding to an absence of action request (action_request = null)')
 
@@ -615,7 +616,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -768,7 +769,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1404,7 +1405,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1566,7 +1567,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1717,7 +1718,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -1907,7 +1908,7 @@ QUnit.test(
       initial_model: initialModel,
       init_event_data: initEventData,
       sinkNames: sinkNames,
-      debug : true
+      debug: true
     };
 
     const fsmComponent = makeFSM(events, transitions, entryComponents, fsmSettings);
@@ -3073,7 +3074,7 @@ QUnit.test(
     }
 
     function modelUpdateReturnsNotArrayUpdates4(model, eventData, actionResponse) {
-      return [{key : 'value'}]
+      return [{ key: 'value' }]
     }
 
     const events = {};
@@ -3171,13 +3172,13 @@ QUnit.test(
       sinkA: {
         outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
         successMessage: 'Error! Model update functions must return an array of valid update operations!',
-        transformFn : match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
+        transformFn: match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
         analyzeTestResults: analyzeTestResults,
       },
       sinkB: {
         outputs: [[CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE]],
         successMessage: 'sink sinkB produces the expected values',
-        transformFn : match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
+        transformFn: match(new RegExp(CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE, 'g')),
         analyzeTestResults: analyzeTestResults,
       },
       modelSink: {
@@ -3270,7 +3271,7 @@ QUnit.test(
           {
             event_guard: EV_GUARD_NONE,
             action_request: ACTION_REQUEST_NONE,
-            re_entry : true,
+            re_entry: true,
             transition_evaluation: [
               {
                 action_guard: ACTION_GUARD_NONE,
@@ -3379,11 +3380,11 @@ QUnit.test(
       return opsOnInitialModel
     }
 
-    function actionGuardPasses (model, actionResponse) {
+    function actionGuardPasses(model, actionResponse) {
       assert.deepEqual(model, initialModel,
         `The action guard is called with first parameter being 
           the model's current value i.e. before any update`);
-      assert.deepEqual(actionResponse.request , dummyRequest,
+      assert.deepEqual(actionResponse.request, dummyRequest,
         `The action guard is called with second parameter being 
           the action response returned by the action driver`);
 

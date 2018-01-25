@@ -1,8 +1,8 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
-import { h, span } from 'cycle-snabbdom'
+import { span } from 'cycle-snabbdom'
 import { runTestScenario } from '../src/runTestScenario'
-import { convertVNodesToHTML } from '../src/utils'
+import { convertVNodesToHTML } from "../utils/debug/src/index"
 import { pipe } from 'ramda'
 import { Pipe } from "../src/components/Pipe/Pipe"
 
@@ -56,7 +56,7 @@ const Actions = function actions(sources, settings) {
 QUnit.test("edge case - sources colliding with sinks, with throwIfSinkSourceConflict true", function exec_test(assert) {
   const done = null;
 
-  const pipedComponent = Pipe({ Pipe: {throwIfSinkSourceConflict: true, }}, [Events, Intents, Actions,]);
+  const pipedComponent = Pipe({ Pipe: { throwIfSinkSourceConflict: true, } }, [Events, Intents, Actions,]);
 
   const inputs = [
     // put myIntent and click in sources to collide with sink for this test case - should throw
@@ -104,9 +104,9 @@ QUnit.test("edge case - wrong parameter type for component array", function exec
   let passed = false;
 
   try {
-    Pipe({ Pipe: {throwIfSinkSourceConflict: false, }}, [Events, [Intents, Actions]]);
+    Pipe({ Pipe: { throwIfSinkSourceConflict: false, } }, [Events, [Intents, Actions]]);
   }
-  catch (err){
+  catch (err) {
     assert.equal(err.toString().includes('components'), true, `throws an exception if not called with an array of components!`)
     passed = true;
   }
@@ -118,9 +118,9 @@ QUnit.test("edge case - empty component array", function exec_test(assert) {
   let passed = false;
 
   try {
-    Pipe({ Pipe: {throwIfSinkSourceConflict: true, }}, []);
+    Pipe({ Pipe: { throwIfSinkSourceConflict: true, } }, []);
   }
-  catch (err){
+  catch (err) {
     assert.equal(err.toString().includes('components'), true, `throws an exception if called with an empty array!`)
     passed = true;
   }
@@ -129,7 +129,7 @@ QUnit.test("edge case - empty component array", function exec_test(assert) {
 
 QUnit.test("main case - sources colliding with sinks, with throwIfSinkSourceConflict false", function exec_test(assert) {
   const done = assert.async(2);
-  const pipedComponent = Pipe({ Pipe: {throwIfSinkSourceConflict: false, }}, [Events, Intents, Actions,]);
+  const pipedComponent = Pipe({ Pipe: { throwIfSinkSourceConflict: false, } }, [Events, Intents, Actions,]);
 
   const inputs = [
     // put myIntent and click in sources to collide with sink for this test case - should throw
@@ -188,7 +188,7 @@ QUnit.test("main case - sources colliding with sinks, with throwIfSinkSourceConf
 
 QUnit.test("main case - sources not colliding with sinks, with throwIfSinkSourceConflict false", function exec_test(assert) {
   const done = assert.async(2);
-  const pipedComponent = Pipe({ Pipe: {throwIfSinkSourceConflict: false, }}, [Events, Intents, Actions,]);
+  const pipedComponent = Pipe({ Pipe: { throwIfSinkSourceConflict: false, } }, [Events, Intents, Actions,]);
 
   const inputs = [
     // put myIntent and click in sources to collide with sink for this test case - should throw
@@ -245,7 +245,7 @@ QUnit.test("main case - sources not colliding with sinks, with throwIfSinkSource
 
 QUnit.test("main case - sources not colliding with sinks, with throwIfSinkSourceConflict true", function exec_test(assert) {
   const done = assert.async(2);
-  const pipedComponent = Pipe({ Pipe: {throwIfSinkSourceConflict: true, }}, [Events, Intents, Actions,]);
+  const pipedComponent = Pipe({ Pipe: { throwIfSinkSourceConflict: true, } }, [Events, Intents, Actions,]);
 
   const inputs = [
     // put myIntent and click in sources to collide with sink for this test case - should throw
