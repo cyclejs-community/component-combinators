@@ -1,6 +1,5 @@
 import { App } from "./app"
 import { createHistory } from "history"
-import { makeRouterDriver } from 'cyclic-router'
 import { makeHistoryDriver } from '@cycle/history';
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
