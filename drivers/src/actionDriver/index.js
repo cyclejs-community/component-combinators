@@ -1,5 +1,7 @@
 import { mapObjIndexed, tryCatch, values } from 'ramda';
 import * as Rx from "rx"
+import { assertContract, isError, isPromise } from "../../../utils/contracts/src/index"
+import { format } from "../../../utils/debug/src/index"
 
 const $ = Rx.Observable;
 
@@ -11,12 +13,8 @@ function errorHandler(e, repository, context, params) {
   return e;
 }
 
-function isPromise(obj) {
-  return !!obj.then
-}
-
-function isError(obj) {
-  return obj instanceof Error
+function isDomainAction(action) {
+  return Boolean(!(isNil(action) || isNil(action.context) || isNil(action.command)))
 }
 
 function eventEmitterFactory(_, context, __) {
@@ -43,7 +41,9 @@ export function makeDomainActionDriver(repository, config) {
 
   return function (sink$) {
     const source$ = sink$.map(function executeAction(action) {
+      assertContract(isDomainAction, [action], `actionDriver > Invalid action ! Expecting {context:truthy, command : truthy, payload : any} ; received ${format(action)}`);
       console.info('DOMAIN ACTION | ', action);
+
       const { context, command, payload } = action;
       const fnToExec = config[context][command];
       const wrappedFn = tryCatch(fnToExec, errorHandler);

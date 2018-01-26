@@ -1,6 +1,8 @@
-import Rx from "rx"
+import * as Rx from "rx"
 import { complement, isNil, tryCatch } from 'ramda';
-import { assertContract, isFunction } from '../../../utils/contracts/src/index'
+import {
+  assertContract, isFunction, isObservable, isPromise
+} from '../../../utils/contracts/src/index'
 const $ = Rx.Observable;
 
 // Helper functions
@@ -41,7 +43,10 @@ export function makeDomainQueryDriver(repository, config) {
         // and we should not : there is no reason why the same call should return the same value!
         // If this should be implementing a live query, then we should cache not to recompute
         // the live query. The live query already automatically pushes updates
-        return $.fromPromise(wrappedFn(repository, context, payload));
+        const output = wrappedFn(repository, context, payload);
+        return isPromise(output)
+          ? $.fromPromise(output)
+          : isObservable(output) ? output : $.of(output)
       }
     }
   }
