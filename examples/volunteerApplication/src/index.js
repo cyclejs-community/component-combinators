@@ -44,14 +44,17 @@ function makeFakeUserDriver(user) {
 }
 
 // Initialize the database
-localForage._config = {
+localForage.config ( {
   driver: localForage.LOCALSTORAGE, // Force local storage;
   name: 'myApp',
   storeName: 'demo', // Should be alphanumeric, with underscores.
   description: 'emulation of remote storage in local for demo storage needs'
-};
+});
 
-localForage.keys()
+Promise.resolve()
+  // NOTE : comment or uncomment the next line to reinitialize local storage
+  // .then(() => localForage.clear())
+  .then(() => localForage.keys())
   .then(keys => Promise.all(keys.map(key => {
       return localForage.getItem(key).then(value => ({ [key]: value }))
     }

@@ -9,4 +9,7 @@ This is a demonstration illustrating the use of a FSM combinator component to di
 # Running it
 - `npm install`
 - `npm run wbuild`
+- have a look at `src/index.js` and decide whether to reset local storage or not at every page load
+  - should be done only when local storage is somehow corrupted (can happen between different 
+  windows). By default leave the `localForage.clear()` line commented out
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory 

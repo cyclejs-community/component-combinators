@@ -24,7 +24,7 @@ export function makeDomainQuerySource(mockedObj, sourceSpecs, stream) {
   // register the stream in the hash table
   mockedObj.hashTable[domainObject][jsonParams] = stream;
   // build the mock anew to incorporate the new stream
-  mockedObj.query = function (domainObject, params){
+  mockedObj.getCurrent = function (domainObject, params){
     return mockedObj.hashTable[domainObject][JSON.stringify(params)];
   }
 
