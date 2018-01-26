@@ -1,6 +1,6 @@
 import Rx from "rx"
 import { complement, isNil, tryCatch } from 'ramda';
-import { assertContract, isFunction } from "../../../utils/contracts/src/index"
+import { assertContract, isFunction } from '../../../utils/contracts/src/index'
 const $ = Rx.Observable;
 
 // Helper functions

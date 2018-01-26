@@ -1,5 +1,4 @@
 import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
@@ -9,12 +8,15 @@ export default {
   input: 'src/index.js',
   output:
     {
-      file: 'lib/rxcc-switch-demo-es5-umd-rollup.js',
-      name: 'rxccSwitchDemo',
+      file: 'lib/rxcc-drivers-es5-umd-rollup.js',
+      name: 'rxccDrivers',
       format: 'umd',
       sourcemap: true,
     },
   plugins: [
+    ["transform-es2015-modules-commonjs", {
+      "allowTopLevelThis": true
+    }],
     resolve({
       module: true,
       jsnext: true,
@@ -23,22 +25,15 @@ export default {
 //      modulesOnly: true,
     }),
     commonjs({
-      include: 'node_modules/**',
-      namedExports: {
-        // NOTE : added after reading:
-        // https://github.com/rollup/rollup-plugin-commonjs#custom-named-exports
-        // https://github.com/rollup/rollup/wiki/Troubleshooting#name-is-not-exported-by-module
-        // https://github.com/rollup/rollup-plugin-commonjs/issues/206
-        // left-hand side can be an absolute path, a path
-        // relative to the current directory, or the name
-        // of a module in node_modules
-//        '../../utils/helpers/node_modules/rx/dist/rx.all.js': [ 'def'+'ault' ]
+      namedExports : {
+        '../utils/debug/src/index.js': ['toHTML']
       },
+      include: 'node_modules/**',
     }),
     babel({
       babelrc: false,
       // cf. https://github.com/rollup/rollup-plugin-babel#modules
-      modules: false,
+//      modules: false, // that was babel <=5
       exclude: 'node_modules/**',
     }),
     replace({
