@@ -74,7 +74,7 @@ import { addPrefix, noop } from "../utils/utils/src/index"
 import { convertVNodesToHTML, format } from "../utils/debug/src/index"
 import { runTestScenario } from "../src/runTestScenario"
 import { span } from "cycle-snabbdom"
-import { makeMockDOMSource } from "../src/mocks/mockDOM"
+import { makeMockDOMSource } from "../utils/testing/mocks/mockDOM"
 import { DOM_SINK, EmptyComponent, makeDivVNode, projectSinksOn } from "../utils/helpers/src/index"
 
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up

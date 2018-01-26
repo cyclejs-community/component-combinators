@@ -10,6 +10,18 @@
     "reactive",
     "rxjs"
   ],
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
   "scripts": {
     "build-test": "babel test --source-maps --out-dir dist-node-test",
     "test": "watchify -d --transform babelify dist-node-test -o test/bundle.js -v",
