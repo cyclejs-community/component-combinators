@@ -57,12 +57,12 @@ import {
   __, addIndex, all as allR, always, clone, curry, defaultTo, identity, isEmpty, isNil,
   keys as keysR, map, mapObjIndexed, reduce as reduceR, tryCatch, values
 } from "ramda"
-import { makeErrorMessage, removeNullsFromArray } from "../utils/utils/src/index"
+import { makeErrorMessage, removeNullsFromArray } from "../../utils/src/index"
 import {
   assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks,
   isString, isUndefined
-} from "../utils/contracts/src/index"
-import { format } from "../utils/debug/src/index"
+} from "../../contracts/src/index"
+import { format } from "../../debug/src/index"
 import * as Rx from "rx"
 
 // NOTE : using $.of, just, amb, empty, from, tap, delay, concat, sample, merge, subscribe,

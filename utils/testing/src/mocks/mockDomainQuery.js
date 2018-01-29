@@ -1,10 +1,7 @@
 import { F, tryCatch } from "ramda"
-import { assertContract } from "../../../utils/contracts/src"
-import { format } from "../../../utils/debug/src"
-import { LIVE_QUERY_TOKEN } from "../../../drivers/src/index"
-import * as Rx from "rx"
-
-const $ = Rx.Observable;
+import { assertContract } from "../../../contracts/src/index"
+import { format } from "../../../debug/src/index"
+import { LIVE_QUERY_TOKEN } from "../../../../drivers/src/index"
 
 /**
  *
@@ -43,7 +40,6 @@ export function makeDomainQuerySource(mockedObj, sourceSpecs, stream) {
       return mockedObj.hashTable[domainObject][JSON.stringify(params)].take(1);
     }
   }
-
 
   return mockedObj
 }

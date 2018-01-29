@@ -1,7 +1,7 @@
 import * as QUnit from "qunitjs"
-import { runTestScenario } from "../src/runTestScenario"
+import { runTestScenario } from "../utils/testing/src/runTestScenario"
 import * as Rx from "rx"
-import { makeDomainQuerySource } from "../utils/testing/mocks/mockDomainQuery"
+import { makeDomainQuerySource } from "../utils/testing/src/mocks/mockDomainQuery"
 import { addPrefix } from "../utils/utils/src/index"
 import { LIVE_QUERY_TOKEN } from "../drivers/src"
 

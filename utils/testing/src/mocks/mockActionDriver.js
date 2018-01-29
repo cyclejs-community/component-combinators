@@ -13,7 +13,6 @@
  */
 
 // TODO test it in next version?
-import { F, tryCatch } from "ramda"
 
 /**
  *

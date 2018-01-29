@@ -72,9 +72,9 @@ import { values } from "ramda"
 import { mEventFactory } from "../src/components/mEventFactory"
 import { addPrefix, noop } from "../utils/utils/src/index"
 import { convertVNodesToHTML, format } from "../utils/debug/src/index"
-import { runTestScenario } from "../src/runTestScenario"
+import { runTestScenario } from "../utils/testing/src/runTestScenario"
 import { span } from "cycle-snabbdom"
-import { makeMockDOMSource } from "../utils/testing/mocks/mockDOM"
+import { makeMockDOMSource } from "../utils/testing/src/mocks/mockDOM"
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
 // TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a

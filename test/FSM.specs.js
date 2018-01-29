@@ -5,7 +5,7 @@ import { __, clone, curry, F, flatten, identity, match, T } from "ramda"
 import * as jsonpatch from "fast-json-patch"
 import * as Rx from "rx"
 import { makeErrorMessage } from "../utils/utils/src/index"
-import { runTestScenario } from "../src/runTestScenario"
+import { runTestScenario } from "../utils/testing/src/runTestScenario"
 import {
   ACTION_GUARD_NONE, ACTION_REQUEST_NONE, CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE,
   CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE, DRIVER_PREFIX, EV_GUARD_NONE, INIT_EVENT_NAME,

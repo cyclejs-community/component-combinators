@@ -1,7 +1,7 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { span } from 'cycle-snabbdom'
-import { runTestScenario } from '../src/runTestScenario'
+import { runTestScenario } from '../utils/testing/src/runTestScenario'
 import { convertVNodesToHTML } from "../utils/debug/src/index"
 import { pipe } from 'ramda'
 import { Pipe } from "../src/components/Pipe/Pipe"

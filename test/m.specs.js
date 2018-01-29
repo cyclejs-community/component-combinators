@@ -8,7 +8,7 @@ import {
   getSlotHoles, m, mergeChildrenIntoParentDOM, rankChildrenBySlot
 } from '../src/components/m/m';
 import { makeDivVNode, projectSinksOn } from "../utils/helpers/src/index"
-import { runTestScenario } from '../src/runTestScenario';
+import { runTestScenario } from '../utils/testing/src/runTestScenario';
 
 let $ = Rx.Observable;
 
