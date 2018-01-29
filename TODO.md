@@ -49,6 +49,9 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - InjectStateInSinks to remove
 - delete utils and recheck everything
 - reissue patch for all utils (I modified format)
+
+# Learn
+- review git rules 
  
 # Documentation/Example
 - blog : investigate highlighitn with ``` how to add new syntax, or what is the list```

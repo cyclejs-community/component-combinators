@@ -269,6 +269,8 @@ QUnit.test("Displays UI", function exec_test(assert) {
       [`document!value@${USER_APPLICATION_FORM_INPUT_ZIPCODE_SELECTOR}`]: subjectFactory,
       [`document!value@${USER_APPLICATION_FORM_INPUT_OPP_ANSWER_SELECTOR}`]: subjectFactory,
       [`document!value@${USER_APPLICATION_FORM_INPUT_TEAM_ANSWER_SELECTOR}`]: subjectFactory,
+      // TODO : test that with a replay subject instead of normal subject
+      // TODO : add test for replay subjects in runTestScenario
       [`domainQuery!${mockUserAppParams}@${USER_APPLICATION}`]: subjectFactory,
       [`domainQuery!${mockTeamsParams}@${TEAMS}`]: subjectFactory,
       [`domainQuery!${mockOpportunityParams}@${OPPORTUNITY}`]: subjectFactory,

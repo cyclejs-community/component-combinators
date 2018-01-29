@@ -248,6 +248,7 @@ function computeSources(inputs, mockedSourcesHandlers, sourceFactory) {
     else if (isMockSource(inputKey)) {
       // Case when the inputs are to mock an object
       // Ex : 'DOM!selector@event'
+      // TODO : check there are only two!!!! or take the first one?? DOC it, test it!!
       const [sourceName, sourceSpecs] = inputKey.split('!')
 
       // Check the source name is valid (not empty etc.)
@@ -484,7 +485,6 @@ function runTestScenario(inputs, expected, testFn, _settings) {
   // Execute the function to be tested (for example a cycle component)
   // with the source subjects
   console.groupCollapsed('runTestScenario: executing test function');
-  // const testSinks = testFn(sourcesStruct.sources);
   const testSinks = tryCatch(testFn, function testSinksErrorHandler(e, sources) {
     console.error('Tested function exited with an exception :', e);
     throw e;

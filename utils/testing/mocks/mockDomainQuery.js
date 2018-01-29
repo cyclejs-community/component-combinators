@@ -1,4 +1,10 @@
-import { tryCatch, F } from "ramda"
+import { F, tryCatch } from "ramda"
+import { assertContract } from "../../../utils/contracts/src"
+import { format } from "../../../utils/debug/src"
+import { LIVE_QUERY_TOKEN } from "../../../drivers/src/index"
+import * as Rx from "rx"
+
+const $ = Rx.Observable;
 
 /**
  *
@@ -10,10 +16,13 @@ import { tryCatch, F } from "ramda"
  * @returns {*|{}}
  */
 export function makeDomainQuerySource(mockedObj, sourceSpecs, stream) {
-  const [jsonParams, domainObject] = sourceSpecs.split('@');
+  assertContract(isValidDomainQueryMockConfig, [sourceSpecs], `makeDomainQuerySource : Invalid spec for domain query source -- must have one and only one @ character, and both sides around the @ characters must be non-empty! Check ${format(sourceSpecs)}`);
+  const [jsonParams, unparsedDomainObject] = sourceSpecs.split('@');
+  const { domainObject, isLiveQuery } = parseDomainObject(unparsedDomainObject);
 
-  if (!isValidDomainQuerySourceInput(jsonParams, domainObject)) {
-    throw `Invalid spec for domain query source : ${sourceSpecs}`
+  if (domainObject.length === 0) {
+    // empty string cannot be a domain entity moniker
+    throw `makeDomainQuerySource: Invalid spec for domain query source -- domain entity cannot be empty string! Check ${format(sourceSpecs)}`
   }
 
   // Initialize object hash table if not done already
@@ -21,16 +30,46 @@ export function makeDomainQuerySource(mockedObj, sourceSpecs, stream) {
   mockedObj.hashTable = mockedObj.hashTable || {};
   mockedObj.hashTable[domainObject] = mockedObj.hashTable[domainObject] || {};
   mockedObj.hashTable[domainObject][jsonParams] = mockedObj.hashTable[domainObject][jsonParams] || {};
-  // register the stream in the hash table
-  mockedObj.hashTable[domainObject][jsonParams] = stream;
-  // build the mock anew to incorporate the new stream
-  mockedObj.getCurrent = function (domainObject, params){
-    return mockedObj.hashTable[domainObject][JSON.stringify(params)];
+
+  if (isLiveQuery) {
+    mockedObj.hashTable[domainObject][jsonParams] = stream;
+    mockedObj.getCurrent = mockedObj.getCurrent || function (domainObject, params) {
+      return mockedObj.hashTable[domainObject][JSON.stringify(params)];
+    }
   }
+  else {
+    mockedObj.hashTable[domainObject][jsonParams] = stream;
+    mockedObj.getCurrent = mockedObj.getCurrent || function (domainObject, params) {
+      return mockedObj.hashTable[domainObject][JSON.stringify(params)].take(1);
+    }
+  }
+
 
   return mockedObj
 }
 
+function parseDomainObject(unparsedDomainObject) {
+  return unparsedDomainObject.startsWith(LIVE_QUERY_TOKEN)
+    ? {
+      domainObject: unparsedDomainObject.split(LIVE_QUERY_TOKEN)[1],
+      isLiveQuery: true
+    }
+    : {
+      domainObject: unparsedDomainObject,
+      isLiveQuery: false
+    }
+
+}
+
+function isValidDomainQueryMockConfig(sourceSpecs) {
+  const preParsed = sourceSpecs.split('@');
+  const [jsonParams, domainObject] = preParsed;
+
+  return preParsed && preParsed.length === 2 && isValidDomainQuerySourceInput(jsonParams, domainObject)
+}
+
 function isValidDomainQuerySourceInput(jsonParams, domainObject) {
   return domainObject && tryCatch(JSON.parse, F)(jsonParams)
+  ? true
+    : `isValidDomainQuerySourceInput : either domainObject is falsy or jsonParams is invalid JSON!`
 }
