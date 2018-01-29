@@ -143,7 +143,7 @@ QUnit.test("with once query", function exec_test(assert) {
       domainQuery: makeDomainQuerySource
     },
     sourceFactory: {
-      [`domainQuery!${JSON.stringify(A_JSON_PARAM)}@${A_ENTITY}`]: replaySubjectFactory,
+      [`domainQuery!${JSON.stringify(A_JSON_PARAM)}@${A_ENTITY}`]: subjectFactory,
     },
     errorHandler: function (err) {
       done(err)
