@@ -1,6 +1,6 @@
 {
   "name": "rx-component-combinators",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Library providing combinators for reactive components",
   "author": "Olivier Couriol",
   "license": "Apache-2.0",
