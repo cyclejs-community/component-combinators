@@ -1,11 +1,10 @@
 // ListOf({list : 'items', as : 'cardInfo', buildActionsFromChildrenSinks:...,
 // actionsMap:{'clickIntent$':'router'}},}, [Component],
 import {
-  assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString
-} from "../../utils"
+  assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString, isComponent
+} from "../../../utils/contracts/src/index"
 import { m } from '../m/m'
 import { either, isNil, keys, merge, path, reduce, uniq } from 'ramda'
-import { isComponent } from "../types"
 import * as Rx from "rx"
 
 const $ = Rx.Observable;
@@ -93,7 +92,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
     const mappedSinkName = (actionsMap || {})[sinkName];
 
     return mappedSinkName
-    ? mappedSinkName
+      ? mappedSinkName
       : sinkName
   }));
 

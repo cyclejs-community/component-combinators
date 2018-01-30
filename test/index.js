@@ -1,6 +1,6 @@
-window.$ = window.jQuery = require('jquery');
 import * as QUnit from 'qunitjs';
 QUnit.dump.maxDepth = 200;
+window.$ = window.jQuery = require('jquery');
 
 // import './m.specs'
 // import './FSM.specs'
@@ -12,4 +12,5 @@ QUnit.dump.maxDepth = 200;
 // import './Router.specs'
 // import './ForEach.specs'
 // import './ListOf.specs'
-import './Pipe.specs'
+// import './Pipe.specs'
+import './mockDomainQuery.specs'

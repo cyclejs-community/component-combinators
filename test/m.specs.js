@@ -7,12 +7,10 @@ import { div } from 'cycle-snabbdom';
 import {
   getSlotHoles, m, mergeChildrenIntoParentDOM, rankChildrenBySlot
 } from '../src/components/m/m';
-import { makeDivVNode, projectSinksOn } from '../src/utils';
-import { runTestScenario } from '../src/runTestScenario';
+import { makeDivVNode, projectSinksOn } from "../utils/helpers/src/index"
+import { runTestScenario } from '../utils/testing/src/runTestScenario';
 
 let $ = Rx.Observable;
-
-
 
 
 // Fixtures
@@ -1239,9 +1237,9 @@ QUnit.test(`main cases - testing default and override - undefined slot`,
 
 QUnit.test(`main cases - testing default, and override deeper level - undefined slot`,
   function exec_test(assert) {
-        const childrenDOMs = [
-          ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC, ChildVNode_0_0_1, ChildVNode_0_2
-        ];
+    const childrenDOMs = [
+      ChildWithNoSlotB, ChildWithNoSlotA, ChildWithNoSlotC, ChildVNode_0_0_1, ChildVNode_0_2
+    ];
 
     const arrayVNode = flatten([ParentVNode_0, childrenDOMs]);
 

@@ -1,10 +1,8 @@
-import { assertContract, isArrayOf, isBoolean } from "../../utils"
+import {
+  assertContract, isArrayOf, isBoolean, isComponent
+} from "../../../utils/contracts/src/index"
 import { m } from '../m/m'
-import { intersection, merge, keys } from 'ramda'
-import * as Rx from "rx";
-import { isComponent } from "../../components/types"
-
-const $ = Rx.Observable;
+import { intersection, keys, merge } from 'ramda'
 
 function isPipeSettings(sources, settings) {
   if ('overwrite' in settings) {

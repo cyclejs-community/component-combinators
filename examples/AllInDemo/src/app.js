@@ -1,6 +1,8 @@
 import { ROUTE_SOURCE } from "./properties"
 import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
-import { Div, DOM_SINK, format } from "../../../src/utils"
+import { filterNull } from "../../../utils/utils/src/index"
+import { DOM_SINK, Div } from "../../../utils/helpers/src/index"
+import { format} from "../../../utils/debug/src/index"
 import { values } from 'ramda'
 import { PROJECTS, USER } from "./domain"
 import { SidePanel } from "./.SidePanel"

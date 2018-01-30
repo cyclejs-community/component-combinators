@@ -29,7 +29,7 @@ import {
   teamContinueEventFactory
 } from './processApplicationEvents';
 import { fetchUserApplicationModelData } from './processApplicationFetch';
-import { DOM_SINK } from "../../../../src/utils";
+import { DOM_SINK } from "../../../../utils/helpers/src/index"
 import { processApplicationRenderInit } from "./processApplicationRenderInit";
 import { processApplicationRenderAboutScreen } from "./processApplicationRenderAboutScreen";
 import { processApplicationRenderQuestionScreen } from "./processApplicationRenderQuestionScreen";

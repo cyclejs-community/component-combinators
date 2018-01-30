@@ -1,19 +1,16 @@
 import { App } from "./app"
 import defaultModules from "cycle-snabbdom/lib/modules"
 import * as localForage from "localforage";
-import * as Rx from "rx";
 // drivers
 import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { DOM_SINK } from "../../../src/utils"
-import { merge } from "ramda"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver/index';
 
-const $ = Rx.Observable;
 const repository = localForage;
 const modules = defaultModules;
 

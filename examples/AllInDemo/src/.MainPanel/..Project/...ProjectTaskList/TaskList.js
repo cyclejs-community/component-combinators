@@ -3,11 +3,11 @@ import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
 import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
 import { InSlot } from "../../../../../../src/components/InSlot"
 import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
-import { DOM_SINK, EmptyComponent, vLift } from "../../../../../../src/utils"
+import { DOM_SINK, EmptyComponent, vLift } from "../../../../../../utils/helpers/src/index"
 import { button, div } from "cycle-snabbdom"
 import { TASKS } from "../../../../src/domain"
 import {
-  ComputeCheckBoxActions, ComputeEditorActions, computeSaveUpdatedTaskActions
+  ComputeCheckBoxActions, ComputeEditorActions
 } from './helpers'
 import { taskListStateFactory } from './state'
 import { CheckBox } from '../../../UI/CheckBox'

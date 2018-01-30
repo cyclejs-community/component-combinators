@@ -69,11 +69,12 @@
 import * as QUnit from "qunitjs"
 import * as Rx from "rx"
 import { values } from "ramda"
-import { makeEventNameFromSelectorAndEvent, mEventFactory } from "../src/components/mEventFactory"
-import { addPrefix, convertVNodesToHTML, format, noop } from "../src/utils"
-import { runTestScenario } from "../src/runTestScenario"
+import { mEventFactory } from "../src/components/mEventFactory"
+import { addPrefix, noop } from "../utils/utils/src/index"
+import { convertVNodesToHTML, format } from "../utils/debug/src/index"
+import { runTestScenario } from "../utils/testing/src/runTestScenario"
 import { span } from "cycle-snabbdom"
-import { makeMockDOMSource } from "../src/mocks/mockDOM"
+import { makeMockDOMSource } from "../utils/testing/src/mocks/mockDOM"
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
 // TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a
@@ -303,7 +304,7 @@ const buttonTestSpace = {
       caseClickAndOneChild: {
         settings: {
           listenOn: SOME_SELECTOR,
-          listenTo : [SOME_DOM_EVENT_NAME, ANOTHER_DOM_EVENT_NAME]
+          listenTo: [SOME_DOM_EVENT_NAME, ANOTHER_DOM_EVENT_NAME]
         },
         childrenComponents: [comp1DOM1NonDOMEvSource12]
       },
@@ -364,7 +365,7 @@ QUnit.test("Good settings : empty settings", function exec_test(assert) {
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
-    analyzeTestResults : analyzeTestResults(assert, done),
+    analyzeTestResults: analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -425,7 +426,7 @@ QUnit.test("Good settings : classes - several classes", function exec_test(asser
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: `${SEP}` }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
-    analyzeTestResults : analyzeTestResults(assert, done),
+    analyzeTestResults: analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -479,7 +480,7 @@ QUnit.test("Good settings : emphasis", function exec_test(assert) {
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
-    analyzeTestResults : analyzeTestResults(assert, done),
+    analyzeTestResults: analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },
@@ -533,7 +534,7 @@ QUnit.test("Good settings : basic", function exec_test(assert) {
   runTestScenario(inputs, testResults, makeButtonComponent(testData, { SEP: SEP }), {
     tickDuration: 5,
     waitForFinishDelay: 50,
-    analyzeTestResults : analyzeTestResults(assert, done),
+    analyzeTestResults: analyzeTestResults(assert, done),
     mocks: {
       DOM: makeMockDOMSource
     },

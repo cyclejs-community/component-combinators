@@ -41,19 +41,19 @@ export function getTeamDetailFormData(document) {
 //////
 // Remote repository data fetching
 export function fetchUserApplication(domainQuery, opportunityKey, userKey) {
-  return domainQuery.query(USER_APPLICATION, { userKey, opportunityKey })
+  return domainQuery.getCurrent(USER_APPLICATION, { userKey, opportunityKey })
 }
 
 export function fetchTeams(domainQuery, projectKey) {
-  return domainQuery.query(TEAMS, { projectKey });
+  return domainQuery.getCurrent(TEAMS, { projectKey });
 }
 
 export function fetchOpportunity(domainQuery, opportunityKey) {
-  return domainQuery.query(OPPORTUNITY, { opportunityKey })
+  return domainQuery.getCurrent(OPPORTUNITY, { opportunityKey })
 }
 
 export function fetchProject(domainQuery, projectKey) {
-  return domainQuery.query(PROJECTS, { projectKey })
+  return domainQuery.getCurrent(PROJECTS, { projectKey })
 }
 
 export function fetchUserApplicationModelData(sources, settings) {

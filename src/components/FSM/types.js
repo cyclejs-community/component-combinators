@@ -4,13 +4,11 @@ import {
 } from "ramda"
 import {
   isArrayOf, isBoolean, isComponent, isEmptyArray, isFunction, isHashMap, isObject, isObservable,
-  isStrictRecord, isString, isSources
-} from "../../utils"
+  isSources, isStrictRecord, isString
+} from "../../../utils/contracts/src/index"
+
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
-import { isNotEmpty, isSettings, isArrayUpdateOperations } from "../types"
-import {
-  isOpAdd, isOpCopy, isOpMove, isOpNone, isOpRemove, isOpReplace, isOpTest
-} from "../types"
+import { isArrayUpdateOperations, isNotEmpty, isSettings } from "../types"
 
 ////////
 // Types FSM
@@ -161,7 +159,7 @@ export const isDefaultActionResponseHandlerConfig = isStrictRecord({
 });
 
 // Type contracts
- export const isEventFactoryDomain = both(isSources, flip(isSettings));
+export const isEventFactoryDomain = both(isSources, flip(isSettings));
 export const isEventFactoryCodomain = isObservable;
 export const isActionResponse = T;
 export const isActionGuardDomain = both(isFsmModel, flip(isActionResponse));

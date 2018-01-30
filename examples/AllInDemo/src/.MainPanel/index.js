@@ -1,6 +1,5 @@
-import * as Rx from "rx";
 import { OnRoute } from "../../../../src/components/Router/Router"
-import { Div } from "../../../../src/utils"
+import { Div } from "../../../../utils/helpers/src/index"
 import { m } from "../../../../src/components/m/m"
 import { Project } from './..Project'
 import { ProjectsDashboard } from './..ProjectsDashboard'

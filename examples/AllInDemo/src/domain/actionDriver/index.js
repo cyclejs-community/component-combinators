@@ -1,6 +1,7 @@
-import { mapObjIndexed, tryCatch, values, isNil } from 'ramda';
+import { isNil, mapObjIndexed, tryCatch, values } from 'ramda';
 import * as Rx from "rx"
-import { assertContract, format, isPromise, isError } from "../../../../../src/utils"
+import { assertContract, isError, isPromise } from "../../../../../utils/contracts/src/index"
+import { format } from "../../../../../utils/debug/src/index"
 
 const $ = Rx.Observable;
 
@@ -18,7 +19,7 @@ function eventEmitterFactory(_, context, __) {
   return new Rx.Subject()
 }
 
-function isDomainAction(action){
+function isDomainAction(action) {
   return Boolean(!(isNil(action) || isNil(action.context) || isNil(action.command)))
 }
 

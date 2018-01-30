@@ -33,8 +33,9 @@ import { OnRoute } from '../src/components/Router/Router'
 import { m } from '../src/components/m/m'
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
-import { runTestScenario } from '../src/runTestScenario'
-import { convertVNodesToHTML, DOM_SINK, format } from '../src/utils'
+import { runTestScenario } from '../utils/testing/src/runTestScenario'
+import { convertVNodesToHTML, format } from "../utils/debug/src/index"
+import { DOM_SINK } from "../utils/helpers/src/index"
 import { pipe } from 'ramda'
 import { ROUTE_PARAMS } from "../src/components/Router/properties"
 

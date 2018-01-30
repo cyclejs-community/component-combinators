@@ -1,7 +1,7 @@
 import * as Rx from "rx";
-import { DOM_SINK } from "../../../../../../src/utils"
 import { div, strong } from "cycle-snabbdom"
 import { calendarTime, formatEfforts } from './helpers'
+import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 
 const $ = Rx.Observable;
 

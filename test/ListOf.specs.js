@@ -1,9 +1,10 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
-import { runTestScenario } from '../src/runTestScenario'
-import { convertVNodesToHTML, DOM_SINK, EmptyComponent, format } from '../src/utils'
-import { pipe, concat } from 'ramda'
+import { runTestScenario } from '../utils/testing/src/runTestScenario'
+import { DOM_SINK, EmptyComponent } from "../utils/helpers/src/index"
+import { convertVNodesToHTML, format } from "../utils/debug/src/index"
+import { concat, pipe } from 'ramda'
 import { ListOf } from "../src/components/ListOf/ListOf"
 
 const $ = Rx.Observable;
@@ -37,12 +38,12 @@ QUnit.module("Testing ListOf component", {})
 QUnit.test("main case - each child generates its actions unhinged - ListOf several items", function exec_test(assert) {
   const done = assert.async(2);
 
-  // TODO
   const childComponent = function childComponent1(sources, settings) {
     return {
       [DOM_SINK]: sources.DOM1
         .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
-        .map(x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
       a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
     }
   };
@@ -50,8 +51,8 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf sever
   const listOfComponent = ListOf({
     list: 'items',
     as: 'item',
-    items : [item1, item2, item3],
-    trace : 'listOfComponent'
+    items: [item1, item2, item3],
+    trace: 'listOfComponent'
   }, [
     EmptyComponent,
     childComponent,
@@ -118,14 +119,14 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf sever
     },
   }
 
-    runTestScenario(inputs, expected, listOfComponent, {
-      tickDuration: 3,
-      waitForFinishDelay: 10,
-      analyzeTestResults: analyzeTestResults(assert, done),
-      errorHandler: function (err) {
-        done(err)
-      }
-    })
+  runTestScenario(inputs, expected, listOfComponent, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
 });
 
 QUnit.test("main case - each child generates its actions unhinged - ListOf 1 item only", function exec_test(assert) {
@@ -136,7 +137,8 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf 1 ite
     return {
       [DOM_SINK]: sources.DOM1
         .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
-        .map(x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
       a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
     }
   };
@@ -144,8 +146,8 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf 1 ite
   const listOfComponent = ListOf({
     list: 'items',
     as: 'item',
-    items : [item1],
-    trace : 'listOfComponent'
+    items: [item1],
+    trace: 'listOfComponent'
   }, [
     EmptyComponent,
     childComponent,
@@ -208,7 +210,8 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf no it
     return {
       [DOM_SINK]: sources.DOM1
         .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
-        .map(x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
       a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
     }
   };
@@ -216,8 +219,8 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf no it
   const listOfComponent = ListOf({
     list: 'items',
     as: 'item',
-    items : [],
-    trace : 'listOfComponent'
+    items: [],
+    trace: 'listOfComponent'
   }, [
     EmptyComponent,
     childComponent,
@@ -237,12 +240,12 @@ QUnit.test("main case - each child generates its actions unhinged - ListOf no it
     // First <div/> is the empty component, surrounding div is the ListOf wrapper, same as if
     // there would be x > 0 items in the list
   const expected = {
-    DOM: {
-      outputs: ["<div><div></div></div>"],
-      successMessage: 'sink DOM produces the expected values',
-      transform: pipe(convertVNodesToHTML)
-    },
-  }
+      DOM: {
+        outputs: ["<div><div></div></div>"],
+        successMessage: 'sink DOM produces the expected values',
+        transform: pipe(convertVNodesToHTML)
+      },
+    }
 
   runTestScenario(inputs, expected, listOfComponent, {
     tickDuration: 3,
@@ -262,7 +265,8 @@ QUnit.test("main case - children sinks are merged at ListOf level - ListOf sever
     return {
       [DOM_SINK]: sources.DOM1
         .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
-        .map(x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
       a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
     }
   };
@@ -270,14 +274,15 @@ QUnit.test("main case - children sinks are merged at ListOf level - ListOf sever
   const listOfComponent = ListOf({
     list: 'items',
     as: 'item',
-    items : [item1, item2],
-    trace : 'listOfComponent',
-    buildActionsFromChildrenSinks : {
-      a : function (ownSink, childrenSinks, settings){
-        return $.merge(childrenSinks.map(sink => sink.map(concat('buildActionsFromChildrenSinks: '))))
+    items: [item1, item2],
+    trace: 'listOfComponent',
+    buildActionsFromChildrenSinks: {
+      a: function (ownSink, childrenSinks, settings) {
+        return $.merge(childrenSinks.map(
+          sink => sink.map(concat('buildActionsFromChildrenSinks: '))))
       }
     },
-    actionsMap : {'a' : 'A'}
+    actionsMap: { 'a': 'A' }
   }, [
     EmptyComponent,
     childComponent,

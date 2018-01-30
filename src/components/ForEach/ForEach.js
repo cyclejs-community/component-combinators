@@ -1,9 +1,11 @@
 import {
-  assertContract, format, hasAtLeastOneChildComponent, isObservable, isString
-} from "../../utils"
+  assertContract, hasAtLeastOneChildComponent, isObservable, isString
+} from "../../../utils/contracts/src/index"
+import { format } from "../../../utils/debug/src/index"
 import { m } from '../m/m'
 import { map, mergeAll } from 'ramda'
 import * as Rx from "rx";
+
 const $ = Rx.Observable;
 
 function isForEachSettings(sources, settings) {
@@ -21,7 +23,8 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
   let cachedSinks = null;
 
   const switchSource = sources[from];
-  // assertContract(isValidForEachSettings, [sources, settings], `ForEach > computeSinks > isValidForEachSettings : source ${from} not found in sources!`);
+  // assertContract(isValidForEachSettings, [sources, settings], `ForEach > computeSinks >
+  // isValidForEachSettings : source ${from} not found in sources!`);
 
   const shouldSwitch$ = switchSource
     .do(function (incomingValue) {
@@ -72,7 +75,7 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
 // Spec
 const forEachSpec = {
   computeSinks: computeSinks,
-  checkPreConditions : isValidForEachSettings
+  checkPreConditions: isValidForEachSettings
 };
 
 export function ForEach(forEachSettings, componentTree) {

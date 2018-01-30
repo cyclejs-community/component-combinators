@@ -2,10 +2,12 @@
 
 import { m } from '../m/m'
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, emitNullIfEmpty, hasAtLeastOneChildComponent,
-  isArrayOf, isFunction, isSource, isString, isVNode, removeEmptyVNodes, removeNullsFromArray,
-  unfoldObjOverload
-} from '../../utils'
+  assertContract, checkAndGatherErrors, hasAtLeastOneChildComponent, isArrayOf, isFunction,
+  isSource, isString, isVNode
+} from "../../../utils/contracts/src/index"
+import { removeNullsFromArray, unfoldObjOverload } from "../../../utils/utils/src/index"
+import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../utils/helpers/src/index"
+
 import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'
 import { SWITCH_SOURCE } from "./properties"
@@ -105,8 +107,8 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
   eqFn = defaultTo(cfg.defaultEqFn, eqFn);
 
   const shouldSwitch$ = switchSource
-    .map(x => ({isMatching : eqFn(x, when), incoming : x}))
-    .do(function ({isMatching, incoming}) {
+    .map(x => ({ isMatching: eqFn(x, when), incoming: x }))
+    .do(function ({ isMatching, incoming }) {
       if (isMatching) {
         console.info(`Found a match (${when}) for Case branch ${settings.trace}`)
         console.info(`Computing the corresponding sinks`)
@@ -130,7 +132,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
 
   function makeSwitchedSink(sinkName) {
     return {
-      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache({isMatching, incoming}) {
+      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache({ isMatching, incoming }) {
         let cached$;
 
         if (isMatching) {

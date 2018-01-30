@@ -1,8 +1,9 @@
 import {
-  bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString, toBoolean
-} from "../utils"
+  bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString
+} from "../../utils/contracts/src/index"
+import { toBoolean } from "../../utils/utils/src/index"
 import { m } from "./m/m"
-import { both, complement, either, flatten, prop, reduce, tap, T, F, pipe } from "ramda"
+import { both, complement, either, flatten, pipe, prop, reduce, tap } from "ramda"
 import * as Rx from "rx"
 import { div } from "cycle-snabbdom"
 
@@ -64,7 +65,8 @@ const checkButtonSettings = bothE(
     either(
       // NOTE : We must use toBoolean here because ramda's both actually does not return a boolean
       // And here we use types to detect whether we have an error message or a passing predicate
-      pipe(both(prop('listenTo'), pipe(prop('listenOn'), tap(x => console.log('tap', x)))), toBoolean),
+      pipe(both(prop('listenTo'), pipe(prop('listenOn'), tap(
+        x => console.log('tap', x)))), toBoolean),
       complement(prop('listenTo'))
     ),
     `If property listenTo is set (events to listen to), then property listenOn must also be set (selector to listen on).`

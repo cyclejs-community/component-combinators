@@ -1,6 +1,6 @@
-import { DOM_SINK } from "../../../src/utils"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import * as Rx from "rx";
-import { a, div, i, img, span,p } from 'cycle-snabbdom'
+import { a, div, i, img, p, span } from 'cycle-snabbdom'
 
 const $ = Rx.Observable;
 

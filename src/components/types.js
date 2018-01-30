@@ -1,12 +1,13 @@
-import { both, complement, cond, either, isEmpty, T, equals } from "ramda"
-import { isFunction, isString, isObject, isStrictRecord } from "../utils"
-import { isArrayOf, isEmptyArray } from "../../src/utils"
+import { both, complement, cond, either, equals, isEmpty, T } from "ramda"
+import {
+  isArrayOf, isEmptyArray, isObject, isStrictRecord, isString
+} from "../../utils/contracts/src/index"
 
 export const isNotEmpty = complement(isEmpty);
-export const isComponent = isFunction;
 export const isSettings = T;
+
 // dont want to go through the trouble of typing this as it is notoriously shapeshifting
-export function isEventName (x){
+export function isEventName(x) {
   return both(isString, isNotEmpty)(x);
 }
 

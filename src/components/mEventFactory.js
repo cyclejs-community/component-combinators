@@ -1,10 +1,12 @@
 import {
-  checkAndGatherErrors, eitherE, getSinkNamesFromSinksArray, isFunction, isHashMap, isStrictRecord,
-  isStrictRecordE, isHashMapE, hasNoCommonValues,
-  isString, preventDefault, removeNullsFromArray, assertContract, hasNoDuplicateKeys, format, isNewKey
-} from "../utils"
+  assertContract, checkAndGatherErrors, eitherE, hasNoCommonValues, hasNoDuplicateKeys, isFunction,
+  isHashMapE, isNewKey, isStrictRecordE, isString
+} from "../../utils/contracts/src/index"
+import { getSinkNamesFromSinksArray, } from "../../utils/helpers/src/index"
+import { format } from "../../utils/debug/src/index"
+import { preventDefault, removeNullsFromArray } from "../../utils/utils/src/index"
 import { defaultMergeSinkFn, m } from "./m/m"
-import { flatten, merge, isNil, keys, reduce, T } from "ramda"
+import { flatten, isNil, keys, merge, reduce, T } from "ramda"
 import { isEventName } from "./types"
 
 // No further argument type checking here
@@ -34,9 +36,9 @@ function hasEventsProperty(sources, settings) {
 }
 
 const checkEventFactoryPreConditions = checkAndGatherErrors([
-    [hasEventsProperty, `Settings parameter must have an events property!`],
-    [isEventFactoryEventSettings, `settings' events property has unexpected shape!`]
-  ], `checkEventFactoryPreConditions : fails!`);
+  [hasEventsProperty, `Settings parameter must have an events property!`],
+  [isEventFactoryEventSettings, `settings' events property has unexpected shape!`]
+], `checkEventFactoryPreConditions : fails!`);
 
 /////
 // Utility functions

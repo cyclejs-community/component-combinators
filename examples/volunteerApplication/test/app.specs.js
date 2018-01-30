@@ -1,12 +1,13 @@
 import * as QUnit from "qunitjs"
-import { runTestScenario } from "../../../src/runTestScenario"
+import { runTestScenario } from "../../../utils/testing/src/runTestScenario"
 import * as Rx from "rx"
 import { pipe } from "ramda"
 import { ProcessApplication } from "../src/processApplication/index"
-import { makeMockDOMSource } from "../../../src/mocks/mockDOM"
-import { makeMockDocumentSource } from "../../../src/mocks/mockDocument"
-import { makeDomainQuerySource } from "../../../src/mocks/mockDomainQuery"
-import { convertVNodesToHTML, noop, stripHtmlTags } from "../../../src/utils"
+import { makeMockDOMSource } from "../../../utils/testing/src/mocks/mockDOM"
+import { makeMockDocumentSource } from "../../../utils/testing/src/mocks/mockDocument"
+import { makeDomainQuerySource } from "../../../utils/testing/src/mocks/mockDomainQuery"
+import { convertVNodesToHTML} from "../../../utils/debug/src/index"
+import { noop, stripHtmlTags } from "../../../utils/utils/src/index"
 import {
   OPPORTUNITY, OPPORTUNITY_REF, PROJECTS, PROJECTS_REF, TEAMS, TEAMS_REF, USER_APPLICATION
 } from "../src/domain/index"
@@ -268,6 +269,8 @@ QUnit.test("Displays UI", function exec_test(assert) {
       [`document!value@${USER_APPLICATION_FORM_INPUT_ZIPCODE_SELECTOR}`]: subjectFactory,
       [`document!value@${USER_APPLICATION_FORM_INPUT_OPP_ANSWER_SELECTOR}`]: subjectFactory,
       [`document!value@${USER_APPLICATION_FORM_INPUT_TEAM_ANSWER_SELECTOR}`]: subjectFactory,
+      // TODO : test that with a replay subject instead of normal subject
+      // TODO : add test for replay subjects in runTestScenario
       [`domainQuery!${mockUserAppParams}@${USER_APPLICATION}`]: subjectFactory,
       [`domainQuery!${mockTeamsParams}@${TEAMS}`]: subjectFactory,
       [`domainQuery!${mockOpportunityParams}@${OPPORTUNITY}`]: subjectFactory,

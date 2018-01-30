@@ -1,7 +1,9 @@
 import {
-  assertContract, checkAndGatherErrors, DOM_SINK, format, hasAtLeastOneChildComponent, isArrayOf,
-  isObservable, isString
-} from "../../utils"
+  assertContract, checkAndGatherErrors, hasAtLeastOneChildComponent, isArrayOf, isObservable,
+  isString
+} from "../../../utils/contracts/src/index"
+import { format, } from "../../../utils/debug/src/index"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import { m } from "../m/m"
 import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
@@ -24,7 +26,7 @@ function hasRouteProperty(sources, settings) {
 
 function hasRouteSourceProperty(sources, settings) {
   return Boolean(settings && 'routeSource' in settings
-      && isString(settings.routeSource) && settings.routeSource.length > 0
+    && isString(settings.routeSource) && settings.routeSource.length > 0
     && isObservable(sources[settings.routeSource]))
 }
 

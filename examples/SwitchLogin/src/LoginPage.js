@@ -1,7 +1,10 @@
 import * as Rx from "rx";
 import { div, form, h2, i, img, input } from 'cycle-snabbdom'
-import { assertContract, convertVNodesToHTML, DOM_SINK } from "../../../src/utils"
-import { T, pipe, always } from "ramda"
+import { assertContract } from "@rxcc/contracts"
+import { DOM_SINK } from "@rxcc/helpers"
+import { convertVNodesToHTML } from "@rxcc/debug"
+
+import { always, pipe, T } from "ramda"
 import { LOG_IN } from "../drivers/auth"
 
 const $ = Rx.Observable;

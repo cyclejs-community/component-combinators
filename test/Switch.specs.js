@@ -1,9 +1,11 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { div, h } from 'cycle-snabbdom'
-import { runTestScenario } from '../src/runTestScenario'
+import { runTestScenario } from '../utils/testing/src/runTestScenario'
 import { Case, Switch } from '../src/components/Switch/Switch'
-import { convertVNodesToHTML, DOM_SINK } from '../src/utils'
+import { DOM_SINK } from "../utils/helpers/src/index"
+import { convertVNodesToHTML } from "../utils/debug/src/index"
+
 import { pipe } from 'ramda'
 
 const $ = Rx.Observable;
@@ -72,7 +74,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
 
   const switchComponent = Switch({
     on: 'sweatch$',
-    as : 'switched',
+    as: 'switched',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [CaseContainer, [
     Case({ when: false }, [childComponent3]),
@@ -118,7 +120,7 @@ QUnit.test("main cases - 1 match - 3 cases - switch on source - with case contai
         "<div class=\"parent\"><div><span>Component 1 : f</span><span>Component 2 : c</span></div></div>",
         "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : c</span></div></div>",
         "<div class=\"parent\"><div><span>Component 1 : a</span><span>Component 2 : d</span></div></div>"
-      ]      ,
+      ],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
       transform: pipe(convertVNodesToHTML)
@@ -196,7 +198,8 @@ QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case cont
   };
   const childComponent4 = function childComponent4(sources, settings) {
     return {
-      c: sources.userAction$.map(x => `Component4 - user action : ${x} | switched on : ${settings.switchedOn}`)
+      c: sources.userAction$.map(
+        x => `Component4 - user action : ${x} | switched on : ${settings.switchedOn}`)
     }
   };
   const CaseContainer = function CaseContainer(sources, settings) {
@@ -207,7 +210,7 @@ QUnit.test("main cases - 0-1 match - 3 cases - switch on source - with case cont
 
   const switchComponent = Switch({
     on: 'sweatch$',
-    as : 'switchedOn',
+    as: 'switchedOn',
     sinkNames: ['DOM', 'a', 'b', 'c']
   }, [CaseContainer, [
     Case({ when: false }, [childComponent3]),

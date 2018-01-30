@@ -1,5 +1,6 @@
 import { OnRoute } from "../../../src/components/Router/Router"
-import { DOM_SINK, format } from "../../../src/utils"
+import { format } from "../../../utils/debug/src/index"
+import { DOM_SINK } from "../../../utils/helpers/src/index"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
 import { AspirationalPageHeader, Card, CardDetail } from "./AspirationalPage"

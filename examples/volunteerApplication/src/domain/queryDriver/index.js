@@ -26,11 +26,11 @@ export function makeDomainQueryDriver(repository, config) {
     void sink;
 
     return {
-      query: function query(domainObject, params) {
+      getCurrent: function query(domainObject, params) {
           const fnToExec = config[domainObject].get;
           const wrappedFn = tryCatch(fnToExec, errorHandler);
 
-          return $.fromPromise(wrappedFn(repository, params));
+          return $.fromPromise(wrappedFn(repository, domainObject, params));
       }
     }
   }

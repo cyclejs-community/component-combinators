@@ -1,4 +1,4 @@
-import { assertContract } from '../../../../src/utils';
+import { assertContract } from "../../../../utils/contracts/src/index"
 import { checkUserApplicationContracts } from './contracts';
 
 export const OPPORTUNITY = 'OPPORTUNITY';
@@ -20,7 +20,7 @@ function makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_RE
 
 export const domainObjectsQueryMap = {
   [PROJECTS]: {
-    get: function getProjectByProjectKey(repository, params) {
+    get: function getProjectByProjectKey(repository, context, params) {
       const { projectKey } = params;
       const localforageKey = [PROJECTS_REF, projectKey].join(KEY_SEP);
 
@@ -28,7 +28,7 @@ export const domainObjectsQueryMap = {
     }
   },
   [OPPORTUNITY]: {
-    get: function getOpportunityByOppKey(repository, params) {
+    get: function getOpportunityByOppKey(repository, context, params) {
       const { opportunityKey } = params;
       const localforageKey = [OPPORTUNITY_REF, opportunityKey].join(KEY_SEP);
 
@@ -36,7 +36,7 @@ export const domainObjectsQueryMap = {
     }
   },
   [TEAMS]: {
-    get: function getTeamsByProjectKey(repository, params) {
+    get: function getTeamsByProjectKey(repository, context, params) {
       const { projectKey } = params;
       const localforageKey = [TEAMS_REF, projectKey].join(KEY_SEP);
 
@@ -44,7 +44,7 @@ export const domainObjectsQueryMap = {
     }
   },
   [USER_APPLICATION]: {
-    get: function getUserAppByOppAndUserKeys(repository, params) {
+    get: function getUserAppByOppAndUserKeys(repository, context, params) {
       const { opportunityKey, userKey } = params;
       const localforageKey = makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey);
 
@@ -65,7 +65,7 @@ export const domainActionsConfig = {
       const { userKey, opportunityKey } = payload;
       const localforageKey = makeUserAppKey(USER_APPLICATION_REF, USERS_REF, userKey, OPPORTUNITY_REF, opportunityKey);
 
-      console.log('update user application:', context, localforageKey , payload);
+      console.log('update user application:', context, localforageKey, payload);
 
       return repository.setItem(localforageKey, payload);
     }

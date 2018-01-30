@@ -1,7 +1,7 @@
 import * as QUnit from "qunitjs"
-import { map, reduce, always, clone, curry, identity, flatten, match, T, F, __ } from "ramda"
+import { curry } from "ramda"
 import * as Rx from "rx"
-import { decorateWithOne, makeFunctionDecorator, decorateWith } from "../src/utils"
+import { decorateWith, decorateWithOne, makeFunctionDecorator } from "../utils/utils/src/index"
 
 let $ = Rx.Observable;
 
@@ -83,7 +83,7 @@ QUnit.test(
     const eventName = 'testEv';
 
     function tapEventSource(eventName) {
-      return function (result, fnToDecorateName,fnToDecorate) {
+      return function (result, fnToDecorateName, fnToDecorate) {
         return result.tap(_ => {
           testArr.push(`value: ${_}`);
         })
