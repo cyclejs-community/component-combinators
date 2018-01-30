@@ -11,6 +11,12 @@
   "jspm": {
     "main": "dist/rxcc.js"
   },
+  "files": [
+    "lib/",
+    "src/",
+    "dist/",
+    "dist-node/"
+  ],
   "browserify": {
     "transform": [
       [
@@ -36,7 +42,9 @@
     "test-no-watch": "browserify -d dist-node-test | derequire > test/test-bundle.js",
     "test": "watchify -d dist-node-test -o test/test-bundle.js -v",
     "wbuild": "webpack --display-error-details --progress --colors --watch --env dev",
-    "wrelease": "webpack --display-error-details --progress --colors --watch --env build"
+    "wrelease": "webpack --display-error-details --progress --colors --watch --env build",
+    "rollup": "./node_modules/.bin/rollup -c",
+    "wrollup": "./node_modules/.bin/rollup -c --environment NODE_ENV:production"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
