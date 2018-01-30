@@ -1,5 +1,5 @@
 {
-  "name": "rx-component-combinators",
+  "name": "@rxcc/components",
   "version": "0.3.0",
   "description": "Library providing combinators for reactive components",
   "author": "Olivier Couriol",
