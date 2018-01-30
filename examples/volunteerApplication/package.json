@@ -55,7 +55,6 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "fmt-obj": "^2.0.0",
     "minimist": "^1.2.0",
-    "node-sass": "^3.4.2",
     "nodemon": "^1.9.2",
     "run-sequence": "^1.1.5",
     "surge": "^0.17.7",
