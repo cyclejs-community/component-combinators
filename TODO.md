@@ -45,10 +45,15 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 
 # Build/devop
 - TODO : get all working with latest version of snabdomm, and cycle-run etc.
-- update the tests to the new imports!!
 - InjectStateInSinks to remove
-- delete utils and recheck everything
-- reissue patch for all utils (I modified format)
+- size build
+  - rx.all -> rx-lite
+  - webpack with tree-shaking?
+  - No, rather rollup but put every used modules in es6
+    - cycle snabbdom, snabbdom-to-html the first ones
+    - lodash remove, kebabCase etc. (I think it was json-patch? or where was it?)
+    - fast-json-patch too to ES6 modules
+    - pretty format and FSM are also big, but nothing to do about it, maybe separate FSM out?
 
 # Learn
 - review git rules 
