@@ -55,6 +55,13 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
     - fast-json-patch too to ES6 modules
     - pretty format and FSM are also big, but nothing to do about it, maybe separate FSM out?
 
+# Release
+- rewrite README.md
+- put myself in position of first reader and explain/sell better
+  - show JSX like syntax?
+  - use Andre's abstraction (introduction to ractive programming) about rxjs
+  - or wait to have one picture from a generated log
+
 # Learn
 - review git rules 
  
