@@ -23,15 +23,16 @@ This was the motivation behind my dedicating my (quite) limited free time to inv
  componentization, visual debugging, testing, concurrency control. I am happy that finally the 
  first step is in a sufficient state of progress that it can be shared. 
  
- That first step is a componentization model for cyclejs, that builds upon the original idea of a 
- component as a function and extends it further. Components are (mostly) what they used to 
+ **That first step is a componentization model for cyclejs**, that builds upon the original idea 
+ of a component as a function and extends it further. Components are (mostly) what they used to 
  be. Components can however now be parameterized through a dedicated argument `settings`, 
- capturing the component's customization concern. Components, importantly, can be built through
- a series of component combinators which eliminate a lot of stream noisy, repetitive code. Those component combinators have been extracted and 
+ capturing the **component's customization concern**. Components, importantly, can be built through
+ a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
+  component combinators have been extracted and 
   abstracted from the 20K lines of code, so they should cover a large number of cases that one 
   encounters. The proposed component model could be seen in many ways a generalization of that of 
-  `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, without any modification of 
-   cyclejs internals. 
+  `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any 
+  modification of cyclejs internals.** 
 
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
 combinators only work with rxjs, the version of cycle used brings us back to the time 
@@ -115,9 +116,7 @@ does he have to check while debugging that the error does not come from an erron
 handling. Provided that the `Switch` combinator has been properly implemented and tested, the 
 corresponding concern is out of the way.
 - A debugging developer can narrow down a cause of misbehaviour for example by selectively 
-modifying arguments, deleting branches of the component tree, stubbing components, etc. 
-Reasoning, investigating can be made at a component level first before, if necessary, going at 
-the lower stream level.
+modifying arguments, deleting branches of the component tree, stubbing components, etc. That is, reasoning, investigating can be made at a component level first before, if necessary, going at the lower stream level.
 
 Let's seee another example.
 
@@ -219,7 +218,7 @@ from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` 
 I hope that by now, even if you do not understand the full syntax and semantics of the component 
 combinators, you realize somewhat the merits of using a component model, under which an application
  is written as a component tree, where components are glued with component combinators. I certainly 
-think it is simpler to write, and more importantly simpler to read, maintain and debug.
+think it is simpler to write, and more importantly, simpler to read, maintain and debug.
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the 
 20K-line cyclejs codebase.
@@ -248,7 +247,7 @@ The proposed library has the following combinators :
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot|
-| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. m basically traverses a component tree, applying reducing functions along the way.  |
+| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
@@ -323,7 +322,7 @@ The current roadmap for the v0.4 stands as :
 - Core
     - [x] component model
     - [x] DOM merge with slot assignment (a la web component)
-    - [x] documentation slot
+    - [x] documentation for a-la-web-component slot mechanism
       - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or 
      https://skyronic-Demo.com/blog/vue-slots-example 
     - [x] documentation combinators
@@ -331,7 +330,7 @@ The current roadmap for the v0.4 stands as :
       - [x] select static site generator (Jekyll, Hexo, Hugo)
       - [x] blog site architecture
       - [x] theoretical underpinnings
-    - [x] sample application taken from Angular2 book
+    - [x] implement sample application taken from Angular2 book
 - Testing
     - [x] Testing library `runTestScenario`
     - [x] Mocks for DOM and document driver
@@ -407,4 +406,4 @@ Contribution is **welcome** in the following areas :
 - reducing build size
 
 # Known issues
-TODO
+That is a paragraph that I am sure will grow with time :-)
