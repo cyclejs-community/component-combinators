@@ -1,4 +1,6 @@
-# Motivation ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://img.shields.io/badge/license-MIT-blue.svg)
+
+# Motivation 
 Around 18 months ago, while working on what is the largest cyclejs codebase I know of 
 (~20K lines of code), I realized how hard it was to actually make sense quickly of a large 
 cycle-js application. Focusing on the issues derived largely from cyclejs usage :
