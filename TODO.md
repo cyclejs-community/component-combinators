@@ -51,7 +51,7 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
   - webpack with tree-shaking?
   - No, rather rollup but put every used modules in es6
     - cycle snabbdom, snabbdom-to-html the first ones
-    - lodash remove, kebabCase etc. (I think it was json-patch? or where was it?)
+    - lodash remove, kebabCase etc. (cycle-snabbdom), takes LOT\S of space
     - fast-json-patch too to ES6 modules
     - pretty format and FSM are also big, but nothing to do about it, maybe separate FSM out?
 

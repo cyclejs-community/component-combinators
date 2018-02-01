@@ -367,13 +367,19 @@ The following packages are available :
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | @rxcc/components | Contains the core component combinators                                                                                              |
 | @rxcc/drivers    | Exposes a few useful drivers, in particular drivers to handle command and queries on a domain, and read the DOM state                |
+| @rxcc/helpers    | Component utility functions                                                                                                          |
+| @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
 | @rxcc/debug      | Utilities functions addressing the debugging concern. In particular, tracing, formatting, converting functions are proposed          |
 | @rxcc/contracts  | A bunch of predicates and utility functions to handle contract checking and assertions                                               |
 | @rxcc/utils      | Miscellaneous utility functions which did not belong in any specific category, but still deserved a separate package for DRY reasons |
-| @rxcc/helpers    | Component utility functions                                                                                                          |
-| @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
 |                  |                                                                                                                                      |
 
+Any of those can be installed with `npm`. For instance :
+
+```javascript
+npm install @rxcc/components
+```
+ 
 # Tests
 Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
 also the possbility in a debugging session to actually display some components' output directly in 
