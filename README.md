@@ -28,8 +28,8 @@ This was the motivation behind my dedicating my (quite) limited free time to inv
  **That first step is a componentization model for cyclejs**, that builds upon the original idea 
  of a component as a function and extends it further. Components are (mostly) what they used to 
  be. Components can however now be parameterized through a dedicated argument `settings`, 
- capturing the **component's customization concern**. Components, importantly, can be built through
- a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
+ capturing the **component's parameterization concern**. Components, importantly, can be built 
+ through a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
   component combinators have been extracted and 
   abstracted from the 20K lines of code, so they should cover a large number of cases that one 
   encounters. The proposed component model could be seen in many ways a generalization of that of 
@@ -359,6 +359,9 @@ The current roadmap for the v0.4 stands as :
     - [x] sequential composition combinator (`Pipe`)
 
 # Installation
+## Packages
+TODO : the list of @rxcc stuff
+
 ## Running tests
 Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
 also the possbility in a debugging session to actually display some components' output directly in 
