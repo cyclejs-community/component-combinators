@@ -2,7 +2,7 @@
 
 # Motivation 
 Around 18 months ago, while working on what is the largest cyclejs codebase I know of 
-(~20K lines of code), I realized how hard it was to actually make sense quickly of a large 
+(~20K lines of code), I realized how hard it was to actually make sense **quickly** of a large 
 cycle-js application. Focusing on the issues derived largely from cyclejs usage :
 
 - a large portion of the code was stream handling originating from the use of components and the 
@@ -48,7 +48,7 @@ Each combinator features (and if not, will feature) a dedicated non-trivial exam
 documented and tested. A sample application is available to showcase how combinators work 
 together with components to build a non-trivial application.
 
-A series of articles covers the theoretical underpinning in more details (read 
+**A series of articles covers the theoretical underpinning** in more details (read 
 chronologically, they constitute a long read, but I think they are very interesting). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the 
 step-by-step building of the show-cased sample application. A shorter introduction can be found in the `README` for the repository. 
 
@@ -118,7 +118,7 @@ does he have to check while debugging that the error does not come from an erron
 handling. Provided that the `Switch` combinator has been properly implemented and tested, the 
 corresponding concern is out of the way.
 - A debugging developer can narrow down a cause of misbehaviour for example by selectively 
-modifying arguments, deleting branches of the component tree, stubbing components, etc. That is, reasoning, investigating can be made at a component level first before, if necessary, going at the lower stream level.
+modifying arguments, deleting branches of the component tree, stubbing components, etc. That is, reasoning, investigating can be made at a component level first, before, if necessary, going at the lower stream level.
 
 Let's seee another example.
 
@@ -266,6 +266,14 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
 
 # Roadmaps
+
+<details>
+  <summary>Roadmap v0.5</summary>
+  <p>Requires a computer running an operating system. The computer
+  must have some memory and ideally some kind of long-term storage.
+  An input device as well as some form of output device is
+  recommended.</p>
+</details>
 
 ## Roadmap v0.5
 The core target of this release will be to prepare the architecture for visual tracing, and 
