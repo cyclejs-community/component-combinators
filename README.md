@@ -38,7 +38,8 @@ This was the motivation behind my dedicating my (quite) limited free time to inv
 
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
 combinators only work with rxjs, the version of cycle used brings us back to the time 
-when cyclejs could still be considered a library (vs. a framework), build is not optimized, etc. 
+when cyclejs could still be considered a library (vs. a framework), build is not optimized, 
+`console.log` are all over the place, etc. 
 
 It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on 
 the **interdependence** of components that defines the user interface **logic**, rather than having
@@ -217,8 +218,8 @@ export const App = InjectSources({
 The reactive update (on `fetchedCardsInfo$`) and iteration logic (on the array of items received 
 from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` combinators.
 
-I hope that by now, even if you do not understand the full syntax and semantics of the component 
-combinators, you realize somewhat the merits of using a component model, under which an application
+While the full syntax and semantics of the component combinators haven't been exposed, hopefully 
+the examples serve to portray the merits of using a component model, under which an application
  is written as a component tree, where components are glued with component combinators. I certainly 
 think it is simpler to write, and more importantly, simpler to read, maintain and debug.
 
@@ -289,7 +290,7 @@ The current roadmap for the v0.5 stands as :
     - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
     materializecss, etc.
 - Demo
-  - [ ] demo from Angular2 book on github site
+  - [ ] continue to complete demo from Angular2 book on github site
   - [ ] [Real world app?](https://github.com/gothinkster/realworld)
 - Testing
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
