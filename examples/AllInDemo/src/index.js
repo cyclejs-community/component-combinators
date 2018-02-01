@@ -11,8 +11,8 @@ import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { inMemoryStoreActionsConfig, inMemoryStoreQueryMap } from './inMemoryStore';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver';
-import { focusDriver } from '../../../src/drivers/focusDriver';
-import { documentDriver } from '../../../src/drivers/documentDriver';
+import { focusDriver } from '../../../drivers/src/focusDriver';
+import { documentDriver } from '../../../drivers/src/documentDriver';
 import {
   initLocallyPersistedState, initLocalNonPersistedState, initRemotelyPersistedState, initRepository
 } from './init'

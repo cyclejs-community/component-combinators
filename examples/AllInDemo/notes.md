@@ -15,7 +15,6 @@ HOW IT WORKS:
         - `EventsFactory :: Sources -> Settings -> Events` in case we need to make events from other previously made events (! be careful with the share and replay semantics there!!)
     - `MakeActions :: MakeActionsSettings -> [Component] -> Component` 
       - `makeAction` is a pure function
-    - we skip the intent intermediary step (often mapping one to one to action)
     - `ev.preventDefault` SHOULD be in the event part, not the action part! We want  `makeAction` to be a pure function
 
 HOW WOULD I DO A TABBED COMPONENT? ALSO STEP COMPONENT!

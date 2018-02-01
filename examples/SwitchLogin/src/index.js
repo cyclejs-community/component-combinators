@@ -37,8 +37,8 @@ localForage.config ({
   storeName: 'demo', // Should be alphanumeric, with underscores.
   description: 'emulation of remote storage in local for demo storage needs'
 });
-localForage.clear()
-  .then(() => localForage.keys())
+
+localForage.keys()
   .then(keys => Promise.all(keys.map(key => {
       return localForage.getItem(key).then(value => ({ [key]: value }))
     }
@@ -68,7 +68,4 @@ localForage.clear()
   .catch(function (err) {
     console.log(`error while initializing database`, err);
   });
-
-// NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/
-// ~~ attributes -> attrs
 

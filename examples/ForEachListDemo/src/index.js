@@ -32,10 +32,10 @@ function documentDriver(_) {
 }
 
 // Initialize the database - for this demo I do not use local storage but I keep this anyways
-localForage._config = {
+localForage.config = {
   driver: localForage.LOCALSTORAGE, // Force local storage;
   name: 'myApp',
-  storeName: 'demo', // Should be alphanumeric, with underscores.
+  storeName: 'ForEach_Demo', // Should be alphanumeric, with underscores.
   description: 'emulation of remote storage in local for demo storage needs'
 };
 
