@@ -2,5 +2,5 @@
 This is a demonstration illustrating the use of a `ForEach` and `ListOf` combinator components.
 
 # Component documentation
-- [ForEach combinator](../../documentation/ForEach.md)
-- [ListOf combinator](../../documentation/ListOf.md)
+- [ForEach combinator](http://brucou.github.io/projects/component-combinators/foreach/)
+- [ListOf combinator](http://brucou.github.io/projects/component-combinators/listof/)
