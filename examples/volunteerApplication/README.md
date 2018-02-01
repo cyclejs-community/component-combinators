@@ -8,7 +8,7 @@ This is a demonstration illustrating the use of a FSM combinator component to di
 ![demo](assets/images/animated_demo.gif)
 
 # Component documentation
-[Extended Finite State Machine](../../documentation/EFSM.md)
+[Extended Finite State Machine](http://brucou.github.io/projects/component-combinators/efsm/)
 
 # Running it
 - `npm install`
