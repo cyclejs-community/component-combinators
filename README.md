@@ -98,11 +98,11 @@ export const App =
 The same code could also be written in a dedicated DSL :
 
 ```javascript
-export const App = `
-  Switch On convertAuthToIsLoggedIn (As switchedOn)
-    When IS_NOT_LOGGED_IN :
+export const App = dsl`
+  Switch On ${convertAuthToIsLoggedIn} (As switchedOn)
+    When ${IS_NOT_LOGGED_IN} :
       LoginPage {redirect:'/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e'}
-    When IS_LOGGED_IN :
+    When ${IS_LOGGED_IN} :
       MainPage
 `
 ```
