@@ -361,9 +361,20 @@ The current roadmap for the v0.4 stands as :
 
 # Installation
 ## Packages
-TODO : the list of @rxcc stuff
+The following packages are available :
 
-## Running tests
+| Package          | Description                                                                                                                          |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| @rxcc/components | Contains the core component combinators                                                                                              |
+| @rxcc/drivers    | Exposes a few useful drivers, in particular drivers to handle command and queries on a domain, and read the DOM state                |
+| @rxcc/debug      | Utilities functions addressing the debugging concern. In particular, tracing, formatting, converting functions are proposed          |
+| @rxcc/contracts  | A bunch of predicates and utility functions to handle contract checking and assertions                                               |
+| @rxcc/utils      | Miscellaneous utility functions which did not belong in any specific category, but still deserved a separate package for DRY reasons |
+| @rxcc/helpers    | Component utility functions                                                                                                          |
+| @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
+|                  |                                                                                                                                      |
+
+# Tests
 Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
 also the possbility in a debugging session to actually display some components' output directly in 
 the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in 
@@ -375,8 +386,8 @@ the root directory, type :
 - `npm run test`
 - then open with a local webserver the `index.html` in `test` directory 
 
-## Demos
-### Example application
+# Demos
+## Example application
 The example application is taken from the book [Mastering Angular2 components](https://www.packtpub.com/web-development/mastering-angular-2-components). Cf. [screenshot](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/#example) here.
 
 - sits in `examples/AllInDemo` directory
@@ -384,19 +395,19 @@ The example application is taken from the book [Mastering Angular2 components](h
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/AllInDemo` directory 
 
-### State Machine
+## State Machine
 - go to `$HOMEDIR/examples/volunteerApplication`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory 
 
-### Switch
+## Switch
 - go to `$HOMEDIR/examples/SwitchLogin`
 - `npm install`
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/SwitchLogin` directory
 
-### OnRoute
+## OnRoute
 - go to `$HOMEDIR/examples/NestedRoutingDemo`
 - `npm install`
 - `npm run wbuild`

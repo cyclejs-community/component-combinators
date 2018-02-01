@@ -1,12 +1,13 @@
 # A few common drivers
 This library provides drivers, to support effect/action execution in the context of a reactive 
-application implemented with =component combinators.
+application implemented with component combinators.
 
 # Documentation
 The current documentation exists :
 
 - [Action driver](http://brucou.github.io/projects/component-combinators/actiondriver/)
 - [Query driver](http://brucou.github.io/projects/component-combinators/querydriver/)
+- [document driver](http://brucou.github.io/projects/component-combinators/querydriver/)
 
 The document driver as of now only inject the global `document` object in the `sources` object. 
 Any existing documentation applying to that object is hence relevant, and as such we provide none
