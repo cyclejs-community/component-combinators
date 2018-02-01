@@ -112,8 +112,6 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 Well, testing is complicated by having impure functions, so not sure what to do here. Best is to 
 have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
 
-# write last summary article + comparison with angular 2/react <component settings>.children.
-
 In summary,
 
 - So what?
@@ -131,16 +129,42 @@ In summary,
    - tracing and loggging should be easy and allow for visualization
      - next release!! 
 
-# doc user as reactive sytems
-- equations:
-  - states_i are behaviours
-  - sum of states_i = states
-  - each behaviour depends on some pieces of state and events
-  - actions depends on some pices of state and events
-  - so there is function i -> indices of events and pieces of state it depends on?
-  - better partition events into individual events, states into behaviours (variables) and 
-  rewrite the equations
-
 # TODO TODO 
+- ROLL UP AND RELEASE
 - start working on logging and visualization -> architecture note
 - start working on the new cycle event/state handling-> architecture draft article to write
+- MAKE A RELEASE!!!!
+  - rmove lodash dependency (forOwn, kebabCase, escape, etc.) that is snabbdom-to-html, which I 
+  don't even use... except for debugging i.e. in dev
+  - so add a DEV variable which will be taken out when building for prod or sth like that
+
+- OR GO BACK TO MASTER and bundle with webpack - look at size in prod...
+- try some default files from webpack the new one
+
+- RELEASE a version!!
+  - umd
+- AND THEN I will have to redo the demos but importing the library with package.json and the 
+release number
+- RUN PRETTIER!!
+
+
+Note that the present content will be easier to grasp for people with already some knowledge of 
+streams/rxjs/cyclejs components. The documentation assumes that prior knowledge. I do not spend too 
+much time explaining what `sources` is, and how rxjs streams can be combined (though I don't think any example has anything else than `map` 
+and `filter`).
+
+I will now be using this library in my future projects. I'll now also take a little break on the 
+development of the first step (see roadmap on things to improve on) to focus on the second and 
+third step (visualization -- thanks to this work, it should now be possible to visually and 
+interactively trace and debug an application). In the meanwhile, I would be grateful to have 
+feedback from the community. Any feedback is useful, but constructive feedback is even better, 
+and helps identify pain points or prioritize features. 
+
+# Sample app
+- tic-tac-toe : showcases what?
+  - https://ejdraper.com/2018/01/17/tic-tac-toe-with-vuejs/
+
+# Quotes
+- https://www.oreilly.com/ideas/reactive-programming-vs-reactive-systems
+> We are no longer building programs—end-to-end logic to calculate something for a single operator—as much as we are building systems.
+> In order to deliver systems that users—and businesses—can depend on, they have to be responsive, for it does not matter if something provides the correct response if the response is not available when it is needed. In order to achieve this, we need to make sure that responsiveness can be maintained under failure (resilience) and under load (elasticity). To make that happen, we make these systems message-driven, and we call them reactive systems.

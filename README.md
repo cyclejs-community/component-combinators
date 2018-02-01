@@ -1,15 +1,55 @@
-# The case for a component combinator library ![](https://img.shields.io/badge/license-MIT-blue.svg)
-This component combinator library comes from some pain points I experimented while dealing with implementing interactive applications, which make heavy use of streams and try to use componentization :
+# Motivation ![](https://img.shields.io/badge/license-MIT-blue.svg)
+Around 18 months ago, while working on what is the largest cyclejs codebase I know of 
+(~20K lines of code), I realized how hard it was to actually make sense quickly of a large 
+cycle-js application. Focusing on the issues derived largely from cyclejs usage :
 
-- the stream plumbery between components is hard to read and make sense of
-  - this is specially true with deep and large reactive graphs
-  - and when you have to process mentally miscellaneous level of `flatMap`
-- achieving reusability through parameterization leads to more in-your-face stream gymnastic 
-    - using `prop$` to pass properties can become unwieldy when there are a lot of properties involved
+- a large portion of the code was stream handling originating from the use of components and the 
+necessity to wire them together. The domain logic, and as a result, the application logic was 
+lost into a sea of streams' sometimes-cryptic operations. 
+- extra confusion due to parametrizing components with streams which were not streams, but constants
+lifted into streams, adding to the noise
+- **modifying, fixing and extending that code proved to be a gamble**, with any debugging sessions 
+counted in hours (to be fair, the complete absence of documentation explained a lot of that)
+- hard to figure out quickly, **with certainty** the workflow that the application was 
+implementing (you know, multi-step processes where any step may fail and need to backtrack), let alone add new
+ logical branches (error recovery...)
 
-The application under development should be expressed as simply or as complex as it is per its design, while keeping the stream complexity at a lower layer. 
+And yet, while that application was large, it cannot really be said to be a particularly complex 
+application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations (no animations at all in fact if I remember well), adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote 
+database, and miscellaneous domain-driven workflows.
 
-Let's see some examples.
+This was the motivation behind my dedicating my (quite) limited free time to investigate remedies
+ to what appeared to be an uncalled-for complexity. I singled out those four areas : 
+ componentization, visual debugging, testing, concurrency control. I am happy that finally the 
+ first step is in a sufficient state of progress that it can be shared. 
+ 
+ That first step is a componentization model for cyclejs, that builds upon the original idea of a 
+ component as a function and extends it further. Components are (mostly) what they used to 
+ be. Components can however now be parameterized through a dedicated argument `settings`, 
+ capturing the component's customization concern. Components, importantly, can be built through
+ a series of component combinators which eliminate a lot of stream noisy, repetitive code. Those component combinators have been extracted and 
+  abstracted from the 20K lines of code, so they should cover a large number of cases that one 
+  encounters. The proposed component model could be seen in many ways a generalization of that of 
+  `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, without any modification of 
+   cyclejs internals. 
+
+This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
+combinators only work with rxjs, the version of cycle used brings us back to the time 
+when cyclejs could still be considered a library (vs. a framework), build is not optimized, etc. 
+
+It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on 
+the **interdependence** of components that defines the user interface **logic**, rather than having
+ to constantly fiddle with a large amount of **implementation details**. 
+
+Each combinator features (and if not, will feature) a dedicated non-trivial example of use, and is 
+documented and tested. A sample application is available to showcase how combinators work 
+together with components to build a non-trivial application.
+
+A series of articles covers the theoretical underpinning in more details (read 
+chronologically, they constitute a long read, but I think they are very interesting). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the 
+step-by-step building of the show-cased sample application. A shorter introduction can be found in the `README` for the repository. 
+
+Let's now see some examples of use.
 
 ## Login gateway
 For instance, the structure behind a login section of an application goes as such:
@@ -17,18 +57,15 @@ For instance, the structure behind a login section of an application goes as suc
 ```javascript
 export const App = Switch({
   on: convertAuthToIsLoggedIn,
-  sinkNames: ['auth$', DOM_SINK, 'router'],
   as : 'switchedOn',
-  trace: 'Switch'
 }, [
-  Case({ when: IS_NOT_LOGGED_IN, trace: 'LoginPage Case' }, [
+  Case({ when: IS_NOT_LOGGED_IN }, [
     LoginPage({ redirect: '/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e' })
   ]),
-  Case({ when: IS_LOGGED_IN, trace: 'MainPage Case' }, [
+  Case({ when: IS_LOGGED_IN }, [
     MainPage
   ]),
 ]);
-
 ```
 
 and translates the simple design :
@@ -40,8 +77,49 @@ and translates the simple design :
     - `MainPage` takes the concern of implementing the main page logic.
     - `LoginPage` is parameterized by a redirect route, and is in charge of logging in the user
     - `convertAuthToIsLoggedIn` emits `IS_NOT_LOGGED_IN` or `IS_LOGGED_IN` according to whether the user is logged or not
-    
-The stream switching logic is hidden behind the `Switch` combinator.
+
+The same code could be written in a `JSX`-like dialect as :
+
+```javascript
+export const App = 
+  <Switch on=convertAuthToIsLoggedIn as='switchedOn'>
+      <Case when=IS_NOT_LOGGED_IN>
+        <LoginPage redirect='/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e'/>
+      </Case>
+      <Case when=IS_LOGGED_IN>
+        <MainPage\/>
+      </Case>
+  </Switch>
+```
+
+The same code could also be written in a dedicated DSL :
+
+```javascript
+export const App = `
+  Switch On convertAuthToIsLoggedIn (As switchedOn)
+    When IS_NOT_LOGGED_IN :
+      LoginPage {redirect:'/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e'}
+    When IS_LOGGED_IN :
+      MainPage
+`
+```
+
+Syntax, whichever one chosen (we will work only with the first one) is but a detail. 
+What is important here is that :
+
+- the stream wiring concern has disappeared within the `Switch` combinator (i.e. has been 
+abstracted out), while the user interface logic can be written in a way which is very close to its specification, hence easier to 
+understand and check for correctness 
+- The developer cannot make any mistake in the stream switching logic, nor 
+does he have to check while debugging that the error does not come from an erroneous switch 
+handling. Provided that the `Switch` combinator has been properly implemented and tested, the 
+corresponding concern is out of the way.
+- A debugging developer can narrow down a cause of misbehaviour for example by selectively 
+modifying arguments, deleting branches of the component tree, stubbing components, etc. 
+Reasoning, investigating can be made at a component level first before, if necessary, going at 
+the lower stream level.
+
+Let's seee another example.
 
 ## Nested routing
 The following implementation corresponds to :
@@ -63,28 +141,25 @@ export const App = InjectSourcesAndSettings({
   sourceFactory: injectRouteSource,
   settings: {
     sinkNames: [DOM_SINK, 'router'],
-    routeSource: ROUTE_SOURCE,
-    trace: 'App'
   }
 }, [
-  OnRoute({ route: '', trace: 'OnRoute (/)' }, [
+  OnRoute({ route: '' }, [
     HomePage
   ]),
-  OnRoute({ route: 'aspirational', trace: 'OnRoute  (/aspirational)' }, [
+  OnRoute({ route: 'aspirational' }, [
     InjectSourcesAndSettings({ settings: { breadcrumbs: ['aspirational'] } }, [
       AspirationalPageHeader, [
         Card(BLACBIRD_CARD_INFO),
-        OnRoute({ route: BLACK_BIRD_DETAIL_ROUTE, trace: `OnRoute (${BLACK_BIRD_DETAIL_ROUTE})` }, [
+        OnRoute({ route: BLACK_BIRD_DETAIL_ROUTE }, [
           CardDetail(BLACBIRD_CARD_INFO)
         ]),
         Card(TECHX_CARD_INFO),
-        OnRoute({ route: TECHX_CARD_DETAIL_ROUTE, trace: `OnRoute (${TECHX_CARD_DETAIL_ROUTE})` }, [
+        OnRoute({ route: TECHX_CARD_DETAIL_ROUTE }, [
           CardDetail(TECHX_CARD_INFO)
         ]),
         Card(TYPOGRAPHICS_CARD_INFO),
         OnRoute({
           route: TYPOGRAPHICS_CARD_DETAIL_ROUTE,
-          trace: `OnRoute (${TYPOGRAPHICS_CARD_DETAIL_ROUTE})`
         }, [
           CardDetail(TYPOGRAPHICS_CARD_INFO)
         ]),
@@ -93,7 +168,13 @@ export const App = InjectSourcesAndSettings({
 ]);
 ```
 
-The nested routing switching logic is hidden behind the `OnRoute` combinator.
+The (gory) nested routing switching logic is hidden behind the `OnRoute` combinator. With that out
+ of the way, the routing logic can be expressed very naturally (in a very similar way to React 
+router's [dynamic routing](https://reacttraining.com/react-router/core/guides/philosophy/dynamic-routing), in which the router is a component 
+like any other). There is no pre-configuration of routes, outside of the application. Routes are 
+directly and naturally included in their context.
+
+Let's attack dynamic lists.
 
 ## Dynamically changing list of items
 
@@ -115,11 +196,10 @@ export const App = InjectSources({
       from: 'fetchedCardsInfo$',
       as: 'items',
       sinkNames: [DOM_SINK],
-      trace: 'ForEach card'
     }, [AspirationalPageHeader, [
-      ListOf({ list: 'items', as: 'cardInfo', trace: 'ForEach card > ListOf' }, [
-        EmptyComponent,
-        Card,
+      ListOf({ list: 'items', as: 'cardInfo' }, [
+        EmptyComponent, // Component activated in case list is empty
+        Card, // // Component activated otherwise
       ])
     ]]
   ),
@@ -131,11 +211,19 @@ export const App = InjectSources({
     Pagination
   ])
 ]);
-
 ```
 
-The iteration logic are taken care of with the `ForEach` and the `ListOf` combinators.
+The reactive update (on `fetchedCardsInfo$`) and iteration logic (on the array of items received 
+from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` combinators.
 
+I hope that by now, even if you do not understand the full syntax and semantics of the component 
+combinators, you realize somewhat the merits of using a component model, under which an application
+ is written as a component tree, where components are glued with component combinators. I certainly 
+think it is simpler to write, and more importantly simpler to read, maintain and debug.
+
+Let's have a proper look at combinators' syntax and the available combinators extracted from the 
+20K-line cyclejs codebase.
+ 
 # Combinators
 ## Syntax
 In general combinators follow a common syntax : 
@@ -164,7 +252,7 @@ The proposed library has the following combinators :
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
-# Background
+# Theoretical background
 The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou.github.io/) :
 
 - [user interfaces as reactive systems](https://brucou.github.io/posts/user-interfaces-as-reactive-systems/)
@@ -243,7 +331,7 @@ The current roadmap for the v0.4 stands as :
       - [x] select static site generator (Jekyll, Hexo, Hugo)
       - [x] blog site architecture
       - [x] theoretical underpinnings
-    - [x] demo from Angular2 book
+    - [x] sample application taken from Angular2 book
 - Testing
     - [x] Testing library `runTestScenario`
     - [x] Mocks for DOM and document driver
@@ -266,7 +354,7 @@ The current roadmap for the v0.4 stands as :
 
 # Installation
 ## Running tests
-Tests are performed with QUnit, i.e. in the browser. This allows debugging code in the browser, and 
+Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
 also the possbility in a debugging session to actually display some components' output directly in 
 the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in 
 the root directory, type : 
@@ -311,7 +399,7 @@ The example application is taken from the book [Mastering Angular2 components](h
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
 
 # Contribute
-Contribution is welcome in the following areas :
+Contribution is **welcome** in the following areas :
 
 - devops
   - monorepos
