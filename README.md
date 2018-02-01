@@ -269,12 +269,6 @@ Documentation can be found in the [projects portion](https://brucou.github.io/pr
 
 <details>
   <summary>Roadmap v0.5</summary>
-  <p>Requires a computer running an operating system. The computer
-  must have some memory and ideally some kind of long-term storage.
-  An input device as well as some form of output device is
-  recommended.</p>
-</details>
-
 ## Roadmap v0.5
 The core target of this release will be to prepare the architecture for visual tracing, and 
 specify the (visual) shape that this should take. A small proof of concept should be produced. A 
@@ -319,6 +313,9 @@ The current roadmap for the v0.5 stands as :
 - Distribution
   - [ ] monorepo?
   - [ ] individual combinator packages?
+
+</details>
+
 
 ## Roadmap v0.4
 Please note that library is still wildly under development :
