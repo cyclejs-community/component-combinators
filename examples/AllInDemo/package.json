@@ -43,7 +43,6 @@
     "jquery": "3.3.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "nodemon": "^1.14.11",
     "postcss-loader": "^0.11.0",
     "qunitjs": "^1.20.0",
     "rimraf": "^2.4.3",
@@ -80,7 +79,7 @@
     "@rxcc/components": "^0.3.4",
     "@rxcc/debug": "^0.1.6",
     "@rxcc/contracts": "^0.1.8",
-    "@rxcc/drivers": "^0.1.4",
+    "@rxcc/drivers": "0.1.5",
     "@rxcc/helpers": "^0.1.1",
     "@rxcc/testing": "^0.1.0",
     "@rxcc/utils": "^0.1.1"
