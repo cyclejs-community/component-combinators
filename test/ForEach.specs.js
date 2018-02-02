@@ -1,8 +1,8 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
-import { runTestScenario } from '../utils/testing/src/runTestScenario'
-import { convertVNodesToHTML } from "../utils/debug/src/index"
+import { runTestScenario } from '../testing/src/runTestScenario'
+import { convertVNodesToHTML } from "../debug/src/index"
 import { pipe } from 'ramda'
 import { ForEach } from "../src/components/ForEach/ForEach"
 

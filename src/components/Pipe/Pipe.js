@@ -1,6 +1,6 @@
 import {
   assertContract, isArrayOf, isBoolean, isComponent
-} from "../../../utils/contracts/src/index"
+} from "../../../contracts/src/index"
 import { m } from '../m/m'
 import { intersection, keys, merge } from 'ramda'
 

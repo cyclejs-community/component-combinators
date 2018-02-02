@@ -70,11 +70,11 @@ import * as QUnit from "qunitjs"
 import * as Rx from "rx"
 import { values } from "ramda"
 import { mEventFactory } from "../src/components/mEventFactory"
-import { addPrefix, noop } from "../utils/utils/src/index"
-import { convertVNodesToHTML, format } from "../utils/debug/src/index"
-import { runTestScenario } from "../utils/testing/src/runTestScenario"
+import { addPrefix, noop } from "../utils/src/index"
+import { convertVNodesToHTML, format } from "../debug/src/index"
+import { runTestScenario } from "../testing/src/runTestScenario"
 import { span } from "cycle-snabbdom"
-import { makeMockDOMSource } from "../utils/testing/src/mocks/mockDOM"
+import { makeMockDOMSource } from "../testing/src/mocks/mockDOM"
 // Bad settings - children sink name conflict with new event name TODO and move back to BAD up
 // Bad settings - new DOM event name conflict with custom event name TODO and move back to BAD up
 // TODO : here will have to use APIs for DOM select of runTestScenario... so could use as a

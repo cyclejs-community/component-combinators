@@ -4,9 +4,9 @@ import { m } from '../m/m'
 import {
   assertContract, checkAndGatherErrors, hasAtLeastOneChildComponent, isArrayOf, isFunction,
   isSource, isString, isVNode
-} from "../../../utils/contracts/src/index"
-import { removeNullsFromArray, unfoldObjOverload } from "../../../utils/utils/src/index"
-import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../utils/helpers/src/index"
+} from "../../../contracts/src/index"
+import { removeNullsFromArray, unfoldObjOverload } from "../../../utils/src/index"
+import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../helpers/src/index"
 
 import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'

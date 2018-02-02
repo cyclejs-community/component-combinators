@@ -1,5 +1,5 @@
 import { m } from "../m/m"
-import { assertContract, isFunction, isObject } from "../../../utils/contracts/src/index"
+import { assertContract, isFunction, isObject } from "../../../contracts/src/index"
 
 function isSourcesAndSettings(obj) {
   return Boolean(

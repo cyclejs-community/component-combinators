@@ -1,7 +1,7 @@
 import {
   bothE, isArrayOf, isBoolean, isOneOf, isOptional, isRecordE, isStrictRecord, isString
-} from "../../utils/contracts/src/index"
-import { toBoolean } from "../../utils/utils/src/index"
+} from "../../contracts/src/index"
+import { toBoolean } from "../../utils/src/index"
 import { m } from "./m/m"
 import { both, complement, either, flatten, pipe, prop, reduce, tap } from "ramda"
 import * as Rx from "rx"

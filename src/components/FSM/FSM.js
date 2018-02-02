@@ -6,7 +6,7 @@ import {
 } from "ramda"
 import {
   assertContract, checkSignature, handleError, isBoolean
-} from "../../../utils/contracts/src/index"
+} from "../../../contracts/src/index"
 import {
   checkEventDefinedInTransitionsMustBeMappedToEventFactory, checkIsObservable,
   checkOriginStatesDefinedInTransitionsMustBeMappedToComponent,

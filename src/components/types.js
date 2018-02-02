@@ -1,7 +1,7 @@
 import { both, complement, cond, either, equals, isEmpty, T } from "ramda"
 import {
   isArrayOf, isEmptyArray, isObject, isStrictRecord, isString
-} from "../../utils/contracts/src/index"
+} from "../../contracts/src/index"
 
 export const isNotEmpty = complement(isEmpty);
 export const isSettings = T;

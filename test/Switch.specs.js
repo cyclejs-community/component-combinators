@@ -1,10 +1,10 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { div, h } from 'cycle-snabbdom'
-import { runTestScenario } from '../utils/testing/src/runTestScenario'
+import { runTestScenario } from '../testing/src/runTestScenario'
 import { Case, Switch } from '../src/components/Switch/Switch'
-import { DOM_SINK } from "../utils/helpers/src/index"
-import { convertVNodesToHTML } from "../utils/debug/src/index"
+import { DOM_SINK } from "../helpers/src/index"
+import { convertVNodesToHTML } from "../debug/src/index"
 
 import { pipe } from 'ramda'
 

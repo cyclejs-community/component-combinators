@@ -5,7 +5,7 @@ import {
 import {
   isArrayOf, isBoolean, isComponent, isEmptyArray, isFunction, isHashMap, isObject, isObservable,
   isSources, isStrictRecord, isString
-} from "../../../utils/contracts/src/index"
+} from "../../../contracts/src/index"
 
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
 import { isArrayUpdateOperations, isNotEmpty, isSettings } from "../types"

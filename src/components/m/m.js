@@ -40,13 +40,13 @@
 
 import {
   emitNullIfEmpty, getSinkNamesFromSinksArray, projectSinksOn,
-} from "../../../utils/helpers/src/index"
+} from "../../../helpers/src/index"
 import {
   assertContract, assertSinksContracts, assertSourcesContracts, isArray, isArrayOf, isArrayOptSinks,
   isEmptyArray, isFunction, isMergeSinkFn, isOptSinks, isVNode
-} from "../../../utils/contracts/src/index"
-import { format, traceSinks } from "../../../utils/debug/src/index"
-import { removeNullsFromArray, traverseTree } from "../../../utils/utils/src/index"
+} from "../../../contracts/src/index"
+import { format, traceSinks } from "../../../debug/src/index"
+import { removeNullsFromArray, traverseTree } from "../../../utils/src/index"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, isNil, keys, map, merge, mergeWith, path,
   reduce

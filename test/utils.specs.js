@@ -1,7 +1,7 @@
 import * as QUnit from "qunitjs"
 import { curry } from "ramda"
 import * as Rx from "rx"
-import { decorateWith, decorateWithOne, makeFunctionDecorator } from "../utils/utils/src/index"
+import { decorateWith, decorateWithOne, makeFunctionDecorator } from "../utils/src/index"
 
 let $ = Rx.Observable;
 

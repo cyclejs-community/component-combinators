@@ -2,7 +2,7 @@
 // actionsMap:{'clickIntent$':'router'}},}, [Component],
 import {
   assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString, isComponent
-} from "../../../utils/contracts/src/index"
+} from "../../../contracts/src/index"
 import { m } from '../m/m'
 import { either, isNil, keys, merge, path, reduce, uniq } from 'ramda'
 import * as Rx from "rx"

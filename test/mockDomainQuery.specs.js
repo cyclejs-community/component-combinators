@@ -1,8 +1,8 @@
 import * as QUnit from "qunitjs"
-import { runTestScenario } from "../utils/testing/src/runTestScenario"
+import { runTestScenario } from "../testing/src/runTestScenario"
 import * as Rx from "rx"
-import { makeDomainQuerySource } from "../utils/testing/src/mocks/mockDomainQuery"
-import { addPrefix } from "../utils/utils/src/index"
+import { makeDomainQuerySource } from "../testing/src/mocks/mockDomainQuery"
+import { addPrefix } from "../utils/src/index"
 import { LIVE_QUERY_TOKEN } from "../drivers/src"
 
 let $ = Rx.Observable;

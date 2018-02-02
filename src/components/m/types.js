@@ -1,7 +1,7 @@
 import {
   checkAndGatherErrors, eitherE, isArray, isArrayOf, isComponent, isEmptyArray, isFunction,
   isHashMap, isObject, isString
-} from "../../../utils/contracts/src/index"
+} from "../../../contracts/src/index"
 import { both, complement, either, isNil, pipe, prop, uniq } from 'ramda'
 
 function hasValidComponentDefProperty(componentDef, _settings, children) {

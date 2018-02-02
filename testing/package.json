@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/testing",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "testing utilities for component combinators library",
   "repository": {
     "type": "git",

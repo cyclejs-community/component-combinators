@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/debug",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "utility functions for debugging component combinators",
   "repository": {
     "type": "git",
@@ -55,7 +55,6 @@
     "image-webpack-loader": "^2.0.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "nodemon": "^1.9.2",
     "postcss-loader": "^0.11.0",
     "rimraf": "^2.4.3",
     "rollup": "^0.54.0",

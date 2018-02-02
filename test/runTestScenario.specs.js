@@ -1,6 +1,6 @@
 import * as assert from 'assert'
-import {runTestScenario} from '../utils/testing/src/runTestScenario'
-import {makeMockDOMSource} from '../utils/testing/src/mocks/mockDOM'
+import {runTestScenario} from '../testing/src/runTestScenario'
+import {makeMockDOMSource} from '../testing/src/mocks/mockDOM'
 import * as Rx from "rx"
 import * as QUnit from "qunitjs"
 

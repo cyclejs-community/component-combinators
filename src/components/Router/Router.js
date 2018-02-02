@@ -1,9 +1,9 @@
 import {
   assertContract, checkAndGatherErrors, hasAtLeastOneChildComponent, isArrayOf, isObservable,
   isString
-} from "../../../utils/contracts/src/index"
-import { format, } from "../../../utils/debug/src/index"
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+} from "../../../contracts/src/index"
+import { format, } from "../../../debug/src/index"
+import { DOM_SINK } from "../../../helpers/src/index"
 import { m } from "../m/m"
 import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
