@@ -1,6 +1,5 @@
 import * as Rx from "rx";
-import { OnRoute } from "../../../../../src/components/Router/Router"
-import { InjectSources } from "../../../../../src/components/Inject/InjectSources"
+import { InjectSources, ListOf, ForEach, m, InSlot } from "@rxcc/components"
 import { preventDefault } from "../../../../../utils/utils/src/index"
 import { Div, DOM_SINK } from "../../../../../utils/helpers/src/index"
 import { button, div, h2, li, p, ul } from "cycle-snabbdom"
