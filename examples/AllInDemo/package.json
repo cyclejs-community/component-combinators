@@ -48,6 +48,7 @@
     "qunitjs": "^1.20.0",
     "rimraf": "^2.4.3",
     "run-sequence": "^1.1.5",
+    "@rxcc/components": "^0.3.0",
     "style-loader": "^0.13.1",
     "surge": "^0.17.7",
     "uglify-js": "^2.5.0",

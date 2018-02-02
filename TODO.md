@@ -44,7 +44,9 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
-- TODO : get all working with latest version of snabdomm, and cycle-run etc.
+- TODO : AllInDemo task deletion does not work
+- remove format and use console.log ?? will be complicated with assertCotnract in its current form
+- also in FSM and else use console.context for logging
 - InjectStateInSinks to remove
 - size build
   - rx.all -> rx-lite

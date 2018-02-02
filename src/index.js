@@ -21,6 +21,7 @@
   }
 }());
 
+export * from "./components/types"
 export * from "./components/m/m"
 export * from "./components/Router/Router"
 export * from "./components/ListOf/ListOf"

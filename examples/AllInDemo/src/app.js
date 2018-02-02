@@ -1,5 +1,5 @@
 import { ROUTE_SOURCE } from "./properties"
-import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
+import { InjectSourcesAndSettings } from "@rxcc/components"
 import { filterNull } from "../../../utils/utils/src/index"
 import { DOM_SINK, Div } from "../../../utils/helpers/src/index"
 import { format} from "../../../utils/debug/src/index"
