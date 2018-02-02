@@ -4,7 +4,7 @@ import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 import {
   ACTIVITIES, activityFactory, DELETE_TASK, LOG_NEW_ACTIVITY, TASKS
 } from "../../../../src/domain"
-import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
+import { ROUTE_PARAMS } from "@rxcc/components"
 
 const $ = Rx.Observable;
 

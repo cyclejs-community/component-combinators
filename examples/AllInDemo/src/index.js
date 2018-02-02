@@ -3,7 +3,7 @@ import defaultModules from "cycle-snabbdom/lib/modules"
 import { createHistory } from "history"
 import firebase from 'firebase'
 // drivers
-import { makeFirebaseDriver, makeQueueDriver, } from '@sparksnetwork/cyclic-fire'
+import { makeFirebaseDriver, makeQueueDriver } from '@sparksnetwork/cyclic-fire'
 import { run } from "@cycle/core"
 import { makeDOMDriver } from "cycle-snabbdom"
 import { makeHistoryDriver } from '@cycle/history';
@@ -11,14 +11,14 @@ import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { inMemoryStoreActionsConfig, inMemoryStoreQueryMap } from './inMemoryStore';
 import { makeDomainQueryDriver } from './domain/queryDriver/index';
 import { makeDomainActionDriver } from './domain/actionDriver';
-import { focusDriver } from '../../../drivers/src/focusDriver';
-import { documentDriver } from '../../../drivers/src/documentDriver';
+// import { focusDriver } from '@rxcc/components/drivers'; // ok for webpack but not rollup
+import { focusDriver, documentDriver } from '@rxcc/drivers';
 import {
   initLocallyPersistedState, initLocalNonPersistedState, initRemotelyPersistedState, initRepository
 } from './init'
 // utils
-import { filterNull } from "../../../utils/utils/src/index"
-import { DOM_SINK} from "../../../utils/helpers/src/index"
+import { filterNull } from "@rxcc/utils"
+import { DOM_SINK} from "@rxcc/helpers"
 
 const repository = initRepository(firebase);
 const fbRoot = repository;

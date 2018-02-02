@@ -2,7 +2,7 @@ import * as Rx from "rx";
 import { getInputValue, preventDefault } from "../../../../../../utils/utils/src/index"
 import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 import { button, div, input } from "cycle-snabbdom"
-import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
+import { ROUTE_PARAMS } from "@rxcc/components"
 import {
   ACTIVITIES, activityFactory, ADD_NEW_TASK, LOG_NEW_ACTIVITY, taskFactory, TASKS
 } from "../../../../src/domain"
@@ -57,7 +57,7 @@ export function EnterTask(sources, settings) {
       // through successfully and react appropriately if not. Just as the original Angular2
       // application does, we do not bother here
       .withLatestFrom(projectFb$, user$, (ev, projectFb, user) => {
-        const {fbIndex : projectFbIndex, project} = projectFb;
+        const { fbIndex: projectFbIndex, project } = projectFb;
         const tasks = project.tasks;
         const newTaskPosition = tasks.length;
         const nr = tasks.reduce((maxNr, task) => task.nr > maxNr ? task.nr : maxNr, 0) + 1;

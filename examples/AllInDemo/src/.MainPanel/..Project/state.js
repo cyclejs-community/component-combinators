@@ -1,6 +1,6 @@
 import * as Rx from "rx";
 import { keys, values } from 'ramda'
-import { ROUTE_PARAMS } from "../../../../../src/components/Router/properties"
+import { InjectSources, ListOf, ForEach, m, InSlot, ROUTE_PARAMS } from "@rxcc/components"
 
 const $ = Rx.Observable;
 

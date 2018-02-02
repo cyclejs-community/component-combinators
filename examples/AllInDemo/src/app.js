@@ -1,8 +1,6 @@
 import { ROUTE_SOURCE } from "./properties"
 import { InjectSourcesAndSettings } from "@rxcc/components"
-import { filterNull } from "../../../utils/utils/src/index"
-import { DOM_SINK, Div } from "../../../utils/helpers/src/index"
-import { format} from "../../../utils/debug/src/index"
+import { Div, DOM_SINK } from "../../../utils/helpers/src/index"
 import { values } from 'ramda'
 import { PROJECTS, USER } from "./domain"
 import { SidePanel } from "./.SidePanel"
@@ -18,7 +16,7 @@ export const App = InjectSourcesAndSettings({
           return (route && route[0] === '/') ? route.substring(1) : route
         })
         .tap(
-          x => console.debug(`App > InjectSourcesAndSettings > ${ROUTE_SOURCE} emits :`, format(x))
+          x => console.debug(`App > InjectSourcesAndSettings > ${ROUTE_SOURCE} emits : %O`, x)
         )
         // starts with home route
         .startWith('')

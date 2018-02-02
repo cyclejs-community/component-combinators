@@ -1,10 +1,8 @@
 import * as Rx from "rx";
-import { InjectSources, ListOf, ForEach, m, InSlot } from "@rxcc/components"
+import { InjectSources, ListOf, ForEach, m, InSlot, OnRoute, ROUTE_PARAMS } from "@rxcc/components"
 import { preventDefault } from "../../../../../utils/utils/src/index"
 import { Div, DOM_SINK } from "../../../../../utils/helpers/src/index"
 import { button, div, h2, li, p, ul } from "cycle-snabbdom"
-import { m } from "../../../../../src/components/m/m"
-import { ROUTE_PARAMS } from "../../../../../src/components/Router/properties"
 import { ProjectTaskList } from "./...ProjectTaskList"
 import { ProjectTaskDetails } from "./...ProjectTaskDetails"
 import { ProjectComments } from "./...ProjectComments"

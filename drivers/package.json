@@ -19,7 +19,11 @@
   "jsnext:main": "src/index.js",
   "files": [
     "lib/",
-    "src/"
+    "src/",
+    "dist/",
+    "dist-node/",
+    "../utils",
+    "../src"
   ],
   "scripts": {
     "build-test": "babel test --source-maps --out-dir dist-node-test",

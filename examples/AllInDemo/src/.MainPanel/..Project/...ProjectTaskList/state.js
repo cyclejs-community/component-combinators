@@ -1,7 +1,7 @@
 import { preventDefault } from "../../../../../../utils/utils/src/index"
 import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
 import { prop } from 'ramda'
-import { ROUTE_PARAMS } from "../../../../../../src/components/Router/properties"
+import { ROUTE_PARAMS } from "@rxcc/components"
 import { getStateInStore, TASKS_FILTER } from "../../../../src/inMemoryStore"
 import { filterTasks, makeButtonGroupSelector } from './helpers'
 import { TaskListScrollBarSelector } from './properties'

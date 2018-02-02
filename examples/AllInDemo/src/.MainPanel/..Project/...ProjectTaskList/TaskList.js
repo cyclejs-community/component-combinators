@@ -1,14 +1,9 @@
 import * as Rx from "rx";
-import { ForEach } from "../../../../../../src/components/ForEach/ForEach"
-import { ListOf } from "../../../../../../src/components/ListOf/ListOf"
-import { InSlot } from "../../../../../../src/components/InSlot"
-import { InjectSourcesAndSettings } from "../../../../../../src/components/Inject/InjectSourcesAndSettings"
+import { ForEach, InjectSourcesAndSettings, InSlot, ListOf, Pipe } from "@rxcc/components"
 import { DOM_SINK, EmptyComponent, vLift } from "../../../../../../utils/helpers/src/index"
 import { button, div } from "cycle-snabbdom"
 import { TASKS } from "../../../../src/domain"
-import {
-  ComputeCheckBoxActions, ComputeEditorActions
-} from './helpers'
+import { ComputeCheckBoxActions, ComputeEditorActions } from './helpers'
 import { taskListStateFactory } from './state'
 import { CheckBox } from '../../../UI/CheckBox'
 import { Editor } from '../../../UI/Editor'
@@ -16,7 +11,6 @@ import { TaskInfo } from './TaskInfo'
 import { TaskDelete, taskDeleteSelector } from './TaskDelete'
 import { TaskLink } from './TaskLink'
 import { TaskListContainerSelector } from './properties'
-import { Pipe } from "../../../../../../src/components/Pipe/Pipe"
 
 const $ = Rx.Observable;
 
