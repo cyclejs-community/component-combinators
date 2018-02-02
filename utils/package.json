@@ -1,7 +1,7 @@
 {
-  "name": "@rxcc/testing",
-  "version": "0.1.0",
-  "description": "testing utilities for component combinators library",
+  "name": "@rxcc/utils",
+  "version": "0.1.2",
+  "description": "miscellaneous utility functions to keep an implementation DRY",
   "repository": {
     "type": "git",
     "url": "https://github.com/brucou/component-combinators"
@@ -12,7 +12,7 @@
     "componentization",
     "components",
     "functional programming",
-    "tests"
+    "utils"
   ],
   "main": "dist-node/index.js",
   "module": "src/index.js",
@@ -42,11 +42,9 @@
     "babel-loader": "7.0.0",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-class-properties": "^6.9.1",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-polyfill": "^6.9.1",
-    "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.5.0",
     "browserify": "^11.2.0",
@@ -57,7 +55,6 @@
     "image-webpack-loader": "^2.0.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "nodemon": "^1.9.2",
     "postcss-loader": "^0.11.0",
     "rimraf": "^2.4.3",
     "rollup": "^0.54.0",
@@ -78,9 +75,6 @@
     "yargs": "7.1.0"
   },
   "dependencies": {
-    "pretty-format": "^22.1.0",
-    "ramda": "^0.25.0",
-    "snabbdom-to-html": "^3.1.1",
-    "rx": "^4.1.0"
+    "ramda": "^0.25.0"
   }
 }

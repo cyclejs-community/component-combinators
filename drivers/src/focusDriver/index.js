@@ -1,4 +1,4 @@
-import {assertContract} from '../../../utils/contracts/src/index'
+import {assertContract} from '../../../contracts/src/index'
 
 export function focusDriver(sink$) {
   sink$.map(function focusDriver(sinkValue) {

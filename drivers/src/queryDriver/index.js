@@ -2,7 +2,7 @@ import * as Rx from "rx"
 import { complement, isNil, tryCatch } from 'ramda';
 import {
   assertContract, isFunction, isObservable, isPromise
-} from '../../../utils/contracts/src/index'
+} from '../../../contracts/src/index'
 const $ = Rx.Observable;
 
 // Helper functions

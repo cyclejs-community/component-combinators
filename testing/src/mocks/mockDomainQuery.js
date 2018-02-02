@@ -1,7 +1,7 @@
 import { F, tryCatch } from "ramda"
 import { assertContract } from "../../../contracts/src/index"
 import { format } from "../../../debug/src/index"
-import { LIVE_QUERY_TOKEN } from "../../../../drivers/src/index"
+import { LIVE_QUERY_TOKEN } from "../../../drivers/src/index"
 
 /**
  *
