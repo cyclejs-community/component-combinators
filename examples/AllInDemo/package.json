@@ -80,7 +80,7 @@
     "@rxcc/components": "^0.3.4",
     "@rxcc/debug": "^0.1.6",
     "@rxcc/contracts": "^0.1.8",
-    "@rxcc/drivers": "^0.1.3",
+    "@rxcc/drivers": "^0.1.4",
     "@rxcc/helpers": "^0.1.1",
     "@rxcc/testing": "^0.1.0",
     "@rxcc/utils": "^0.1.1"

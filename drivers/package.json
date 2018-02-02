@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/drivers",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "drivers for component combinators library",
   "repository": {
     "type": "git",
@@ -22,8 +22,7 @@
     "src/",
     "dist/",
     "dist-node/",
-    "../utils",
-    "../src"
+    "../"
   ],
   "scripts": {
     "build-test": "babel test --source-maps --out-dir dist-node-test",
