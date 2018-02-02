@@ -15,7 +15,9 @@
     "lib/",
     "src/",
     "dist/",
-    "dist-node/"
+    "dist-node/",
+    "utils",
+    "drivers"
   ],
   "browserify": {
     "transform": [

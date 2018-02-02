@@ -1,5 +1,5 @@
 import { NO_VALUE } from "../properties"
-import { memoizeWith, always, isNil } from 'ramda'
+import { always, memoizeWith } from 'ramda'
 import * as Rx from "rx";
 import Moment from 'moment';
 
@@ -116,16 +116,17 @@ export const domainActionsConfig = {
 
       return repository.child(path).set(newTask)
     },
-    [UPDATE_TASK_COMPLETION_STATUS]: function updateTaskCompletionStatus(repository, context, payload) {
-      const { isChecked, project, projectFbIndex , filteredTask } = payload;
+    [UPDATE_TASK_COMPLETION_STATUS]: function updateTaskCompletionStatus(repository, context,
+                                                                         payload) {
+      const { isChecked, project, projectFbIndex, filteredTask } = payload;
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/done`;
-      const updatedValue = isChecked? +Date.now() : false;
+      const updatedValue = isChecked ? +Date.now() : false;
 
       return repository.child(path).set(updatedValue)
     },
     [UPDATE_TASK_DESCRIPTION]: function updateTaskDescription(repository, context, payload) {
-      const { newTitle, projectFbIndex , filteredTask } = payload;
+      const { newTitle, projectFbIndex, filteredTask } = payload;
       const taskIndex = filteredTask.position;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/title`;
       const updatedValue = newTitle;
@@ -133,7 +134,7 @@ export const domainActionsConfig = {
       return repository.child(path).set(updatedValue)
     },
     [DELETE_TASK]: function deleteTask(repository, context, payload) {
-      const { projectFbIndex , tasks, filteredTask } = payload;
+      const { projectFbIndex, tasks, filteredTask } = payload;
       // TODO : harmonize the payload parameter for all same context TASKS
       const numberOfTasks = tasks.length;
       const index = tasks.indexOf(filteredTask);
@@ -141,18 +142,18 @@ export const domainActionsConfig = {
       const clonedTasks = tasks.slice();
       const removedTask = clonedTasks.splice(index, 1)[0];
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks`;
-      const lastElementPath = [path, numberOfTasks-1].join('/');
+      const lastElementPath = [path, numberOfTasks - 1].join('/');
 
-        return repository.child(path).update(clonedTasks)
+      return repository.child(path).update(clonedTasks)
         .then(_ => {
           // array should have one element less, so now delete last element which is now obsolete
           // NOTE : apparent cannot be child(path/numerOfTasks-1).update(null)!!
-          repository.child(path).update({[numberOfTasks-1] : null})
+          repository.child(path).update({ [numberOfTasks - 1]: null })
         })
     }
   },
-  [ACTIVITIES]:{
-    [LOG_NEW_ACTIVITY] : function logNewActivity(repository, context, payload){
+  [ACTIVITIES]: {
+    [LOG_NEW_ACTIVITY]: function logNewActivity(repository, context, payload) {
       const activity = payload;
       const path = `${ACTIVITIES_REF}`
 

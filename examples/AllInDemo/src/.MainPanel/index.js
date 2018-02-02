@@ -1,6 +1,5 @@
-import { OnRoute } from "../../../../src/components/Router/Router"
 import { Div } from "../../../../utils/helpers/src/index"
-import { m } from "../../../../src/components/m/m"
+import { m, OnRoute } from "@rxcc/components"
 import { Project } from './..Project'
 import { ProjectsDashboard } from './..ProjectsDashboard'
 import { ManagePlugins } from './..ManagePlugins'
