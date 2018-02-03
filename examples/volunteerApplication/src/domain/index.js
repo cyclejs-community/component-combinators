@@ -1,4 +1,4 @@
-import { assertContract } from "../../../../utils/contracts/src/index"
+import { assertContract } from "@rxcc/contracts"
 import { checkUserApplicationContracts } from './contracts';
 
 export const OPPORTUNITY = 'OPPORTUNITY';

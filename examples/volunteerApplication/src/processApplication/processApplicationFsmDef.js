@@ -1,10 +1,8 @@
 import { both, complement, flip, T } from 'ramda';
 import {
-  ACTION_GUARD_NONE, ACTION_REQUEST_NONE, EV_GUARD_NONE, INIT_EVENT_NAME, INIT_STATE
-} from '../../../../src/components/FSM/properties';
-import {
-  checkActionResponseIsSuccess, makeDefaultActionResponseProcessing, modelUpdateIdentity
-} from '../../../../src/components/FSM/utils';
+  ACTION_GUARD_NONE, ACTION_REQUEST_NONE, checkActionResponseIsSuccess, EV_GUARD_NONE,
+  INIT_EVENT_NAME, INIT_STATE, makeDefaultActionResponseProcessing, modelUpdateIdentity
+} from '@rxcc/components';
 import { STEP_ABOUT, STEP_APPLIED, STEP_QUESTION, STEP_REVIEW, STEP_TEAMS } from './properties';
 import {
   makeRequestToUpdateUserApplication, makeRequestToUpdateUserApplicationWithHasApplied,
@@ -29,7 +27,7 @@ import {
   teamContinueEventFactory
 } from './processApplicationEvents';
 import { fetchUserApplicationModelData } from './processApplicationFetch';
-import { DOM_SINK } from "../../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import { processApplicationRenderInit } from "./processApplicationRenderInit";
 import { processApplicationRenderAboutScreen } from "./processApplicationRenderAboutScreen";
 import { processApplicationRenderQuestionScreen } from "./processApplicationRenderQuestionScreen";

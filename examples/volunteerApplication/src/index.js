@@ -7,14 +7,12 @@ import { Observable as $ } from "rx";
 // drivers
 import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
-import { makeDomainQueryDriver } from './domain/queryDriver/index';
-import { makeDomainActionDriver } from './domain/actionDriver/index';
+import { makeDomainActionDriver, makeDomainQueryDriver } from '@rxcc/drivers';
 import { defaultUser, loadTestData } from '../fixtures';
 // domain
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 // utils
-import { DOM_SINK } from "../../../utils/helpers/src/index"
-import { convertVNodesToHTML } from "../../../utils/debug/src/index"
+import { convertVNodesToHTML, DOM_SINK } from "@rxcc/utils"
 
 const history = supportsHistory() ? createHistory() : createHashHistory();
 const repository = localForage;
@@ -44,7 +42,7 @@ function makeFakeUserDriver(user) {
 }
 
 // Initialize the database
-localForage.config ( {
+localForage.config({
   driver: localForage.LOCALSTORAGE, // Force local storage;
   name: 'myApp',
   storeName: 'demo', // Should be alphanumeric, with underscores.
@@ -52,8 +50,8 @@ localForage.config ( {
 });
 
 Promise.resolve()
-  // NOTE : comment or uncomment the next line to reinitialize local storage
-  // .then(() => localForage.clear())
+// NOTE : comment or uncomment the next line to reinitialize local storage
+// .then(() => localForage.clear())
   .then(() => localForage.keys())
   .then(keys => Promise.all(keys.map(key => {
       return localForage.getItem(key).then(value => ({ [key]: value }))

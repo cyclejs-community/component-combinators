@@ -14,8 +14,8 @@ import {
   USER_APPLICATION_SKIP_TEAM_SELECTOR, USER_APPLICATION_TEAM_CONTINUE_BUTTON_SELECTOR,
   USER_APPLICATION_TEAMLIST_SELECTOR
 } from './properties';
-import { isBoolean } from "../../../../utils/contracts/src/index"
-import { preventDefault } from "../../../../utils/utils/src/index"
+import { isBoolean } from "@rxcc/contracts"
+import { preventDefault } from "@rxcc/utils"
 import { USER_APPLICATION_QUESTION_CONTINUE_BUTTON_SELECTOR } from "./properties/index"
 
 ///////

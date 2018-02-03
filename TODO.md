@@ -44,6 +44,7 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
+- study parcel
 - missing volunteer application to transform
 - change @rxcc/testing to testutils
 - change assertContract to use auto print arguments with %O, so I don't have to use format

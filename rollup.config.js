@@ -19,7 +19,7 @@ export default {
       jsnext: true,
       main: true,
       browser: true,
-//      modulesOnly: true,
+      modulesOnly: true,
     }),
     commonjs({
       include: 'node_modules/**',

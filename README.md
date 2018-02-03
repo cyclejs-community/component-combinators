@@ -11,7 +11,8 @@ lost into a sea of streams' sometimes-cryptic operations.
 - extra confusion due to parametrizing components with streams which were not streams, but constants
 lifted into streams, adding to the noise
 - **modifying, fixing and extending that code proved to be a gamble**, with any debugging sessions 
-counted in hours (to be fair, the complete absence of documentation explained a lot of that)
+counted in hours (to be fair, the complete absence of documentation (and tests) explained a lot of 
+that)
 - hard to figure out quickly, **with certainty** the workflow that the application was 
 implementing (you know, multi-step processes where any step may fail and need to backtrack), let alone add new
  logical branches (error recovery...)
@@ -266,6 +267,37 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 # Documentation
 Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
 
+# Installation
+## Packages
+The following packages are available :
+
+| Package          | Description                                                                                                                          |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| @rxcc/components | Contains the core component combinators                                                                                              |
+| @rxcc/drivers    | Exposes a few useful drivers, in particular drivers to handle command and queries on a domain, and read the DOM state                |
+| @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
+| @rxcc/contracts  | A bunch of predicates and utility functions to handle contract checking and assertions                                               |
+| @rxcc/utils      | Miscellaneous utility functions (debugging, component helpers, etc.) |
+|                  |                                                                                                                                      |
+
+Any of those can be installed with `npm`. For instance :
+
+```javascript
+npm install @rxcc/components
+```
+ 
+ # Tests
+ Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
+ also the possbility in a debugging session to actually display some components' output directly in 
+ the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in 
+ the root directory, type : 
+ 
+ - `npm install`
+ - `npm run build-node-test`
+ - have a look at `/test/index.js` to pick up which test you want to run
+ - `npm run test`
+ - then open with a local webserver the `index.html` in `test` directory 
+
 # Roadmaps
 
 <details>
@@ -359,36 +391,6 @@ The current roadmap for the v0.4 stands as :
     - [x] Action driver 
     - [x] sequential composition combinator (`Pipe`)
 
-# Installation
-## Packages
-The following packages are available :
-
-| Package          | Description                                                                                                                          |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| @rxcc/components | Contains the core component combinators                                                                                              |
-| @rxcc/drivers    | Exposes a few useful drivers, in particular drivers to handle command and queries on a domain, and read the DOM state                |
-| @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
-| @rxcc/contracts  | A bunch of predicates and utility functions to handle contract checking and assertions                                               |
-| @rxcc/utils      | Miscellaneous utility functions (debugging, component helpers, etc.) |
-|                  |                                                                                                                                      |
-
-Any of those can be installed with `npm`. For instance :
-
-```javascript
-npm install @rxcc/components
-```
- 
-# Tests
-Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and 
-also the possbility in a debugging session to actually display some components' output directly in 
-the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in 
-the root directory, type : 
-
-- `npm install`
-- `npm run build-node-test`
-- have a look at `/test/index.js` to pick up which test you want to run
-- `npm run test`
-- then open with a local webserver the `index.html` in `test` directory 
 
 # Demos
 ## Example application

@@ -23,3 +23,8 @@ Life is a mystery.
 # formatting object
 Be sure to have maxDepth set (I set 3), otherwise object like DOM or observable take an eternity 
 to display.
+
+# build issues
+- remove node_module, force clean the npm cache (npm clean cache --force, or sth like that)
+- update version (that worked for rollup uglyfy plugin)
+- pray

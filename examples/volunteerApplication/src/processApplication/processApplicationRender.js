@@ -4,7 +4,7 @@ import {
   STEP_TEAMS,
 } from './properties';
 import { curry } from "ramda"
-import { isBoolean } from "../../../../utils/contracts/src/index"
+import { isBoolean } from "@rxcc/contracts"
 
 //////
 // Render function helpers

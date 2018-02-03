@@ -1,12 +1,12 @@
 import { curry, flatten, keys, merge, pick, reduce } from 'ramda';
 import {
   addOpToJsonPatch, chainModelUpdates, getSelectedKey, toJsonPatch
-} from '../../../../src/components/FSM/utils';
+} from '@rxcc/components';
 import {
   aboutYouFields, personalFields, questionFields, STEP_ABOUT, STEP_QUESTION, STEP_REVIEW,
   STEP_TEAM_DETAIL, STEP_TEAMS
 } from './properties';
-import { assertContract } from "../../../../utils/contracts/src/index"
+import { assertContract } from "@rxcc/contracts"
 import { checkUserApplicationContracts } from '../domain/contracts';
 
 function _updateModelWithStepOnly(step, model, eventData,

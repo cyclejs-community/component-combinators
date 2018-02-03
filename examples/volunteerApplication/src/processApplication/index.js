@@ -1,5 +1,5 @@
 import { Observable as $ } from "rx"
-import { makeFSM } from '../../../../src/components/FSM/FSM';
+import { makeFSM } from '@rxcc/components';
 import { entryComponents, events, fsmSettings, transitions } from './processApplicationFsmDef';
 import { fakeOpportunityKey, fakeProjectKey, fakeUserKey } from "../../fixtures"
 
