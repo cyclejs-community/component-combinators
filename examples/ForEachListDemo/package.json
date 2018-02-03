@@ -65,7 +65,7 @@
     "pretty-format": "^22.1.0",
     "@rxcc/components": "^0.3.6",
     "@rxcc/contracts": "^0.1.10",
-    "@rxcc/drivers": "~0.1.7",
+    "@rxcc/drivers": "~0.1.8",
     "@rxcc/testing": "^0.1.2",
     "@rxcc/utils": "^0.1.4"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/drivers",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "drivers for component combinators library",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-plugin-uglify": "^3.0.0",
     "run-sequence": "^1.1.5",
     "surge": "^0.17.7",
     "uglify-js": "^2.5.0",
@@ -79,6 +79,7 @@
     "pretty-format": "^22.1.0",
     "ramda": "^0.25.0",
     "snabbdom-to-html": "^3.1.1",
+    "cycle-snabbdom": "1.2.0",
     "rx": "^4.1.0"
   }
 }
