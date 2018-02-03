@@ -62,7 +62,7 @@
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-plugin-uglify": "^3.0.0",
     "run-sequence": "^1.1.5",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.13.1",
@@ -75,6 +75,10 @@
     "yargs": "7.1.0"
   },
   "dependencies": {
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "cycle-snabbdom": "1.2.0",
+    "snabbdom": "0.6.7",
+    "snabbdom-to-html": "^3.1.1",
+    "rx": "^4.1.0"
   }
 }
