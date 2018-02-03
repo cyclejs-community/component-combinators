@@ -1,7 +1,6 @@
 import * as Rx from "rx";
 import { a, div } from 'cycle-snabbdom'
-import { preventDefault } from "@rxcc/utils"
-import { DOM_SINK } from "@rxcc/utils"
+import { DOM_SINK, preventDefault } from "@rxcc/utils"
 import { always } from 'ramda'
 import { PAGE, UPDATE } from "./domain/index"
 
@@ -33,7 +32,7 @@ export function Pagination(sources, settings) {
     return clickedPageNumber$.map(always({
       context: PAGE,
       command: UPDATE,
-      payload: {page : index}
+      payload: { page: index }
     }))
   });
 
@@ -41,6 +40,6 @@ export function Pagination(sources, settings) {
     [DOM_SINK]: $.of(
       div(".ui.steps.unstackable", renderedPaginationSection),
     ),
-    domainAction$ : $.merge(changePageActions)
+    domainAction$: $.merge(changePageActions)
   }
 }
