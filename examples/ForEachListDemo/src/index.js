@@ -6,10 +6,9 @@ import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
-import { makeDomainQueryDriver } from './domain/queryDriver/index';
-import { makeDomainActionDriver } from './domain/actionDriver/index';
+import { makeDomainQueryDriver, makeDomainActionDriver } from '@rxcc/drivers';
 
 const repository = localForage;
 const modules = defaultModules;

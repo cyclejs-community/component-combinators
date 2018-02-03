@@ -1,7 +1,7 @@
 import * as Rx from "rx";
 import { a, div } from 'cycle-snabbdom'
-import { preventDefault } from "../../../utils/utils/src/index"
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { preventDefault } from "@rxcc/utils"
+import { DOM_SINK } from "@rxcc/utils"
 import { always } from 'ramda'
 import { PAGE, UPDATE } from "./domain/index"
 

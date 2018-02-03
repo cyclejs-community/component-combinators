@@ -1,4 +1,4 @@
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import * as Rx from "rx";
 import { div, i, img, span } from 'cycle-snabbdom'
 

@@ -62,6 +62,11 @@
     "standard-error": "^1.1.0",
     "localforage": "^1.5.0",
     "snabbdom": "0.6.7",
-    "pretty-format": "^22.1.0"
+    "pretty-format": "^22.1.0",
+    "@rxcc/components": "^0.3.6",
+    "@rxcc/contracts": "^0.1.10",
+    "@rxcc/drivers": "~0.1.7",
+    "@rxcc/testing": "^0.1.2",
+    "@rxcc/utils": "^0.1.4"
   }
 }

@@ -1,4 +1,4 @@
-import { mapObjIndexed, tryCatch, values } from 'ramda';
+import { mapObjIndexed, tryCatch, values, isNil } from 'ramda';
 import * as Rx from "rx"
 import { assertContract, isError, isPromise } from "../../../contracts/src/index"
 import { format } from "../../../utils/src/index"
@@ -86,8 +86,8 @@ export function makeDomainActionDriver(repository, config) {
     source$.subscribe(function (x) {console.log(`makeDomainActionDriver`, x)});
 
     // DOC : responseSource$ will emit responses for any of the action request
-    // DOC : for use cases when one wants to filter per context, `getResponse` property is added
-    // DOC : returns the subject from which one can listen for responses of a given context
+    //     : for use cases when one wants to filter per context, `getResponse` property is added
+    //     : returns the subject from which one can listen for responses of a given context
     const responseSource$ = $.merge(values(eventEmitters));
     responseSource$.getResponse = function getResponse(context) {
       console.warn('getResponse', context);
