@@ -1,6 +1,9 @@
-import { curry, defaultTo, isNil, keys, mapObjIndexed, pipe, reject, values } from "ramda"
+import { curry, defaultTo, isNil, keys, mapObjIndexed, pipe, reject, values, tap  } from "ramda"
 import Rx from "rx"
 import { div, nav } from "cycle-snabbdom"
+import toHTML from "snabbdom-to-html"
+// import { StandardError } from "standard-error"
+import formatObj from 'pretty-format'
 
 const $ = Rx.Observable;
 const ERROR_MESSAGE_PREFIX = 'ERROR : '
@@ -475,6 +478,82 @@ function filterNull(driver) {
   }
 }
 
+// debug
+/**
+ * Adds `tap` logging/tracing information to all sinks
+ * @param {String} traceInfo
+ * @param {Sinks} sinks
+ * @returns {*}
+ */
+function traceSinks(traceInfo, sinks) {
+  return mapObjIndexed((sink$, sinkName) => {
+    return sink$
+      ? sink$.tap(function log(x) {
+        console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
+      })
+      // Pass on null and undefined values as they are, they will be filtered out downstream
+      : sink$
+  }, sinks)
+}
+
+const logFnTrace = (title, paramSpecs) => ({
+  before: (args, fnToDecorateName) =>
+    console.info(`==> ${title.toUpperCase()} | ${fnToDecorateName}(${paramSpecs.join(', ')}): `, args),
+  after: (result, fnToDecorateName) => {
+    console.info(`<== ${title.toUpperCase()} | ${fnToDecorateName} <- `, result);
+    return result
+  },
+});
+
+function toHTMLorNull(x) {
+  return x ? toHTML(x) : null
+}
+
+function convertVNodesToHTML(vNodeOrVnodes) {
+  if (Array.isArray(vNodeOrVnodes)) {
+    console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? toHTML(x) : null)}`)
+    return vNodeOrVnodes.map(toHTMLorNull)
+  }
+  else {
+    console.debug(`toHTML: ${toHTMLorNull(vNodeOrVnodes)}`)
+    return toHTMLorNull(vNodeOrVnodes)
+  }
+}
+
+function formatArrayObj(arr, separator) {
+  return arr.map(format).join(separator)
+}
+
+function format(obj) {
+  // basically if obj is an object, use formatObj, else use toString
+  if (obj === 'null') {
+    return '<null>'
+  }
+  else if (obj === 'undefined') {
+    return '<undefined>'
+  }
+  else if (typeof(obj) === 'string' && obj.length === 0) {
+    return '<empty string>'
+  }
+  else if (Array.isArray(obj)) {
+    return formatArrayObj(obj, ' ; ')
+  }
+  else if (typeof(obj) === 'object') {
+    if (keys(obj).length === 0) {
+      // i.e. object is {}
+      return '<empty object>'
+    }
+    else return formatObj(obj, {maxDepth : 3})
+  }
+  else {
+    return "" + obj
+  }
+}
+
+function traceFn(fn, text) {
+  return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "")))
+}
+
 export {
   // Helpers
   emitNullIfEmpty,
@@ -508,5 +587,13 @@ export {
   traverseTree,
   firebaseListToArray,
   getInputValue,
-  filterNull
+  filterNull,
+  // debug
+  traceSinks,
+  getFunctionName,
+  logFnTrace,
+  convertVNodesToHTML,
+  formatArrayObj,
+  format,
+  traceFn
 }
