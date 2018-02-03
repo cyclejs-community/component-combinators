@@ -44,11 +44,9 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
--- maybe put the field browser in the package to the umd ?
-- put helpers, debug, utils together? call it utils
+- missing volunteer application to transform
 - change @rxcc/testing to testutils
 - change assertContract to use auto print arguments with %O, so I don't have to use format
-- so @rxcc/drivers will only use @rxcc/contracts
 - TODO : AllInDemo task deletion does not work
 - remove format and use console.log ?? will be complicated with assertCotnract in its current form
 - also in FSM and else use console.context for logging

@@ -8,7 +8,7 @@ import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { DOM_SINK } from "@rxcc/helpers"
+import { DOM_SINK } from "@rxcc/utils"
 import { makeAuthDriver } from "../drivers/auth"
 
 const repository = localForage;
