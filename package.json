@@ -16,8 +16,11 @@
     "src/",
     "dist/",
     "dist-node/",
-    "utils",
-    "drivers"
+    "utils/",
+    "drivers/",
+    "debug/",
+    "helpers/",
+    "contracts/"
   ],
   "browserify": {
     "transform": [

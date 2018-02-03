@@ -1,7 +1,7 @@
 import * as Rx from "rx";
 import { InjectSources, ListOf, ForEach, m, InSlot } from "@rxcc/components"
-import { firebaseListToArray, preventDefault } from "../../../../utils/utils/src/index"
-import { Div, DOM_SINK, EmptyComponent } from "../../../../utils/helpers/src/index"
+import { firebaseListToArray, preventDefault } from "../../../../utils/src/index"
+import { Div, DOM_SINK, EmptyComponent } from "../../../../helpers/src/index"
 import { always, filter, map } from 'ramda'
 import { a, div, h2, img, nav, p, strong, ul } from "cycle-snabbdom"
 

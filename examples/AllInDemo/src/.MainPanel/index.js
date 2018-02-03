@@ -1,4 +1,4 @@
-import { Div } from "../../../../utils/helpers/src/index"
+import { Div } from "../../../../helpers/src/index"
 import { m, OnRoute } from "@rxcc/components"
 import { Project } from './..Project'
 import { ProjectsDashboard } from './..ProjectsDashboard'

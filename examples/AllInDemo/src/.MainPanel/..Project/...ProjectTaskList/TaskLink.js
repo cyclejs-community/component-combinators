@@ -1,6 +1,6 @@
 import * as Rx from "rx";
 import { a } from "cycle-snabbdom"
-import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
+import { DOM_SINK } from "../../../../../../helpers/src/index"
 
 const $ = Rx.Observable;
 

@@ -1,5 +1,5 @@
-import { preventDefault } from "../../../../../../utils/utils/src/index"
-import { DOM_SINK } from "../../../../../../utils/helpers/src/index"
+import { preventDefault } from "../../../../../../utils/src/index"
+import { DOM_SINK } from "../../../../../../helpers/src/index"
 import { prop } from 'ramda'
 import { ROUTE_PARAMS } from "@rxcc/components"
 import { getStateInStore, TASKS_FILTER } from "../../../../src/inMemoryStore"

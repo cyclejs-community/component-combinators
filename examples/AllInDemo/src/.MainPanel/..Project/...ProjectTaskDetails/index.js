@@ -1,3 +1,3 @@
-import { DummyComponent } from "../../../../../../utils/helpers/src/index"
+import { DummyComponent } from "../../../../../../helpers/src/index"
 
 export const ProjectTaskDetails = DummyComponent;

@@ -1,5 +1,5 @@
 import { InSlot, m } from "@rxcc/components"
-import { vLift } from "../../../../../../utils/helpers/src/index"
+import { vLift } from "../../../../../../helpers/src/index"
 import { div } from "cycle-snabbdom"
 import { ToggleButton } from './ToggleButton'
 import { EnterTask } from './EnterTask'

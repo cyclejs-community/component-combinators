@@ -1,6 +1,6 @@
 import { ROUTE_SOURCE } from "./properties"
 import { InjectSourcesAndSettings } from "@rxcc/components"
-import { Div, DOM_SINK } from "../../../utils/helpers/src/index"
+import { Div, DOM_SINK } from "../../../helpers/src/index"
 import { values } from 'ramda'
 import { PROJECTS, USER } from "./domain"
 import { SidePanel } from "./.SidePanel"
