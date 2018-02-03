@@ -1,7 +1,7 @@
 import {
   assertContract, hasAtLeastOneChildComponent, isObservable, isString
 } from "../../../contracts/src/index"
-import { format } from "../../../debug/src/index"
+import { format } from "../../../utils/src/index"
 import { m } from '../m/m'
 import { map, mergeAll } from 'ramda'
 import * as Rx from "rx";

@@ -2,7 +2,7 @@ import {
   assertContract, checkAndGatherErrors, hasAtLeastOneChildComponent, isArrayOf, isObservable,
   isString
 } from "../../../contracts/src/index"
-import { format, } from "../../../debug/src/index"
+import { format, } from "../../../utils/src/index"
 import { DOM_SINK } from "../../../helpers/src/index"
 import { m } from "../m/m"
 import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"

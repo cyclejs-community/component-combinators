@@ -4,7 +4,7 @@ import { div, h } from 'cycle-snabbdom'
 import { runTestScenario } from '../testing/src/runTestScenario'
 import { Case, Switch } from '../src/components/Switch/Switch'
 import { DOM_SINK } from "../helpers/src/index"
-import { convertVNodesToHTML } from "../debug/src/index"
+import { convertVNodesToHTML } from "../utils/src/index"
 
 import { pipe } from 'ramda'
 

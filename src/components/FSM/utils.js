@@ -2,7 +2,7 @@ import {
   always, cond, evolve, flatten, identity, isNil, map as mapR, mapObjIndexed, pipe, T, values
 } from "ramda"
 import { assertContract, isFunction } from "../../../contracts/src/index"
-import { logFnTrace } from "../../../debug/src/index"
+import { logFnTrace } from "../../../utils/src/index"
 import { assertFunctionContractDecoratorSpecs, decorateWith } from "../../../utils/src/index"
 import {
   isActionGuardCodomain, isActionGuardDomain, isActionRequestCodomain, isActionRequestDomain,

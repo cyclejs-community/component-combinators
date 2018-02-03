@@ -1,7 +1,7 @@
 import { mapObjIndexed, tryCatch, values } from 'ramda';
 import * as Rx from "rx"
 import { assertContract, isError, isPromise } from "../../../contracts/src/index"
-import { format } from "../../../debug/src/index"
+import { format } from "../../../utils/src/index"
 
 const $ = Rx.Observable;
 

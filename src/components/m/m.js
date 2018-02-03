@@ -45,7 +45,7 @@ import {
   assertContract, assertSinksContracts, assertSourcesContracts, isArray, isArrayOf, isArrayOptSinks,
   isEmptyArray, isFunction, isMergeSinkFn, isOptSinks, isVNode
 } from "../../../contracts/src/index"
-import { format, traceSinks } from "../../../debug/src/index"
+import { format, traceSinks } from "../../../utils/src/index"
 import { removeNullsFromArray, traverseTree } from "../../../utils/src/index"
 import {
   addIndex, always, clone, concat, defaultTo, flatten, is, isNil, keys, map, merge, mergeWith, path,
