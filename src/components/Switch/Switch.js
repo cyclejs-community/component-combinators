@@ -6,7 +6,7 @@ import {
   isSource, isString, isVNode
 } from "../../../contracts/src/index"
 import { removeNullsFromArray, unfoldObjOverload } from "../../../utils/src/index"
-import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../helpers/src/index"
+import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../utils/src/index"
 
 import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
 import * as Rx from 'rx'

@@ -7,7 +7,7 @@ import { div } from 'cycle-snabbdom';
 import {
   getSlotHoles, m, mergeChildrenIntoParentDOM, rankChildrenBySlot
 } from '../src/components/m/m';
-import { makeDivVNode, projectSinksOn } from "../helpers/src/index"
+import { makeDivVNode, projectSinksOn } from "../utils/src/index"
 import { runTestScenario } from '../testing/src/runTestScenario';
 
 let $ = Rx.Observable;

@@ -2,7 +2,7 @@ import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
 import { runTestScenario } from '../testing/src/runTestScenario'
-import { DOM_SINK, EmptyComponent } from "../helpers/src/index"
+import { DOM_SINK, EmptyComponent } from "../utils/src/index"
 import { convertVNodesToHTML, format } from "../utils/src/index"
 import { concat, pipe } from 'ramda'
 import { ListOf } from "../src/components/ListOf/ListOf"

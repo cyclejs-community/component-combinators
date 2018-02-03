@@ -35,7 +35,7 @@ import * as Rx from 'rx'
 import { h } from 'cycle-snabbdom'
 import { runTestScenario } from '../testing/src/runTestScenario'
 import { convertVNodesToHTML, format } from "../utils/src/index"
-import { DOM_SINK } from "../helpers/src/index"
+import { DOM_SINK } from "../utils/src/index"
 import { pipe } from 'ramda'
 import { ROUTE_PARAMS } from "../src/components/Router/properties"
 

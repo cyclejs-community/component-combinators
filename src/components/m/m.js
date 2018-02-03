@@ -40,7 +40,7 @@
 
 import {
   emitNullIfEmpty, getSinkNamesFromSinksArray, projectSinksOn,
-} from "../../../helpers/src/index"
+} from "../../../utils/src/index"
 import {
   assertContract, assertSinksContracts, assertSourcesContracts, isArray, isArrayOf, isArrayOptSinks,
   isEmptyArray, isFunction, isMergeSinkFn, isOptSinks, isVNode

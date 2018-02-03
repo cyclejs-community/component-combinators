@@ -3,7 +3,7 @@ import {
   isString
 } from "../../../contracts/src/index"
 import { format, } from "../../../utils/src/index"
-import { DOM_SINK } from "../../../helpers/src/index"
+import { DOM_SINK } from "../../../utils/src/index"
 import { m } from "../m/m"
 import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"

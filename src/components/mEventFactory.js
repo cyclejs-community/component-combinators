@@ -2,7 +2,7 @@ import {
   assertContract, checkAndGatherErrors, eitherE, hasNoCommonValues, hasNoDuplicateKeys, isFunction,
   isHashMapE, isNewKey, isStrictRecordE, isString
 } from "../../contracts/src/index"
-import { getSinkNamesFromSinksArray, } from "../../helpers/src/index"
+import { getSinkNamesFromSinksArray, } from "../../utils/src/index"
 import { format } from "../../utils/src/index"
 import { preventDefault, removeNullsFromArray } from "../../utils/src/index"
 import { defaultMergeSinkFn, m } from "./m/m"
