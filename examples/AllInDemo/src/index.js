@@ -9,16 +9,12 @@ import { makeDOMDriver } from "cycle-snabbdom"
 import { makeHistoryDriver } from '@cycle/history';
 import { domainActionsConfig, domainObjectsQueryMap } from './domain/index';
 import { inMemoryStoreActionsConfig, inMemoryStoreQueryMap } from './inMemoryStore';
-import { makeDomainQueryDriver } from './domain/queryDriver/index';
-import { makeDomainActionDriver } from './domain/actionDriver';
-// import { focusDriver } from '@rxcc/components/drivers'; // ok for webpack but not rollup
-import { focusDriver, documentDriver } from '@rxcc/drivers';
+import { focusDriver, documentDriver, makeDomainQueryDriver, makeDomainActionDriver } from '@rxcc/drivers';
 import {
   initLocallyPersistedState, initLocalNonPersistedState, initRemotelyPersistedState, initRepository
 } from './init'
 // utils
-import { filterNull } from "@rxcc/utils"
-import { DOM_SINK} from "@rxcc/helpers"
+import { filterNull, DOM_SINK } from "@rxcc/utils"
 
 const repository = initRepository(firebase);
 const fbRoot = repository;

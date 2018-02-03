@@ -1,10 +1,9 @@
 import * as Rx from "rx";
-import { preventDefault } from "../../../../../../utils/src/index"
-import { DOM_SINK } from "../../../../../../helpers/src/index"
+import { DOM_SINK, preventDefault } from "@rxcc/utils"
+import { ROUTE_PARAMS } from "@rxcc/components"
 import {
   ACTIVITIES, activityFactory, DELETE_TASK, LOG_NEW_ACTIVITY, TASKS
 } from "../../../../src/domain"
-import { ROUTE_PARAMS } from "@rxcc/components"
 
 const $ = Rx.Observable;
 

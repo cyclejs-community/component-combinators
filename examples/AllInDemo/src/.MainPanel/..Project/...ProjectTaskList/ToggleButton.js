@@ -1,5 +1,5 @@
 import { InjectSourcesAndSettings } from "@rxcc/components"
-import { DOM_SINK } from "../../../../../../helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import { button } from "cycle-snabbdom"
 import { PATCH, TASKS_FILTER } from "../../../../src/inMemoryStore"
 import { makeButtonGroupSelector } from './helpers'

@@ -1,7 +1,6 @@
 import * as Rx from "rx";
-import { assertContract } from "../../../../contracts/src/index"
-import { DOM_SINK } from "../../../../helpers/src/index"
-import { format } from "../../../../debug/src/index"
+import { assertContract } from "@rxcc/contracts"
+import { DOM_SINK, format } from "@rxcc/utils"
 import { div, input, label, span } from "cycle-snabbdom"
 import { defaultTo } from 'ramda'
 

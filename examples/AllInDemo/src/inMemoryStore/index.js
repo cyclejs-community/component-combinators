@@ -1,7 +1,7 @@
 import * as Rx from "rx";
 import * as jsonpatch from "fast-json-patch"
 import { isArrayUpdateOperations } from "@rxcc/components"
-import { assertContract } from "../../../../contracts/src/index"
+import { assertContract } from "@rxcc/contracts"
 
 const $ = Rx.Observable;
 

@@ -1,7 +1,7 @@
 import { TASKS_INIT_FILTER } from './properties'
 import { INITIAL_DATA } from "../fixtures"
 import { flatten, keys, map } from "ramda"
-import { TASKS_FILTER } from "./inMemoryStore/index"
+import { TASKS_FILTER } from "./inMemoryStore"
 
 export function initRemotelyPersistedState(repository) {
   // in this case, firebase is the repository

@@ -1,6 +1,6 @@
 import * as Rx from "rx";
 import { ForEach, InjectSourcesAndSettings, InSlot, ListOf, Pipe } from "@rxcc/components"
-import { DOM_SINK, EmptyComponent, vLift } from "../../../../../../helpers/src/index"
+import { DOM_SINK, EmptyComponent, vLift } from "@rxcc/utils"
 import { button, div } from "cycle-snabbdom"
 import { TASKS } from "../../../../src/domain"
 import { ComputeCheckBoxActions, ComputeEditorActions } from './helpers'

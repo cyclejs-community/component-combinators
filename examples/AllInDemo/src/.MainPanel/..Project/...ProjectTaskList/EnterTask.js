@@ -1,6 +1,5 @@
 import * as Rx from "rx";
-import { getInputValue, preventDefault } from "../../../../../../utils/src/index"
-import { DOM_SINK } from "../../../../../../helpers/src/index"
+import { DOM_SINK, getInputValue, preventDefault } from "@rxcc/utils"
 import { button, div, input } from "cycle-snabbdom"
 import { ROUTE_PARAMS } from "@rxcc/components"
 import {

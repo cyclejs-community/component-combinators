@@ -1,3 +1,3 @@
-import { DummyComponent } from "../../../../../helpers/src/index"
+import { DummyComponent } from "@rxcc/utils"
 
 export const ProjectsDashboard = DummyComponent

@@ -1,5 +1,5 @@
 import * as Rx from "rx";
-import { DOM_SINK } from "../../../../../../helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import {
   ACTIVITIES, activityFactory, LOG_NEW_ACTIVITY, TASKS, UPDATE_TASK_COMPLETION_STATUS,
   UPDATE_TASK_DESCRIPTION

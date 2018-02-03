@@ -1,6 +1,5 @@
 import * as Rx from "rx";
-import { preventDefault } from "../../../../utils/src/index"
-import { DOM_SINK } from "../../../../helpers/src/index"
+import { DOM_SINK, preventDefault } from "@rxcc/utils"
 import { button, div } from "cycle-snabbdom"
 import { always, merge } from 'ramda'
 
