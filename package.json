@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/components",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Library providing combinators for reactive components",
   "author": "Olivier Couriol",
   "license": "Apache-2.0",
