@@ -9,7 +9,7 @@ import { makeDOMDriver } from "cycle-snabbdom"
 import { run } from "@cycle/core"
 import { loadTestData } from '../fixtures';
 // utils
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { DOM_SINK } from "@rxcc/utils"
 import { merge } from "ramda"
 
 const $ = Rx.Observable;

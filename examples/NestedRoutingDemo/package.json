@@ -67,6 +67,11 @@
     "snabbdom": "0.6.7",
     "snabbdom-to-html": "^3.1.1",
     "standard-error": "^1.1.0",
-    "pretty-format": "^22.1.0"
+    "pretty-format": "^22.1.0",
+    "@rxcc/components": "^0.3.9",
+    "@rxcc/contracts": "^0.1.10",
+    "@rxcc/drivers": "~0.1.8",
+    "@rxcc/testing": "^0.1.2",
+    "@rxcc/utils": "^0.1.5"
   }
 }

@@ -1,6 +1,5 @@
-import { OnRoute } from "../../../src/components/Router/Router"
-import { format } from "../../../utils/debug/src/index"
-import { DOM_SINK } from "../../../utils/helpers/src/index"
+import { OnRoute, InjectSourcesAndSettings  } from "@rxcc/components"
+import { format, DOM_SINK  } from "@rxcc/utils"
 import * as Rx from "rx";
 import { HomePage } from "./HomePage"
 import { AspirationalPageHeader, Card, CardDetail } from "./AspirationalPage"
@@ -8,7 +7,6 @@ import {
   BLACBIRD_CARD_INFO, BLACK_BIRD_DETAIL_ROUTE, TECHX_CARD_DETAIL_ROUTE, TECHX_CARD_INFO,
   TYPOGRAPHICS_CARD_DETAIL_ROUTE, TYPOGRAPHICS_CARD_INFO
 } from "./properties"
-import { InjectSourcesAndSettings } from "../../../src/components/Inject/InjectSourcesAndSettings"
 
 const $ = Rx.Observable;
 const ROUTE_SOURCE = 'route$';
