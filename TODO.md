@@ -9,6 +9,7 @@
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- change m to `combine`
 - think about work around for isolation, components need to pass their click free of concerns
 - m : write a better doc to explain settings inheritance, and put in the docs not in the code
   - write an interactive application with update of the three possible settings

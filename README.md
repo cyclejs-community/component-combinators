@@ -2,27 +2,29 @@
 
 # Motivation 
 Around 18 months ago, while working on what is the largest cyclejs codebase I know of 
-(~20K lines of code), I realized how hard it was to actually make sense **quickly** of a large 
-cycle-js application. Focusing on the issues derived largely from cyclejs usage :
+(~20K lines of javascript), I realized how hard it was to actually make sense and maintain a 
+large cycle-js application. Focusing on those issues derived from cyclejs usage :
 
 - a large portion of the code was stream handling originating from the use of components and the 
 necessity to wire them together. The domain logic, and as a result, the application logic was 
 lost into a sea of streams' sometimes-cryptic operations. 
-- extra confusion due to parametrizing components with streams which were not streams, but constants
-lifted into streams, adding to the noise
+- extra confusion about inputs (sources), their meanings and usage, due to inputs addressing two 
+separate concerns : component parameterization and interfacing with external systems. A bunch of 
+constants were lifted into streams in miscelleanous places to serve as parameters for generic 
+components, and that led to more stream arithmetic, noise, and in some occurences bugs
 - **modifying, fixing and extending that code proved to be a gamble**, with any debugging sessions 
-counted in hours (to be fair, the complete absence of documentation (and tests) explained a lot of 
-that)
-- hard to figure out quickly, **with certainty** the workflow that the application was 
-implementing (you know, multi-step processes where any step may fail and need to backtrack), let alone add new
- logical branches (error recovery...)
+counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of 
+that). The absence of unit tests itself could be explained itself by, well, the **pain** that it 
+is to write them with streams in the middle, which led to resorting to sometimes 
+brittle, often slow, selenium-based end-to-end tests.
+- hard to figure out quickly, **with certainty** the exact workflow that the application was 
+implementing (you know, multi-step processes where any step may fail and you need to backtrack), let
+ alone add new logical branches (error recovery...)
 
 And yet, while that application was large, it cannot really be said to be a particularly complex 
-application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations (no animations at all in fact if I remember well), adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote 
-database, and miscellaneous domain-driven workflows.
+application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
 
-This was the motivation behind my dedicating my (quite) limited free time to investigate remedies
- to what appeared to be an uncalled-for complexity. I singled out those four areas : 
+This was the motivation behind my dedicating my (quite) limited free time to investigate remedies. I singled out those four areas : 
  componentization, visual debugging, testing, concurrency control. I am happy that finally the 
  first step is in a sufficient state of progress that it can be shared. 
  
@@ -33,14 +35,14 @@ This was the motivation behind my dedicating my (quite) limited free time to inv
  through a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
   component combinators have been extracted and 
   abstracted from the 20K lines of code, so they should cover a large number of cases that one 
-  encounters. The proposed component model could be seen in many ways a generalization of that of 
-  `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any 
+  encounters. The proposed component model could be seen in many ways as a generalization of that
+   of `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any 
   modification of cyclejs internals.** 
 
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
 combinators only work with rxjs, the version of cycle used brings us back to the time 
 when cyclejs could still be considered a library (vs. a framework), build is not optimized, 
-`console.log` are all over the place, etc. 
+`console.log`s are all over the place, etc. 
 
 It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on 
 the **interdependence** of components that defines the user interface **logic**, rather than having
@@ -109,7 +111,7 @@ export const App = dsl`
 `
 ```
 
-Syntax, whichever one chosen (we will work only with the first one) is but a detail. 
+Syntax, whichever chosen (we will work only with the first one) is but a detail. 
 What is important here is that :
 
 - the stream wiring concern has disappeared within the `Switch` combinator (i.e. has been 
@@ -251,7 +253,8 @@ The proposed library has the following combinators :
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot|
-| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` basically traverses a component tree, applying default or provided reducing functions along the way.  |
+| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions 
+along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
@@ -311,6 +314,15 @@ concept level.
 The current roadmap for the v0.5 stands as :
 
 - Core
+    - robustness of settings :
+      - in some cases, should be inherited down the tree, in other cases should be private (find 
+      a nice syntax). That creates complexity but reduces bug surface so worth it.
+      - very important bug which is facilitated as of now : a settings could be set at some 
+      location in the tree, and then read wrongly at another location of the tree because they 
+      have the same name. that prevents from using default values for settings, the default value
+       could be wrongly overridden by settings inherited from up the tree.
+         - as of now, expected settings MUST be mandatory and SHOULD be namespaced to avoid 
+         collisions
     - see what can be done to have a better concurrency model (i.e. beyond FSM)
     - [ ] type contracts error handling for component's settings (which types of component 
     combinator expects, types of settings, etc.)
