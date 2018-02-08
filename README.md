@@ -24,7 +24,8 @@ implementing (you know, multi-step processes where any step may fail and you nee
 And yet, while that application was large, it cannot really be said to be a particularly complex 
 application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
 
-This was the motivation behind my dedicating my (quite) limited free time to investigate remedies. I singled out those four areas : 
+This was the motivation behind my dedicating my (quite) limited free time to add the missing 
+capabilities to the framework. I singled out those four areas : 
  componentization, visual debugging, testing, concurrency control. I am happy that finally the 
  first step is in a sufficient state of progress that it can be shared. 
  
@@ -222,7 +223,7 @@ export const App = InjectSources({
 ]);
 ```
 
-![](examples/ForEachListDemo/assets/images/animated_demo.gif)
+![ForEachList demo](examples/ForEachListDemo/assets/images/animated_demo.gif)
 
 The reactive update (on `fetchedCardsInfo$`) and iteration logic (on the array of items received 
 from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` combinators.
@@ -259,8 +260,7 @@ The proposed library has the following combinators :
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot|
-| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions 
-along the way.  |
+| [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
 
@@ -437,7 +437,7 @@ The example application is taken from the book [Mastering Angular2 components](h
 - `npm run wbuild`
 - then open with a local webserver the `index.html` in `$HOMEDIR/examples/NestedRoutingDemo` directory
 
-### ForEach and List
+## ForEach and List
 - go to `$HOMEDIR/examples/ForEachListDemo`
 - `npm install`
 - `npm run wbuild`
