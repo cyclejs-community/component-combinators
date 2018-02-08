@@ -9,8 +9,9 @@
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
-- change m to `combine`
+- break the FSM doc in two parts : one bla bla theoretical and one sample app
 - think about work around for isolation, components need to pass their click free of concerns
+- m : call it `combine`
 - m : write a better doc to explain settings inheritance, and put in the docs not in the code
   - write an interactive application with update of the three possible settings
 - m : design better trace information
@@ -45,11 +46,10 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
+- TODO : AllInDemo task deletion does not work
 - study parcel
-- missing volunteer application to transform
 - change @rxcc/testing to testutils
 - change assertContract to use auto print arguments with %O, so I don't have to use format
-- TODO : AllInDemo task deletion does not work
 - remove format and use console.log ?? will be complicated with assertCotnract in its current form
 - also in FSM and else use console.context for logging
 - InjectStateInSinks to remove

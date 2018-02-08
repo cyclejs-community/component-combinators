@@ -68,11 +68,6 @@ Promise.resolve()
       domainQuery: makeDomainQueryDriver(repository, domainObjectsQueryMap),
       domainAction$: makeDomainActionDriver(repository, domainActionsConfig),
       document: documentDriver
-      // TODO : add https://github.com/tmpvar/jsdom
-      // https://github.com/tmpvar/jsdom/issues/1284,
-      // https://github.com/snabbdom/snabbdom/issues/30 - have a DOM driver which return
-      // document as DOM source, instead of cycle-dom-driver - see if that is compatible with
-      // mock in runTestScenario (how to set input data??)
     });
 
     // Webpack specific code
@@ -91,24 +86,3 @@ Promise.resolve()
 
 // NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/
 // ~~ attributes -> attrs
-
-
-// 0. router source, should be just this, no driver, Rx.Observable.create
-// let unlisten = history.listen((location) => {
-// observer.next(location);
-//});
-// I already hav history (imported from npm package history)
-// 1. import history-driver from cycle, I need the click capture. check that
-// that is use cyclic-router 1.0.0
-// check it works with capture settings
-// 2. implements the route logic
-// navigate to /apply
-// navigate to /completed (!!I will have to update the fsm state entry component for STATE_APPLIED)
-// 3. check database keys - use the same as in example
-// 4. I will need query$: makeDomainQueryDriver(repository, queryConfig),
-// 4. replace firebase by something else
-// use rxdb
-// copy firebase data to rxdb (dump?)
-// adapt the makeDomainQueryDriver to that repository
-// or pipelinedb https://www.pipelinedb.com/
-// NO : use local storage : https://github.com/localForage/localForage

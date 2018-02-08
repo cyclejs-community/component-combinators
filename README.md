@@ -42,7 +42,7 @@ This was the motivation behind my dedicating my (quite) limited free time to inv
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
 combinators only work with rxjs, the version of cycle used brings us back to the time 
 when cyclejs could still be considered a library (vs. a framework), build is not optimized, 
-`console.log`s are all over the place, etc. 
+`console.log`s are all over the place, only tested on chrome evergreen, etc. 
 
 It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on 
 the **interdependence** of components that defines the user interface **logic**, rather than having
@@ -84,6 +84,8 @@ and translates the simple design :
     - `MainPage` takes the concern of implementing the main page logic.
     - `LoginPage` is parameterized by a redirect route, and is in charge of logging in the user
     - `convertAuthToIsLoggedIn` emits `IS_NOT_LOGGED_IN` or `IS_LOGGED_IN` according to whether the user is logged or not
+
+![login demo with Switch combinator](examples/SwitchLogin/assets/login_demo.gif)
 
 The same code could be written in a `JSX`-like dialect as :
 
