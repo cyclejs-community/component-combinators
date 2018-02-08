@@ -9,6 +9,8 @@ From the previous chart, the corresponding control flow was derived :
 ![complete control flow](./assets/images/graphs/sparks%20application%20process%20with%20validation%20and%20errors%20flow.png)
 
 # Demo
+The previously presented control flow was implemented with the FSM combinator :
+
 ![demo](assets/images/animated_demo.gif)
 
 # Component documentation
