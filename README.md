@@ -222,6 +222,8 @@ export const App = InjectSources({
 ]);
 ```
 
+![](examples/ForEachListDemo/assets/images/animated_demo.gif)
+
 The reactive update (on `fetchedCardsInfo$`) and iteration logic (on the array of items received 
 from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` combinators.
 
