@@ -4,6 +4,7 @@ This is a demonstration illustrating the use of a FSM combinator component to di
 # Specifications
 Without going too much in textual details, we reproduce here the initial wireframes from the UX 
 team :
+
 ![sequence](https://camo.githubusercontent.com/d64fd08f45bd5c28e5cd237ef095f5181c89ea72/687474703a2f2f692e696d6775722e636f6d2f42466a6667575a2e706e67)
 
 From the previous chart, after discussion with the development team, more detailed specifications 
