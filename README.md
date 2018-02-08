@@ -43,7 +43,7 @@ capabilities to the framework. I singled out those four areas :
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
 combinators only work with rxjs, the version of cycle used brings us back to the time 
 when cyclejs could still be considered a library (vs. a framework), build is not optimized, 
-`console.log`s are all over the place, only tested on chrome evergreen, etc. 
+`console.log`s are all over the place, **only tested on chrome evergreen**, etc. 
 
 It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on 
 the **interdependence** of components that defines the user interface **logic**, rather than having
