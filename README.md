@@ -175,6 +175,8 @@ export const App = InjectSourcesAndSettings({
 ]);
 ```
 
+![animated demo](examples/NestedRoutingDemo/assets/nested_routing_demo.gif)
+
 The (gory) nested routing switching logic is hidden behind the `OnRoute` combinator. With that out
  of the way, the routing logic can be expressed very naturally (in a very similar way to React 
 router's [dynamic routing](https://reacttraining.com/react-router/core/guides/philosophy/dynamic-routing), in which the router is a component 
