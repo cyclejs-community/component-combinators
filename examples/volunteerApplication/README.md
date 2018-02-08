@@ -6,8 +6,7 @@ This is a demonstration illustrating the use of a FSM combinator component to di
 
 From the previous chart, the corresponding control flow was derived :
 
-![complete control flow](./assets/images/graphs/sparks%20application%20process%20with%20validation
-%20and%20errors%20flow.png)
+![complete control flow](./assets/images/graphs/sparks%20application%20process%20with%20validation%20and%20errors%20flow.png)
 
 # Demo
 ![demo](assets/images/animated_demo.gif)
