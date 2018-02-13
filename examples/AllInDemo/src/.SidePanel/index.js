@@ -90,13 +90,12 @@ function NavigationItem(sources, settings) {
     // application (unicity of a route)
     click: sources.DOM.select(`.navigation-section__link.${linkSanitized}`).events('click')
   };
-  // TODO : refactor to state = {isLinkActive$ : url$...}, it is more readable, and in line with
+  // TODO : refactor to state = {isLinkActive : ...}, it is more readable, and in line with
   // the equational approach, that I will detail later in the blog
   // TODO : search for `function NavigationItem` in blog and update example
   // TODO : if have the courage, go through all components and impose the pattern
   // TODO : copy the selector DRY approach from blog article Applying componentization to reactive
-  // systems - sample application.md TODO : if have the courage, go through all components and
-  // impose the pattern...
+  // systems - sample application.md
   const state$ = url$
     .map(url => url.indexOf(link) > -1)
     .shareReplay(1);

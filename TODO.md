@@ -9,6 +9,7 @@
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- make a final v0.4 release (actually release as is 3.x before the final v.4)
 - break the FSM doc in two parts : one bla bla theoretical and one sample app
 - think about work around for isolation, components need to pass their click free of concerns
 - m : call it `combine`
