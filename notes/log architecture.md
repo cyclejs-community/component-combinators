@@ -201,3 +201,12 @@ Given :
 ```
 
 (id has to be with the stuff it disambiguates..., so App-1, SidePanel-3, instead of App,Sidepanel, 3)
+
+combinatorName will be set by the combinator creator
+componentName will be set by the programmer
+- m will traceInput sources with settings.id (if none then 0 - for root)
+- then call children components with settings :
+  - id : old ID + push getID
+  - set componentName to component.name if no (outer)settings._trace.componentName (case leave 
+  compponent)
+    - as a matter tree should be only combinator till leaves (to put in contract)

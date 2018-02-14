@@ -388,6 +388,7 @@ function m(componentDef, _settings, componentTree) {
     `m > assertContract : error checking signature (componentDef, settings, children) = 
    ${format({ componentDef, _settings, _children: componentTree })}!`);
 
+  // TODO : remove cf. below
   let {
     makeLocalSources, makeLocalSettings, mergeSinks,
     computeSinks, checkPostConditions, checkPreConditions
@@ -397,6 +398,7 @@ function m(componentDef, _settings, componentTree) {
 
   // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
   // DOC : [null, [child]] is allowed
+  // TODO : refactor to const {parentComponent, childrenComponents} = parseComponentTree(componentTree)
   if (isNil(componentTree[1])) {
     parentComponent = always(null);
     childrenComponents = componentTree;
@@ -411,8 +413,9 @@ function m(componentDef, _settings, componentTree) {
   }
   // NOTE : there is no more branches as we already type-checked prior to here
 
-  // Set default values
   _settings = _settings || {};
+  // TODO : refactor to const {makeL...} = parseComponentDef(...), except settings
+  // Set default values
   makeLocalSources = defaultTo(always(null), makeLocalSources);
   makeLocalSettings = defaultTo(always({}), makeLocalSettings);
   mergeSinks = defaultTo({}, mergeSinks);
@@ -431,7 +434,7 @@ function m(componentDef, _settings, componentTree) {
     const mergedSettings = deepMerge(innerSettings, _settings);
 
     // Note that per `merge` ramda spec. the second object's values
-    // replace those from the first in case of key conflict
+    // replace those from the first in case of conflict of keys
     const localSettings = deepMerge(
       makeLocalSettings(mergedSettings),
       mergedSettings
@@ -454,6 +457,8 @@ function m(componentDef, _settings, componentTree) {
     let reducedSinks;
 
     // Case : computeSinks is defined
+    // TODO : refactor in three cases : computeReducedSinks(reduceStrategy, parentComponent, childrenComponents, extendedSources, localSettings)
+    // TODO : with reduceStrategy = one big shot | one per sink | one for all sinks
     if (computeSinks) {
       console.groupCollapsed(`${traceInfo} component > computeSinks`)
       reducedSinks = computeSinks(

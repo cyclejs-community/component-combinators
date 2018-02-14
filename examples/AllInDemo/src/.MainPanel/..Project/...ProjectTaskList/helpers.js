@@ -90,6 +90,7 @@ export function ComputeEditorActions(sources, settings) {
     domainAction$: save$
       .withLatestFrom(projectFb$, user$, (save, projectFb, user) => {
         const { fbIndex, project: { _id: projectId } } = projectFb;
+        const {editMode, textContent} = save;
         // NOTE : the index of the child correspond to the index of the item in the list
 
         return $.from([
