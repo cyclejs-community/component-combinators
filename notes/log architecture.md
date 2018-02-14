@@ -107,6 +107,7 @@ function traceRun (traceSpecs, run) {
       // TO WRITE, should be about the same as previous line, so refactor later
       tracedSources.traceInputs = ... take all sources and add before advice
       tracedSources.traceSinks = ... take all sinks (should be easier, only observable)
+      tracedSources.getId = ... closure to give unique id (incremental number)
       
       const tracedSettings = settings;
 
@@ -198,3 +199,5 @@ Given :
   - componentName:[App-1, SidePanel-3], combinatorName : 'Inject..', emits : {type: source, value: ''}, when:..., id : 3
   - componentName:[App-1, SidePanel-3], combinatorName : 'Inject..', emits : {type: sink, value: ..}, when:..., id : 3
 ```
+
+(id has to be with the stuff it disambiguates..., so App-1, SidePanel-3, instead of App,Sidepanel, 3)
