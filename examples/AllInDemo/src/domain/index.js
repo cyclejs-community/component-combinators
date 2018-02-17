@@ -119,7 +119,7 @@ export const domainActionsConfig = {
     [UPDATE_TASK_COMPLETION_STATUS]: function updateTaskCompletionStatus(repository, context,
                                                                          payload) {
       const { isChecked, project, projectFbIndex, filteredTask } = payload;
-      const taskIndex = filteredTask.position;
+      const taskIndex = filteredTask.index;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/done`;
       const updatedValue = isChecked ? +Date.now() : false;
 
@@ -127,7 +127,7 @@ export const domainActionsConfig = {
     },
     [UPDATE_TASK_DESCRIPTION]: function updateTaskDescription(repository, context, payload) {
       const { newTitle, projectFbIndex, filteredTask } = payload;
-      const taskIndex = filteredTask.position;
+      const taskIndex = filteredTask.index;
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks/${taskIndex}/title`;
       const updatedValue = newTitle;
 
@@ -137,17 +137,17 @@ export const domainActionsConfig = {
       const { projectFbIndex, tasks, filteredTask } = payload;
       // TODO : harmonize the payload parameter for all same context TASKS
       const numberOfTasks = tasks.length;
-      const index = tasks.indexOf(filteredTask);
+      const taskIndex = filteredTask.index;
       // The best is to remove the array and replace it, or can I also update with firebase
       const clonedTasks = tasks.slice();
-      const removedTask = clonedTasks.splice(index, 1)[0];
+      const removedTask = clonedTasks.splice(taskIndex, 1)[0];
       const path = `${PROJECTS_REF}/${projectFbIndex}/tasks`;
       const lastElementPath = [path, numberOfTasks - 1].join('/');
 
       return repository.child(path).update(clonedTasks)
         .then(_ => {
           // array should have one element less, so now delete last element which is now obsolete
-          // NOTE : apparent cannot be child(path/numerOfTasks-1).update(null)!!
+          // NOTE : apparently cannot be child(path/numerOfTasks-1).update(null)!!
           repository.child(path).update({ [numberOfTasks - 1]: null })
         })
     }

@@ -12,8 +12,8 @@ lost into a sea of streams' sometimes-cryptic operations.
 separate concerns : component parameterization and interfacing with external systems. A bunch of 
 constants were lifted into streams in miscelleanous places to serve as parameters for generic 
 components, and that led to more stream arithmetic, noise, and in some occurences bugs
-- **modifying, fixing and extending that code proved to be a gamble**, with any debugging sessions 
-counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of 
+- **modifying, fixing and extending that code proved to be a gamble**, with any bug fixing or 
+debugging sessions counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of 
 that). The absence of unit tests itself could be explained itself by, well, the **pain** that it 
 is to write them with streams in the middle, which led to resorting to sometimes 
 brittle, often slow, selenium-based end-to-end tests.
@@ -21,7 +21,7 @@ brittle, often slow, selenium-based end-to-end tests.
 implementing (you know, multi-step processes where any step may fail and you need to backtrack), let
  alone add new logical branches (error recovery...)
 
-And yet, while that application was large, it cannot really be said to be a particularly complex 
+And yet, while that application was large, it cannot really be said to be an exceptionally complex 
 application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
 
 This was the motivation behind my dedicating my (quite) limited free time to add the missing 

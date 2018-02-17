@@ -7,7 +7,7 @@ const $ = Rx.Observable;
 export function projectsStateFactory(sources, settings) {
   const { [ROUTE_PARAMS]: { projectId } } = settings;
 
-  return sources.projectsFb$
+  const projectFb$ = sources.projectsFb$
     .map(projectsFb => {
       const fbKeys = keys(projectsFb);
       const _values = values(projectsFb);
@@ -21,5 +21,9 @@ export function projectsStateFactory(sources, settings) {
       }
     })
     //    .distinctUntilChanged(prop('fbIndex'))
-    .shareReplay(1)
+    .shareReplay(1);
+
+  return {
+    projectFb$
+  }
 }

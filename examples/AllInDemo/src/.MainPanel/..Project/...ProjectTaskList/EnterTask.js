@@ -37,9 +37,12 @@ export function EnterTask(sources, settings) {
   let key = 0;
   const { projectFb$, user$, document } = sources;
   const { [ROUTE_PARAMS]: { projectId } } = settings;
-  const taskEnterButtonClick$ = sources[DOM_SINK].select(taskEnterButtonSelector).events('click')
-  // NOTE : is event -> share
-    .share();
+  const taskEnterButtonClick$ =
+    sources[DOM_SINK]
+      .select(taskEnterButtonSelector)
+      .events('click')
+      // NOTE : is event -> share
+      .share();
 
   // NOTE :: we use a key here which changes all the time to force snabbdom to always render the
   // input vNodes. Because we read from the actual DOM, the input vNodes are no longer the
@@ -50,6 +53,7 @@ export function EnterTask(sources, settings) {
     [DOM_SINK]: taskEnterButtonClick$
       .map(_ => renderTaskEntryArea(++key))
       .startWith(renderTaskEntryArea(++key)),
+
     domainAction$: taskEnterButtonClick$
       .do(preventDefault)
       // Optimistic implementation. In the real word, we should check that the domain udpate went

@@ -4,21 +4,29 @@ import {
   ACTIVITIES, activityFactory, LOG_NEW_ACTIVITY, TASKS, UPDATE_TASK_COMPLETION_STATUS,
   UPDATE_TASK_DESCRIPTION
 } from "../../../../src/domain"
-import Moment from 'moment';
+import { merge } from "ramda"
+import Moment from 'moment'
 
 const $ = Rx.Observable;
 
 export function filterTasks(tasks, taskFilter) {
   return tasks
-    ? tasks.filter((task) => {
+    ? tasks.reduce((acc, task, index) => {
       if (taskFilter === 'all') {
-        return true;
-      } else if (taskFilter === 'open') {
-        return !task.done;
-      } else {
-        return task.done;
+        acc.push(merge(task, { index }));
+        return acc
       }
-    })
+      if ((taskFilter === 'open') && !task.done) {
+        acc.push(merge(task, { index }));
+        return acc
+      }
+      if ((taskFilter === 'done') && task.done) {
+        acc.push(merge(task, { index }));
+        return acc
+      }
+
+      return acc
+    }, [])
     : []
 }
 
@@ -37,25 +45,6 @@ export function computeTaskFilterTabClasses(taskFilter, label) {
     : staticClasses;
 
   return buttonClasses
-}
-
-export function computeTaskCheckedActions(ownSink, childrenSinks, settings) {
-  const { filteredTasks } = settings;
-
-  // NOTE: when using ListOf, ownSink is always null
-  return $.merge(childrenSinks.map((childIsCheckedSink, index) => {
-    return childIsCheckedSink.map(({ isChecked, projectFb }) => {
-      const { fbIndex, project } = projectFb;
-      // NOTE : the index of the child correspond to the index of the item in the list
-      const filteredTask = filteredTasks[index];
-
-      return {
-        context: TASKS,
-        command: UPDATE_TASK_COMPLETION_STATUS,
-        payload: { isChecked, project, projectFbIndex: fbIndex, filteredTask }
-      }
-    })
-  }))
 }
 
 export function ComputeCheckBoxActions(sources, settings) {
@@ -90,7 +79,7 @@ export function ComputeEditorActions(sources, settings) {
     domainAction$: save$
       .withLatestFrom(projectFb$, user$, (save, projectFb, user) => {
         const { fbIndex, project: { _id: projectId } } = projectFb;
-        const {editMode, textContent} = save;
+        const { editMode, textContent } = save;
         // NOTE : the index of the child correspond to the index of the item in the list
 
         return $.from([

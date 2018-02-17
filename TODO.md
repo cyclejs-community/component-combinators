@@ -9,6 +9,12 @@
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- investigate microbundle instead of rollup : https://github.com/developit/microbundle
+- have a sanbox dedicated playground?
+- do sth about position updates for AllInDemo - deletion and insert; also what is nr? 
+  - nr is an unique id
+  - cannot use position for index... would not work later with drag and drop 
+  - so rehave a look at the logic
 - make a final v0.4 release (actually release as is 3.x before the final v.4)
 - break the FSM doc in two parts : one bla bla theoretical and one sample app
 - think about work around for isolation, components need to pass their click free of concerns
