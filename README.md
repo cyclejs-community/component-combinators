@@ -250,7 +250,7 @@ The proposed library has the following combinators :
 
 | Combinator      | Description | 
 | --------- | :-----|
-| [FSM](http://brucou.github.io/projects/component-combinators/efsm/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
+| [FSM](http://brucou.github.io/projects/component-combinators/efsm---example-application/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
 | [OnRoute](http://brucou.github.io/projects/component-combinators/router/)      |    Activate a component based on the route changes. Allows nested routing. |
 | [Switch](http://brucou.github.io/projects/component-combinators/switch/)  | Activate component(s) depending on the incoming value of a source| 
 | [ForEach](http://brucou.github.io/projects/component-combinators/foreach/)     |   Activate component for each incoming value of a source| 
@@ -328,16 +328,24 @@ The current roadmap for the v0.5 stands as :
        could be wrongly overridden by settings inherited from up the tree.
          - as of now, expected settings MUST be mandatory and SHOULD be namespaced to avoid 
          collisions
+    - external system's state reading
+      - [ ] `document` driver reads synchronously a **value** from the DOM. That is possible 
+      because DOM database is **local**. Value whether to uniformize read mechanism by having them 
+      all returning `Observable`. That should enable **simpler** tracing!!
     - see what can be done to have a better concurrency model (i.e. beyond FSM)
     - [ ] type contracts error handling for component's settings (which types of component 
     combinator expects, types of settings, etc.)
-    - [ ] error management : [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
+    - error management : 
+      - [ ] [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
+      - [ ] error logging (use chrome's console.context? replace string formatting for console?)
     - [ ] logging and visualization (!)
     - [ ] conversion to web components
 - Component library
   - [ ] a small one with the basics - should be able to copy a lot from react?
     - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf. 
     materializecss, etc.
+- Drivers library
+  - analyze benefits of immutability for store drivers
 - Demo
   - [ ] continue to complete demo from Angular2 book on github site
   - [ ] [Real world app?](https://github.com/gothinkster/realworld)

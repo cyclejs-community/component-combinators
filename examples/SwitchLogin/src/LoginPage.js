@@ -38,7 +38,7 @@ export function LoginPage(loginSettings) {
       // NOTE : router never gets to emit a value :
       // - when auth sink leads to auth source change, the Switch component disconnect the
       // LoginPage component, including the router sinks -> the route is never taken...
-      // I leave it there though as testimony of things to think about
+      // I leave it there though as testimony of things to think about (this is NOT a bug)
       router: redirectAction$
     }
   }
