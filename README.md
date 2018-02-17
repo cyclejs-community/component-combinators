@@ -6,10 +6,10 @@ Around 18 months ago, while working on what is the largest cyclejs codebase I kn
 large cycle-js application. Focusing on those issues derived from cyclejs usage :
 
 - a large portion of the code was stream handling originating from the use of components and the 
-necessity to wire them together. The domain logic, and as a result, the application logic was 
-lost into a sea of streams' sometimes-cryptic operations. 
-- extra confusion about inputs (sources), their meanings and usage, due to inputs addressing two 
-separate concerns : component parameterization and interfacing with external systems. A bunch of 
+necessity to wire them together. The domain logic, and as a result, **the application logic was 
+lost** into a sea of streams' sometimes-cryptic operations. 
+- extra confusion about inputs (sources), their meanings and usage, due to **inputs addressing two 
+separate concerns** : component parameterization and interfacing with external systems. A bunch of 
 constants were lifted into streams in miscelleanous places to serve as parameters for generic 
 components, and that led to more stream arithmetic, noise, and in some occurences bugs
 - **modifying, fixing and extending that code proved to be a gamble**, with any bug fixing or 
@@ -17,7 +17,7 @@ debugging sessions counted in hours. To be fair, the complete absence of documen
 that). The absence of unit tests itself could be explained itself by, well, the **pain** that it 
 is to write them with streams in the middle, which led to resorting to sometimes 
 brittle, often slow, selenium-based end-to-end tests.
-- hard to figure out quickly, **with certainty** the exact workflow that the application was 
+- hard to figure out **quickly, with certainty** the exact workflow that the application was 
 implementing (you know, multi-step processes where any step may fail and you need to backtrack), let
  alone add new logical branches (error recovery...)
 
@@ -32,12 +32,11 @@ capabilities to the framework. I singled out those four areas :
  **That first step is a componentization model for cyclejs**, that builds upon the original idea 
  of a component as a function and extends it further. Components are (mostly) what they used to 
  be. Components can however now be parameterized through a dedicated argument `settings`, 
- capturing the **component's parameterization concern**. Components, importantly, can be built 
- through a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
-  component combinators have been extracted and 
-  abstracted from the 20K lines of code, so they should cover a large number of cases that one 
-  encounters. The proposed component model could be seen in many ways as a generalization of that
-   of `React`, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any 
+ capturing the **component's parameterization concern**, and which is inherited down the component 
+ tree. Components, importantly, can be built through a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
+  component combinators have been extracted and  abstracted from the 20K lines of code, so they should cover a large number of cases that one 
+  encounters. The proposed component model could be seen in many ways as a **generalization of that
+   of `React`**, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any 
   modification of cyclejs internals.** 
 
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon, 
