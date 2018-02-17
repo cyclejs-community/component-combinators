@@ -9,6 +9,12 @@ import Moment from 'moment'
 
 const $ = Rx.Observable;
 
+/**
+ *
+ * @param {Array} tasks
+ * @param {String} taskFilter
+ * @returns {Array}
+ */
 export function filterTasks(tasks, taskFilter) {
   return tasks
     ? tasks.reduce((acc, task, index) => {
