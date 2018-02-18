@@ -1,5 +1,5 @@
 import * as Rx from "rx";
-import { InjectSourcesAndSettings, m, OnRoute, ROUTE_PARAMS } from "@rxcc/components"
+import { InjectSourcesAndSettings, Combine, OnRoute, ROUTE_PARAMS } from "@rxcc/components"
 import { Div, DOM_SINK, preventDefault } from "@rxcc/utils"
 import { button, div, h2, li, p, ul } from "cycle-snabbdom"
 import { ProjectTaskList } from "./...ProjectTaskList"
@@ -94,7 +94,7 @@ function ProjectHeader(sources, settings) {
 export const Project =
   InjectSourcesAndSettings({ sourceFactory: projectsStateFactory }, [Div('.project'), [
     ProjectHeader,
-    m({}, { tabItems }, [TabContainer, [
+    Combine({ tabItems }, [TabContainer, [
       OnRoute({ route: 'tasks' }, [ProjectTaskList]),
       OnRoute({ route: 'task/:nr' }, [Div('.task-details', { slot: 'tab' }), [ProjectTaskDetails]]),
       OnRoute({ route: 'comments' }, [Div('.comments', { slot: 'tab' }), [ProjectComments]]),

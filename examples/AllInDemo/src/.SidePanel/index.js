@@ -1,5 +1,5 @@
 import * as Rx from "rx";
-import { ForEach, InjectSources, InSlot, ListOf, m, Combine } from "@rxcc/components"
+import { Combine, ForEach, InjectSources, InSlot, ListOf } from "@rxcc/components"
 import { Div, DOM_SINK, EmptyComponent, firebaseListToArray, preventDefault } from "@rxcc/utils"
 import { always, filter, map } from 'ramda'
 import { a, div, h2, img, nav, p, strong, ul } from "cycle-snabbdom"
@@ -60,7 +60,7 @@ function NavigationContainerComponent(sources, settings) {
 }
 
 function Navigation(navigationSettings, componentArray) {
-  return m({}, navigationSettings, [NavigationContainerComponent, componentArray])
+  return Combine(navigationSettings, [NavigationContainerComponent, componentArray])
 }
 
 function NavigationSectionContainerComponent(sources, settings) {
@@ -77,7 +77,7 @@ function NavigationSectionContainerComponent(sources, settings) {
 }
 
 function NavigationSection(navigationSectionSettings, componentArray) {
-  return m({}, navigationSectionSettings, [NavigationSectionContainerComponent, componentArray])
+  return Combine(navigationSectionSettings, [NavigationSectionContainerComponent, componentArray])
 }
 
 function NavigationItem(sources, settings) {

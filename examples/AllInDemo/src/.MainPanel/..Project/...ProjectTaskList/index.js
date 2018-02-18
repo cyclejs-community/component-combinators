@@ -1,4 +1,4 @@
-import { InSlot, m } from "@rxcc/components"
+import { InSlot, Combine } from "@rxcc/components"
 import { vLift } from "@rxcc/utils"
 import { div } from "cycle-snabbdom"
 import { ToggleButton } from './ToggleButton'
@@ -15,7 +15,7 @@ const ProjectTaskListContainer = vLift(
   ]));
 
 export const ProjectTaskList =
-  m({}, {}, [ProjectTaskListContainer, [
+  Combine({}, [ProjectTaskListContainer, [
     InSlot('toggle', [ToggleButton]),
     InSlot('enter-task', [EnterTask]),
     InSlot('tasks', [TaskList])

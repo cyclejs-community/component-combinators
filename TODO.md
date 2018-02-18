@@ -5,6 +5,9 @@
   - update README
   - update code for all examples
   - review all docs for m({}...) remaining there
+- for next version, move towards a InjectSources only for sources, and settings injected through 
+Combine (object) or InjectSettings(function, use to adapt settings). Worse case, that adds a level
+ in the tree, but more readable logic
 - Use Pipe({},[WithEvents(...), WithState(...), ComputeActions(...)]) would be any leaf
       // component including generic or ad-hoc components.
       // InjectSources would be state visible in all the hierarchy, while WithState only visible
