@@ -80,7 +80,7 @@ function NavigationSection(navigationSectionSettings, componentArray) {
   return Combine(navigationSectionSettings, [NavigationSectionContainerComponent, componentArray])
 }
 
-function NavigationItem(sources, settings) {
+function _NavigationItem(sources, settings) {
   const { url$ } = sources;
   const { project: { title, link } } = settings;
   const linkSanitized = link.replace(/\//i, '_');
@@ -120,12 +120,16 @@ function NavigationItem(sources, settings) {
   }
 }
 
+function NavigationItem(navigationItemSettings, componentArray) {
+  return Combine(navigationItemSettings, [_NavigationItem])
+}
+
 const ListOfItemsComponent =
   InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
     ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
       ListOf({ list: 'projectList', as: 'project' }, [
         EmptyComponent,
-        NavigationItem
+        NavigationItem({}, [])
       ])
     ])
   ]);
@@ -134,13 +138,13 @@ export const SidePanel =
   Combine({}, [Div('.app__l-side'), [
     Navigation({}, [
       NavigationSection({ title: 'Main' }, [
-        Combine({ project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
+        NavigationItem({ project: { title: 'Dashboard', link: 'dashboard' } }, [])
       ]),
       NavigationSection({ title: 'Projects' }, [
         InSlot('navigation-item', [ListOfItemsComponent])
       ]),
       NavigationSection({ title: 'Admin' }, [
-        Combine({ project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
+        NavigationItem({ project: { title: 'Manage Plugins', link: 'plugins' } }, [])
       ]),
     ])
   ]]);
