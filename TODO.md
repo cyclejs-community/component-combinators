@@ -4,7 +4,6 @@
     - example application in particular
   - update README
   - update code for all examples
-  - review all docs for m({}...) remaining there
 - for next version, move towards a InjectSources only for sources, and settings injected through 
 Combine (object) or InjectSettings(function, use to adapt settings). Worse case, that adds a level
  in the tree, but more readable logic
