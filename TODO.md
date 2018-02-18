@@ -1,4 +1,10 @@
 # Combinators
+- add combine as m({}, ...) -> that changes all the graphs... shit
+  - update graphics in all docs
+    - example application in particular
+  - update README
+  - update code for all examples
+  - review all docs for m({}...) remaining there
 - Use Pipe({},[WithEvents(...), WithState(...), ComputeActions(...)]) would be any leaf
       // component including generic or ad-hoc components.
       // InjectSources would be state visible in all the hierarchy, while WithState only visible
@@ -9,6 +15,7 @@
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- explain m with graphics??
 - investigate microbundle instead of rollup : https://github.com/developit/microbundle
 - have a sanbox dedicated playground?
 - do sth about position updates for AllInDemo - deletion and insert; also what is nr? 
@@ -53,7 +60,6 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - Preventing transition
 
 # Build/devop
-- TODO : AllInDemo task deletion does not work
 - study parcel
 - change @rxcc/testing to testutils
 - change assertContract to use auto print arguments with %O, so I don't have to use format

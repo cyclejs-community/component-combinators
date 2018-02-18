@@ -54,7 +54,7 @@ together with components to build a non-trivial application.
 
 **A series of articles covers the theoretical underpinning** in more details (read 
 chronologically, they constitute a long read, but I think they are very interesting). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the 
-step-by-step building of the show-cased sample application. A shorter introduction can be found in the `README` for the repository. 
+step-by-step building of the showcased sample application. A shorter introduction can be found in the `README` for the repository. 
 
 Let's now see some examples of use.
 

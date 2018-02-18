@@ -5,5 +5,6 @@ lines of javascript I was extending and maintaining. That component model for cy
  an extension of that of react, and incorporates a DOM slot mechanism à la web components. It works 
 pretty nicely even though the whole thing is still but a proof of concept. 
 
-I invite you to have a look, check the demos, documentation and articles, and let me know what you 
- think. The entry point would be the README : https://github.com/cyclejs-community/component-combinators
+This is a relatively large piece of work, so expect to not being able to get the details on the 
+first read. Hopefully though, you should get the general concept relatively fast. I invite you to 
+have a look, check the demos, documentation and articles, and let me know what you think. The entry point would be the README : https://github.com/cyclejs-community/component-combinators
