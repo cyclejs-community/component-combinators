@@ -23,6 +23,7 @@
 
 export * from "./components/types"
 export * from "./components/m/m"
+export * from "./components/Combine"
 export * from "./components/Router"
 export * from "./components/ListOf"
 export * from "./components/ForEach"

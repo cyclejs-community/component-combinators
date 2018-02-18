@@ -1,5 +1,5 @@
 import * as Rx from "rx";
-import { ForEach, InjectSources, InSlot, ListOf, m } from "@rxcc/components"
+import { ForEach, InjectSources, InSlot, ListOf, m, Combine } from "@rxcc/components"
 import { Div, DOM_SINK, EmptyComponent, firebaseListToArray, preventDefault } from "@rxcc/utils"
 import { always, filter, map } from 'ramda'
 import { a, div, h2, img, nav, p, strong, ul } from "cycle-snabbdom"
@@ -131,16 +131,16 @@ const ListOfItemsComponent =
   ]);
 
 export const SidePanel =
-  m({}, {}, [Div('.app__l-side'), [
+  Combine({}, [Div('.app__l-side'), [
     Navigation({}, [
       NavigationSection({ title: 'Main' }, [
-        m({}, { project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
+        Combine({ project: { title: 'Dashboard', link: 'dashboard' } }, [NavigationItem])
       ]),
       NavigationSection({ title: 'Projects' }, [
         InSlot('navigation-item', [ListOfItemsComponent])
       ]),
       NavigationSection({ title: 'Admin' }, [
-        m({}, { project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
+        Combine({ project: { title: 'Manage Plugins', link: 'plugins' } }, [NavigationItem])
       ]),
     ])
   ]]);
