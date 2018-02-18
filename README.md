@@ -250,15 +250,15 @@ The proposed library has the following combinators :
 
 | Combinator      | Description | 
 | --------- | :-----|
-| [FSM](http://brucou.github.io/projects/component-combinators/efsm---example-application/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
 | [OnRoute](http://brucou.github.io/projects/component-combinators/router/)      |    Activate a component based on the route changes. Allows nested routing. |
 | [Switch](http://brucou.github.io/projects/component-combinators/switch/)  | Activate component(s) depending on the incoming value of a source| 
+| [FSM](http://brucou.github.io/projects/component-combinators/efsm---example-application/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
 | [ForEach](http://brucou.github.io/projects/component-combinators/foreach/)     |   Activate component for each incoming value of a source| 
 | [ListOf](http://brucou.github.io/projects/component-combinators/listof/)      |    Activate a list of a given component based on an array of items |
 | [Pipe](https://brucou.github.io/projects/component-combinators/pipe/)      |    Sequentially compose components |
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
-| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot ([a la web component](https://alligator.io/web-components/composing-slots-named-slots/)|
+| [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot ([a la web component](https://alligator.io/web-components/composing-slots-named-slots/))|
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
@@ -346,6 +346,7 @@ The current roadmap for the v0.5 stands as :
     materializecss, etc.
 - Drivers library
   - analyze benefits of immutability for store drivers
+  - rename Action driver to Command driver, to make it obvious this is Command and Query separation
 - Demo
   - [ ] continue to complete demo from Angular2 book on github site
   - [ ] [Real world app?](https://github.com/gothinkster/realworld)
@@ -395,7 +396,7 @@ The current roadmap for the v0.4 stands as :
       - [x] select static site generator (Jekyll, Hexo, Hugo)
       - [x] blog site architecture
       - [x] theoretical underpinnings
-    - [x] implement sample application taken from Angular2 book
+    - [x] implement relevant part of sample application taken from Angular2 book
 - Testing
     - [x] Testing library `runTestScenario`
     - [x] Mocks for DOM and document driver
