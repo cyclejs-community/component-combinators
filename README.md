@@ -404,6 +404,7 @@ The current roadmap for the v0.4 stands as :
     - [x] Mock for domain query driver
 - Combinators
     - [x] Generic combinator `m`
+    - [x] combinator `Combine`    
     - [x] Routing combinator `onRoute`
     - [x] Switch combinator 
       - [x] `Switch`

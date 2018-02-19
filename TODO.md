@@ -1,9 +1,6 @@
 # Combinators
 - add combine as m({}, ...) -> that changes all the graphs... shit
-  - update graphics in all docs
-    - example application in particular
-  - update README
-  - update code for all examples
+  - use an example in README of combine with slot mechanism (default and named)
 - for next version, move towards a InjectSources only for sources, and settings injected through 
 Combine (object) or InjectSettings(function, use to adapt settings). Worse case, that adds a level
  in the tree, but more readable logic
@@ -17,7 +14,8 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
-- explain m with graphics??
+- explain m with graphics?? yes, update drawings in http://localhost:1313/projects/component-combinators/mm/
+  - no more `makeOwnSinks`, but `parentComponent` instead so update all
 - investigate microbundle instead of rollup : https://github.com/developit/microbundle
 - have a sanbox dedicated playground?
 - do sth about position updates for AllInDemo - deletion and insert; also what is nr? 
