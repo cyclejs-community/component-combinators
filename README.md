@@ -234,7 +234,7 @@ The following implementation corresponds to the layout specifications :
 
 - layout specifications (in order from top to bottom of appearance on screen)
     - header
-    - feature
+    - feature : we will reuse here the component from the routing demo
     - footer
       - made of three groups (with miscellaneous navigation links) and a header
     - sitemap
@@ -298,10 +298,15 @@ mechanism we use is the slot mechanism made popular by web components.
 
 ![slot demo with Combine combinator](examples/CombineDemo/assets/images/animated_demo.gif)
 
+Note that all component combinator use the same default for merging children components' sinks 
+(whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large oodebase 
+and seem to cover the vast majority of the patterns which occurred in that codebase.
+
 While the full syntax and semantics of the component combinators haven't been exposed, hopefully
 the examples serve to portray the merits of using a component model, under which an application
- is written as a component tree, where components are glued with component combinators. I certainly
-think it is simpler to write, and more importantly, simpler to read, maintain and debug.
+ is written as a component tree, where components are glued with convenient component combinators. 
+ I certainly think it is simpler to write, and more importantly, simpler to read, maintain and 
+ debug.
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
 20K-line cyclejs codebase.
@@ -312,8 +317,8 @@ In general combinators follow a common syntax :
 
 - `Combinator :: Settings -> ComponentTree -> Component`
     - `Component :: Sources -> Settings -> Sinks`
-    - `ComponentTree :: ChildrenComponents | [ParentComponent, ChildrenComponents]`
-    - `ParentComponent:: Component`
+    - `ComponentTree :: ChildrenComponents | [ContainerComponent, ChildrenComponents]`
+    - `ContainerComponent:: Component`
     - `ChildrenComponents :: Array<Component>`
 
 ## Combinator list
@@ -330,7 +335,7 @@ The proposed library has the following combinators :
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot ([a la web component](https://alligator.io/web-components/composing-slots-named-slots/))|
-| [Combine](http://brucou.github.io/projects/component-combinators/Combine/)      |    The simplest combinator which traverses a component tree, applying default merge functions to components' sinks along the way. Distinguishes between DOM sink and non-DOM sink, and implement a slot mechanism for merging DOM sinks |
+| [Combine](http://brucou.github.io/projects/component-combinators/Combine/)      |    The simplest combinator which traverses a component tree, applying default merge functions to components' sinks along the way. Distinguishes between DOM sink and non-DOM sink, and implements a slot mechanism for merging DOM sinks |
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in its respective repository.
@@ -345,7 +350,7 @@ The theoretical underpinnings can be found as a series of articles on my [blog](
 - [Component models for user interfaces implementation - a comparison](http://brucou.github.io/posts/component-models-for-user-interfaces-implementation---a-comparison/)
 
 # Documentation
-Documentation can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
+Documentation for component combinators and drivers can be found in the [projects portion](https://brucou.github.io/projects/component-combinators/) of my blog.
 
 # Installation
 ## Packages
@@ -374,7 +379,8 @@ npm install @rxcc/components
 
  - `npm install`
  - `npm run build-node-test`
- - have a look at `/test/index.js` to pick up which test you want to run
+ - have a look at `/test/index.js` to pick up which test you want to run (400+ tests available in
+  total)
  - `npm run test`
  - then open with a local webserver the `index.html` in `test` directory
 
@@ -394,11 +400,11 @@ The current roadmap for the v0.5 stands as :
     - robustness of settings :
       - in some cases, should be inherited down the tree, in other cases should be private (find
       a nice syntax). That creates complexity but reduces bug surface so worth it.
-      - very important bug which is facilitated as of now : a settings could be set at some
-      location in the tree, and then read wrongly at another location of the tree because they
+      - very important bug possibility which is facilitated as of now : a settings could be set at 
+      some location in the tree, and then read wrongly at another location of the tree because they
       have the same name. that prevents from using default values for settings, the default value
        could be wrongly overridden by settings inherited from up the tree.
-         - as of now, expected settings MUST be mandatory and SHOULD be namespaced to avoid
+         - as of now, expected settings SHOULD be mandatory and SHOULD be namespaced to avoid
          collisions
     - external system's state reading
       - [ ] `document` driver reads synchronously a **value** from the DOM. That is possible
@@ -410,6 +416,8 @@ The current roadmap for the v0.5 stands as :
     - error management :
       - [ ] [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
       - [ ] error logging (use chrome's console.context? replace string formatting for console?)
+      - [ ] improve error reporting (human-readable message, add guards, include blame information
+      in the form of erroneous arguments)
     - [ ] logging and visualization (!)
     - [ ] conversion to web components
 - Component library
@@ -424,7 +432,8 @@ The current roadmap for the v0.5 stands as :
   - [ ] [Real world app?](https://github.com/gothinkster/realworld)
 - Testing
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
-    - [ ] study testing with pupeeteer.js (chrome headless browser)
+    - [ ] study testing with pupeeteer.js (chrome headless browser) -- cypress looks quite good too
+    - [ ] improve API for `runTestScenario` to make it less verbose
 - Combinators
     - [ ] [Portal](https://reactjs.org/docs/portals.html) combinator (render DOM in a specific location)
     - [ ] `Catch` combinator? cf. Core -- error management
@@ -435,12 +444,12 @@ The current roadmap for the v0.5 stands as :
       - [ ] automatic generation of graphical representation of the FSM
       - [ ] refactor the asynchronous FSM into synchronous EHFSM + async module
         - this adds the hierarchical part, improvement in core library are automatically translated in improvement to this library, and closed/open principle advantages
-      - [ ] investigate prior art
+      - [ ] investigate prior art for reuse opportunities
         - https://github.com/jbeard4/SCION
         - http://blog.sproutcore.com/statecharts-in-sproutcore/
-    - [ ] Event combinator `WithEvents`
-    - [ ] State combinator `WithState`
-    - [ ] Action combinator `ComputeActions`
+    - [ ] Event combinator `WithEvents` to think about (specifications? cf. current `mEventFactory`)
+    - [ ] State combinator `WithState` to think about (specifications? rationale?)
+    - [ ] Action combinator `ComputeActions` to think about (specifications? rationale?)
 - Distribution
   - [ ] monorepo?
   - [ ] individual combinator packages?
