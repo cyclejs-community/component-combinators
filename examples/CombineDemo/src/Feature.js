@@ -5,7 +5,8 @@ import {App as Feature} from "../../NestedRoutingDemo/src/app"
 
 const $ = Rx.Observable;
 
-
+// Dummy feature with no actions attached
+// We replaced that by a more complex component taken from our routing example
 export function _Feature(sources, settings) {
 
   return {

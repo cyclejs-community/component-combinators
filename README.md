@@ -227,29 +227,81 @@ export const App = InjectSources({
 The reactive update (on `fetchedCardsInfo$`) and iteration logic (on the array of items received
 from `fetchedCardsInfo$`) are taken care of with the `ForEach` and the `ListOf` combinators.
 
+Let's move on to features layouting.
+
+## Layouting
+The following implementation corresponds to the layout specifications :
+
+- layout specifications (in order from top to bottom of appearance on screen)
+    - header
+    - feature
+    - footer
+      - made of three groups (with miscellaneous navigation links) and a header
+    - sitemap
+
+The application would be correspondingly broken down as follows :
+
+```javascript
+function LayoutContainer(sources, settings) {
+  return {
+    [DOM_SINK]: $.of(div([
+      div(".ui.fixed.inverted.menu", { "slot": "header", }, []),
+      div(".ui.main.text.container", { "slot": "body", }, []),
+      div(".ui.inverted.vertical.footer.segment", { "slot": "footer", }, []),
+    ]))
+  }
+}
+
+export const App = Combine({}, [LayoutContainer, [
+  InSlot('body', [Feature]),
+  InSlot('header', [Header]),
+  InSlot('footer', [Footer]),
+]]);
+```
+
+with the `Footer` component broken down as follows :
+
+```javascript
+function FooterContainer(sources, settings) {
+  return {
+    [DOM_SINK]: $.of(
+      div([
+        div(".ui.center.aligned.container", [
+          div(".ui.stackable.inverted.divided.grid", [
+            div(".three.wide.column", { slot: 'group1' }, []),
+            div(".three.wide.column", { slot: 'group2' }, []),
+            div(".three.wide.column", { slot: 'group3' }, []),
+            div(".seven.wide.column", { slot: 'footer_header' }, [])
+          ]),
+          div({ "slot": "sitemap" }, [])
+        ]),
+      ])
+    )
+  }
+}
+
+export const Footer = Combine({}, [FooterContainer, [
+  InSlot('group1', [FooterGroup1]),
+  InSlot('group2', [FooterGroup2]),
+  InSlot('group3', [FooterGroup3]),
+  InSlot('footer_header', [FooterHeader]),
+  InSlot('sitemap', [Sitemap]),
+]]);
+```
+
+By using a 
+container component which specifies where to distribute the DOM content of children components, it
+ is possible to : separate layout concerns from feature concerns ; break down layout 
+concern into smaller concerns in a organized, readable and maintainable way. Changing the layout 
+for instance often will require changing only the container components. The content distribution 
+mechanism we use is the slot mechanism made popular by web components. 
+
+![slot demo with Combine combinator](examples/CombineDemo/assets/images/login_demo.gif)
+
 While the full syntax and semantics of the component combinators haven't been exposed, hopefully
 the examples serve to portray the merits of using a component model, under which an application
  is written as a component tree, where components are glued with component combinators. I certainly
 think it is simpler to write, and more importantly, simpler to read, maintain and debug.
-
-Let's move on to features layouting.
-
-## Layouting
-The following implementation corresponds to :
-
-- Functional specifications
-    - user visits '/' -> display home page
-        - home page allows to navigate to different sections of the application
-    - when the user visit a given section of the application
-        - a breadcrumb shows the user where he stands in the sitemap
-        - a series of clickable cards is displayed
-            - when the user clicks on a given card, details about that card are displayed, and corresponding to a specific route for possible bookmarking
-- Technical specifications
-    - `HomePage` takes the concern of implementing the home page logic.
-    - `Card` is parameterized by its card content, and is in charge of implementing the card logic
-    - `CardDetail` is parameterized by its card content, and is in charge of displaying the extra details of the card
-
-**TODO**
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
 20K-line cyclejs codebase.
