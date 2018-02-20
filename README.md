@@ -296,7 +296,7 @@ concern into smaller concerns in a organized, readable and maintainable way. Cha
 for instance often will require changing only the container components. The content distribution 
 mechanism we use is the slot mechanism made popular by web components. 
 
-![slot demo with Combine combinator](https://raw.githubusercontent.com/brucou/component-combinators/master/examples/CombineDemo/assets/images/animated_demo.gif)
+![slot demo with Combine combinator](examples/CombineDemo/assets/images/animated_demo.gif)
 
 While the full syntax and semantics of the component combinators haven't been exposed, hopefully
 the examples serve to portray the merits of using a component model, under which an application
