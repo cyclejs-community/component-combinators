@@ -10,6 +10,8 @@ export function InSlot(slotName, [component]) {
     const vNodes$ = sinks[DOM_SINK];
 
     sinks[DOM_SINK] = vNodes$.do(vNode => {
+      // NOTE : guard necessary as vNode could be null : OnRoute combinator for instance sends null
+      // Those null are filtered at top level (filterNull), so we let them propagate to the top
       if (vNode) vNode.data.slot = slotName;
     });
 

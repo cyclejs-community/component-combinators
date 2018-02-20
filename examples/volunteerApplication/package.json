@@ -80,7 +80,7 @@
     "route-matcher": "*",
     "fast-json-patch": "^1.1.4",
     "pretty-format": "^22.1.0",
-    "@rxcc/components": "^0.3.11",
+    "@rxcc/components": "^0.3.13",
     "@rxcc/contracts": "^0.1.10",
     "@rxcc/drivers": "^0.1.8",
     "@rxcc/testing": "^0.1.2",

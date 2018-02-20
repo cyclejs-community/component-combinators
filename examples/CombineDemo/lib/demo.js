@@ -12661,25 +12661,25 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__F__ = __webpack_require__(155);
 /* unused harmony reexport F */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__T__ = __webpack_require__(156);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__T__["a"]; });
+/* unused harmony reexport T */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2____ = __webpack_require__(157);
 /* unused harmony reexport __ */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__add__ = __webpack_require__(36);
 /* unused harmony reexport add */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__addIndex__ = __webpack_require__(158);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_4__addIndex__["a"]; });
+/* unused harmony reexport addIndex */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__adjust__ = __webpack_require__(83);
 /* unused harmony reexport adjust */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__all__ = __webpack_require__(159);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_6__all__["a"]; });
+/* unused harmony reexport all */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__allPass__ = __webpack_require__(161);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_7__allPass__["a"]; });
+/* unused harmony reexport allPass */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__always__ = __webpack_require__(24);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_8__always__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_8__always__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__and__ = __webpack_require__(87);
 /* unused harmony reexport and */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__any__ = __webpack_require__(88);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_10__any__["a"]; });
+/* unused harmony reexport any */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__anyPass__ = __webpack_require__(163);
 /* unused harmony reexport anyPass */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ap__ = __webpack_require__(57);
@@ -12697,7 +12697,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__ascend__ = __webpack_require__(170);
 /* unused harmony reexport ascend */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__assoc__ = __webpack_require__(40);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_19__assoc__["a"]; });
+/* unused harmony reexport assoc */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__assocPath__ = __webpack_require__(92);
 /* unused harmony reexport assocPath */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__binary__ = __webpack_require__(171);
@@ -12705,7 +12705,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__bind__ = __webpack_require__(85);
 /* unused harmony reexport bind */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__both__ = __webpack_require__(172);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_23__both__["a"]; });
+/* unused harmony reexport both */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__call__ = __webpack_require__(173);
 /* unused harmony reexport call */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__chain__ = __webpack_require__(60);
@@ -12713,11 +12713,11 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__clamp__ = __webpack_require__(177);
 /* unused harmony reexport clamp */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__clone__ = __webpack_require__(178);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_27__clone__["a"]; });
+/* unused harmony reexport clone */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__comparator__ = __webpack_require__(179);
 /* unused harmony reexport comparator */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__complement__ = __webpack_require__(180);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_29__complement__["a"]; });
+/* unused harmony reexport complement */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__compose__ = __webpack_require__(62);
 /* unused harmony reexport compose */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__composeK__ = __webpack_require__(100);
@@ -12725,9 +12725,9 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__composeP__ = __webpack_require__(182);
 /* unused harmony reexport composeP */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__concat__ = __webpack_require__(64);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_33__concat__["a"]; });
+/* unused harmony reexport concat */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__cond__ = __webpack_require__(191);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_34__cond__["a"]; });
+/* unused harmony reexport cond */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__construct__ = __webpack_require__(192);
 /* unused harmony reexport construct */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__constructN__ = __webpack_require__(105);
@@ -12739,17 +12739,17 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__countBy__ = __webpack_require__(194);
 /* unused harmony reexport countBy */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__curry__ = __webpack_require__(59);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_40__curry__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_40__curry__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_41__curryN__ = __webpack_require__(7);
 /* unused harmony reexport curryN */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__dec__ = __webpack_require__(196);
 /* unused harmony reexport dec */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_43__defaultTo__ = __webpack_require__(107);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_43__defaultTo__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_43__defaultTo__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_44__descend__ = __webpack_require__(197);
 /* unused harmony reexport descend */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_45__difference__ = __webpack_require__(108);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_45__difference__["a"]; });
+/* unused harmony reexport difference */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_46__differenceWith__ = __webpack_require__(109);
 /* unused harmony reexport differenceWith */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_47__dissoc__ = __webpack_require__(110);
@@ -12771,7 +12771,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__dropWhile__ = __webpack_require__(209);
 /* unused harmony reexport dropWhile */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__either__ = __webpack_require__(211);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return __WEBPACK_IMPORTED_MODULE_56__either__["a"]; });
+/* unused harmony reexport either */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_57__empty__ = __webpack_require__(117);
 /* unused harmony reexport empty */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_58__endsWith__ = __webpack_require__(212);
@@ -12781,23 +12781,23 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_60__eqProps__ = __webpack_require__(214);
 /* unused harmony reexport eqProps */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_61__equals__ = __webpack_require__(11);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return __WEBPACK_IMPORTED_MODULE_61__equals__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_61__equals__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_62__evolve__ = __webpack_require__(215);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return __WEBPACK_IMPORTED_MODULE_62__evolve__["a"]; });
+/* unused harmony reexport evolve */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_63__filter__ = __webpack_require__(65);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return __WEBPACK_IMPORTED_MODULE_63__filter__["a"]; });
+/* unused harmony reexport filter */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_64__find__ = __webpack_require__(216);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "t", function() { return __WEBPACK_IMPORTED_MODULE_64__find__["a"]; });
+/* unused harmony reexport find */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_65__findIndex__ = __webpack_require__(218);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "u", function() { return __WEBPACK_IMPORTED_MODULE_65__findIndex__["a"]; });
+/* unused harmony reexport findIndex */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_66__findLast__ = __webpack_require__(220);
 /* unused harmony reexport findLast */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_67__findLastIndex__ = __webpack_require__(222);
 /* unused harmony reexport findLastIndex */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_68__flatten__ = __webpack_require__(224);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "v", function() { return __WEBPACK_IMPORTED_MODULE_68__flatten__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_68__flatten__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_69__flip__ = __webpack_require__(48);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "w", function() { return __WEBPACK_IMPORTED_MODULE_69__flip__["a"]; });
+/* unused harmony reexport flip */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_70__forEach__ = __webpack_require__(225);
 /* unused harmony reexport forEach */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_71__forEachObjIndexed__ = __webpack_require__(226);
@@ -12821,7 +12821,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_80__identical__ = __webpack_require__(103);
 /* unused harmony reexport identical */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_81__identity__ = __webpack_require__(70);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "x", function() { return __WEBPACK_IMPORTED_MODULE_81__identity__["a"]; });
+/* unused harmony reexport identity */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_82__ifElse__ = __webpack_require__(235);
 /* unused harmony reexport ifElse */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_83__inc__ = __webpack_require__(236);
@@ -12839,7 +12839,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_89__insertAll__ = __webpack_require__(242);
 /* unused harmony reexport insertAll */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_90__intersection__ = __webpack_require__(243);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "y", function() { return __WEBPACK_IMPORTED_MODULE_90__intersection__["a"]; });
+/* unused harmony reexport intersection */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_91__intersperse__ = __webpack_require__(245);
 /* unused harmony reexport intersperse */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_92__into__ = __webpack_require__(246);
@@ -12851,17 +12851,17 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_95__invoker__ = __webpack_require__(33);
 /* unused harmony reexport invoker */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_96__is__ = __webpack_require__(121);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "z", function() { return __WEBPACK_IMPORTED_MODULE_96__is__["a"]; });
+/* unused harmony reexport is */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_97__isEmpty__ = __webpack_require__(251);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "A", function() { return __WEBPACK_IMPORTED_MODULE_97__isEmpty__["a"]; });
+/* unused harmony reexport isEmpty */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_98__isNil__ = __webpack_require__(93);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "B", function() { return __WEBPACK_IMPORTED_MODULE_98__isNil__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_98__isNil__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_99__join__ = __webpack_require__(252);
 /* unused harmony reexport join */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_100__juxt__ = __webpack_require__(122);
 /* unused harmony reexport juxt */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_101__keys__ = __webpack_require__(18);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "C", function() { return __WEBPACK_IMPORTED_MODULE_101__keys__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_101__keys__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_102__keysIn__ = __webpack_require__(253);
 /* unused harmony reexport keysIn */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_103__last__ = __webpack_require__(115);
@@ -12887,13 +12887,13 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_113__lte__ = __webpack_require__(259);
 /* unused harmony reexport lte */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_114__map__ = __webpack_require__(9);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "D", function() { return __WEBPACK_IMPORTED_MODULE_114__map__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_114__map__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_115__mapAccum__ = __webpack_require__(260);
 /* unused harmony reexport mapAccum */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_116__mapAccumRight__ = __webpack_require__(261);
 /* unused harmony reexport mapAccumRight */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_117__mapObjIndexed__ = __webpack_require__(262);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "E", function() { return __WEBPACK_IMPORTED_MODULE_117__mapObjIndexed__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_117__mapObjIndexed__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_118__match__ = __webpack_require__(263);
 /* unused harmony reexport match */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_119__mathMod__ = __webpack_require__(264);
@@ -12911,9 +12911,9 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_125__memoizeWith__ = __webpack_require__(127);
 /* unused harmony reexport memoizeWith */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_126__merge__ = __webpack_require__(268);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "F", function() { return __WEBPACK_IMPORTED_MODULE_126__merge__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_126__merge__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_127__mergeAll__ = __webpack_require__(269);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "G", function() { return __WEBPACK_IMPORTED_MODULE_127__mergeAll__["a"]; });
+/* unused harmony reexport mergeAll */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_128__mergeDeepLeft__ = __webpack_require__(270);
 /* unused harmony reexport mergeDeepLeft */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_129__mergeDeepRight__ = __webpack_require__(271);
@@ -12923,7 +12923,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_131__mergeDeepWithKey__ = __webpack_require__(50);
 /* unused harmony reexport mergeDeepWithKey */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_132__mergeWith__ = __webpack_require__(273);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "H", function() { return __WEBPACK_IMPORTED_MODULE_132__mergeWith__["a"]; });
+/* unused harmony reexport mergeWith */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_133__mergeWithKey__ = __webpack_require__(74);
 /* unused harmony reexport mergeWithKey */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_134__min__ = __webpack_require__(274);
@@ -12953,7 +12953,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_146__of__ = __webpack_require__(281);
 /* unused harmony reexport of */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_147__omit__ = __webpack_require__(283);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "I", function() { return __WEBPACK_IMPORTED_MODULE_147__omit__["a"]; });
+/* unused harmony reexport omit */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_148__once__ = __webpack_require__(284);
 /* unused harmony reexport once */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_149__or__ = __webpack_require__(116);
@@ -12969,7 +12969,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_154__partition__ = __webpack_require__(288);
 /* unused harmony reexport partition */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_155__path__ = __webpack_require__(26);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "J", function() { return __WEBPACK_IMPORTED_MODULE_155__path__["a"]; });
+/* unused harmony reexport path */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_156__pathEq__ = __webpack_require__(289);
 /* unused harmony reexport pathEq */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_157__pathOr__ = __webpack_require__(290);
@@ -12983,7 +12983,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_161__pickBy__ = __webpack_require__(293);
 /* unused harmony reexport pickBy */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_162__pipe__ = __webpack_require__(99);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "K", function() { return __WEBPACK_IMPORTED_MODULE_162__pipe__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_162__pipe__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_163__pipeK__ = __webpack_require__(294);
 /* unused harmony reexport pipeK */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_164__pipeP__ = __webpack_require__(101);
@@ -12997,9 +12997,9 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_168__project__ = __webpack_require__(296);
 /* unused harmony reexport project */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_169__prop__ = __webpack_require__(56);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "L", function() { return __WEBPACK_IMPORTED_MODULE_169__prop__["a"]; });
+/* unused harmony reexport prop */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_170__propEq__ = __webpack_require__(297);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "M", function() { return __WEBPACK_IMPORTED_MODULE_170__propEq__["a"]; });
+/* unused harmony reexport propEq */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_171__propIs__ = __webpack_require__(298);
 /* unused harmony reexport propIs */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_172__propOr__ = __webpack_require__(299);
@@ -13011,7 +13011,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_175__range__ = __webpack_require__(302);
 /* unused harmony reexport range */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_176__reduce__ = __webpack_require__(19);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "N", function() { return __WEBPACK_IMPORTED_MODULE_176__reduce__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_176__reduce__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_177__reduceBy__ = __webpack_require__(47);
 /* unused harmony reexport reduceBy */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_178__reduceRight__ = __webpack_require__(134);
@@ -13019,9 +13019,9 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_179__reduceWhile__ = __webpack_require__(303);
 /* unused harmony reexport reduceWhile */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_180__reduced__ = __webpack_require__(304);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "O", function() { return __WEBPACK_IMPORTED_MODULE_180__reduced__["a"]; });
+/* unused harmony reexport reduced */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_181__reject__ = __webpack_require__(46);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "P", function() { return __WEBPACK_IMPORTED_MODULE_181__reject__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_181__reject__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_182__remove__ = __webpack_require__(111);
 /* unused harmony reexport remove */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_183__repeat__ = __webpack_require__(305);
@@ -13073,7 +13073,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_206__takeWhile__ = __webpack_require__(321);
 /* unused harmony reexport takeWhile */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_207__tap__ = __webpack_require__(323);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Q", function() { return __WEBPACK_IMPORTED_MODULE_207__tap__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_207__tap__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_208__test__ = __webpack_require__(325);
 /* unused harmony reexport test */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_209__times__ = __webpack_require__(135);
@@ -13097,7 +13097,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_218__trim__ = __webpack_require__(334);
 /* unused harmony reexport trim */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_219__tryCatch__ = __webpack_require__(335);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "R", function() { return __WEBPACK_IMPORTED_MODULE_219__tryCatch__["a"]; });
+/* unused harmony reexport tryCatch */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_220__type__ = __webpack_require__(61);
 /* unused harmony reexport type */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_221__unapply__ = __webpack_require__(336);
@@ -13113,7 +13113,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_226__unionWith__ = __webpack_require__(341);
 /* unused harmony reexport unionWith */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_227__uniq__ = __webpack_require__(72);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "S", function() { return __WEBPACK_IMPORTED_MODULE_227__uniq__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_227__uniq__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_228__uniqBy__ = __webpack_require__(119);
 /* unused harmony reexport uniqBy */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_229__uniqWith__ = __webpack_require__(137);
@@ -13129,7 +13129,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_234__useWith__ = __webpack_require__(133);
 /* unused harmony reexport useWith */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_235__values__ = __webpack_require__(91);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "T", function() { return __WEBPACK_IMPORTED_MODULE_235__values__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return __WEBPACK_IMPORTED_MODULE_235__values__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_236__valuesIn__ = __webpack_require__(345);
 /* unused harmony reexport valuesIn */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_237__view__ = __webpack_require__(346);
@@ -13137,7 +13137,7 @@ var ReactiveTest = Rx.ReactiveTest = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_238__when__ = __webpack_require__(347);
 /* unused harmony reexport when */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_239__where__ = __webpack_require__(138);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "U", function() { return __WEBPACK_IMPORTED_MODULE_239__where__["a"]; });
+/* unused harmony reexport where */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_240__whereEq__ = __webpack_require__(348);
 /* unused harmony reexport whereEq */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_241__without__ = __webpack_require__(349);
@@ -13653,1348 +13653,8 @@ var equals = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* 
 /* harmony default export */ __webpack_exports__["a"] = (equals);
 
 /***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return handleError; });
-/* unused harmony export assertSignature */
-/* unused harmony export assertSignatureContract */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return assertContract; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return checkSignature; });
-/* unused harmony export isNullableObject */
-/* unused harmony export isNullableComponentDef */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return isHashMap; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "w", function() { return isStrictRecord; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return isComponent; });
-/* unused harmony export isUndefined */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return isFunction; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "y", function() { return isVNode; });
-/* unused harmony export isOptional */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return isObject; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return isBoolean; });
-/* unused harmony export isOneOf */
-/* unused harmony export isTrue */
-/* unused harmony export isNumber */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "x", function() { return isString; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return isArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return isEmptyArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return isArrayOf; });
-/* unused harmony export isPromise */
-/* unused harmony export isError */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return isObservable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "u", function() { return isSource; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "v", function() { return isSources; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "t", function() { return isOptSinks; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return isMergeSinkFn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return isArrayOptSinks; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return checkAndGatherErrors; });
-/* unused harmony export isStrictRecordE */
-/* unused harmony export allPassE */
-/* unused harmony export bothE */
-/* unused harmony export whereE */
-/* unused harmony export isHashMapE */
-/* unused harmony export allE */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return eitherE; });
-/* unused harmony export isRecordE */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return assertSourcesContracts; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return assertSinksContracts; });
-/* unused harmony export assertSettingsContracts */
-/* unused harmony export hasNoDuplicateKeys */
-/* unused harmony export hasNoCommonValues */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return hasAtLeastOneChildComponent; });
-/* unused harmony export isNewKey */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_src_index__ = __webpack_require__(13);
-
-
-
-const mapIndexed = __WEBPACK_IMPORTED_MODULE_0_ramda__["b" /* addIndex */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */]);
-
-// Type checking typings
-/**
- * @typedef {String} ErrorMessage
- */
-/**
- * @typedef {Boolean|Array<ErrorMessage>} SignatureCheck
- * Note : The booleam can only be true
- */
-
-// Component typings
-/**
- * @typedef {String} SourceName
- */
-/**
- * @typedef {String} SinkName
- */
-/**
- * @typedef {Rx.Observable} Source
- */
-/**
- * @typedef {Rx.Observable|Null} Sink
- */
-/**
- * @typedef {Object.<string, Source>} Sources
- */
-/**
- * @typedef {Object.<string, Sink>} Sinks
- */
-/**
- * @typedef {?Object.<string, ?Object>} Settings
- */
-/**
- * @typedef {function(Sink, Array<Sink>, Settings):Sink} mergeSink
- */
-/**
- * @typedef {Object} DetailedComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings):Sinks} makeOwnSinks
- * @property {Object.<SinkName, mergeSink> | function} mergeSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
- */
-/**
- * @typedef {Object} ShortComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings):Sinks} makeOwnSinks
- * @property {function(Component, Array<Component>, Sources, Settings)}
- * computeSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
- */
-/**
- * @typedef {function(Sources, Settings):Sinks} Component
- */
-
-///////
-// Helpers
-
-/**
- * Throws an exception if the arguments parameter fails at least one
- * validation rule
- * Note that all arguments are mandatory, i.e. the function does not deal with
- * optional arguments
- * @param {String} fnName
- * @param {Array<*>} _arguments
- * @param {[Array<Object.<string, Predicate|PredicateWithError>>]} vRules
- * Validation rules.
- *
- * Given f(x, y) =  x + y, with x both int, in the body of `f`, include
- * function f(x, y) {
-   *   assertSignature ('f', arguments, [{x:isInteger},{y:isInteger}],
-   *                  'one of the parameters is not an integer!')
-   *   ...
-   * }
- */
-function assertSignature(fnName, _arguments, vRules) {
-  const argNames = __WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */], vRules))
-  const ruleFns = __WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](function (vRule) {
-    return __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](vRule)[0]
-  }, vRules))
-
-  const args = mapIndexed(function (vRule, index) {
-    return _arguments[index]
-  }, vRules)
-
-  const validatedArgs = mapIndexed((value, index) => {
-    const ruleFn = ruleFns[index]
-    return ruleFn(value)
-  }, args)
-
-  const hasFailed = __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */]((acc, value) => {
-    return isFalse(value) || acc
-  }, false, validatedArgs)
-
-  if (hasFailed) {
-    const validationMessages = mapIndexed((errorMessageOrBool, index) => {
-        const argName = argNames[index]
-
-        return isTrue(errorMessageOrBool) ?
-          '' :
-          [
-            `${fnName}: argument ${argName} fails rule ${vRules[index][argName].name}`,
-            isBoolean(errorMessageOrBool) ? '' : errorMessageOrBool
-          ].join(': ')
-      }, validatedArgs
-    ).join('\n')
-
-    const errorMessage = ['assertSignature:', validationMessages].join(' ')
-    throw errorMessage
-  }
-
-  return !hasFailed
-}
-
-function assertSignatureContract(fnName, args, signatureDef) {
-  let isContractFailing = false
-  const argChecks = mapIndexed((paramStruct, index) => {
-    const paramName = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](paramStruct)[0]
-    const [paramContract, contractErrorMessage] = paramStruct[paramName]
-    if (isTrue(paramContract.call(null, args[index]))) {
-      // contract is fulfilled
-      return true
-    }
-    else {
-      isContractFailing = true
-      return `${paramName} fails contract ${paramContract.name} : ${contractErrorMessage}`
-    }
-  }, signatureDef)
-
-  if (isContractFailing) {
-    const errorMessages = __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](
-      boolOrErrorMessage => isString(boolOrErrorMessage) ? boolOrErrorMessage : ""
-      , argChecks)
-      .join('\n')
-
-    throw `${fnName} called with unexpected or erroneous arguments! \n ${errorMessages}`
-  }
-
-
-}
-
-/**
- * Test against a predicate, and throws an exception if the predicate
- * is not satisfied
- * @param {function(*): (Boolean|String)} contractFn Predicate that must be
- * satisfied. Returns true if predicate is satisfied, otherwise return a
- * string to report about the predicate failure
- * @param {Array<*>} contractArgs arguments for the predicate
- * @param {String} errorMessage error message to report in case of failure
- * @returns {Boolean}
- * @throws if the contract fails
- */
-function assertContract(contractFn, contractArgs, errorMessage) {
-  const boolOrError = contractFn.apply(null, contractArgs)
-  const isPredicateSatisfied = isBoolean(boolOrError) && boolOrError;
-
-  if (!isPredicateSatisfied) {
-    throw `assertContract: fails contract ${contractFn.name}\n${errorMessage}\n ${boolOrError}`
-  }
-  return true
-}
-
-/**
- * Returns:
- * - `true` if the object passed as parameter passes all the predicates on
- * its properties
- * - an array with the concatenated error messages otherwise
- * @param obj
- * @param {Object.<string, Predicate>} signature
- * @param {Object.<string, string>} signatureErrorMessages
- * @param {Boolean=false} isStrict When `true` signals that the object
- * should not have properties other than the ones checked for
- * @returns {Boolean | Array<String>}
- */
-function checkSignature(obj, signature, signatureErrorMessages, isStrict) {
-  let arrMessages = [];
-  let strict = !!isStrict;
-
-  // Check that object properties in the signature match it
-  __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((predicate, property) => {
-    if (!predicate(obj[property])) {
-      arrMessages.push(signatureErrorMessages[property])
-    }
-  }, signature);
-
-  // Check that object properties are all in the signature if strict is set
-  if (strict) {
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, property) => {
-      if (!(property in signature)) {
-        arrMessages.push(`Object cannot contain a property called ${property}`)
-      }
-    }, obj)
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */](arrMessages) ? true : arrMessages
-}
-
-/**
- * Returns true iff the parameter is a boolean whose value is false.
- * This hence does both type checking and value checking
- * @param obj
- * @returns {boolean}
- */
-function isFalse(obj) {
-  return isBoolean(obj) ? !obj : false
-}
-
-/**
- * Returns true iff the parameter is a boolean whose value is false.
- * This hence does both type checking and value checking
- * @param obj
- * @returns {boolean}
- */
-function isTrue(obj) {
-  return isBoolean(obj) ? obj : false
-}
-
-function isMergeSinkFn(obj) {
-  return isFunction(obj)
-}
-
-/**
- * Returns true iff the passed parameter is null or undefined OR a POJO
- * @param {Object} obj
- * @returns {boolean}
- */
-function isNullableObject(obj) {
-  // Note that `==` is used instead of `===`
-  // This allows to test for `undefined` and `null` at the same time
-  return obj == null || typeof obj === 'object'
-}
-
-/**
- *
- * @param obj
- * @returns {SignatureCheck}
- */
-function isNullableComponentDef(obj) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](obj) || checkSignature(obj, {
-    makeLocalSources: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-    makeLocalSettings: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-    makeOwnSinks: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-    mergeSinks: mergeSinks => {
-      if (obj.computeSinks) {
-        return !mergeSinks
-      }
-      else {
-        return __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](isObject, isFunction))(mergeSinks)
-      }
-    },
-    computeSinks: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-    checkPreConditions: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-    checkPostConditions: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isFunction),
-  }, {
-    makeLocalSources: 'makeLocalSources must be undefined or a function',
-    makeLocalSettings: 'makeLocalSettings must be undefined or a' +
-    ' function',
-    makeOwnSinks: 'makeOwnSinks must be undefined or a function',
-    mergeSinks: 'mergeSinks can only be defined when `computeSinks` is' +
-    ' not, and when so, it must be undefined, an object or a function',
-    computeSinks: 'computeSinks must be undefined or a function',
-    checkPreConditions: 'checkPreConditions must be undefined or a function',
-    checkPostConditions: 'checkPostConditions must be undefined or a function'
-  }, true)
-}
-
-function isUndefined(obj) {
-  return typeof obj === 'undefined'
-}
-
-function isFunction(obj) {
-  return typeof(obj) === 'function'
-}
-
-function isObject(obj) {
-  return typeof(obj) === 'object'
-}
-
-function isBoolean(obj) {
-  return typeof(obj) === 'boolean'
-}
-
-function isOneOf(strList) {
-  return function (obj) {
-    return isString(obj) && strList.indexOf(obj) !== -1
-  }
-}
-
-function isNumber(obj) {
-  return typeof(obj) === 'number'
-}
-
-function isString(obj) {
-  return typeof(obj) === 'string'
-}
-
-function isArray(obj) {
-  return Array.isArray(obj)
-}
-
-function isEmptyArray(obj) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["d" /* allPass */]([__WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */], isArray])(obj);
-}
-
-/**
- * Returns a function which returns true if its parameter is an array,
- * and each element of the array satisfies a given predicate
- * @param {function(*):Boolean} predicateFn
- * @returns {function():Boolean}
- */
-function isArrayOf(predicateFn) {
-  if (typeof predicateFn !== 'function') {
-    throw 'isArrayOf: predicateFn is not a function!!'
-  }
-
-  return function _isArrayOf(obj) {
-    if (!Array.isArray(obj)) {
-      return false
-    }
-
-    return __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](predicateFn, obj)
-  }
-}
-
-function isVNode(obj) {
-  return ["children", "data", "elm", "key", "sel", "text"]
-    .every(prop => prop in obj)
-}
-
-/**
- *
- * @param {Predicate} predicateKey predicate which keys of hashmap must satisfy
- * @param {Predicate} predicateValue predicate which values of hash map must satisfy
- * @returns {Predicate}
- * @throws when either one predicate is not a function
- */
-function isHashMap(predicateKey, predicateValue) {
-  assertContract(isFunction, [predicateKey], 'isHashMap : first argument must be a' +
-    ' predicate function!');
-  assertContract(isFunction, [predicateValue], 'isHashMap : second argument must be a' +
-    ' predicate function!');
-
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */], __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](predicateKey)),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](predicateValue))
-  );
-}
-
-/**
- * check that an object :
- * - does not have any extra properties than the expected ones (strictness)
- * - that its properties follow the defined specs
- * Note that if a property is optional, the spec must include that case
- * @param {Object.<String, Predicate>} recordSpec
- * @returns {Predicate}
- * @throws when recordSpec is not an object
- *
- * Example :
- * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2'}) -> true
- * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:'2', c:3}) -> false
- * - isStrictRecordOf({a : isNumber, b : isString})({a:1, b:2}) -> false
- */
-function isStrictRecord(recordSpec) {
-  assertContract(isObject, [recordSpec], 'isStrictRecord : record specification argument must be' +
-    ' a valid object!');
-
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["d" /* allPass */]([
-      // 1. no extra properties, i.e. all properties in obj are in recordSpec
-      // return true if recordSpec.keys - obj.keys is empty
-      __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */], __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_0_ramda__["o" /* difference */])(__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](recordSpec)), __WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */]),
-      // 2. the properties in recordSpec all pass their corresponding predicate
-      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
-      __WEBPACK_IMPORTED_MODULE_0_ramda__["U" /* where */](recordSpec)
-    ]
-  )
-}
-
-/**
- * Returns true iff the parameter `obj` represents a component.
- * @param obj
- * @returns {boolean}
- */
-function isComponent(obj) {
-  // Without a type system, we just test that it is a function
-  return isFunction(obj)
-}
-
-function isPromise(obj) {
-  return obj && obj.then && isFunction(obj.then) && true
-}
-
-function isError(obj) {
-  return obj instanceof Error
-}
-
-function isObservable(obj) {
-  // duck typing in the absence of a type system
-  return isFunction(obj.subscribe)
-}
-
-function isSource(obj) {
-  return isObservable(obj)
-}
-
-function isSources(obj) {
-  // We check the minimal contract which is not to be nil
-  // In `cycle`, sources can have both regular
-  // objects and observables (sign that the design could be improved).
-  // Regular objects are injected dependencies (DOM, router?) which
-  // are initialized in the drivers, and should be separated from
-  // `sources`. `sources` could then have an homogeneous type which
-  // could be checked properly
-  return !__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](obj)
-}
-
-function isOptSinks(obj) {
-  // obj can be null
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](obj) || (isObject(obj) && __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](__WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isObservable), __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](obj)))
-}
-
-function isArrayOptSinks(arrSinks) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](isOptSinks, arrSinks)
-}
-
-/**
- *
- * @param {Array<>} predicatesFn An array of predicates which must all be satisfied for the
- * check to pass, together with an error message in the form of a string for when the predicate
- * fails.
- * Those error messages are accumulated, the `errorMessage` is appended to them, and the
- * concatenation of those errors strings is returned.
- * @param {String} errorMessage
- * @returns {Function} function which returns a boolean or an error message string
- */
-function checkAndGatherErrors(predicatesFn, errorMessage) {
-  return function (...args) {
-    let hasFailed = false;
-    const accErrorMessages = __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */]((acc, [predicateFn, _errorMessage]) => {
-      const validationResultOrError = predicateFn.apply(predicateFn, args);
-
-      if (isTrue(validationResultOrError)) {
-        return acc
-      }
-      else {
-        // Case when the predicate returns an error message - which can be empty
-        _errorMessage && acc.push(_errorMessage);
-        acc.push(`Predicate ${predicateFn.name} failed with arguments : ${__WEBPACK_IMPORTED_MODULE_1__utils_src_index__["f" /* formatArrayObj */](args, ', ')}`)
-        validationResultOrError && acc.push(validationResultOrError);
-        hasFailed = true;
-        return __WEBPACK_IMPORTED_MODULE_0_ramda__["O" /* reduced */](acc)
-      }
-    }, [], predicatesFn);
-
-    if (!hasFailed) {
-      // no errors - all checks passed
-      return true
-    }
-    else {
-      errorMessage && accErrorMessages.unshift(errorMessage);
-      return accErrorMessages.join('\n')
-    }
-  }
-}
-
-/**
- * Cf. isStrictRecord. Adds the error messages accumulation aspect.
- * @param recordSpec
- */
-function isStrictRecordE(recordSpec) {
-  assertContract(isObject, [recordSpec], 'isStrictRecordE : record specification argument must' +
-    ' be a valid object!');
-
-  return allPassE([
-      // 1. no extra properties, i.e. all properties in obj are in recordSpec
-      // return true if recordSpec.keys - obj.keys is empty
-      [
-        __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */], __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_0_ramda__["o" /* difference */])(__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](recordSpec)), __WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */]),
-        `isStrictRecordE : unexpected properties were found on object! Object should only have properties within a configured fixed set of properties : ${__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](recordSpec)}!`
-      ],
-      // 2. the properties in recordSpec all pass their corresponding predicate
-      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
-      [
-        whereE(recordSpec),
-        `isStrictRecordE : At least one property of object failed its predicate!`
-      ]
-    ]
-    , `isStrictRecordE > allPassE : fails!`)
-
-}
-
-/**
- * Cf. isRecord. Adds the error messages accumulation aspect.
- * @param recordSpec
- */
-function isRecordE(recordSpec) {
-  assertContract(isObject, [recordSpec], 'isRecordE : record specification argument must' +
-    ' be a valid object!');
-
-  return allPassE([
-      // 2. the properties in recordSpec all pass their corresponding predicate
-      // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
-      [
-        whereE(recordSpec, `isRecordE > allPassE > whereE : fails!`),
-        `isStrictRecordE : At least one property of object failed its predicate!`
-      ]
-    ]
-    , `isRecordE > allPassE : fails!`)
-
-}
-
-const allPassE = checkAndGatherErrors;
-
-function bothE([leftPredicateE, leftError], [rightPredicateE, rightError], error) {
-  return allPassE([
-    [leftPredicateE, leftError],
-    [rightPredicateE, rightError]
-  ], error || `One of the two predicates has failed!`)
-}
-
-/**
- * @param recordSpec an object containing for each key a predicate. Cf. Ramda `where` function
- * documentation
- * @param error error text to display when one the predicate is failing
- * @returns {function}
- */
-function whereE(recordSpec, error) {
-  // RecordSpec :: HashMap<Key, Predicate>
-  const predicates = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](recordSpec)
-    .map(key => [
-      obj => recordSpec[key](obj[key]),
-      `property ${key} fails predicate ${recordSpec[key].name}`
-    ]);
-
-  return checkAndGatherErrors(predicates, error)
-}
-
-
-/**
- * Test against a left predicate. If that predicate passes, returns true. Otherwise tests
- * against the right predicate. If that predicate passes, returns true. Otherwise, returns an
- * error message which is the concatenation of the possible error messages returned by the
- * left and right predicates
- * @param leftValidation
- * @param leftError
- * @param rightValidation
- * @param rightError
- * @param error
- * @returns {function(*) : Boolean | String}
- */
-function eitherE([leftValidation, leftError], [rightValidation, rightError], error) {
-  const predicates = [[
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](leftValidation, rightValidation),
-    [
-      `both predicates (${leftValidation.name}, ${rightValidation.name}) failed!`,
-      `left predicate : ${leftError}`,
-      `right predicate : ${rightError}`
-    ].join('\n')
-  ]];
-
-  return checkAndGatherErrors(predicates, error)
-}
-
-/**
- * Cf. isHashMap. Decorates isHashMap with validation error messages
- * @param {Predicate} predicateKey
- * @param {Predicate} predicateValue
- * @returns {Predicate}
- * @throws when either predicate is not a function
- */
-function isHashMapE(predicateKey, predicateValue) {
-  assertContract(isFunction, [predicateKey], 'isHashMapE : first argument must be a' +
-    ' predicate function!');
-  assertContract(isFunction, [predicateValue], 'isHashMapE : second argument must be a' +
-    ' predicate function!');
-
-  return allPassE([
-    [__WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */], allE(predicateKey)), `isHashMapE : at least one property key of the object failed its predicate!`],
-    [__WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], allE(predicateValue)), `isHashMapE : at least one property's value of the object failed its predicate!`]
-  ], `isHashMapE : fails!`);
-}
-
-/**
- * Decorate `R.all` from ramda with validation error messages
- * @param predicate
- */
-function allE(predicate) {
-  return function (...args) {
-    const arrayOfValues = args[0] || [];
-
-    const result = __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */]((acc, value) => {
-      const booleanOrErrorMessage = predicate(value);
-
-      if (isTrue(booleanOrErrorMessage)) {
-        return acc
-      }
-      else {
-        acc.push(`allE : predicate ${predicate.name} fails with arguments : ${__WEBPACK_IMPORTED_MODULE_1__utils_src_index__["e" /* format */](value)}`);
-        booleanOrErrorMessage && acc.push(booleanOrErrorMessage);
-        return acc
-      }
-    }, [], arrayOfValues)
-
-    return result.length === 0
-      ? true
-      : result.join('\n')
-  }
-}
-
-function assertSourcesContracts([sources, settings], sourcesContract) {
-  // Check sources contracts
-  assertContract(isSources, [sources],
-    'm : `sources` parameter is invalid');
-  assertContract(sourcesContract, [sources, settings], 'm: `sources, settings`' +
-    ' parameters fails contract ' + sourcesContract.name);
-}
-
-function assertSinksContracts(sinks, sinksContract) {
-  assertContract(isOptSinks, [sinks],
-    'mergeSinks must return a hash of observable sink');
-  assertContract(sinksContract, [sinks],
-    'fails custom contract ' + sinksContract.name);
-}
-
-function assertSettingsContracts(mergedSettings, settingsContract) {
-  // Check settings contracts
-  assertContract(settingsContract, [mergedSettings], 'm: `settings`' +
-    ' parameter fails contract ' + settingsContract.name);
-}
-
-//////
-// Helper functions
-function hasAtLeastOneChildComponent(childrenComponents) {
-  return childrenComponents &&
-  isArray(childrenComponents) &&
-  childrenComponents.length >= 1 ? true : ''
-}
-
-function _handleError(msg, e) {
-  console.error(`${msg}`, e);
-  throw e;
-}
-
-const handleError = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](_handleError);
-
-function isOptional(predicate) {
-  return function (obj) {
-    return __WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](obj) ? true : predicate(obj)
-  }
-}
-
-function hasNoDuplicateKeys(objA, objB) {
-  const objAkeys = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](objA);
-  const objBkeys = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](objB);
-
-  return (objAkeys.length === 0 || objBkeys.length === 0)
-    ? true // if objA or objB is empty, then there is no duplicate
-    : (__WEBPACK_IMPORTED_MODULE_0_ramda__["y" /* intersection */](objAkeys, objBkeys).length === 0)
-}
-
-function hasNoCommonValues(eventSinkNames, childrenSinkNames) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["y" /* intersection */](eventSinkNames, childrenSinkNames).length === 0
-}
-
-function isNewKey(obj, key) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](obj).indexOf(key) === -1
-}
-
-
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return emitNullIfEmpty; });
-/* unused harmony export EmptyComponent */
-/* unused harmony export DummyComponent */
-/* unused harmony export vLift */
-/* unused harmony export Div */
-/* unused harmony export Nav */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DOM_SINK; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return projectSinksOn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return getSinkNamesFromSinksArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return removeEmptyVNodes; });
-/* unused harmony export makeDivVNode */
-/* unused harmony export labelSourceWith */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return unfoldObjOverload; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return removeNullsFromArray; });
-/* unused harmony export deepFreeze */
-/* unused harmony export makeErrorMessage */
-/* unused harmony export decorateWithOne */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return decorateWith; });
-/* unused harmony export makeFunctionDecorator */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return assertFunctionContractDecoratorSpecs; });
-/* unused harmony export preventDefault */
-/* unused harmony export addPrefix */
-/* unused harmony export noop */
-/* unused harmony export toJsonPatch */
-/* unused harmony export toBoolean */
-/* unused harmony export stripHtmlTags */
-/* unused harmony export ERROR_MESSAGE_PREFIX */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return traverseTree; });
-/* unused harmony export firebaseListToArray */
-/* unused harmony export getInputValue */
-/* unused harmony export filterNull */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return traceSinks; });
-/* unused harmony export getFunctionName */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return logFnTrace; });
-/* unused harmony export convertVNodesToHTML */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return formatArrayObj; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return format; });
-/* unused harmony export traceFn */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_snabbdom_to_html__ = __webpack_require__(78);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_snabbdom_to_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_snabbdom_to_html__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pretty_format__ = __webpack_require__(148);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pretty_format___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_pretty_format__);
-
-
-
-
-// import { StandardError } from "standard-error"
-
-
-const $ = __WEBPACK_IMPORTED_MODULE_1_rx___default.a.Observable;
-const ERROR_MESSAGE_PREFIX = 'ERROR : '
-const DOM_SINK = 'DOM';
-
-// Type checking typings
-/**
- * @typedef {String} ErrorMessage
- */
-/**
- * @typedef {Boolean|Array<ErrorMessage>} SignatureCheck
- * Note : The booleam can only be true
- */
-
-// Component typings
-/**
- * @typedef {String} SourceName
- */
-/**
- * @typedef {String} SinkName
- */
-/**
- * @typedef {Rx.Observable} Source
- */
-/**
- * @typedef {Rx.Observable|Null} Sink
- */
-/**
- * @typedef {Object.<string, Source>} Sources
- */
-/**
- * @typedef {Object.<string, Sink>} Sinks
- */
-/**
- * @typedef {?Object.<string, ?Object>} Settings
- */
-/**
- * @typedef {function(Sink, Array<Sink>, Settings):Sink} mergeSink
- */
-/**
- * @typedef {Object} DetailedComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings):Sinks} makeOwnSinks
- * @property {Object.<SinkName, mergeSink> | function} mergeSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
- */
-/**
- * @typedef {Object} ShortComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings):Sinks} makeOwnSinks
- * @property {function(Component, Array<Component>, Sources, Settings)}
- * computeSinks
- * @property {function(Sinks):Boolean} sinksContract
- * @property {function(Sources):Boolean} sourcesContract
- */
-
-/**
- * @typedef {function(Sources, Settings):Sinks} Component
- */
-
-function isUndefined(obj) {
-  return typeof obj === 'undefined'
-}
-
-function removeEmptyVNodes(arrVNode) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */]((accNonEmptyVNodes, vNode) => {
-    return (isNullVNode(vNode)) ?
-      accNonEmptyVNodes :
-      (accNonEmptyVNodes.push(vNode), accNonEmptyVNodes)
-  }, [], arrVNode)
-}
-
-function isNullVNode(vNode) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](vNode.children, []) &&
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](vNode.data, {}) &&
-    isUndefined(vNode.elm) &&
-    isUndefined(vNode.key) &&
-    isUndefined(vNode.sel) &&
-    isUndefined(vNode.text)
-}
-
-/**
- * For each element object of the array, returns the indicated property of
- * that object, if it exists, null otherwise.
- * For instance, `projectSinksOn('a', obj)` with obj :
- * - [{a: ..., b: ...}, {b:...}]
- * - result : [..., null]
- * @param {String} prop
- * @param {Array<*>} obj
- * @returns {Array<*>}
- */
-function projectSinksOn(prop, obj) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](x => x ? x[prop] : null, obj)
-}
-
-/**
- * Returns an array with the set of sink names extracted from an array of
- * sinks. The ordering of those names should not be relied on.
- * For instance:
- * - [{DOM, auth},{DOM, route}]
- * results in ['DOM','auth','route']
- * @param {Array<Sinks>} aSinks
- * @returns {Array<String>}
- */
-function getSinkNamesFromSinksArray(aSinks) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["S" /* uniq */](__WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](getValidKeys, aSinks)))
-}
-
-function getValidKeys(obj) {
-  let validKeys = []
-  __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, key) => {
-    if (value != null) {
-      validKeys.push(key)
-    }
-  }, obj)
-
-  return validKeys
-}
-
-function makeDivVNode(x) {
-  return {
-    "children": undefined,
-    "data": {},
-    "elm": undefined,
-    "key": undefined,
-    "sel": "div",
-    "text": x
-  }
-}
-
-function vLift(vNode) {
-  return function vLift(sources, settings) {
-    return {
-      [DOM_SINK]: $.of(vNode)
-    }
-  }
-}
-
-/**
- * Lifts a div function into a Div component which only has a DOM sink, whose only value emitted
- * is computed from the arguments passed
- * @returns {Component}
- */
-function Div() {
-  return vLift(__WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__["div"].apply(null, arguments))
-}
-
-function Nav() {
-  return vLift(__WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__["nav"].apply(null, arguments))
-}
-
-/**
- *
- * @param {String} label
- * @param {Rx.Observable} source
- */
-function labelSourceWith(label, source) {
-  return source.map(x => ({ [label]: x }))
-}
-
-function EmptyComponent(sources, settings) {
-  return {
-    [DOM_SINK]: $.of(__WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__["div"](''))
-  }
-}
-
-function DummyComponent(sources, settings) {
-  return {
-    [DOM_SINK]: $.of(__WEBPACK_IMPORTED_MODULE_2_cycle_snabbdom__["div"]('dummy content'))
-  }
-}
-
-/**
- * Turns a sink which is empty into a sink which emits `Null`
- * This is necessary for use in combination with `combineLatest`
- * As a matter of fact, `combineLatest(obs1, obs2)` will block till both
- * observables emit at least one value. So if `obs2` is empty, it will
- * never emit anything
- * @param sink
- * @returns {Observable|*}
- */
-function emitNullIfEmpty(sink) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](sink)
-    ? null
-    : $.create(function emitNullIfEmptyObs(observer) {
-      let isEmpty = true;
-      sink.subscribe(function next(x) {
-        isEmpty = false;
-        observer.onNext(x);
-      }, function error(e) {
-        console.error(`emitNullIfEmpty > Error!`, e);
-        observer.onError(e);
-      }, function completed() {
-        if (isEmpty) {
-          observer.onNext(null);
-        }
-        observer.onCompleted();
-      });
-
-      return function dispose() {
-        // No clean-up necessary
-      }
-    })
-  /*
-    return isNil(sink) ?
-      null :
-      $.merge(
-        sink,
-        sink.isEmpty().filter(x => x).map(x => null)
-      )
-  */
-}
-
-/**
- * Returns an object whose keys :
- * - the first key found in `obj` for which the matching predicate was
- * fulfilled. Predicates are tested in order of indexing of the array.
- * - `_index` the index in the array where a predicate was fulfilled if
- * any, undefined otherwise
- * Ex : unfoldObjOverload('DOM', {sourceName: isString, predicate:
-    * isPredicate})
- * Result : {sourceName : 'DOM'}
- * @param obj
- * @param {Array<Object.<string, Predicate>>} overloads
- * @returns {{}}
- */
-function unfoldObjOverload(obj, overloads) {
-  let result = {};
-  let index = 0;
-
-  overloads.some(overload => {
-    // can only be one property
-    const property = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](overload)[0];
-    const predicate = __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](overload)[0];
-    const predicateEval = predicate(obj);
-
-    if (predicateEval) {
-      result[property] = obj;
-      result._index = index
-    }
-    index++;
-
-    return predicateEval
-  });
-  return result
-}
-
-function isBoolean(obj) {
-  return typeof(obj) === 'boolean'
-}
-
-function isString(obj) {
-  return typeof(obj) === 'string'
-}
-
-// from https://github.com/substack/deep-freeze/blob/master/index.js
-function deepFreeze(o) {
-  Object.freeze(o);
-
-  Object.getOwnPropertyNames(o).forEach(function (prop) {
-    if (o.hasOwnProperty(prop)
-      && o[prop] !== null
-      && (typeof o[prop] === "object" || typeof o[prop] === "function")
-      && !Object.isFrozen(o[prop])) {
-      deepFreeze(o[prop]);
-    }
-  });
-
-  return o;
-}
-
-function makeErrorMessage(errorMessage) {
-  return ERROR_MESSAGE_PREFIX + errorMessage;
-}
-
-function removeNullsFromArray(arr) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["P" /* reject */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], arr)
-}
-
-//IE workaround for lack of function name property on Functions
-//getFunctionName :: (* -> *) -> String
-const getFunctionName = (r => fn => {
-  return fn.name || ((('' + fn).match(r) || [])[1] || 'Anonymous');
-})(/^\s*function\s*([^\(]*)/i);
-
-// cf.
-// http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
-function NamedFunction(name, args, body, scope, values) {
-  if (typeof args == "string")
-    values = scope, scope = body, body = args, args = [];
-  if (!Array.isArray(scope) || !Array.isArray(values)) {
-    if (typeof scope == "object") {
-      var keys = Object.keys(scope);
-      values = keys.map(function (p) { return scope[p]; });
-      scope = keys;
-    } else {
-      values = [];
-      scope = [];
-    }
-  }
-  return Function(scope, "function " + name + "(" + args.join(", ") + ") {\n" + body + "\n}\nreturn " + name + ";").apply(null, values);
-}
-
-// decorateWith(decoratingFn, fnToDecorate), where log :: fn -> fn such as both have same name
-// and possibly throw exception if that make sense to decoratingFn
-function decorateWithOne(decoratorSpec, fnToDecorate) {
-  const fnToDecorateName = getFunctionName(fnToDecorate);
-
-  return NamedFunction(fnToDecorateName, [], `
-      const args = [].slice.call(arguments);
-      const decoratingFn = makeFunctionDecorator(decoratorSpec);
-      return decoratingFn(args, fnToDecorateName, fnToDecorate);
-`,
-    { makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName });
-}
-
-const decorateWith = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](function decorateWith(decoratingFnsSpecs, fnToDecorate) {
-  return decoratingFnsSpecs.reduce((acc, decoratingFn) => {
-    return decorateWithOne(decoratingFn, acc)
-  }, fnToDecorate)
-});
-
-/**
- * NOTE : incorrect declaration... TODO : correct one day
- * before(fnToDecorate, fnToDecorateName, args) or nil
- * after(fnToDecorate, fnToDecorateName, result) or nil
- * but not both nil
- * @returns {function(fnToDecorate: Function, fnToDecorateName:String, args:Array<*>)}
- */
-function makeFunctionDecorator({ before, after, name }) {
-  // we can have one of the two not specified, but if we have none, there is no decorator to make
-  if ((typeof before !== 'function') && (typeof after !== 'function')) {
-    throw `makeFunctionDecorator: you need to specify 'before' OR 'after' as decorating functions. You passed falsy values for both!`
-  }
-
-  const decoratorFnName = __WEBPACK_IMPORTED_MODULE_0_ramda__["n" /* defaultTo */]('anonymousDecorator', name);
-
-  // trick to get the same name for the returned function
-  // cf.
-  // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
-  const obj = {
-    [decoratorFnName](args, fnToDecorateName, fnToDecorate) {
-      before && before(args, fnToDecorateName, fnToDecorate);
-
-      const result = fnToDecorate(...args);
-
-      return after
-        ? after(result, fnToDecorateName, fnToDecorate)
-        : result;
-    }
-  };
-
-  return obj[decoratorFnName];
-}
-
-const assertFunctionContractDecoratorSpecs = fnContract => ({
-  before: (args, fnToDecorateName) => {
-    const checkDomain = fnContract.checkDomain;
-    const contractFnName = getFunctionName(checkDomain);
-    const passed = checkDomain(...args);
-
-    if (!isBoolean(passed) || (isBoolean(passed) && !passed)) {
-      // contract is failed
-      console.error(`assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName} \n
-${isString(passed) ? passed : ''}`);
-      throw `assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName}`
-    }
-  },
-  after: (result, fnToDecorateName) => {
-    const checkCodomain = fnContract.checkCodomain;
-    const contractFnName = getFunctionName(checkCodomain);
-    const passed = checkCodomain(result);
-
-    if (!isBoolean(passed) || (isBoolean(passed) && !passed)) {
-      // contract is failed
-      console.error(`assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName} \n
-${isString(passed) ? passed : ''}`);
-      throw `assertFunctionContractDecorator: ${fnToDecorateName} fails contract ${contractFnName}`
-    }
-
-    return result;
-  }
-});
-
-function preventDefault(ev) {
-  if (ev) ev.preventDefault()
-}
-
-function addPrefix(prefix) {
-  return function (str) {
-    return prefix + str
-  }
-}
-
-function noop() {
-
-}
-
-function toBoolean(x) {return !!x}
-
-/**
- * Returns a function which turns an object to be put at a given path location into an array of
- * JSON patch operations
- * @param {JSON_Pointer} path
- * @returns {Function}
- */
-function toJsonPatch(path) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, key) => ({
-      op: "add",
-      path: [path, key].join('/'),
-      value: value
-    })),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */]
-  );
-}
-
-function stripHtmlTags(html) {
-  let tmp = document.createElement("DIV");
-  tmp.innerHTML = html;
-
-  const strippedContent = tmp.textContent || tmp.innerText || "";
-
-  tmp.remove();
-
-  return strippedContent
-}
-
-/**
- * Iterative tree traversal generic algorithm
- * @param StoreConstructor a constructor for either a queue (breadth-first) or a stack
- * structure (depth-first)
- * @param {Function} pushFn queue or push instruction
- * @param {Function} popFn dequeue or pop instruction
- * @param {Function} isEmptyStoreFn check if the data structure used to store node to
- * process is empty
- * @param {Function} visitFn the visiting function on the node. Its results are accumulated
- * into the final result of the traverseTree function
- * @param {Function} getChildrenFn give the children for a given node
- * @param root the root node of the tree to traverse
- */
-function traverseTree({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, visitFn, getChildrenFn },
-                      root) {
-  const traversalResult = [];
-  const store = new StoreConstructor();
-  pushFn(store, root);
-  while ( !isEmptyStoreFn(store) ) {
-    const vnode = popFn(store);
-    traversalResult.push(visitFn(vnode));
-    getChildrenFn(vnode).forEach((child, index) => pushFn(store, child));
-  }
-
-  return traversalResult
-}
-
-function firebaseListToArray(fbList) {
-  // will have {key1:element, key2...}
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](fbList)
-}
-
-function getInputValue(document, sel) {
-  const el = document.querySelector(sel);
-  return el ? el.value : ''
-}
-
-function filterNull(driver) {
-  return function filteredDOMDriver(sink$) {
-    return driver(sink$.filter(Boolean))
-  }
-}
-
-// debug
-/**
- * Adds `tap` logging/tracing information to all sinks
- * @param {String} traceInfo
- * @param {Sinks} sinks
- * @returns {*}
- */
-function traceSinks(traceInfo, sinks) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((sink$, sinkName) => {
-    return sink$
-      ? sink$.tap(function log(x) {
-        console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
-      })
-      // Pass on null and undefined values as they are, they will be filtered out downstream
-      : sink$
-  }, sinks)
-}
-
-const logFnTrace = (title, paramSpecs) => ({
-  before: (args, fnToDecorateName) =>
-    console.info(`==> ${title.toUpperCase()} | ${fnToDecorateName}(${paramSpecs.join(', ')}): `, args),
-  after: (result, fnToDecorateName) => {
-    console.info(`<== ${title.toUpperCase()} | ${fnToDecorateName} <- `, result);
-    return result
-  },
-});
-
-function toHTMLorNull(x) {
-  return x ? __WEBPACK_IMPORTED_MODULE_3_snabbdom_to_html___default.a(x) : null
-}
-
-function convertVNodesToHTML(vNodeOrVnodes) {
-  if (Array.isArray(vNodeOrVnodes)) {
-    console.debug(`toHTML: ${vNodeOrVnodes.map(x => x ? __WEBPACK_IMPORTED_MODULE_3_snabbdom_to_html___default.a(x) : null)}`)
-    return vNodeOrVnodes.map(toHTMLorNull)
-  }
-  else {
-    console.debug(`toHTML: ${toHTMLorNull(vNodeOrVnodes)}`)
-    return toHTMLorNull(vNodeOrVnodes)
-  }
-}
-
-function formatArrayObj(arr, separator) {
-  return arr.map(format).join(separator)
-}
-
-function format(obj) {
-  // basically if obj is an object, use formatObj, else use toString
-  if (obj === 'null') {
-    return '<null>'
-  }
-  else if (obj === 'undefined') {
-    return '<undefined>'
-  }
-  else if (typeof(obj) === 'string' && obj.length === 0) {
-    return '<empty string>'
-  }
-  else if (Array.isArray(obj)) {
-    return formatArrayObj(obj, ' ; ')
-  }
-  else if (typeof(obj) === 'object') {
-    if (__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](obj).length === 0) {
-      // i.e. object is {}
-      return '<empty object>'
-    }
-    else return __WEBPACK_IMPORTED_MODULE_4_pretty_format___default.a(obj, {maxDepth : 3})
-  }
-  else {
-    return "" + obj
-  }
-}
-
-function traceFn(fn, text) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](fn, __WEBPACK_IMPORTED_MODULE_0_ramda__["Q" /* tap */](console.warn.bind(console, text ? text + ":" : "")))
-}
-
-
-
-
-/***/ }),
+/* 12 */,
+/* 13 */,
 /* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -15515,560 +14175,7 @@ var reduce = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry3__["a" /* 
 /* harmony default export */ __webpack_exports__["a"] = (reduce);
 
 /***/ }),
-/* 20 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return m; });
-/* unused harmony export defaultMergeSinkFn */
-/* unused harmony export computeDOMSinkDefault */
-/* unused harmony export mergeChildrenIntoParentDOM */
-/* unused harmony export computeReducedSink */
-/* unused harmony export getSlotHoles */
-/* unused harmony export rankChildrenBySlot */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_src_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__types__ = __webpack_require__(390);
-// Component typings
-/**
- * @typedef {Observable} Stream
- */
-/**
- * @typedef {Object.<string, Stream>} Sources
- */
-/**
- * @typedef {Object.<string, Stream>} Sinks
- * NOTE : this type def is not perfect as we allow sometimes null values
- */
-/**
- * @typedef {?Object.<string, *>} Settings
- * @property {?String} trace
- */
-/**
- * @typedef {?Object} DetailedComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings)} makeOwnSinks
- * @property {function(Sinks, Array<Sinks>, Settings) || Object.<Sink, Function>} mergeSinks
- * @property {?function(Sinks):Boolean} checkPostConditions
- * @property {?function(Sources, Settings):Boolean} checkPreConditions
- */
-/**
- * @typedef {?Object} ShortComponentDef
- * @property {?function(Sources, Settings)} makeLocalSources
- * @property {?function(Settings)} makeLocalSettings
- * @property {?function(Sources, Settings, Array<Component>)} makeAllSinks
- * @property {function(Function, Array<Component>, Sources, Settings)} computeSinks
- * @property {?function(Sinks):Boolean} checkPostConditions
- * @property {?function(Sources, Settings):Boolean} checkPreConditions
- */
-/**
- * @typedef {function(Sources, Settings):Sinks} Component
- */
-/**
- *@typedef {Component | Array<Component>} ParentAndChildren
- */
-
-
-
-
-
-
-
-
-
-
-__WEBPACK_IMPORTED_MODULE_4_rx___default.a.config.longStackSupport = true;
-let $ = __WEBPACK_IMPORTED_MODULE_4_rx___default.a.Observable
-const mapIndexed = __WEBPACK_IMPORTED_MODULE_2_ramda__["b" /* addIndex */](__WEBPACK_IMPORTED_MODULE_2_ramda__["D" /* map */]);
-
-const deepMerge = function deepMerge(a, b) {
-  return (__WEBPACK_IMPORTED_MODULE_2_ramda__["z" /* is */](Object, a) && __WEBPACK_IMPORTED_MODULE_2_ramda__["z" /* is */](Object, b)) ? __WEBPACK_IMPORTED_MODULE_2_ramda__["H" /* mergeWith */](deepMerge, a, b) : b;
-}
-
-// Configuration
-const defaultMergeSinkConfig = {
-  DOM: computeDOMSinkDefault,
-  _default: computeSinkDefault
-}
-
-//////
-// Helpers
-function isSlotHole(vnode) {
-  return vnode && vnode.data && 'slot' in vnode.data && true
-}
-
-const StoreConstructor = Array;
-
-function pushFn(arr, node) {arr.push(node)}
-
-// NOTE : we use `shift` here to simulate a queue structure, so we traverse breadth-first
-// Breadth-first traversal is important to reflect the precedency of each slot
-// However depth-first would give the same end result, just less efficient
-// For instance `{slot0, children: [slot1]]` with content for all slots, content for
-// `slot0` will erase all content put in `slot1`, so it is better to set `slot0` content first
-function popFn(arr) {return arr.shift()}
-
-function isEmptyStoreFn(arr) {return arr.length === 0}
-
-function getChildrenFn(vnode) {return vnode.children ? vnode.children : []}
-
-function visitFn(vnode) {
-  return isSlotHole(vnode)
-    ? vnode
-    : null
-}
-
-/**
- *
- * @param vNode
- * @returns {Array.<VNode>} returns an array of whatever
- * structure `visitFn`
- * is returning
- */
-function getSlotHoles(vNode) {
-  if (!vNode) throw `getSlotHoles : internal error, vNode cannot be falsy!`
-
-  const slotHoles = __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["k" /* removeNullsFromArray */](
-    __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["m" /* traverseTree */]({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, getChildrenFn, visitFn }, vNode)
-  );
-
-  const slotNames = slotHoles.map(__WEBPACK_IMPORTED_MODULE_2_ramda__["J" /* path */](['data', 'slot']));
-
-  // Edge case : at least one slot name has more than one corresponding slot hole
-  // NOTE : I could perfectly allow such duplication - children content with the duplicated
-  // slot would be copied once in several locations, that could be a feature too, but not for now
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_5__types__["b" /* hasNoTwoSlotsSameName */], [slotHoles, slotNames],
-    `m > getSlotHoles : at least one slot name has more than one corresponding slot hole! For information : array of slot names should show duplicated - ${slotNames}`);
-
-  // Main case : no given slot name has more than one corresponding slot hole
-  return slotHoles
-}
-
-/**
- * Returns a hashmap associating a slot with an array of vnode featuring that slot
- * A vnode will be considered to belong to a slot if at the top level of its node tree it has
- * a truthy slot property (should be a string, NOT CHECKED here) in its `vnode.data` object
- * Children which are not associated to a slot, will be put in the `undefined` slot
- * @param {Array.<*>} childrenVNode
- * @returns {Object.<string, Array.<VNode>>}
- */
-function rankChildrenBySlot(childrenVNode) {
-  return childrenVNode.reduce((acc, vnode) => {
-    if (vnode && vnode.data) {
-      acc[vnode.data.slot] = acc[vnode.data.slot] || [];
-      acc[vnode.data.slot].push(vnode)
-    }
-
-    return acc
-  }, {})
-}
-
-/**
- * Merges the DOM nodes produced by a parent component with the DOM nodes
- * produced by children components, such that the parent DOM nodes
- * wrap around the children DOM nodes
- * For instance:
- * - parent -> div(..., [h2(...)])
- * - children -> [div(...), button(...)]
- * - result : div(..., [h2(...), div(...), button(...)])
- * @param {Sink} parentDOMSinkOrNull
- * @param {Array<Sink>} childrenSink
- * @param {Settings} settings
- * @returns {Observable<VNode>|Null}
- */
-function computeDOMSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
-  // We want `combineLatest` to still emit the parent DOM sink, even when
-  // one of its children sinks is empty, so we modify the children sinks
-  // to emits ONE `Null` value if it is empty
-  // NOTE : some of those children sinks could be null, that is filtered out
-  const childrenDOMSinkOrNull = __WEBPACK_IMPORTED_MODULE_2_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["d" /* emitNullIfEmpty */], childrenSink);
-
-  const allSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["v" /* flatten */]([parentDOMSinkOrNull, childrenDOMSinkOrNull]);
-  const allDOMSinks = __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["k" /* removeNullsFromArray */](allSinks);
-
-  // Edge case : none of the sinks have a DOM sink
-  // That should not be possible as we come here only
-  // when we detect a DOM sink
-  if (allDOMSinks.length === 0) {
-    throw `m > computeDOMSinkDefault: internal error!`
-  }
-
-  return $.combineLatest(allDOMSinks)
-  //    .tap(x => console.log(`m > computeDOMSinkDefault: allDOMSinks : ${convertVNodesToHTML(x)}`))
-    .map(mergeChildrenIntoParentDOM(parentDOMSinkOrNull))
-}
-
-function computeSinkDefault(parentDOMSinkOrNull, childrenSink, settings) {
-  const allSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["k" /* concat */]([parentDOMSinkOrNull], childrenSink)
-
-  // Nulls have to be removed as a given sink name will not be in all children
-  // sinks. It is however guaranteed by the caller that the given sink
-  // name will be in at least one of the children. Hence the merged array
-  // is never empty
-  return $.merge(__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["k" /* removeNullsFromArray */](allSinks))
-}
-
-function mergeChildrenIntoParentDOM(parentDOMSink) {
-  return function mergeChildrenIntoParentDOM(arrayVNode) {
-    // We remove null elements from the array of vNode
-    // We can have a null vNode emitted by a sink if that sink is empty
-    let _arrayVNode = __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["k" /* removeNullsFromArray */](arrayVNode);
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["y" /* isVNode */]), [_arrayVNode], 'DOM sources must' +
-      ' stream VNode objects! Got ' + _arrayVNode)
-
-    if (!parentDOMSink) {
-      // Case : the parent sinks does not have a DOM sink
-      // That's simple : no slotting, no nothing, just pass the children on if any
-      switch (_arrayVNode.length) {
-        case 0 :
-          return null
-        /*
-         // To avoid putting an extra `div` when there is only one vNode,
-         // we put the extra `div` only when there are several vNodes
-         // that did not work though... `insertBefore : error...`
-         // KEPT AS ADR i.e. documenting past choices
-         case 1 :
-         return _arrayVNode[0]
-         */
-        default :
-          return __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__["div"](_arrayVNode)
-      }
-    }
-    else {
-      // TODO:need! why?? where is that ever modified? deep cloning stuff kills performance
-      let parentVNode = __WEBPACK_IMPORTED_MODULE_2_ramda__["i" /* clone */](_arrayVNode.shift());
-      let childrenVNode = _arrayVNode;
-      parentVNode.children = parentVNode.children || [];
-      const slotHoles = getSlotHoles(parentVNode);
-
-      // ALG : if the parent vTree has some slot holes, then try to fill them in with the children
-      // slot content, if any can be found
-      // Note that if the parent has an undefined slot, children content with no slot will be
-      // copied there
-      const slotChildrenHashmap = rankChildrenBySlot(childrenVNode);
-
-      if (!__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["n" /* isEmptyArray */](slotHoles)) {
-        slotHoles.forEach(slotHole => {
-          const slotName = slotHole.data.slot;
-          const childrenSlotContent = slotChildrenHashmap[slotName];
-          if (childrenSlotContent) {
-            slotHole.children = childrenSlotContent
-          }
-        });
-      }
-
-      const parentHasUndefinedSlot = slotHoles.some(slotHole => {
-        return slotHole.data.slot === undefined
-      });
-      const childrenVNodesWithNoSlots = slotChildrenHashmap && slotChildrenHashmap[undefined];
-
-      // ALG : if the parent node did not define a default slot for children content, then put
-      // that content by default at the end of the parent VNodes
-      if (!parentHasUndefinedSlot) {
-        // Two cases here :
-        // - The parent's vNode has a `text` property :
-        //   we move that text to a text vNode at first position in the children
-        //   then we add the children's DOM in last position of the
-        // existing parent's children
-        // - The parent's vNode does not have a `text` property :
-        //   we just add the children's DOM in last position of the exisitng
-        //   parent's children
-        // Note that this is specific to the snabbdom vNode data structure
-        // childrenVNode could be null if all children sinks are empty
-        // observables, in which case we just return the parentVNode
-        if (childrenVNodesWithNoSlots) {
-          if (parentVNode.text) {
-            // NOTE : if parentVNode has text, then children = [], so splice is too defensive here
-            parentVNode.children.splice(0, 0, {
-              children: [],
-              "data": {},
-              "elm": undefined,
-              "key": undefined,
-              "sel": undefined,
-              "text": parentVNode.text
-            })
-            parentVNode.text = undefined
-          }
-          Array.prototype.push.apply(parentVNode.children, childrenVNodesWithNoSlots)
-        }
-      }
-
-      return parentVNode
-    }
-  }
-}
-
-///////
-// Helpers
-function computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks) {
-  return function computeReducedSink(accReducedSinks, sinkName) {
-    let mergeSinkFn = mergeSinks[sinkName]
-      || defaultMergeSinkConfig[sinkName]
-      || defaultMergeSinkConfig['_default']
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["q" /* isMergeSinkFn */], [mergeSinkFn],
-      `m : mergeSinkFn for sink ${sinkName} must be a function : check parameter or default merge function!`)
-
-    accReducedSinks[sinkName] = mergeSinkFn(
-      ownSinks ? ownSinks[sinkName] : null,
-      __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["i" /* projectSinksOn */](sinkName, childrenSinks),
-      localSettings
-    )
-
-    return accReducedSinks
-  }
-}
-
-function defaultMergeSinkFn(eventSinks, childrenSinks, localSettings, sinkNames) {
-  return __WEBPACK_IMPORTED_MODULE_2_ramda__["N" /* reduce */](
-    computeReducedSink(eventSinks, childrenSinks, localSettings, {}),
-    {}, sinkNames
-  )
-}
-
-function computeChildrenSinks(children, extendedSources, localSettings) {
-  return mapIndexed(
-    (childComponent, index) => {
-      const childComponentName = childComponent.name || index
-
-      console.group(`computing children sinks for ${childComponentName}`)
-
-      const childSinks = childComponent(extendedSources, localSettings)
-
-      console.groupEnd()
-
-      return childSinks
-    },
-    children
-  )
-}
-
-/**
- * # Settings
- * The output component returned by the `m` utility receives settings (at call time), termed in
- * what follows as inner settings or dynamic settings. The `m` utility also receives static
- * settings (at compile time), termed here as outer settings or static settings.
- * This allows the component factory `m` to parameterize/customize the behaviour of
- * its computed component, both statically and dynamically. In the current implementation, the
- * static settings take precedence over the inner settings in case of conflict.
- *
- * Such merging conflicts are to be avoided in general. Having the computed component
- * behaviour depending statically on a parameter external to its definition means that one can no
- * longer reason about the component behaviour in isolation, but needs to know about the component's
- * context (position in the component tree).
- * There are however some valid cases when the equivalent of environment variables needs to be
- * passed down to components. Rather than explicitly passing those parameters to every
- * component individually down the component tree, it is enough to pass it once at some level,
- * and those parameters will be :
- * - visible at every lower level
- * - can be rewritten by lower level components if need arises
- *
- * Those 'environment variables' should reflect concerns which are fairly orthogonal to the
- * component (leaf indexing, sinks signature, etc.), so that they do not interact with the
- * intended behaviour of the component.
- *
- * To complicate the matter further, as a part of the component definition, one can include
- * what is term here as computed settings (derived from the merge of inner and outer
- * settings). Those computed (at call time) settings are merged to the other two and have the
- * lowest precedence level of all. They aim at covering fairly narrow cases, and allow for
- * temporary customization of component behaviour (another call can result in a different
- * behaviour for the component).
- *
- * So :
- * - settings passed to the `m` factory are permanent and inherited by both the computed
- * component, and the children components which are part of the `m` factory definition
- * - the computed component is called with settings which are automatically passed down the
- * children components passed to the factory
- * - the children component behaviour can, if there is no conflict with existing settings,
- * be customized further by the local settings factory, which is a part of the `m` factory
- * definition
- *
- * TODO : this only clarifies the precedence between the factory and its computed component.
- * It might just be the opporiste of what is described there... because of tree evaluation order
- * There is a third case which is that the computed component receives also settings from
- * its upper hierarchy... To be detailed with examples, that\s the best given the three-way dance.
- * Also note that the settings passed down to children component from
- *
- * IMPLEMENTATION NOTES:
- * Source contracts are checked before merging incoming sources and user-configured sources
- * Settings contracts are checked on the final settings for the component, which is the result
- * of the merge of the outer settings passed through the `m` utility, and the inner settings
- * passed to the output component.
- *
- * @param {*} componentDef
- * @param {Settings} _settings
- * @param {Array<Component> | Array<ParentAndChildren>} componentTree
- *
- * @returns {Component}
- * @throws when type- and user-specified contracts are not satisfied
- */
-function m(componentDef, _settings, componentTree) {
-  console.groupCollapsed('m factory > Entry');
-  console.log('componentDef, _settings, children', componentDef, _settings, componentTree);
-
-  // Check contracts
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_5__types__["a" /* hasMsignature */], [componentDef, _settings, componentTree],
-    `m > assertContract : error checking signature (componentDef, settings, children) = 
-   ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */]({ componentDef, _settings, _children: componentTree })}!`);
-
-  // TODO : remove cf. below
-  let {
-    makeLocalSources, makeLocalSettings, mergeSinks,
-    computeSinks, checkPostConditions, checkPreConditions
-  } = componentDef;
-  let parentComponent;
-  let childrenComponents;
-
-  // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
-  // DOC : [null, [child]] is allowed
-  // TODO : refactor to const {parentComponent, childrenComponents} = parseComponentTree(componentTree)
-  if (__WEBPACK_IMPORTED_MODULE_2_ramda__["B" /* isNil */](componentTree[1])) {
-    parentComponent = __WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](null);
-    childrenComponents = componentTree;
-  }
-  else if (__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["i" /* isArray */](componentTree[1])) {
-    parentComponent = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */](__WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](null), componentTree[0]);
-    childrenComponents = componentTree[1];
-  }
-  else {
-    parentComponent = __WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](null);
-    childrenComponents = componentTree;
-  }
-  // NOTE : there is no more branches as we already type-checked prior to here
-
-  _settings = _settings || {};
-  // TODO : refactor to const {makeL...} = parseComponentDef(...), except settings
-  // Set default values
-  makeLocalSources = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */](__WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](null), makeLocalSources);
-  makeLocalSettings = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */](__WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */]({}), makeLocalSettings);
-  mergeSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */]({}, mergeSinks);
-  checkPostConditions = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */](__WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](true), checkPostConditions);
-  checkPreConditions = __WEBPACK_IMPORTED_MODULE_2_ramda__["n" /* defaultTo */](__WEBPACK_IMPORTED_MODULE_2_ramda__["e" /* always */](true), checkPreConditions);
-
-  console.groupEnd();
-
-  return function mComponent(sources, innerSettings) {
-    /** @type {String}*/
-    const traceInfo = (innerSettings && innerSettings.trace) || (_settings && _settings.trace);
-    console.groupCollapsed(`${traceInfo} component > Entry`);
-    console.debug('sources, innerSettings', sources, innerSettings);
-
-    innerSettings = innerSettings || {};
-    const mergedSettings = deepMerge(innerSettings, _settings);
-
-    // Note that per `merge` ramda spec. the second object's values
-    // replace those from the first in case of conflict of keys
-    const localSettings = deepMerge(
-      makeLocalSettings(mergedSettings),
-      mergedSettings
-    );
-
-    console.debug('inner and outer settings merge', mergedSettings);
-    console.debug(`${traceInfo} component : final settings`, localSettings);
-
-    // Computes and MERGES the extra sources which will be passed
-    // to the children and this component
-    // Extra sources are derived from the `sources`
-    // received as input, which remain untouched
-    const extendedSources = __WEBPACK_IMPORTED_MODULE_2_ramda__["F" /* merge */](
-      sources,
-      makeLocalSources(sources, localSettings)
-    );
-
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["c" /* assertSourcesContracts */]([extendedSources, localSettings], checkPreConditions);
-
-    let reducedSinks;
-
-    // Case : computeSinks is defined
-    // TODO : refactor in three cases : computeReducedSinks(reduceStrategy, parentComponent, childrenComponents, extendedSources, localSettings)
-    // TODO : with reduceStrategy = one big shot | one per sink | one for all sinks
-    if (computeSinks) {
-      console.groupCollapsed(`${traceInfo} component > computeSinks`)
-      reducedSinks = computeSinks(
-        parentComponent, childrenComponents, extendedSources, localSettings
-      )
-      console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
-      __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["t" /* isOptSinks */], [reducedSinks], `${traceInfo} : m > computeSinks : must return sinks!, returned ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](reducedSinks)}`);
-      console.groupEnd()
-    }
-    // Case : computeSinks is not defined, merge is defined in mergeSinks
-    else {
-      console.groupCollapsed(`${traceInfo} component > makeOwnSinks`);
-      console.debug(`called with extendedSources : ${__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](extendedSources)}`);
-      console.debug(`called with localSettings`, localSettings);
-
-      const ownSinks = parentComponent(extendedSources, localSettings);
-
-      console.debug(`${traceInfo} component > makeOwnSinks returns : `, ownSinks);
-      console.groupEnd();
-
-      console.group(`${traceInfo} component > computing children sinks`);
-      console.debug(`called with extendedSources : ${__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](extendedSources)}`);
-      console.debug(`called with localSettings`, localSettings);
-
-      const childrenSinks = computeChildrenSinks(childrenComponents, extendedSources, localSettings);
-
-      console.debug(`${traceInfo} component > computing children sinks returns : `, childrenSinks);
-      console.groupEnd();
-
-      __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["t" /* isOptSinks */], [ownSinks], 'ownSinks must be a hash of observable sink');
-      __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["k" /* isArrayOptSinks */], [childrenSinks], 'childrenSinks must' +
-        ' be an array of sinks');
-
-      // Merge the sinks from children and one-s own...
-      // Case : mergeSinks is defined through a function
-      if (__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */](mergeSinks)) {
-        console.groupCollapsed(`${traceInfo} component > (fn) mergeSinks`);
-        console.debug(`called with ownSinks : ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](ownSinks))}, 
-                       childrenSinks: ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](childrenSinks.map(__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */]))}`);
-        console.debug(`called with localSettings`, localSettings);
-
-        reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings);
-
-        console.debug(`${traceInfo} component > (fn) mergeSinks returns :`, reducedSinks)
-        __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["t" /* isOptSinks */], [reducedSinks], `${traceInfo} : m > mergeSinks (fn) : must return sinks!, returned ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](reducedSinks)}`);
-        console.groupEnd()
-      }
-      // Case : mergeSinks is defined through an object
-      else {
-        const allSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["k" /* removeNullsFromArray */]([ownSinks, childrenSinks]))
-        const sinkNames = __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["g" /* getSinkNamesFromSinksArray */](allSinks)
-
-        console.groupCollapsed(`${traceInfo} component > (obj) mergeSinks`)
-        console.log(`mergeSinks fn defined for sinks ${__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](mergeSinks)}`)
-        console.debug(`called with ownSinks : ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](ownSinks))}, 
-                       childrenSinks: ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](childrenSinks.map(__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */]))}`)
-        console.debug(`called with localSettings`, localSettings)
-
-        reducedSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["N" /* reduce */](
-          computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks),
-          {}, sinkNames
-        );
-
-        console.debug(`${traceInfo} component > (obj) mergeSinks returns :`, reducedSinks)
-        __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["t" /* isOptSinks */], [reducedSinks], `${traceInfo} : m > mergeSinks (obj) : must return sinks!, returned ${__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["e" /* format */](reducedSinks)}`);
-        console.groupEnd()
-      }
-    }
-
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["b" /* assertSinksContracts */](reducedSinks, checkPostConditions);
-
-    const tracedSinks = __WEBPACK_IMPORTED_MODULE_0__utils_src_index__["l" /* traceSinks */](traceInfo, reducedSinks);
-
-    console.groupEnd()
-    return tracedSinks
-  }
-}
-
-
-
-
-/***/ }),
+/* 20 */,
 /* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -16228,7 +14335,7 @@ function isUndefined(obj) {
 }
 
 function removeEmptyVNodes(arrVNode) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */]((accNonEmptyVNodes, vNode) => {
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* reduce */]((accNonEmptyVNodes, vNode) => {
     return (isNullVNode(vNode)) ?
       accNonEmptyVNodes :
       (accNonEmptyVNodes.push(vNode), accNonEmptyVNodes)
@@ -16236,8 +14343,8 @@ function removeEmptyVNodes(arrVNode) {
 }
 
 function isNullVNode(vNode) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](vNode.children, []) &&
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](vNode.data, {}) &&
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["d" /* equals */](vNode.children, []) &&
+    __WEBPACK_IMPORTED_MODULE_0_ramda__["d" /* equals */](vNode.data, {}) &&
     isUndefined(vNode.elm) &&
     isUndefined(vNode.key) &&
     isUndefined(vNode.sel) &&
@@ -16255,7 +14362,7 @@ function isNullVNode(vNode) {
  * @returns {Array<*>}
  */
 function projectSinksOn(prop, obj) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](x => x ? x[prop] : null, obj)
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* map */](x => x ? x[prop] : null, obj)
 }
 
 /**
@@ -16268,12 +14375,12 @@ function projectSinksOn(prop, obj) {
  * @returns {Array<String>}
  */
 function getSinkNamesFromSinksArray(aSinks) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["S" /* uniq */](__WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](getValidKeys, aSinks)))
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["o" /* uniq */](__WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* map */](getValidKeys, aSinks)))
 }
 
 function getValidKeys(obj) {
   let validKeys = []
-  __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, key) => {
+  __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* mapObjIndexed */]((value, key) => {
     if (value != null) {
       validKeys.push(key)
     }
@@ -16345,7 +14452,7 @@ function DummyComponent(sources, settings) {
  * @returns {Observable|*}
  */
 function emitNullIfEmpty(sink) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */](sink)
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["f" /* isNil */](sink)
     ? null
     : $.create(function emitNullIfEmptyObs(observer) {
       let isEmpty = true;
@@ -16395,8 +14502,8 @@ function unfoldObjOverload(obj, overloads) {
 
   overloads.some(overload => {
     // can only be one property
-    const property = __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](overload)[0];
-    const predicate = __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](overload)[0];
+    const property = __WEBPACK_IMPORTED_MODULE_0_ramda__["g" /* keys */](overload)[0];
+    const predicate = __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* values */](overload)[0];
     const predicateEval = predicate(obj);
 
     if (predicateEval) {
@@ -16439,7 +14546,7 @@ function makeErrorMessage(errorMessage) {
 }
 
 function removeNullsFromArray(arr) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["P" /* reject */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], arr)
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* reject */](__WEBPACK_IMPORTED_MODULE_0_ramda__["f" /* isNil */], arr)
 }
 
 //IE workaround for lack of function name property on Functions
@@ -16479,7 +14586,7 @@ function decorateWithOne(decoratorSpec, fnToDecorate) {
     { makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName });
 }
 
-const decorateWith = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](function decorateWith(decoratingFnsSpecs, fnToDecorate) {
+const decorateWith = __WEBPACK_IMPORTED_MODULE_0_ramda__["b" /* curry */](function decorateWith(decoratingFnsSpecs, fnToDecorate) {
   return decoratingFnsSpecs.reduce((acc, decoratingFn) => {
     return decorateWithOne(decoratingFn, acc)
   }, fnToDecorate)
@@ -16498,7 +14605,7 @@ function makeFunctionDecorator({ before, after, name }) {
     throw `makeFunctionDecorator: you need to specify 'before' OR 'after' as decorating functions. You passed falsy values for both!`
   }
 
-  const decoratorFnName = __WEBPACK_IMPORTED_MODULE_0_ramda__["n" /* defaultTo */]('anonymousDecorator', name);
+  const decoratorFnName = __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* defaultTo */]('anonymousDecorator', name);
 
   // trick to get the same name for the returned function
   // cf.
@@ -16570,13 +14677,13 @@ function toBoolean(x) {return !!x}
  * @returns {Function}
  */
 function toJsonPatch(path) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, key) => ({
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["k" /* pipe */](
+    __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* mapObjIndexed */]((value, key) => ({
       op: "add",
       path: [path, key].join('/'),
       value: value
     })),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */]
+    __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* values */]
   );
 }
 
@@ -16620,7 +14727,7 @@ function traverseTree({ StoreConstructor, pushFn, popFn, isEmptyStoreFn, visitFn
 
 function firebaseListToArray(fbList) {
   // will have {key1:element, key2...}
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](fbList)
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* values */](fbList)
 }
 
 function getInputValue(document, sel) {
@@ -16642,7 +14749,7 @@ function filterNull(driver) {
  * @returns {*}
  */
 function traceSinks(traceInfo, sinks) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((sink$, sinkName) => {
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* mapObjIndexed */]((sink$, sinkName) => {
     return sink$
       ? sink$.tap(function log(x) {
         console.debug(`traceSinks > ${traceInfo} > sink ${sinkName} emits :`, x)
@@ -16695,7 +14802,7 @@ function format(obj) {
     return formatArrayObj(obj, ' ; ')
   }
   else if (typeof(obj) === 'object') {
-    if (__WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](obj).length === 0) {
+    if (__WEBPACK_IMPORTED_MODULE_0_ramda__["g" /* keys */](obj).length === 0) {
       // i.e. object is {}
       return '<empty object>'
     }
@@ -16707,7 +14814,7 @@ function format(obj) {
 }
 
 function traceFn(fn, text) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](fn, __WEBPACK_IMPORTED_MODULE_0_ramda__["Q" /* tap */](console.warn.bind(console, text ? text + ":" : "")))
+  return __WEBPACK_IMPORTED_MODULE_0_ramda__["k" /* pipe */](fn, __WEBPACK_IMPORTED_MODULE_0_ramda__["n" /* tap */](console.warn.bind(console, text ? text + ":" : "")))
 }
 
 
@@ -17826,170 +15933,13 @@ module.exports = function(module) {
 
 /***/ }),
 /* 53 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, __webpack_exports__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_types__ = __webpack_require__(54);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_m_m__ = __webpack_require__(20);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Combine__ = __webpack_require__(391);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "Combine", function() { return __WEBPACK_IMPORTED_MODULE_2__components_Combine__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Router__ = __webpack_require__(392);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "OnRoute", function() { return __WEBPACK_IMPORTED_MODULE_3__components_Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_ListOf__ = __webpack_require__(396);
-/* harmony namespace reexport (by used) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_4__components_ListOf__, "InSlot")) __webpack_require__.d(__webpack_exports__, "InSlot", function() { return __WEBPACK_IMPORTED_MODULE_4__components_ListOf__["InSlot"]; });
-/* harmony namespace reexport (by used) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_4__components_ListOf__, "InjectSourcesAndSettings")) __webpack_require__.d(__webpack_exports__, "InjectSourcesAndSettings", function() { return __WEBPACK_IMPORTED_MODULE_4__components_ListOf__["InjectSourcesAndSettings"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_ForEach__ = __webpack_require__(399);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_Switch__ = __webpack_require__(402);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_FSM__ = __webpack_require__(404);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_Inject_InjectSourcesAndSettings__ = __webpack_require__(407);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "InjectSourcesAndSettings", function() { return __WEBPACK_IMPORTED_MODULE_8__components_Inject_InjectSourcesAndSettings__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_Inject_InjectSources__ = __webpack_require__(408);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__components_Pipe_Pipe__ = __webpack_require__(409);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_InSlot__ = __webpack_require__(410);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "InSlot", function() { return __WEBPACK_IMPORTED_MODULE_11__components_InSlot__["a"]; });
-// Avoid `console` errors in browsers that lack a console.
-(function () {
-  let method;
-  const noop = function () {};
-  const methods = [
-    'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-    'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-    'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-    'timeline', 'timelineEnd', 'timeStamp', 'trace', 'warn'
-  ];
-  let length = methods.length;
-  let console = (window.console = window.console || {});
-
-  while ( length-- ) {
-    method = methods[length];
-
-    // Only stub undefined methods.
-    if (!console[method]) {
-      console[method] = noop;
-    }
-  }
-}());
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export * from "./components/mButton"
-// export * from "./components/mEventFactory"
-// export * from "../drivers/src/actionDriver"
-// export * from "../drivers/src/queryDriver"
-// export * from "../testing/src/mocks"
-// export * from "../contracts/src/index"
-// export * from "../utils/src/index"
-// export * from "../debug/src/index"
-// export * from "../utils/src/index"
-// export * from "../testing/src/runTestScenario"
-
+throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'C:\\Users\\toshiba\\WebstormProjects\\component-combinators\\examples\\CombineDemo\\node_modules\\@rxcc\\components\\src\\index.js'");
 
 /***/ }),
-/* 54 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export isEventName */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-
-
-
-const isNotEmpty = __WEBPACK_IMPORTED_MODULE_0_ramda__["j" /* complement */](__WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */]);
-/* harmony export (immutable) */ __webpack_exports__["b"] = isNotEmpty;
-
-const isSettings = __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */];
-/* harmony export (immutable) */ __webpack_exports__["c"] = isSettings;
-
-
-// dont want to go through the trouble of typing this as it is notoriously shapeshifting
-function isEventName(x) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], isNotEmpty)(x);
-}
-
-// Works but evaluates all the functions...
-// export const isUpdateOperation = converge(any(identity), isOpAdd, isOpRemove, isOpReplace,
-// isOpMove, isOpCopy, isOpTest, isOpNone)
-const isJsonPointer = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */];
-/* unused harmony export isJsonPointer */
-
-const isOpNone = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["r" /* isObject */], __WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */]);
-/* unused harmony export isOpNone */
-
-const isOpAdd = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('add')),
-  path: isJsonPointer,
-  value: __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]
-});
-/* unused harmony export isOpAdd */
-
-const isOpRemove = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('remove')),
-  path: isJsonPointer,
-});
-/* unused harmony export isOpRemove */
-
-const isOpReplace = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('replace')),
-  path: isJsonPointer,
-  value: __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]
-});
-/* unused harmony export isOpReplace */
-
-const isOpMove = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('move')),
-  path: isJsonPointer,
-});
-/* unused harmony export isOpMove */
-
-const isOpCopy = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('copy')),
-  path: isJsonPointer,
-});
-/* unused harmony export isOpCopy */
-
-const isOpTest = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  op: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */]('test')),
-  path: isJsonPointer,
-  value: __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]
-});
-/* unused harmony export isOpTest */
-
-
-const isUpdateOperation = __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* cond */]([
-  [isOpNone, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpAdd, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpRemove, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpReplace, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpMove, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpCopy, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-  [isOpTest, __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]],
-]);
-/* unused harmony export isUpdateOperation */
-
-const isArrayUpdateOperations = __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["n" /* isEmptyArray */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](isUpdateOperation));
-/* harmony export (immutable) */ __webpack_exports__["a"] = isArrayUpdateOperations;
-
-
-
-/***/ }),
+/* 54 */,
 /* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -19059,331 +17009,8 @@ module.exports = root;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(52)(module), __webpack_require__(34)))
 
 /***/ }),
-/* 81 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-
-
-const EV_GUARD_NONE = null;
-/* harmony export (immutable) */ __webpack_exports__["n"] = EV_GUARD_NONE;
-
-const AR_GUARD_NONE = null;
-/* harmony export (immutable) */ __webpack_exports__["b"] = AR_GUARD_NONE;
-
-const ACTION_REQUEST_NONE = null;
-/* harmony export (immutable) */ __webpack_exports__["a"] = ACTION_REQUEST_NONE;
-
-const ACTION_GUARD_NONE = __WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* always */](true);
-/* unused harmony export ACTION_GUARD_NONE */
-
-const ZERO_DRIVER = null;
-/* harmony export (immutable) */ __webpack_exports__["q"] = ZERO_DRIVER;
-
-const [EVENT_PREFIX, DRIVER_PREFIX, INIT_PREFIX] = ['events', 'drivers', 'init'];
-/* harmony export (immutable) */ __webpack_exports__["m"] = EVENT_PREFIX;
-
-/* harmony export (immutable) */ __webpack_exports__["l"] = DRIVER_PREFIX;
-
-/* unused harmony export INIT_PREFIX */
-
-const INIT_EVENT_NAME = 'init_event';
-/* harmony export (immutable) */ __webpack_exports__["o"] = INIT_EVENT_NAME;
-
-const AWAITING_EVENTS = 'AWAITING_EVENTS';
-/* harmony export (immutable) */ __webpack_exports__["c"] = AWAITING_EVENTS;
-
-const AWAITING_RESPONSE = 'AWAITING_RESPONSE';
-/* harmony export (immutable) */ __webpack_exports__["d"] = AWAITING_RESPONSE;
-
-const INIT_STATE = 'INIT';
-/* harmony export (immutable) */ __webpack_exports__["p"] = INIT_STATE;
-
-
-// Error messages
-const CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE =
-  `For each action response, there MUST be a configured guard which is satisfied!`;
-/* harmony export (immutable) */ __webpack_exports__["k"] = CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE;
-
-const CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE =
-  `Model update function must return valid update operations!`;
-/* harmony export (immutable) */ __webpack_exports__["j"] = CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE;
-
-const CONTRACT_EVENT_GUARD_FN_RETURN_VALUE =
-  `Event guards functions must return a boolean!`;
-/* harmony export (immutable) */ __webpack_exports__["h"] = CONTRACT_EVENT_GUARD_FN_RETURN_VALUE;
-
-const CONTRACT_ACTION_GUARD_FN_RETURN_VALUE =
-  `Action guards functions must return a boolean!`;
-/* harmony export (immutable) */ __webpack_exports__["f"] = CONTRACT_ACTION_GUARD_FN_RETURN_VALUE;
-
-const CONTRACT_EVENT_GUARD_CANNOT_FAIL =
-  `Event guards functions cannot throw exceptions!`;
-/* harmony export (immutable) */ __webpack_exports__["g"] = CONTRACT_EVENT_GUARD_CANNOT_FAIL;
-
-const CONTRACT_ACTION_GUARD_CANNOT_FAIL =
-  `Action guards functions cannot throw exceptions!`;
-/* harmony export (immutable) */ __webpack_exports__["e"] = CONTRACT_ACTION_GUARD_CANNOT_FAIL;
-
-const CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL =
-  `Model update functions cannot throw exceptions!`;
-/* harmony export (immutable) */ __webpack_exports__["i"] = CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL;
-
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["e"] = checkTargetStatesDefinedInTransitionsMustBeMappedToComponent;
-/* harmony export (immutable) */ __webpack_exports__["c"] = checkOriginStatesDefinedInTransitionsMustBeMappedToComponent;
-/* harmony export (immutable) */ __webpack_exports__["a"] = checkEventDefinedInTransitionsMustBeMappedToEventFactory;
-/* harmony export (immutable) */ __webpack_exports__["b"] = checkIsObservable;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__properties__ = __webpack_require__(81);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__types__ = __webpack_require__(54);
-
-
-
-
-
-
-////////
-// Types FSM
-const isEventName = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */]);
-/* unused harmony export isEventName */
-
-const isTransitionName = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */]);
-/* unused harmony export isTransitionName */
-
-const isSinkName = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */]);
-/* unused harmony export isSinkName */
-
-const isState = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */], __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */]);
-/* unused harmony export isState */
-
-// NOTE : cant check at this level type of arguments
-//`Event :: Sources -> Settings -> Source EventData`
-const isEvent = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */];
-/* unused harmony export isEvent */
-
-//`EventData :: * | Null`
-const isEventData = __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */];
-/* unused harmony export isEventData */
-
-//`FSM_Model :: Object`
-const isFsmModel = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["r" /* isObject */];
-/* harmony export (immutable) */ __webpack_exports__["s"] = isFsmModel;
-
-
-// `EventGuard :: Model -> EventData -> Boolean`
-const isEventGuard = __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */]);
-/* unused harmony export isEventGuard */
-
-// `ActionRequest :: Record {
-//   driver :: SinkName | Null
-//   request :: (FSM_Model -> EventData) -> Request | Null
-// } | Null`
-const isActionRequest = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  driver: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isSinkName),
-  request: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */])
-});
-
-// `ActionGuard :: ActionResponse -> Boolean`
-const isActionGuard = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */];
-
-// `TransEval :: Record {
-//   action_guard :: ActionGuard
-//   target_state :: State
-//   model_update :: FSM_Model -> EventData -> ActionResponse -> [UpdateOperation]
-// }`
-const isModelUpdate = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */];
-const isTransEval = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  action_guard: isActionGuard,
-  target_state: isState,
-  model_update: __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */]
-});
-
-// `Transition :: Record {
-//   event_guard :: EventGuard
-//   action_request :: ActionRequest
-//   re_entry :: Boolean | Null
-//   transition_evaluation :: [TransEval]
-// }`
-const isTransition = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  event_guard: isEventGuard,
-  re_entry: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */]),
-  action_request: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], isActionRequest),
-  transition_evaluation: __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](isTransEval),
-});
-
-//`TransitionOptions :: Record {
-//  origin_state :: State
-//  event :: EventName
-//  target_states :: [Transition]
-//}`
-const isTransitionOptions = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  origin_state: isState,
-  event: isEventName,
-  target_states: __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](isTransition), __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */])
-});
-
-// `StateEntryComponent :: FSM_Model -> Component`
-const isStateEntryComponent = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */];
-// `StateEntryComponents :: HashMap State StateEntryComponent`
-const isFsmEntryComponents = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["p" /* isHashMap */](isState, isStateEntryComponent), __WEBPACK_IMPORTED_MODULE_3__types__["b" /* isNotEmpty */]);
-/* harmony export (immutable) */ __webpack_exports__["q"] = isFsmEntryComponents;
-
-
-// FSM_Settings :: Record {
-//   initial_model :: FSM_Model
-//   init_event_data :: Event_Data
-//   sinkNames :: [SinkName]
-// }`
-const isFsmSettings = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  initial_model: isFsmModel,
-  init_event_data: isEventData,
-  sinkNames: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["n" /* isEmptyArray */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](isSinkName)),
-  debug: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */])
-});
-/* harmony export (immutable) */ __webpack_exports__["t"] = isFsmSettings;
-
-
-// `Events :: (HashMap EventName Event) | {}`
-const isFsmEvents = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["p" /* isHashMap */](isEventName, isEvent);
-/* harmony export (immutable) */ __webpack_exports__["r"] = isFsmEvents;
-
-const isFsmTransitions = __WEBPACK_IMPORTED_MODULE_0_ramda__["d" /* allPass */]([
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["p" /* isHashMap */](isTransitionName, isTransitionOptions),
-  __WEBPACK_IMPORTED_MODULE_0_ramda__["j" /* complement */](__WEBPACK_IMPORTED_MODULE_0_ramda__["A" /* isEmpty */]),
-  __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], __WEBPACK_IMPORTED_MODULE_0_ramda__["f" /* any */](__WEBPACK_IMPORTED_MODULE_0_ramda__["M" /* propEq */]('event', __WEBPACK_IMPORTED_MODULE_2__properties__["o" /* INIT_EVENT_NAME */])))
-]);
-/* harmony export (immutable) */ __webpack_exports__["u"] = isFsmTransitions;
-
-
-function checkTargetStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
-                                                                             entryComponents,
-                                                                             fsmSettings) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('target_states')), __WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */],
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('transition_evaluation')), __WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */],
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('target_state')),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */])(entryComponents)),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](__WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */]))
-  (transitions);
-}
-
-function checkOriginStatesDefinedInTransitionsMustBeMappedToComponent(events, transitions,
-                                                                             entryComponents,
-                                                                             fsmSettings) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('origin_state')),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["s" /* filter */](__WEBPACK_IMPORTED_MODULE_0_ramda__["j" /* complement */](__WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](__WEBPACK_IMPORTED_MODULE_2__properties__["p" /* INIT_STATE */]))),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */])(entryComponents)),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](__WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */]))
-  (transitions);
-}
-
-function checkEventDefinedInTransitionsMustBeMappedToEventFactory(events, transitions,
-                                                                         entryComponents,
-                                                                         fsmSettings) {
-  const check = __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */], __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('event')),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["s" /* filter */](__WEBPACK_IMPORTED_MODULE_0_ramda__["j" /* complement */](__WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](__WEBPACK_IMPORTED_MODULE_2__properties__["o" /* INIT_EVENT_NAME */]))),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */])(events)),
-    __WEBPACK_IMPORTED_MODULE_0_ramda__["c" /* all */](__WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */]))
-  (transitions);
-
-  return check;
-}
-
-function checkIsObservable(obj) {
-  return !!obj.subscribe
-}
-
-// `JSON_Patch :: Op_Add | Op_Remove | Op_Replace | Op_Move | Op_Copy | Op_Test | Op_None`
-// `Op_Add :: Record { op: "add", path: JSON_Pointer, value : *}`
-// `Op_Remove :: Record { op: "remove", path: JSON_Pointer}`
-// `Op_Replace :: Record { op: "replace", path: JSON_Pointer, value: *}`
-// `Op_Move :: Record { op: "move", from: JSON_Pointer, path: JSON_Pointer}`
-// `Op_Copy :: Record { op: "copy", from: JSON_Pointer, path: JSON_Pointer}`
-// `Op_Test :: Record { op: "test", path: JSON_Pointer, value: *}`
-// `Op_None :: {} | Null`
-
-const checkStateEntryComponentFnMustReturnComponent = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["m" /* isComponent */];
-/* harmony export (immutable) */ __webpack_exports__["d"] = checkStateEntryComponentFnMustReturnComponent;
-
-
-const isEntryComponentFactory = __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */]);
-/* harmony export (immutable) */ __webpack_exports__["l"] = isEntryComponentFactory;
-
-const isEntryComponent = __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */]);
-/* harmony export (immutable) */ __webpack_exports__["k"] = isEntryComponent;
-
-
-const isDefaultActionResponseHandlerConfig = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  success: __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({ target_state: isState, model_update: isModelUpdate }),
-  error: __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({ target_state: isState, model_update: isModelUpdate }),
-});
-/* harmony export (immutable) */ __webpack_exports__["j"] = isDefaultActionResponseHandlerConfig;
-
-
-// Type contracts
-const isEventFactoryDomain = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["v" /* isSources */], __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](__WEBPACK_IMPORTED_MODULE_3__types__["c" /* isSettings */]));
-/* harmony export (immutable) */ __webpack_exports__["n"] = isEventFactoryDomain;
-
-const isEventFactoryCodomain = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["s" /* isObservable */];
-/* harmony export (immutable) */ __webpack_exports__["m"] = isEventFactoryCodomain;
-
-const isActionResponse = __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */];
-/* unused harmony export isActionResponse */
-
-const isActionGuardDomain = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](isFsmModel, __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](isActionResponse));
-/* harmony export (immutable) */ __webpack_exports__["g"] = isActionGuardDomain;
-
-const isActionGuardCodomain = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */];
-/* harmony export (immutable) */ __webpack_exports__["f"] = isActionGuardCodomain;
-
-const isModelUpdateDomain = function isModelUpdateDomain(model, eventData, actionResponse,
-                                                                settings) {
-  return isFsmModel(model) &&
-    isEventData(eventData) &&
-    isActionResponse(actionResponse) &&
-    __WEBPACK_IMPORTED_MODULE_3__types__["c" /* isSettings */](settings)
-};
-/* harmony export (immutable) */ __webpack_exports__["w"] = isModelUpdateDomain;
-
-const isModelUpdateCodomain = __WEBPACK_IMPORTED_MODULE_3__types__["a" /* isArrayUpdateOperations */];
-/* harmony export (immutable) */ __webpack_exports__["v"] = isModelUpdateCodomain;
-
-const isEventGuardCodomain = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */];
-/* harmony export (immutable) */ __webpack_exports__["o"] = isEventGuardCodomain;
-
-const isEventGuardDomain = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](isFsmModel, __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](isEventData));
-/* harmony export (immutable) */ __webpack_exports__["p"] = isEventGuardDomain;
-
-const isCommand = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */];
-/* unused harmony export isCommand */
-
-const isRequest = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["w" /* isStrictRecord */]({
-  command: isCommand,
-  context: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]), // optional
-  payload: __WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */]) // optional
-});
-/* unused harmony export isRequest */
-
-const isActionRequestDomain = __WEBPACK_IMPORTED_MODULE_0_ramda__["h" /* both */](isFsmModel, __WEBPACK_IMPORTED_MODULE_0_ramda__["w" /* flip */](isEventData));
-/* harmony export (immutable) */ __webpack_exports__["i"] = isActionRequestDomain;
-
-const isActionRequestCodomain = isRequest;
-/* harmony export (immutable) */ __webpack_exports__["h"] = isActionRequestCodomain;
-
-
-
-/***/ }),
+/* 81 */,
+/* 82 */,
 /* 83 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -26366,222 +23993,9 @@ module.exports = prettyFormat;
 
 
 /***/ }),
-/* 149 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// Configuration
-const ROUTE_PARAMS = 'routeParams'
-/* harmony export (immutable) */ __webpack_exports__["b"] = ROUTE_PARAMS;
-
-const ROUTE_CONFIG = 'route'
-/* harmony export (immutable) */ __webpack_exports__["a"] = ROUTE_CONFIG;
-
-
-
-/***/ }),
-/* 150 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const SWITCH_SOURCE = 'switchSource'
-/* harmony export (immutable) */ __webpack_exports__["a"] = SWITCH_SOURCE;
-
-
-
-/***/ }),
-/* 151 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export modelUpdateIdentity */
-/* unused harmony export chainModelUpdates */
-/* unused harmony export makeDefaultActionResponseProcessing */
-/* unused harmony export checkActionResponseIsSuccess */
-/* unused harmony export addOpToJsonPatch */
-/* unused harmony export getSelectedKey */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_src_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__types__ = __webpack_require__(82);
-
-
-
-
-
-
-function modelUpdateIdentity() {
-  return []
-}
-
-// Allows to compose model update functions (a la monad chain operation)
-function chainModelUpdates(arrayModelUpdateFn) {
-  return function chainedModelUpdates(model, eventData, actionResponse, settings) {
-    return __WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](__WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](
-      modelUpdateFn => modelUpdateFn(model, eventData, actionResponse, settings),
-      arrayModelUpdateFn)
-    )
-  }
-}
-
-// Shortcut to avoid defining over and over the same action response (success, error) logic
-function makeDefaultActionResponseProcessing(config) {
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_3__types__["j" /* isDefaultActionResponseHandlerConfig */], [config],
-    'Configuration for action response handling must be of the shape :: {' +
-    '  success : {target_state : <state>, udpate_model : <model update fn>,' +
-    '  error : {target_state : <state>, udpate_model : <model update fn>}'
-  );
-
-  const {
-    success: { target_state: successTargetState, model_update: successModelUpdate },
-    error: { target_state: errorTargetState, model_update: errorModelUpdate }
-  } = config;
-
-  return [
-    {
-      action_guard: checkActionResponseIsSuccess,
-      target_state: successTargetState,
-      model_update: successModelUpdate
-    },
-    {
-      action_guard: __WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */],
-      target_state: errorTargetState,
-      model_update: errorModelUpdate
-    }
-  ]
-}
-
-function checkActionResponseIsSuccess(model, actionResponse) {
-  void model;
-  const { err } = actionResponse;
-  return !err;
-}
-
-// Decorators to add log, contract checking, and tracing capabilities to fsm functions
-const tapEventStreamOutput = eventName => ({
-  after: result => result.tap(console.warn.bind(console, `Incoming user event! ${eventName}: `))
-});
-/* unused harmony export tapEventStreamOutput */
-
-
-const decorateStateEntryWithLog = __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((stateEntryComponent,
-                                                        state) => stateEntryComponent
-  ? __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-    __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-      checkDomain: isEntryComponentDomain,
-      checkCodomain: isEntryComponentCodomain
-    }),
-    __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */](`.STATE. ${state}`, ['model']),
-  ], stateEntryComponent)
-  : null
-);
-/* harmony export (immutable) */ __webpack_exports__["b"] = decorateStateEntryWithLog;
-
-
-const isEntryComponentDomain = __WEBPACK_IMPORTED_MODULE_3__types__["s" /* isFsmModel */];
-/* unused harmony export isEntryComponentDomain */
-
-const isEntryComponentCodomain = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */];
-/* unused harmony export isEntryComponentCodomain */
-
-
-const decorateEventsWithLog = __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((eventFactory, eventName) =>
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-    __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-      checkDomain: __WEBPACK_IMPORTED_MODULE_3__types__["n" /* isEventFactoryDomain */],
-      checkCodomain: __WEBPACK_IMPORTED_MODULE_3__types__["m" /* isEventFactoryCodomain */]
-    }),
-    __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */]('Event factory', ['sources', 'settings']),
-    tapEventStreamOutput(eventName)
-  ], eventFactory)
-);
-/* harmony export (immutable) */ __webpack_exports__["a"] = decorateEventsWithLog;
-
-
-const decorateEventGuard = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-    checkDomain: __WEBPACK_IMPORTED_MODULE_3__types__["p" /* isEventGuardDomain */],
-    checkCodomain: __WEBPACK_IMPORTED_MODULE_3__types__["o" /* isEventGuardCodomain */]
-  }),
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */]('Event guard', ['FSM_Model', 'EventData']),
-]);
-/* unused harmony export decorateEventGuard */
-
-
-const decorateActionRequest = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-    checkDomain: __WEBPACK_IMPORTED_MODULE_3__types__["i" /* isActionRequestDomain */],
-    checkCodomain: __WEBPACK_IMPORTED_MODULE_3__types__["h" /* isActionRequestCodomain */]
-  }),
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */]('action request', ['FSM_Model', 'EventData']),
-]);
-/* unused harmony export decorateActionRequest */
-
-
-const decorateActionGuard = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-    checkDomain: __WEBPACK_IMPORTED_MODULE_3__types__["g" /* isActionGuardDomain */],
-    checkCodomain: __WEBPACK_IMPORTED_MODULE_3__types__["f" /* isActionGuardCodomain */]
-  }),
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */]('action guard', ['model', 'actionResponse']),
-]);
-
-const decorateModelUpdate = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["c" /* decorateWith */]([
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["b" /* assertFunctionContractDecoratorSpecs */]({
-    checkDomain: __WEBPACK_IMPORTED_MODULE_3__types__["w" /* isModelUpdateDomain */],
-    checkCodomain: __WEBPACK_IMPORTED_MODULE_3__types__["v" /* isModelUpdateCodomain */]
-  }),
-  __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["h" /* logFnTrace */]('model update', ['FSM_Model', 'EventData', 'ActionResponse', 'Settings']),
-]);
-
-const decorateTransEval = __WEBPACK_IMPORTED_MODULE_0_ramda__["r" /* evolve */]({
-  target_state: __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */],
-  action_guard: __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* cond */]([[__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* always */](null)], [__WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */], decorateActionGuard]]),
-  model_update: decorateModelUpdate
-});
-
-const decorateTransition = __WEBPACK_IMPORTED_MODULE_0_ramda__["r" /* evolve */]({
-  re_entry: __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */],
-  transition_evaluation: __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](decorateTransEval),
-  event_guard: __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* cond */]([[__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* always */](null)], [__WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */], decorateEventGuard]]),
-  action_request: __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* cond */]([[__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* always */](null)], [__WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */], __WEBPACK_IMPORTED_MODULE_0_ramda__["r" /* evolve */]({
-    driver: __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */],
-    request: decorateActionRequest
-  })]]),
-});
-
-const decorateTransitionsWithLog = __WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */](__WEBPACK_IMPORTED_MODULE_0_ramda__["r" /* evolve */]({
-  origin_state: __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */],
-  event: __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */],
-  target_states: __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](decorateTransition)
-}));
-/* harmony export (immutable) */ __webpack_exports__["c"] = decorateTransitionsWithLog;
-
-
-// NOTE!! the object passed as parameter must be a non-empty object!!
-// TODO : rewrite this properly to add an exception in case of misuse
-const toJsonPatch = (path) => __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */]((value, key) => ({
-  op: "add",
-  path: [path, key].join('/'),
-  value: value
-})), __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */]);
-/* unused harmony export toJsonPatch */
-
-
-function addOpToJsonPatch(path, value) {
-  return [{
-    op: "add",
-    path: path,
-    value: value
-  }]
-}
-
-function getSelectedKey(latestTeamIndex, teamKeys) {
-  return teamKeys[latestTeamIndex];
-}
-
-
-/***/ }),
+/* 149 */,
+/* 150 */,
+/* 151 */,
 /* 152 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -26656,7 +24070,7 @@ function init(App) {
   return function initApp(sources, settings) {
     const appSinks = App(sources, settings);
 
-    return __WEBPACK_IMPORTED_MODULE_8_ramda__["F" /* merge */](appSinks, {
+    return __WEBPACK_IMPORTED_MODULE_8_ramda__["j" /* merge */](appSinks, {
       router: $.concat([$.of('/'), appSinks.router])
     });
   };
@@ -26670,6 +24084,7 @@ function init(App) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rx__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_rx__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__rxcc_components__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__rxcc_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__rxcc_components__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__rxcc_utils__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__);
@@ -26936,7 +24351,7 @@ var F = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__always__["a" /* default */](fa
  *      R.T(); //=> true
  */
 var T = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__always__["a" /* default */](true);
-/* harmony default export */ __webpack_exports__["a"] = (T);
+/* unused harmony default export */ var _unused_webpack_default_export = (T);
 
 /***/ }),
 /* 157 */
@@ -27021,7 +24436,7 @@ var addIndex = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry1__["a" /
     return fn.apply(this, args);
   });
 });
-/* harmony default export */ __webpack_exports__["a"] = (addIndex);
+/* unused harmony default export */ var _unused_webpack_default_export = (addIndex);
 
 /***/ }),
 /* 159 */
@@ -27069,7 +24484,7 @@ var all = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* def
   }
   return true;
 }));
-/* harmony default export */ __webpack_exports__["a"] = (all);
+/* unused harmony default export */ var _unused_webpack_default_export = (all);
 
 /***/ }),
 /* 160 */
@@ -27166,7 +24581,7 @@ var allPass = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry1__["a" /*
     return true;
   });
 });
-/* harmony default export */ __webpack_exports__["a"] = (allPass);
+/* unused harmony default export */ var _unused_webpack_default_export = (allPass);
 
 /***/ }),
 /* 162 */
@@ -27611,7 +25026,7 @@ var both = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* de
     return f.apply(this, arguments) && g.apply(this, arguments);
   } : __WEBPACK_IMPORTED_MODULE_3__lift__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__and__["a" /* default */])(f, g);
 });
-/* harmony default export */ __webpack_exports__["a"] = (both);
+/* unused harmony default export */ var _unused_webpack_default_export = (both);
 
 /***/ }),
 /* 173 */
@@ -27800,7 +25215,7 @@ var clamp = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry3__["a" /* d
 var clone = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry1__["a" /* default */](function clone(value) {
   return value != null && typeof value.clone === 'function' ? value.clone() : __WEBPACK_IMPORTED_MODULE_0__internal_clone__["a" /* default */](value, [], [], true);
 });
-/* harmony default export */ __webpack_exports__["a"] = (clone);
+/* unused harmony default export */ var _unused_webpack_default_export = (clone);
 
 /***/ }),
 /* 179 */
@@ -27870,7 +25285,7 @@ var comparator = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry1__["a"
  *      isNotNil(7); //=> true
  */
 var complement = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__lift__["a" /* default */](__WEBPACK_IMPORTED_MODULE_1__not__["a" /* default */]);
-/* harmony default export */ __webpack_exports__["a"] = (complement);
+/* unused harmony default export */ var _unused_webpack_default_export = (complement);
 
 /***/ }),
 /* 181 */
@@ -28322,7 +25737,7 @@ var cond = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry1__["a" /* de
     }
   });
 });
-/* harmony default export */ __webpack_exports__["a"] = (cond);
+/* unused harmony default export */ var _unused_webpack_default_export = (cond);
 
 /***/ }),
 /* 192 */
@@ -29083,7 +26498,7 @@ var either = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* 
     return f.apply(this, arguments) || g.apply(this, arguments);
   } : __WEBPACK_IMPORTED_MODULE_2__lift__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__or__["a" /* default */])(f, g);
 });
-/* harmony default export */ __webpack_exports__["a"] = (either);
+/* unused harmony default export */ var _unused_webpack_default_export = (either);
 
 /***/ }),
 /* 212 */
@@ -29234,7 +26649,7 @@ var evolve = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* 
   }
   return result;
 });
-/* harmony default export */ __webpack_exports__["a"] = (evolve);
+/* unused harmony default export */ var _unused_webpack_default_export = (evolve);
 
 /***/ }),
 /* 216 */
@@ -29282,7 +26697,7 @@ var find = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* de
     idx += 1;
   }
 }));
-/* harmony default export */ __webpack_exports__["a"] = (find);
+/* unused harmony default export */ var _unused_webpack_default_export = (find);
 
 /***/ }),
 /* 217 */
@@ -29370,7 +26785,7 @@ var findIndex = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" 
   }
   return -1;
 }));
-/* harmony default export */ __webpack_exports__["a"] = (findIndex);
+/* unused harmony default export */ var _unused_webpack_default_export = (findIndex);
 
 /***/ }),
 /* 219 */
@@ -30371,7 +27786,7 @@ var intersection = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry2__["
   }
   return __WEBPACK_IMPORTED_MODULE_4__uniq__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__internal_filter__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__flip__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__internal_contains__["a" /* default */])(lookupList), filteredList));
 });
-/* harmony default export */ __webpack_exports__["a"] = (intersection);
+/* unused harmony default export */ var _unused_webpack_default_export = (intersection);
 
 /***/ }),
 /* 244 */
@@ -30882,7 +28297,7 @@ var invertObj = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry1__["a" 
 var isEmpty = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry1__["a" /* default */](function isEmpty(x) {
   return x != null && __WEBPACK_IMPORTED_MODULE_2__equals__["a" /* default */](x, __WEBPACK_IMPORTED_MODULE_1__empty__["a" /* default */](x));
 });
-/* harmony default export */ __webpack_exports__["a"] = (isEmpty);
+/* unused harmony default export */ var _unused_webpack_default_export = (isEmpty);
 
 /***/ }),
 /* 252 */
@@ -31620,7 +29035,7 @@ var merge = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry2__["a" /* d
 var mergeAll = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_1__internal_curry1__["a" /* default */](function mergeAll(list) {
   return __WEBPACK_IMPORTED_MODULE_0__internal_assign__["a" /* default */].apply(null, [{}].concat(list));
 });
-/* harmony default export */ __webpack_exports__["a"] = (mergeAll);
+/* unused harmony default export */ var _unused_webpack_default_export = (mergeAll);
 
 /***/ }),
 /* 270 */
@@ -31780,7 +29195,7 @@ var mergeWith = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry3__["a" 
     return fn(_l, _r);
   }, l, r);
 });
-/* harmony default export */ __webpack_exports__["a"] = (mergeWith);
+/* unused harmony default export */ var _unused_webpack_default_export = (mergeWith);
 
 /***/ }),
 /* 274 */
@@ -32115,7 +29530,7 @@ var omit = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry2__["a" /* de
   }
   return result;
 });
-/* harmony default export */ __webpack_exports__["a"] = (omit);
+/* unused harmony default export */ var _unused_webpack_default_export = (omit);
 
 /***/ }),
 /* 284 */
@@ -32651,7 +30066,7 @@ var project = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_3__useWith__["a" /* default
 var propEq = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry3__["a" /* default */](function propEq(name, val, obj) {
   return __WEBPACK_IMPORTED_MODULE_1__equals__["a" /* default */](val, obj[name]);
 });
-/* harmony default export */ __webpack_exports__["a"] = (propEq);
+/* unused harmony default export */ var _unused_webpack_default_export = (propEq);
 
 /***/ }),
 /* 298 */
@@ -32926,7 +30341,7 @@ var reduceWhile = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curryN__["a
  *       [1, 2, 3, 4, 5]) // [1, 2, 3]
  */
 var reduced = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0__internal_curry1__["a" /* default */](__WEBPACK_IMPORTED_MODULE_1__internal_reduced__["a" /* default */]);
-/* harmony default export */ __webpack_exports__["a"] = (reduced);
+/* unused harmony default export */ var _unused_webpack_default_export = (reduced);
 
 /***/ }),
 /* 305 */
@@ -34120,7 +31535,7 @@ var tryCatch = /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_2__internal_curry2__["a" /
     }
   });
 });
-/* harmony default export */ __webpack_exports__["a"] = (tryCatch);
+/* unused harmony default export */ var _unused_webpack_default_export = (tryCatch);
 
 /***/ }),
 /* 336 */
@@ -41277,3298 +38692,27 @@ module.exports = words;
 
 
 /***/ }),
-/* 390 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = hasNoTwoSlotsSameName;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ramda__ = __webpack_require__(6);
-
-
-
-function hasValidComponentDefProperty(componentDef, _settings, children) {
-  return __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["f" /* eitherE */](
-    [__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], `m > hasMsignature > hasValidComponentDefProperty : there is no component definition`],
-    [isNonNilComponentDef, `m > hasMsignature > hasValidComponentDefProperty : there is a component definition but it is not valid!`],
-    ``
-  )(componentDef)
-}
-
-function hasValidSettingsProperty(componentDef, _settings, children) {
-  return __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["r" /* isObject */])(_settings)
-}
-
-const isSinkName = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */];
-
-const isCombineGenericSpecs = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["d" /* checkAndGatherErrors */]([
-    [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('computeSinks'),
-      __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_1_ramda__["h" /* both */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */], __WEBPACK_IMPORTED_MODULE_1_ramda__["j" /* complement */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('mergeSinks'))))),
-      `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef > isCombineGenericSpecs : 'computeSinks' if not null must be  a function and in that case 'mergeSinks cannot be defined' !`],
-    [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('makeOwnSinks'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef > isCombineGenericSpecs : makeOwnSinks must be either null or a function!`]
-  ],
-  `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef > isCombineGenericSpecs : invalid combine generic definition!`);
-
-const isCombineSinksSpecs = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["f" /* eitherE */](
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('mergeSinks'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), ``],
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('mergeSinks'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["p" /* isHashMap */](isSinkName, __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */]))), ``],
-  `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef > isCombineGenericSpecs : invalid combine sinks definition! : must be a hash of functions, or a function`);
-
-const isNonNilComponentDef = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["d" /* checkAndGatherErrors */]([
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('makeLocalSources'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid 'makeLocalSources', should be null or a function!`],
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('makeLocalSettings'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid 'makeLocalSettings', should be null or a function!`],
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('checkPreConditions'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid 'checkPreConditions', should be null or a function!`],
-  [__WEBPACK_IMPORTED_MODULE_1_ramda__["K" /* pipe */](__WEBPACK_IMPORTED_MODULE_1_ramda__["L" /* prop */]('checkPostConditions'), __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */])), `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid 'checkPostConditions', should be null or a function!`],
-  [__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["f" /* eitherE */](
-    [isCombineGenericSpecs, `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid generic merge!`],
-    [isCombineSinksSpecs, `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid per sink merge!`],
-    `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid component definition - must have either generic merge, or per sinks merge!`
-  )]
-], `m > hasMsignature > hasValidComponentDefProperty > isNonNilComponentDef : invalid component definition!`);
-
-function isParentAndComponentArray(children) {
-  if (__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */](children) || !__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["i" /* isArray */](children)) return false
-
-  const parentCandidate = children[0];
-  const childrenCandidate = children[1];
-
-  if (__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */](parentCandidate) && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["n" /* isEmptyArray */](childrenCandidate)) {
-    return `m > hasMsignature > hasValidChildrenProperty > isParentAndComponentArray : 'm' component requires sinks to merge. That means both parent and children cannot be null at the same time!`
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_1_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_1_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */])(parentCandidate) && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["i" /* isArray */](childrenCandidate)
-    && (
-      childrenCandidate.length === 0
-      || __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */])(childrenCandidate)
-    )
-}
-
-function hasValidChildrenProperty(componentDef, _settings, children) {
-  if (__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["n" /* isEmptyArray */](children)) {
-    return `m > hasMsignature > hasValidChildrenProperty : 'children' parameter cannot be empty array, there has to be a component emitting sinks`
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["f" /* eitherE */](
-    [__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */]), `m > hasMsignature > hasValidChildrenProperty : 'children' parameter is not an array of components`],
-    [isParentAndComponentArray, `m > hasMsignature > hasValidChildrenProperty : 'children' parameter does not have the shape [Parent, [Child]]`],
-    ``
-  )(children)
-}
-
-const hasMsignature = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["d" /* checkAndGatherErrors */]([
-  [hasValidComponentDefProperty, `m > hasMsignature > hasValidComponentDefProperty : invalid component definition !`],
-  [hasValidSettingsProperty, `m > hasMsignature > hasValidSettingsProperty : invalid settings parameter !`],
-  [hasValidChildrenProperty, `m > hasMsignature > hasValidChildrenProperty : children components must be an array of components!`]
-], `hasMsignature : fails!`);
-/* harmony export (immutable) */ __webpack_exports__["a"] = hasMsignature;
-
-
-function hasNoTwoSlotsSameName(slotHoles, slotNames) {
-  return __WEBPACK_IMPORTED_MODULE_1_ramda__["S" /* uniq */](slotNames).length === slotHoles.length
-}
-
-
-/***/ }),
-/* 391 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = Combine;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__m_m__ = __webpack_require__(20);
-
-
-// Spec
-// Yes, there is nothing, default behaviour of `m` is what we want
-const combineSpec = {};
-
-function Combine(combineSettings, componentTree) {
-  return __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */](combineSpec, combineSettings, componentTree)
-}
-
-
-/***/ }),
-/* 392 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties__ = __webpack_require__(149);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Router__ = __webpack_require__(393);
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__Router__["a"]; });
-
-
-
-
-/***/ }),
-/* 393 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = OnRoute;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_src_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__vendor_routematcher__ = __webpack_require__(394);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__properties__ = __webpack_require__(149);
-
-
-
-
-
-
-
-
-
-const $ = __WEBPACK_IMPORTED_MODULE_5_rx___default.a.Observable
-
-///////////
-// Helpers
-function hasSinkNamesProperty(sources, settings) {
-  return Boolean(settings && 'sinkNames' in settings)
-    && Boolean(__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */])(settings.sinkNames))
-}
-
-function hasRouteProperty(sources, settings) {
-  return Boolean(settings && 'route' in settings)
-    || Boolean(__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.route) && settings.route.length > 1)
-}
-
-function hasRouteSourceProperty(sources, settings) {
-  return Boolean(settings && 'routeSource' in settings
-    && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.routeSource) && settings.routeSource.length > 0
-    && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["s" /* isObservable */](sources[settings.routeSource]))
-}
-
-/**
- * @typedef {String} Route
- */
-
-/**
- * @typedef {Object.<String, String> | null} ParsedRoute
- */
-/**
- * @param {Route} routeToMatch the configured route to be matched against current location
- * @returns {function(Route): {match : ParsedRoute | {routeRemainder : *}}} Returns a function
- * which, when called with the current route location, returns :
- * - the parsed route when the current route location matches the configured route (total match)
- * - the route remainder if the current route lcoation strictly 'contains' the configured route,
- * i.e. there is a substring of current route location that matches the configured route. The
- * route remainder is the difference between the current route location and that substring
- * - configured route : /*param, route location : /a/b => {routeRemainder : b, param : a}
- * In short, this allows for partial matching of url vs. configured route.
- * The returned object always contains the matched parameters from the url (undefined if none)
- * and `routeRemainder` property holds on the next sections of the url (undefined when no
- * next sections).
- */
-function match(routeToMatch) {
-  let rm1 = __WEBPACK_IMPORTED_MODULE_4__vendor_routematcher__["a" /* routeMatcher */](routeToMatch)
-  let rm2 = __WEBPACK_IMPORTED_MODULE_4__vendor_routematcher__["a" /* routeMatcher */](routeToMatch + '/*routeRemainder')
-
-  return function match(incomingRoute) {
-    console.debug(`Router > match > matching against route : ${__WEBPACK_IMPORTED_MODULE_1__utils_src_index__["e" /* format */](routeToMatch)}`)
-    if (__WEBPACK_IMPORTED_MODULE_3_ramda__["B" /* isNil */](incomingRoute)) {
-      return {
-        match: null
-      }
-    }
-
-    const matched = rm1.parse(incomingRoute)
-    const remainder = rm2.parse(incomingRoute)
-
-    return {
-      match: matched || remainder
-    }
-  }
-}
-
-const isRouteSettings = __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["d" /* checkAndGatherErrors */]([
-  [hasRouteProperty, `Settings parameter must have a 'route' property which is a non empty string!`],
-  [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
-  [hasRouteSourceProperty, `If settings parameter have a 'routeSource' property, then it must be a string! Otherwise a default value applies. The 'sources' must have a source with that name!`],
-], `isRouteSettings : fails!`);
-
-/**
- * Definition for a router component which :
- * - will pass the sinks of its children components iff the new route
- * matches the route configured for the components
- * - when the route no longer matches, components sinks are terminated
- * - when the route matches, changes but keeps the same value, children
- * sinks remain in place
- * Route information is read on the `route$` property
- * Children components pass to their own children a `route$` which is the
- * `route$` they received from their parent, from which they remove the
- * part of the route that they have matched (passing what is called here the
- * remainder).
- * Params parsed from the matched route are passed to the children
- * component through their `settings` parameters, with the `routeParams`
- * property.
- * The `route$` property can be but should not be manipulated directly out
- * of a `Router` component.
- *
- * Two settings are necessary :
- * - route : the route which triggers the component sinks activation.
- *   1. Note that a route value of `undefined` will produce no matching,
- *   while a value of `""` will match `":user"` ! See the tests
- *   2. Every new nested route will trigger the emission of a nested route
- *   value, even if that new nested route value is the same as the
- *   previous one.
- *   3. In the routed component, the `route$` will emit the matched
- *   portion of the route. However, the same information is already broken
- *   down in `routeParams` and should be read from there.
- *
- * - sinkNames : the list of sinks (names) which must be activated in
- * response to the matching route
- *
- * Note that the DOM sink will emit null on some specific circumstances,
- * hence the component receiving the routed DOM sink must plan for that
- * case accordingly. That means DOM :: Observable<VNode>|Null
- *
- * @param {Sources} sources
- * @param {{route: string, sinkNames: Array<string>, trace: string}} settings
- * @param {Array<Component>} childrenComponents
- * @param {function(Sources, Settings)} parentComponent
- *
- */
-function computeSinks(parentComponent, childrenComponents, sources, settings) {
-  const trace = 'Router (' + (settings.trace || "") + ")";
-  console.groupCollapsed(`${trace} > computeSinks`)
-  console.debug(`sources : ${__WEBPACK_IMPORTED_MODULE_3_ramda__["C" /* keys */](sources)}`)
-  console.debug(`settings`, settings)
-  console.debug('childrenComponents', childrenComponents);
-
-  // The sink names are necessary as we cannot know otherwise in
-  // advance what are the sinks output by the children components without
-  // executing all the children components.
-  // However to execute the children components, we need to pass the route
-  // params to the children. To get those params, in turn, we need to
-  // enter the observable monad, from which we can't get out.
-  // This behaviour results in having to handle null cases for sinks (some
-  // sinks might be present only on some children components).
-  const { sinkNames, routeSource } = settings;
-
-  let cachedSinks = null;
-
-  let route$ = sources[routeSource]
-    .tap(console.debug.bind(console, `${trace} : source ${routeSource}`))
-
-  let matchedRoute$ = route$.map(match(settings[__WEBPACK_IMPORTED_MODULE_6__properties__["a" /* ROUTE_CONFIG */]]))
-    .tap(x => {
-        if (__WEBPACK_IMPORTED_MODULE_3_ramda__["B" /* isNil */](x.match)) {
-          console.debug(`${trace} > matchedRoute$ > current route does not match this component's route!`)
-        } else {
-          console.debug(`${trace} > matchedRoute$ > current route matches!! :`, x)
-        }
-      }
-    )
-    // NOTE : replaying here is mandatory
-    // That's because the children are passed `matchedRoute` and
-    // connect to it AFTER the `route$` has emitted its value...
-    // In short, while time is abstracted out in the case of a static
-    // graph, dynamic stream graphs come with synchronization pains
-    .shareReplay(1)
-
-  let changedRouteEvents$ = matchedRoute$
-    .distinctUntilChanged(({ match }) => {
-      return match ? __WEBPACK_IMPORTED_MODULE_3_ramda__["I" /* omit */](['routeRemainder'], match) : null
-    })
-    .tap(console.debug.bind(console, `${trace} > changedRouteEvents$ > route change (ignoring duplicates) on section :`))
-    .do(function computeChildrenSinksIfAny({ match }) {
-      // Case : the configured route did match the current route
-      if (match != null) {
-        console.info(`${trace} > computing children components sinks with match`, match);
-        const componentFromChildren = __WEBPACK_IMPORTED_MODULE_2__m_m__["a" /* m */]({
-            makeLocalSources: function makeLocalSources(sources, __settings) {
-              console.group(`${trace} > changedRouteEvents$ > children wrapper component > makeLocalSources`);
-              console.debug(`sources : ${__WEBPACK_IMPORTED_MODULE_3_ramda__["C" /* keys */](sources)}, __settings :`, __settings);
-              console.groupEnd();
-
-              return {
-                [routeSource]: matchedRoute$
-                  .map(__WEBPACK_IMPORTED_MODULE_3_ramda__["J" /* path */](['match', 'routeRemainder']))
-                  .tap(console.debug.bind(console,
-                    `${trace} > changedRouteEvents$ > children wrapper component  > source ${routeSource} > routeRemainder (new route$ for children)`))
-                  .share(),
-              }
-            },
-          }, {
-            [__WEBPACK_IMPORTED_MODULE_6__properties__["b" /* ROUTE_PARAMS */]]: __WEBPACK_IMPORTED_MODULE_3_ramda__["I" /* omit */](['routeRemainder'], match),
-            trace: `${trace} > componentFromChildren`
-          },
-          [parentComponent, childrenComponents]);
-        cachedSinks = componentFromChildren(sources, settings);
-      }
-      else {
-        cachedSinks = null
-      }
-    })
-    .share()
-  // Note : must be shared, used twice here
-  // NOTE : we cannot group  matchedRoute$ and changedRouteEvents$ in one, as one needs a Replay
-  // and the other one needs just a share :
-  // - changedRouteEvents$ really is an event, we don't want it to trigger in a delayed manner.
-  // Tests proved that this leads to children componnt emitting values when they should already
-  // be disconnected
-
-  function makeRoutedSinkFromCache(sinkName) {
-    return function makeRoutedSinkFromCache(params) {
-      let cached$, preCached$, prefix$
-
-      if (params != null) {
-        // Case : new route matches component configured route
-        if (cachedSinks[sinkName] != null) {
-          // Case : the component produces a sink with that name
-          // This is an important case, as parent can have children
-          // nested at arbitrary levels, with either :
-          // 1. sinks which will not be retained (not in `sinkNames`
-          // settings)
-          // 2. or no sinks matching a particular `sinkNames`
-          // Casuistic 1. is taken care of automatically as we only
-          // construct the sinks in `sinkNames`
-          // Casuistic 2. is taken care of thereafter
-
-          prefix$ = sinkName === __WEBPACK_IMPORTED_MODULE_1__utils_src_index__["a" /* DOM_SINK */] ?
-            // Case : DOM sink
-            // actually any sink which is merged with a `combineLatest`
-            // but here by default only DOM sinks are merged that way
-            // Because the `combineLatest` blocks till all its sources
-            // have started, and that behaviour interacts badly with
-            // route changes desired behavior, we forcibly emits a `null`
-            // value at the beginning of every sink.
-            $.of(null) :
-            // Case : Non-DOM sink
-            // Non-DOM sinks are merged with a simple `merge`, there
-            // is no conflict here, so we just return nothing
-            $.empty()
-
-          preCached$ = cachedSinks[sinkName]
-            .tap(console.log.bind(console, `${trace} > makeRoutedSinkFromCache > sink ${sinkName} :`))
-            .finally(_ => {
-              void _
-              console.log(`${trace} > makeRoutedSinkFromCache > sink ${sinkName} : terminating due to route change`)
-            })
-
-          cached$ = $.concat(prefix$, preCached$)
-        }
-        else {
-          // Case : the component does not have any sinks with the
-          // corresponding sinkName
-          console.info(`${trace} > sink ${sinkName} : component has no such sink!`)
-          console.debug(`${trace} > makeRoutedSinkFromCache > sink ${sinkName} : -> empty`)
-          cached$ = $.empty()
-        }
-      }
-      else {
-        // Case : new route does NOT match component configured route
-        console.log(`${trace} > sink ${sinkName} : no match for this component on this route!`)
-        cached$ = sinkName === __WEBPACK_IMPORTED_MODULE_1__utils_src_index__["a" /* DOM_SINK */] ? $.of(null) : $.empty()
-      }
-
-      return cached$
-    }
-  }
-
-  function makeRoutedSink(sinkName) {
-    return {
-      [sinkName]: changedRouteEvents$
-        .pluck('match')
-        .map(makeRoutedSinkFromCache(sinkName))
-        .switch()
-    }
-  }
-
-  console.groupEnd();
-
-  return __WEBPACK_IMPORTED_MODULE_3_ramda__["G" /* mergeAll */](__WEBPACK_IMPORTED_MODULE_3_ramda__["D" /* map */](makeRoutedSink, sinkNames))
-}
-
-const RouterSpec = {
-  computeSinks: computeSinks,
-  checkPreConditions: isRouteSettings
-};
-
-function OnRoute(routeSettings, componentTree) {
-  // check that components is an array
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["h" /* hasAtLeastOneChildComponent */], [componentTree], `Router : router combinator must at least have one child component to route to!`);
-
-  return __WEBPACK_IMPORTED_MODULE_2__m_m__["a" /* m */](RouterSpec, routeSettings, componentTree)
-}
-
-// NOTE ADR: 'routeSource' and not 'from' to avoid telescoping with other combinators which use
-// 'from' as well. Routing is always at the top level, so the risk of collusion is sort of
-// maximized
-
-
-/***/ }),
-/* 394 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* JavaScript Route Matcher - v0.1.0 - 10/19/2011
- * http://github.com/cowboy/javascript-route-matcher
- * Copyright (c) 2011 "Cowboy" Ben Alman; Licensed MIT, GPL */
-const rM = (function (root, factory) {
-  if (typeof define === 'function' && __webpack_require__(395)) {
-    // AMD. Register as an anonymous module.
-    define([], factory);
-  } else {
-    // Browser globals
-    return (root || window).routeMatcher = factory();
-  }
-}(this, function () {
-  var exports = {};
-  // Characters to be escaped with \. RegExp borrowed from the Backbone router
-  // but escaped (note: unnecessarily) to keep JSHint from complaining.
-  var reEscape = /[\-\[\]{}()+?.,\\\^$|#\s]/g;
-  // Match named :param or *splat placeholders.
-  var reParam = /([:*])(\w+)/g;
-
-  // Test to see if a value matches the corresponding rule.
-  function validateRule(rule, value) {
-    // For a given rule, get the first letter of the string name of its
-    // constructor function. "R" -> RegExp, "F" -> Function (these shouldn't
-    // conflict with any other types one might specify). Note: instead of
-    // getting .toString from a new object {} or Object.prototype, I'm assuming
-    // that exports will always be an object, and using its .toString method.
-    // Bad idea? Let me know by filing an issue
-    var type = exports.toString.call(rule).charAt(8);
-    // If regexp, match. If function, invoke. Otherwise, compare. Note that ==
-    // is used because type coercion is needed, as `value` will always be a
-    // string, but `rule` might not.
-    return type === "R" ? rule.test(value) : type === "F" ? rule(value) : rule == value;
-  }
-
-  // Pass in a route string (or RegExp) plus an optional map of rules, and get
-  // back an object with .parse and .stringify methods.
-  exports.routeMatcher = function (route, rules) {
-    // Object to be returned. The public API.
-    var self = {};
-    // Matched param or splat names, in order
-    var names = [];
-    // Route matching RegExp.
-    var re = route;
-
-    // Build route RegExp from passed string.
-    if (typeof route === "string") {
-      // Escape special chars.
-      re = re.replace(reEscape, "\\$&");
-      // Replace any :param or *splat with the appropriate capture group.
-      re = re.replace(reParam, function (_, mode, name) {
-        names.push(name);
-        // :param should capture until the next / or EOL, while *splat should
-        // capture until the next :param, *splat, or EOL.
-        return mode === ":" ? "([^/]*)" : "(.*)";
-      });
-      // Add ^/$ anchors and create the actual RegExp.
-      re = new RegExp("^" + re + "$");
-
-      // Match the passed url against the route, returning an object of params
-      // and values.
-      self.parse = function (url) {
-        var i = 0;
-        var param, value;
-        var params = {};
-        var matches = url.match(re);
-        // If no matches, return null.
-        if (!matches) { return null; }
-        // Add all matched :param / *splat values into the params object.
-        while (i < names.length) {
-          param = names[i++];
-          value = matches[i];
-          // If a rule exists for thie param and it doesn't validate, return null.
-          if (rules && param in rules && !validateRule(rules[param], value)) { return null; }
-          params[param] = value;
-        }
-        return params;
-      };
-
-      // Build path by inserting the given params into the route.
-      self.stringify = function (params) {
-        var param, re;
-        var result = route;
-        // Insert each passed param into the route string. Note that this loop
-        // doesn't check .hasOwnProperty because this script doesn't support
-        // modifications to Object.prototype.
-        for (param in params) {
-          re = new RegExp("[:*]" + param + "\\b");
-          result = result.replace(re, params[param]);
-        }
-        // Missing params should be replaced with empty string.
-        return result.replace(reParam, "");
-      };
-    } else {
-      // RegExp route was passed. This is super-simple.
-      self.parse = function (url) {
-        var matches = url.match(re);
-        return matches && {captures: matches.slice(1)};
-      };
-      // There's no meaningful way to stringify based on a RegExp route, so
-      // return empty string.
-      self.stringify = function () { return ""; };
-    }
-    return self;
-  };
-return exports;
-}));
-
-const routeMatcher = rM && rM.routeMatcher
-/* harmony export (immutable) */ __webpack_exports__["a"] = routeMatcher;
-
-
-
-/***/ }),
-/* 395 */
-/***/ (function(module, exports) {
-
-/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
-module.exports = __webpack_amd_options__;
-
-/* WEBPACK VAR INJECTION */}.call(exports, {}))
-
-/***/ }),
-/* 396 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties__ = __webpack_require__(397);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__properties__);
-/* harmony namespace reexport (by used) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_0__properties__, "InSlot")) __webpack_require__.d(__webpack_exports__, "InSlot", function() { return __WEBPACK_IMPORTED_MODULE_0__properties__["InSlot"]; });
-/* harmony namespace reexport (by used) */ if(__webpack_require__.o(__WEBPACK_IMPORTED_MODULE_0__properties__, "InjectSourcesAndSettings")) __webpack_require__.d(__webpack_exports__, "InjectSourcesAndSettings", function() { return __WEBPACK_IMPORTED_MODULE_0__properties__["InjectSourcesAndSettings"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ListOf__ = __webpack_require__(398);
-/* unused harmony namespace reexport */
-
-
-
-
-/***/ }),
-/* 397 */
-/***/ (function(module, exports) {
-
-
-
-/***/ }),
-/* 398 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export ListOf */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rx__);
-// ListOf({list : 'items', as : 'cardInfo', buildActionsFromChildrenSinks:...,
-// actionsMap:{'clickIntent$':'router'}},}, [Component],
-
-
-
-
-
-const $ = __WEBPACK_IMPORTED_MODULE_3_rx__["Observable"];
-
-function getPathFromString(list) {
-  return list.split('.');
-}
-
-function isListOfSettings(settings) {
-  return 'list' in settings && 'as' in settings
-    && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.list) && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.as)
-}
-
-function isListAnArray(sources, settings) {
-  return __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["i" /* isArray */](__WEBPACK_IMPORTED_MODULE_2_ramda__["J" /* path */](getPathFromString(settings.list), settings))
-}
-
-function hasValidBuildActionsFromChildrenSinks(sources, settings) {
-  return (!('buildActionsFromChildrenSinks' in settings)
-    || __WEBPACK_IMPORTED_MODULE_2_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_2_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_2_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["r" /* isObject */], __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["o" /* isFunction */]))(settings.buildActionsFromChildrenSinks))
-}
-
-function hasValidActionsMap(sources, settings) {
-  return (!('actionsMap' in settings) || __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["r" /* isObject */](settings.actionsMap))
-}
-
-function hasExactlyTwoChildrenComponent(arrayOfComponents) {
-  // NOTE : we exclude [parent, [child, child]]. We want [child, child]
-  return arrayOfComponents && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["i" /* isArray */](arrayOfComponents) && arrayOfComponents.length === 2
-    && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */](arrayOfComponents[0]) && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */](arrayOfComponents[1])
-}
-
-const isValidListOfSettings =
-  // 1. list must be an array
-  // 2. buildActionsFromChildrenSinks is optional and a function (signature??)
-  // 3. actionsMap is optional and a hashmap (can be empty)
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["d" /* checkAndGatherErrors */]([
-    [isListAnArray, `'list' ListOf's setting must reference a setting property which is an array!`],
-    [hasValidBuildActionsFromChildrenSinks, `buildActionsFromChildrenSinks parameter is optional. When present it must be a function or a hashmap mapping a sink to a merge function!`],
-    [hasValidActionsMap, `hasValidActionsMap parameter is optional. When present it must be a hashmap mapping children sinks to action sinks!`],
-  ], `isValidListOfSettings : fails!`);
-
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  const { list, buildActionsFromChildrenSinks, actionsMap } = settings;
-  const items = __WEBPACK_IMPORTED_MODULE_2_ramda__["J" /* path */](getPathFromString(list), settings);
-  const childComponent = items.length ? childrenComponents[1] : childrenComponents[0];
-
-  const indexedChildrenComponents = items.length
-    // Case when the `items` array is not empty, we branch to the second child component
-    ? items.map((item, index) => {
-      return function indexedChildComponent(sources, _settings) {
-        const childComponentSettings = __WEBPACK_IMPORTED_MODULE_2_ramda__["F" /* merge */](_settings, { [settings.as]: item, listIndex: index });
-
-        return childComponent(sources, childComponentSettings)
-      }
-    })
-    // Case when the `items` array is empty, we branch to the first child component
-    : [childComponent]
-
-  const reducedSinks = __WEBPACK_IMPORTED_MODULE_1__m_m__["a" /* m */]({
-    mergeSinks: buildActionsFromChildrenSinks || {}
-  }, { trace: 'ListOf > computing indexed children' }, indexedChildrenComponents)(sources, settings);
-
-  const sinkNames = __WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](reducedSinks);
-
-  const collectedReducedSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["N" /* reduce */](
-    function collectReducedSinks(acc, sinkName) {
-      const mappedSinkName = (actionsMap || {})[sinkName];
-      if (mappedSinkName) {
-        acc[mappedSinkName] = acc[mappedSinkName] || [];
-        acc[mappedSinkName].push(reducedSinks[sinkName]);
-      }
-      else {
-        acc[sinkName] = acc[sinkName] || [];
-        acc[sinkName].push(reducedSinks[sinkName]);
-      }
-
-      return acc
-    },
-    {},
-    sinkNames
-  );
-
-  const mappedSinkNames = __WEBPACK_IMPORTED_MODULE_2_ramda__["S" /* uniq */](sinkNames.map(sinkName => {
-    const mappedSinkName = (actionsMap || {})[sinkName];
-
-    return mappedSinkName
-      ? mappedSinkName
-      : sinkName
-  }));
-
-  const finalSinks = __WEBPACK_IMPORTED_MODULE_2_ramda__["N" /* reduce */](function mergeReducedSinks(acc, sinkName) {
-    // This is an array by previous construction
-    const sinks = collectedReducedSinks[sinkName];
-    if (sinks.length === 1) {
-      // Case standard when there is only one reduced sink for a given sink name
-      acc[sinkName] = sinks[0];
-    }
-    else {
-      // Case advanced when there are several reduced sinks for a given sink name
-      // This can happen because of mapping several sinks into another given sink name,
-      // as a result of the mapping
-      acc[sinkName] = $.merge(sinks)
-    }
-
-    return acc
-  }, {}, mappedSinkNames);
-
-  return finalSinks
-}
-
-// Spec
-const listOfSpec = {
-  computeSinks: computeSinks,
-  checkPreConditions: isValidListOfSettings
-};
-
-function ListOf(listOfSettings, childrenComponents) {
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](hasExactlyTwoChildrenComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly two children component to list from!`);
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
-
-  return __WEBPACK_IMPORTED_MODULE_1__m_m__["a" /* m */](listOfSpec, listOfSettings, childrenComponents)
-}
-
-// NOTE ADR: it is better to have only one child component. If several, we have to allow
-// specifying how they are merged, which would complexify the API. We already have to specify
-// how the array of the components are merged. That would make two merge functions to specify
-// with different scopes, which is a bit harder to reason about and error-prone.
-// It is always possible to specify the unique child component as a the sum of other components
-// and define the merge at that level. For instance :
-// ListOf(..., [UniqueComponent]); UniqueComponent = m({mergeSpecs}, {settings}, [Components])
-
-
-/***/ }),
-/* 399 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties__ = __webpack_require__(400);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ForEach__ = __webpack_require__(401);
-/* unused harmony namespace reexport */
-
-
-
-
-/***/ }),
-/* 400 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const defaultFilterBy = function defaultFilterBy (x){return true}
-/* unused harmony export defaultFilterBy */
-
-
-
-/***/ }),
-/* 401 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export ForEach */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_src_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rx__);
-
-
-
-
-
-
-const $ = __WEBPACK_IMPORTED_MODULE_4_rx__["Observable"];
-
-function isForEachSettings(sources, settings) {
-  return 'from' in settings && 'as' in settings
-    && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.from) && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["x" /* isString */](settings.as)
-}
-
-function isValidForEachSettings(sources, settings) {
-  return sources && sources[settings.from] && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["s" /* isObservable */](sources[settings.from])
-    && 'sinkNames' in settings
-}
-
-function computeSinks(parentComponent, childrenComponents, sources, settings) {
-  let { from, as, sinkNames } = settings;
-  let cachedSinks = null;
-
-  const switchSource = sources[from];
-  // assertContract(isValidForEachSettings, [sources, settings], `ForEach > computeSinks >
-  // isValidForEachSettings : source ${from} not found in sources!`);
-
-  const shouldSwitch$ = switchSource
-    .do(function (incomingValue) {
-      console.info(`${settings.trace} > ForEach > New value from source ${from}`, __WEBPACK_IMPORTED_MODULE_1__utils_src_index__["e" /* format */](incomingValue));
-      console.info(`${settings.trace} > ForEach > Computing the associated sinks`);
-      const mergedChildrenComponentsSinks = __WEBPACK_IMPORTED_MODULE_2__m_m__["a" /* m */](
-        {},
-        { [as]: incomingValue, trace: 'executing ForEach children' },
-        [parentComponent, childrenComponents]);
-
-      cachedSinks = mergedChildrenComponentsSinks(sources, settings);
-    })
-    // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
-    // because the wire happens at switch time? and that is a different time every time??
-    // Anyways it semms to work like this, so no more touching it
-    .shareReplay(1)
-  ;
-
-  function makeSwitchedSink(sinkName) {
-    return {
-      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache(incomingValue) {
-        // Case : the component produces a sink with that name
-        if (cachedSinks[sinkName] != null) {
-          console.log(`ForEach > makeSwitchedSink > sink ${sinkName} : extracting...`)
-          return cachedSinks[sinkName]
-            .tap(console.warn.bind(console, `ForEach > makeSwitchedSink > sink ${sinkName} emits :`))
-            .finally(_ => {
-              console.log(`sink ${sinkName} terminating due to applicable case change`)
-            })
-        }
-        else {
-          // Case : the component does not have any sinks with the corresponding sinkName
-          // NOTE : Don't use $.never(), this avoids hanging in some cases
-          console.log(`ForEach > makeSwitchedSink > sink ${sinkName} : component does not have a sink with that name, sink set to empty`)
-          return $.empty()
-        }
-      })
-        .tap(function () {
-          console.warn(`ForEach > makeSwitchedSink > switching in ${sinkName}`)
-        })
-        .switch()
-    }
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_3_ramda__["G" /* mergeAll */](__WEBPACK_IMPORTED_MODULE_3_ramda__["D" /* map */](makeSwitchedSink, sinkNames)) // ramda mergeAll, not Rx
-}
-
-// Spec
-const forEachSpec = {
-  computeSinks: computeSinks,
-  checkPreConditions: isValidForEachSettings
-};
-
-function ForEach(forEachSettings, componentTree) {
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["h" /* hasAtLeastOneChildComponent */], [componentTree], `ForEach : ForEach combinator must at least have one child component to switch to!`);
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](isForEachSettings, [null, forEachSettings], `ForEach : ForEach combinator must have 'from' and 'as' property which are strings!`);
-
-  return __WEBPACK_IMPORTED_MODULE_2__m_m__["a" /* m */](forEachSpec, forEachSettings, componentTree)
-}
-
-
-/***/ }),
-/* 402 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties__ = __webpack_require__(150);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Switch__ = __webpack_require__(403);
-/* unused harmony namespace reexport */
-
-
-
-
-/***/ }),
-/* 403 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export Switch */
-/* unused harmony export Case */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_src_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__properties__ = __webpack_require__(150);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_cycle_snabbdom__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_cycle_snabbdom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_cycle_snabbdom__);
-// NOTE : right now all casewhen are evaluated
-
-
-
-
-
-
-
-
-
-
-
-const $ = __WEBPACK_IMPORTED_MODULE_4_rx__["Observable"];
-const mapIndexed = __WEBPACK_IMPORTED_MODULE_3_ramda__["b" /* addIndex */](__WEBPACK_IMPORTED_MODULE_3_ramda__["D" /* map */])
-
-function defaultsTo(obj, defaultsTo) {
-  return !obj ? defaultsTo : obj
-}
-
-// CONFIG
-const defaultEqFn = function swichCptdefaultEqFn(a, b) {
-  return __WEBPACK_IMPORTED_MODULE_3_ramda__["q" /* equals */](a, b)
-}
-const cfg = {
-  defaultEqFn: defaultEqFn
-}
-
-// Type checking typings
-/**
- * @typedef {function(Sources,Settings):Source} SwitchOnCondition
- */
-
-/**
- * @typedef {SourceName} SwitchOnSource
- */
-/**
- * @typedef {Object} SwitchCaseSettings
- * @property {SwitchOnCondition | SwitchOnSource} on
- * @property {Array<SinkName>} sinkNames
- * @property {?function(*,*): Boolean} eqFn
- */
-
-function hasWhenProperty(sources, settings) {
-  return Boolean(settings && 'when' in settings)
-}
-
-function hasEqFnProperty(sources, settings) {
-  return Boolean(!settings || !('eqFn' in settings))
-    || Boolean(__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */](settings.eqFn))
-}
-
-function hasSinkNamesProperty(sources, settings) {
-  return Boolean(settings || !settings.sinkNames)
-    && Boolean(__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */])(settings.sinkNames))
-}
-
-function hasValidOnProperty(sources, settings) {
-  return Boolean(__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */](settings.on) && sources[settings.on])
-}
-
-function hasOnProperty(sources, settings) {
-  return Boolean(settings && settings.on)
-}
-
-function hasAsProperty(sources, settings) {
-  return Boolean(settings && settings.as && __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */](settings.as))
-}
-
-const isCaseSettings = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["d" /* checkAndGatherErrors */]([
-  [hasWhenProperty, `Settings parameter must have a 'when' property!`],
-  [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
-], `isCaseSettings : fails!`);
-
-const isSwitchSettings = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["d" /* checkAndGatherErrors */]([
-  [hasSinkNamesProperty, `Settings parameter must have a 'sinkNames' property!`],
-  [hasValidOnProperty, `Settings parameter must have a 'on' property, which is a string, and corresponds to a source in sources!`],
-  [hasEqFnProperty, `If settings parameter has a eqFn property, it must be a function!`]
-], `Switch : Invalid switch component settings!`);
-
-//////////////
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
-  let { eqFn, when, sinkNames, on, as } = settings;
-  let cachedSinks = null;
-
-  const overload = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["n" /* unfoldObjOverload */](on, [
-    { 'guard$': __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */] },
-    { 'sourceName': __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["x" /* isString */] }
-  ]);
-  let { guard$, sourceName, _index } = overload;
-  let switchSource;
-
-  if (overload._index === 1) {
-    // Case : overload `settings.on :: SourceName`
-    switchSource = sources[sourceName]
-  }
-  if (overload._index === 0) {
-    // Case : overload `settings.on :: SourceName`
-    switchSource = guard$(sources, settings)
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["u" /* isSource */], [switchSource],
-      `Case > computeSinks > The function used for conditional switching did not return an observable!`)
-  }
-
-  // set default values for optional properties
-  eqFn = __WEBPACK_IMPORTED_MODULE_3_ramda__["n" /* defaultTo */](cfg.defaultEqFn, eqFn);
-
-  const shouldSwitch$ = switchSource
-    .map(x => ({ isMatching: eqFn(x, when), incoming: x }))
-    .do(function ({ isMatching, incoming }) {
-      if (isMatching) {
-        console.info(`Found a match (${when}) for Case branch ${settings.trace}`)
-        console.info(`Computing the corresponding sinks`)
-        const mergedChildrenComponentsSinks = __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */](
-          {},
-          // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well.
-          { [as]: incoming, trace: 'executing case children' },
-          [makeOwnSinks, childrenComponents])
-
-        cachedSinks = mergedChildrenComponentsSinks(sources, settings)
-      }
-      else {
-        console.info(`Did not find a match (${when}) for Case branch ${settings.trace}`)
-      }
-    })
-    // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
-    // because the wire happens at switch time? and that is a different time every time??
-    // Anyways it semms to work like this, so no more touching it
-    .shareReplay(1)
-  ;
-
-  function makeSwitchedSink(sinkName) {
-    return {
-      [sinkName]: shouldSwitch$.map(function makeSwitchedSinkFromCache({ isMatching, incoming }) {
-        let cached$;
-
-        if (isMatching) {
-          // Case : the switch source emits a value corresponding to the
-          // configured case in the component
-
-          // Case : the component produces a sink with that name
-          if (cachedSinks[sinkName] != null) {
-            console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : extracting...`)
-            cached$ = cachedSinks[sinkName]
-              .tap(console.warn.bind(console, `Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} emits :`))
-              .finally(_ => {
-                console.log(`sink ${sinkName} terminating due to applicable case change`)
-              })
-          }
-          else {
-            // Case : the component does not have any sinks with the
-            // corresponding sinkName
-            // NOTE : Don't use $.never(), this avoids hanging in some cases
-            console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : component does not have a sink with that name, sink set to empty`)
-            cached$ = $.empty()
-          }
-        }
-        else {
-          // Case : the switch source emits a value NOT corresponding to the
-          // configured case in the component
-          console.log(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > sink ${sinkName} : set to empty or null`)
-          // TODO : replace DOM which is specific to cycle
-          // In fact, we need to put null in DOM because we need to erase
-          // the current value of DOM, which should be on only iff the case
-          // is fulfilled.
-          // In even more fact, this is the case for any behaviour, not just
-          // the DOM. Behaviours must continuously have a value. Not settings null for the DOM,
-          // i.e. for instance setting $.empty() would mean a `combineLatest` down the road would
-          // still lead to the display of the old DOM, or worse block part of the DOM building
-          // (all sources for `combineLatest` must have emitted for the operator to emit its first
-          // value)
-          // SO : we need a list of behaviour sinks, and their monoidal zero (eq. to $.of(null))
-          cached$ = sinkName === __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["a" /* DOM_SINK */] ? $.of(null) : $.empty()
-        }
-        return cached$
-      })
-        .tap(function () {
-          console.warn(`Switch > Case > computeSinks > makeSwitchedSink > Branch ${settings.trace} > switching in ${sinkName}`)
-        })
-        .switch()
-    }
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_3_ramda__["G" /* mergeAll */](__WEBPACK_IMPORTED_MODULE_3_ramda__["D" /* map */](makeSwitchedSink, sinkNames)) // ramda mergeAll, not Rx
-}
-
-function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
-  return function mergeChildrenIntoParentDOM(arrayVNode) {
-    // We remove null elements from the array of vNode
-    // We can have a null vNode emitted by a sink if that sink is empty
-    let _arrayVNode = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["j" /* removeEmptyVNodes */](__WEBPACK_IMPORTED_MODULE_2__utils_src_index__["k" /* removeNullsFromArray */](arrayVNode));
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["y" /* isVNode */]), [_arrayVNode], 'DOM sources must' +
-      ' stream VNode objects! Got ' + _arrayVNode)
-
-    if (parentDOMSink) {
-      // Case : the parent sinks have a DOM sink
-      // We want to put the children's DOM **inside** the parent's DOM
-      // cf. m.js computeDOMSinkDefault
-      let parentVNode = __WEBPACK_IMPORTED_MODULE_3_ramda__["i" /* clone */](_arrayVNode.shift())
-      let childrenVNode = _arrayVNode
-      /*
-            // For Case component, null does not mean empty vnode
-            // We want to avoid having the parent enclosing an empty content, which would not be
-            // semantically accurate (though eventually accurate - the next DOM values should be the
-            // right DOM to display, so this would be only temporally wrong, but still we remove it to
-            // avoid confusion)
-            if (childrenVNode.length === 0) {
-              return null
-            }
-      */
-
-      parentVNode.children = __WEBPACK_IMPORTED_MODULE_3_ramda__["i" /* clone */](parentVNode.children) || []
-
-      // childrenVNode could be null if all children sinks are empty
-      // observables, in which case we just return the parentVNode
-      if (childrenVNode) {
-        if (parentVNode.text) {
-          // NOTE : if parentVNode has text, then children = [], so splice is too defensive here
-          parentVNode.children.splice(0, 0, {
-            children: [],
-            "data": {},
-            "elm": undefined,
-            "key": undefined,
-            "sel": undefined,
-            "text": parentVNode.text
-          })
-          parentVNode.text = undefined
-        }
-        Array.prototype.push.apply(parentVNode.children, childrenVNode)
-      }
-
-      return parentVNode
-    }
-    else {
-      // Case : the parent sinks does not have a DOM sink
-      /*
-            // Cf. above : For Case component, null does not mean empty vnode, it is an intermediate
-            // value, so don't add an empty div for nothing, add a null which will be filtered down
-            // the road
-            if (_arrayVNode.length === 0) {
-              return null
-            }
-      */
-
-      return __WEBPACK_IMPORTED_MODULE_6_cycle_snabbdom__["div"](_arrayVNode)
-    }
-  }
-}
-
-function computeSwitchDOMSink(parentDOMSinkOrNull, childrenSink, settings) {
-  // We want `combineLatest` to still emit the parent DOM sink, even when
-  // one of its children sinks is empty, so we modify the children sinks
-  // to emits ONE `Null` value if it is empty
-  // Note : in default function, settings parameter is not used
-  const childrenDOMSinkOrNull = __WEBPACK_IMPORTED_MODULE_3_ramda__["D" /* map */](__WEBPACK_IMPORTED_MODULE_2__utils_src_index__["d" /* emitNullIfEmpty */], childrenSink)
-
-  const allSinks = __WEBPACK_IMPORTED_MODULE_3_ramda__["v" /* flatten */]([parentDOMSinkOrNull, childrenDOMSinkOrNull])
-  const allDOMSinks = __WEBPACK_IMPORTED_MODULE_2__utils_src_index__["k" /* removeNullsFromArray */](allSinks)
-
-  // Edge case : none of the sinks have a DOM sink
-  // That should not be possible as we come here only
-  // when we detect a DOM sink
-  if (allDOMSinks.length === 0) {
-    throw `Switch > computeSwitchDOMSink: internal error!`
-  }
-
-  return $.combineLatest(allDOMSinks)
-    .map(mergeCaseChildrenIntoParentDOM(parentDOMSinkOrNull))
-}
-
-const SwitchSpec = {
-  mergeSinks: {
-    [__WEBPACK_IMPORTED_MODULE_2__utils_src_index__["a" /* DOM_SINK */]]: function mergeDomSwitchedSinks(ownSink, childrenDOMSink, settings) {
-      return computeSwitchDOMSink(ownSink, childrenDOMSink, settings)
-      // NOTE : current implementation of switch generates a lot of null (for each failing
-      // Case branch) - we filter that out, they do not mean a null vNode
-        .filter(Boolean)
-        // NOTE : DOM values can be repeated for instance on every incoming value of the
-        // switching source. Repeating those values does not change semantics (DOM is a
-        // behaviour). However, we believe (only intuition) that performance is better by
-        // avoiding repetition, because `combineLatest` is very chatty (emitting anytime one of
-        // its arguments emit).
-        // In any case, testing certainly is easier by avoiding repetition. One does not have to
-        // compute the exact number of repetitions according to the current and past inputs
-        .distinctUntilChanged()
-    }
-  },
-  // NOTE : cf. old implementation in 05.09.2017, and using nothing for mergeSinks
-  checkPreConditions: isSwitchSettings
-}
-/* unused harmony export SwitchSpec */
-
-
-const CaseSpec = {
-  computeSinks: computeSinks,
-  checkPreConditions: isCaseSettings
-}
-/* unused harmony export CaseSpec */
-
-
-/**
- * Usage : Switch(SwitchCaseSettings, Array<CaseComponent>)
- * Example : cf. specs
- *   > const mComponent = Switch({
-   *   >    on: (sources,settings) => sources.sweatch$,
-   *   >    sinkNames: ['DOM', 'a', 'b']
-   *   >  }, [
- *   > Case({when: true}, [childComponent1, childComponent2]),
- *   > Case({when: false}, [childComponent3])
- *   > ])
- *
- * The switch combinator activates a component conditionally depending on
- * whether a condition on a 'switch' source stream is satisfied. Note
- * that the condition is evaluated every time there is an incoming value
- * on the switch source.
- * If it is necessary to implement a logic by which the component activation
- * should only trigger on **changes** of the incoming value, that logic
- * could be implemented with a `distinctUntilChanged`.
- * When the condition is no longer satisfied, the previously activated
- * component is deactivated automatically :
- * - DOM sink emits null and terminates
- * - Non-DOM sinks are empty
- * DOM sinks are treated differently because the DOM is a behaviour
- * (continuous value), not an event, so we need to update to null its value
- * when there is no longer a match. i.e. match => DOM, no match => Null
- *
- * Signature 1: SwitchOnCondition -> [Component] -> Component
- * - settings.on :: Sources -> Settings -> Source
- * The function passed as parameter is returning a source observable whose
- * values will be used for the conditional switching.
- * - settings.sinkNames :: [SinkName]
- * This is an array with the names of the sinks to be constructed. This is
- * mandatory as we can't know in advance which sinks to produce
- * - settings.eqFn :: * -> * -> Boolean
- * A predicate which returns true if both parameters are considered equal.
- * This parameter defaults to ramda's equals function
- *
- * Signature 2: SwitchOnSource -> [Component] -> Component
- * - settings.on :: SourceName
- * A string which is the source name whose values will be used for the
- * conditional activation of the component. The source used will be
- * sources[sourceName]
- * - Cf. Signature 1 for the meaning of the rest of parameters
- *
- * Contracts :
- * - the source name given as parameter must exist as property of the `sources` parameter
- * - `Switch` combinator must have at least one child component
- * - `Case` combinator must have at least one child component
- * - `on`, `sinkNames`, `when` are mandatory
- *
- * Case component
- * - `settings.when :: *`
- * An object which will activate the switched-to component whenever the switch source
- * observable returned by the `on` parameter emits that object
- *
- * Contracts :
- * - `when` is mandatory
- *
- * @params {SwitchSettings} switchSettings
- * @params {ComponentTree} componentTree
- * @return {Component}
- * @throws
- */
-function Switch(switchSettings, componentTree) {
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["h" /* hasAtLeastOneChildComponent */], [componentTree], `Switch : switch combinator must at least have one child component to switch to!`);
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](hasOnProperty, [null, switchSettings], `Switch : switch combinator must have a 'on' property !`);
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](hasAsProperty, [null, switchSettings], `Switch : switch combinator must have a 'as' property !`);
-  let _SwitchSpec = SwitchSpec;
-  let _switchSettings = switchSettings;
-
-  // if we precompute the switch source, then change the specs and settings of the case
-  // components so that we add the precomputed source to the children sources, and we pass the
-  // `on` settings to be that extra source.
-  // All this is to avoid a previous bug where the computed switch source was computed within
-  // the Case component, hence it was computed every time for every case component
-  if (__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */](switchSettings.on)) {
-    _SwitchSpec = __WEBPACK_IMPORTED_MODULE_3_ramda__["g" /* assoc */]('makeLocalSources', function addComputedSwitchSource(sources, settings) {
-      const switchSource = switchSettings.on(sources, settings);
-      return {
-        [__WEBPACK_IMPORTED_MODULE_5__properties__["a" /* SWITCH_SOURCE */]]: switchSource
-      }
-    }, SwitchSpec);
-    _switchSettings = __WEBPACK_IMPORTED_MODULE_3_ramda__["g" /* assoc */]('on', __WEBPACK_IMPORTED_MODULE_5__properties__["a" /* SWITCH_SOURCE */], switchSettings);
-  }
-
-  return __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */](_SwitchSpec, _switchSettings, componentTree)
-}
-
-function Case(CaseSettings, componentTree) {
-  return __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */](CaseSpec, CaseSettings, componentTree)
-}
-
-
-/***/ }),
-/* 404 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__properties__ = __webpack_require__(81);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__FSM__ = __webpack_require__(405);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__types__ = __webpack_require__(82);
-/* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils__ = __webpack_require__(151);
-/* unused harmony namespace reexport */
-
-
-
-
-
-
-/***/ }),
-/* 405 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export makeFSM */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ramda__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__types__ = __webpack_require__(82);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rx__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rx__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fast_json_patch__ = __webpack_require__(406);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fast_json_patch___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_fast_json_patch__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__properties__ = __webpack_require__(81);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils__ = __webpack_require__(151);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__src_components_types__ = __webpack_require__(54);
-// Patch library : https://github.com/Starcounter-Jack/JSON-Patch
-
-
-
-
-
-
-
-
-// NOTE1 : dont use observe functionality for generating patches
-// it uses JSON stringify which makes it impossible to have functions in the
-// model object
-// NOTE2 : patches are applied IN PLACE
-
-/**
- * @typedef {String} EventName
- */
-/**
- * @typedef {SinkName} DriverName
- */
-/**
- * @typedef {*} EventData
- */
-/**
- * @typedef {String} State
- */
-/**
- * @typedef {String} JSON_Pointer
- * albeit a string with a particular format
- * cf. https://tools.ietf.org/html/rfc6901
- * The ABNF syntax of a JSON Pointer is:
- *  json-pointer    = *( "/" reference-token )
- *  reference-token = *( unescaped / escaped )
- *  unescaped       = %x00-2E / %x30-7D / %x7F-10FFFF ; %x2F ('/') and %x7E ('~') are excluded from
- *   'unescaped' escaped         = "~" ( "0" / "1" ) ; representing '~' and '/', respectively
- */
-/**
- * @typedef {String} TransitionName
- */
-/**
- * @typedef {Object.<EventName, Event>} Events
- */
-/**
- * @typedef {function(Sources):EventData} Event
- */
-/**
- * @typedef {*} FSM_Model
- */
-/**
- * @typedef {*} Command
- */
-/**
- * @typedef {*} Payload
- */
-/**
- * @typedef {*} ActionResponse
- */
-/**
- * @typedef {String} ZeroDriver
- */
-/**
- * @typedef {{command : Command, payload : Payload}} Request
- */
-/**
- * @typedef {function(FSM_Model, EventData):Request} RequestFn
- */
-/**
- * @typedef {{driver : SinkName|ZeroDriver, request : RequestFn, }} ActionRequest
- */
-/**
- * @typedef {function(FSM_Model, EventData) : Boolean} EventGuard
- */
-/**
- * @typedef {function(ActionResponse) : Boolean} ActionGuard
- */
-/**
- * @typedef {{op : "add", path : JSON_Pointer, value : *}} Op_Add
- */
-/**
- * @typedef {{op : "replace", path : JSON_Pointer, value : *}} Op_Replace
- */
-/**
- * @typedef {{op : "remove", path : JSON_Pointer}} Op_Remove
- */
-/**
- * @typedef {{op : "move", from : JSON_Pointer, path : JSON_Pointer}} Op_Move
- */
-/**
- * @typedef {{op : "copy", from : JSON_Pointer, path : JSON_Pointer}} Op_Copy
- */
-/**
- * @typedef {{op : "copy", path : JSON_Pointer, value : *}} Op_Test
- */
-/**
- * @typedef {Op_Add|Op_Remove|Op_Replace|Op_Move|Op_Copy|Op_Test} JSON_Patch
- */
-/**
- * @typedef {JSON_Patch} UpdateOperation
- */
-/**
- * @typedef {function(FSM_Model, EventData, ActionResponse) : UpdateOperation[]} UpdateFn
- */
-/**
- * @typedef {{action_guard : ActionGuard, target_state : State, model_update : UpdateFn}} TransEval
- */
-/**
- * @typedef {{event_guard : EventGuard, re_entry: Boolean, action_request : ActionRequest,
- *   transition_evaluation : TransEval[]}} Transition
- */
-/**
- * @typedef {{origin_state : State, event : EventName, target_states : Transition[]}}
- *   TransitionOptions
- */
-/**
- * @typedef {Object.<TransitionName, TransitionOptions>} Transitions
- */
-/**
- * @typedef {String} AWAITING_EVENTS
- */
-/**
- * @typedef {String} AWAITING_ACTION_RESPONSE
- */
-/**
- * @typedef {AWAITING_EVENTS|AWAITING_ACTION_RESPONSE} InternalState
- */
-/**
- * @typedef {{internal_state : InternalState, external_state : State, model : FSM_Model,
- *   current_event_name : EventName | Null, current_event_data : EventData | Null,
- *   current_event_guard_index : Number | Null, current_action_request_driver : DriverName | Null,
- *   sinks : Sinks | Null}} FSM_State
- */
-/**
- * @typedef {String} UserEventPrefix
- */
-/**
- * @typedef {String} DriverEventPrefix
- */
-/**
- * @typedef {Object.<EventName, EventData>} LabelledUserEvent
- */
-/**
- * @typedef {Object.<DriverName, ActionResponse>} LabelledDriverEvent
- */
-/**
- * @typedef {Object.<UserEventPrefix, LabelledUserEvent>} UserEvent
- */
-/**
- * @typedef {Object.<DriverEventPrefix, LabelledDriverEvent>} DriverEvent
- */
-
-let $ = __WEBPACK_IMPORTED_MODULE_3_rx__["Observable"];
-
-function removeZeroDriver(driverNameArray) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["s" /* filter */](function removeZero(driverName) {
-    return driverName != __WEBPACK_IMPORTED_MODULE_5__properties__["q" /* ZERO_DRIVER */]
-  }, driverNameArray)
-}
-
-function prefixWith(prefix) {
-  return function _prefixWith(obj) {
-    return { [prefix]: obj }
-  }
-}
-
-/**
- * @param {Object.<string, *>} fsmEvent
- * @returns {String}
- */
-function getPrefix(fsmEvent) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](fsmEvent)[0]
-}
-
-/**
- * NOTE : fsmEvent MUST only have one key
- * @param fsmEvent
- * @returns {UserEventPrefix|DriverEventPrefix}
- */
-function getEventOrigin(fsmEvent) {
-  return getPrefix(fsmEvent)
-}
-
-/**
- * NOTE : fsmEvent MUST only have one key
- * @param prefix
- * @param {UserEvent | DriverEvent} fsmEvent
- * @returns {LabelledUserEvent | LabelledDriverEvent}
- */
-function getFsmEventValue(prefix, fsmEvent) {
-  return fsmEvent[prefix]
-}
-
-/**
- *
- * @param {String} eventOrDriverName
- * @param {LabelledUserEvent|LabelledDriverEvent} fsmEventValue
- * @returns {EventData | ActionResponse}
- */
-function getEventDataOrActionResponse(eventOrDriverName, fsmEventValue) {
-  return fsmEventValue[eventOrDriverName]
-}
-
-/**
- *
- * @param fsmEvent
- * @returns {{fsmEventOrigin: (UserEventPrefix|DriverEventPrefix), fsmEventValue:
- *   (LabelledUserEvent|LabelledDriverEvent)}}
- */
-function destructureFsmEvent(fsmEvent) {
-  const prefix = getEventOrigin(fsmEvent);
-  const fsmEventValue = getFsmEventValue(prefix, fsmEvent);
-
-  return {
-    fsmEventOrigin: prefix,
-    fsmEventValue: fsmEventValue
-  }
-}
-
-/**
- *
- * @param fsmEventValue
- * @returns {{eventOrDriverName: String, eventDataOrActionResponse: (EventData|ActionResponse)}}
- */
-function destructureFsmEventValue(fsmEventValue) {
-  const eventOrDriverName = getPrefix(fsmEventValue);
-  const eventDataOrActionResponse = getEventDataOrActionResponse(eventOrDriverName, fsmEventValue);
-
-  return {
-    eventOrDriverName: eventOrDriverName,
-    eventDataOrActionResponse: eventDataOrActionResponse
-  }
-}
-
-/**
- *
- * @param {Transitions} transitions
- * @returns {Object.<State, EventName[]>}
- */
-function computeStateEventMap(transitions) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */](function (/*OUT*/accStateEventMap, transName) {
-    const transOptions = transitions[transName];
-    const { origin_state, event } = transOptions;
-    accStateEventMap[origin_state] = accStateEventMap[origin_state] || [];
-    accStateEventMap[origin_state].push(event);
-
-    return accStateEventMap;
-  }, {}, __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](transitions));
-}
-
-/**
- *
- * @param {Transitions} transitions
- * @returns {Object.<State, Object.<EventName, TransitionName>>}
- */
-function computeStateEventToTransitionNameMap(transitions) {
-  return __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */](function (/*OUT*/acc, transName) {
-    const transOptions = transitions[transName];
-    const { origin_state, event } = transOptions;
-    acc[origin_state] = acc[origin_state] || {};
-    acc[origin_state][event] = transName;
-
-    return acc;
-  }, {}, __WEBPACK_IMPORTED_MODULE_0_ramda__["C" /* keys */](transitions));
-}
-
-/**
- * Returns the action request corresponding to the first guard satisfied, as
- * defined by the order of the target_states array
- * @param {Transitions} transitions
- * @param {String} transName
- * @param {FSM_Model} model
- * @param {EventData} eventData
- * @return {{ actionRequest : ActionRequest | Null, transitionEvaluation, satisfiedGuardIndex :
- *   Number | Null, reEntry: Boolean, noGuardSatisfied : Boolean}}
- */
-function computeTransition(transitions, transName, model, eventData) {
-  const NOT_FOUND = -1;
-  const targetStates = transitions[transName].target_states;
-
-  const satisfiedGuardIndex = __WEBPACK_IMPORTED_MODULE_0_ramda__["u" /* findIndex */](function (transition) {
-    /** @type {EventGuard} */
-    const eventGuard = transition.event_guard;
-
-    if (eventGuard == __WEBPACK_IMPORTED_MODULE_5__properties__["n" /* EV_GUARD_NONE */]) {
-      return true
-    }
-    else {
-      // EventGuard :: Model -> EventData -> Boolean
-      const wrappedEventGuard = __WEBPACK_IMPORTED_MODULE_0_ramda__["R" /* tryCatch */](eventGuard, __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["g" /* handleError */](__WEBPACK_IMPORTED_MODULE_5__properties__["g" /* CONTRACT_EVENT_GUARD_CANNOT_FAIL */]));
-      const guardValue = wrappedEventGuard(model, eventData);
-      __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */], [guardValue],
-        `computeTransition: ${__WEBPACK_IMPORTED_MODULE_5__properties__["h" /* CONTRACT_EVENT_GUARD_FN_RETURN_VALUE */]}`);
-
-      return guardValue
-    }
-  }, targetStates);
-
-  return satisfiedGuardIndex !== NOT_FOUND
-    ? {
-      satisfiedGuardIndex,
-      actionRequest: targetStates[satisfiedGuardIndex].action_request,
-      reEntry: targetStates[satisfiedGuardIndex].re_entry,
-      transitionEvaluation: targetStates[satisfiedGuardIndex].transition_evaluation,
-      noGuardSatisfied: false
-    }
-    : {
-      satisfiedGuardIndex: null,
-      actionRequest: null,
-      reEntry: null,
-      transitionEvaluation: null,
-      noGuardSatisfied: true
-    }
-}
-
-function isZeroActionRequest(actionRequest) {
-  return actionRequest == __WEBPACK_IMPORTED_MODULE_5__properties__["a" /* ACTION_REQUEST_NONE */] || isZeroDriver(actionRequest.driver)
-}
-
-function isZeroDriver(driver) {
-  return driver == __WEBPACK_IMPORTED_MODULE_5__properties__["q" /* ZERO_DRIVER */]
-}
-
-/**
- *
- * @param {FSM_Model} model
- * @param {UpdateOperation[]} modelUpdateOperations
- * @returns {FSM_Model}
- */
-function applyUpdateOperations(/*OUT*/model, modelUpdateOperations) {
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_7__src_components_types__["a" /* isArrayUpdateOperations */], [modelUpdateOperations],
-    `applyUpdateOperations : ${__WEBPACK_IMPORTED_MODULE_5__properties__["j" /* CONTRACT_MODEL_UPDATE_FN_RETURN_VALUE */]}`);
-
-  __WEBPACK_IMPORTED_MODULE_4_fast_json_patch__["apply"](model, modelUpdateOperations);
-  return model;
-}
-
-/**
- *
- * @param sources
- * @param settings
- * @param {Event} event$Fn Event factory function
- * @param {EventName} eventName
- * @returns {Observable}
- * @throws
- */
-function _labelEvents(sources, settings, event$Fn, eventName, _) {
-  const event$Fn$ = event$Fn(sources, settings);
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["b" /* checkIsObservable */], [event$Fn$],
-    `event factory function for event ${eventName} must return an observable!`);
-
-  return event$Fn$.map(prefixWith(eventName))
-}
-
-const computeAndLabelEvents = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](_labelEvents);
-
-function getDriverNames(transOptions, transName) {
-  const { target_states } = transOptions;
-  /** @type {Array.<String|ZeroDriver>} */
-  const driverNames = __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](function (transition) {
-    const { action_request } = transition;
-    const { driver } = action_request || {};
-
-    return driver;
-  }, target_states);
-
-  return driverNames;
-}
-
-function setFsmStateSinksToNull(fsmState) {
-  let {
-    internal_state, external_state, model, clonedModel,
-    current_event_name, current_event_data, current_event_guard_index,
-    current_action_request_driver, current_action_request, sinks
-  } = fsmState;
-
-  return {
-    sinks: null,
-    internal_state, external_state, model, clonedModel,
-    current_event_name, current_event_data, current_event_guard_index,
-    current_action_request_driver, current_action_request
-  };
-}
-
-/**
- * Returns the action request corresponding to the first guard satisfied, as
- * defined by the order of the target_states array
- * @param {Transitions} transitions
- * @param {String} transName
- * @param {Number} current_event_guard_index
- * @param model
- * @param {ActionResponse} actionResponse
- * @return {{target_state: null, re_entry: boolean, model_update: null, noGuardSatisfied: boolean}}
- */
-function evaluateTransitionWhenActionResponse(transitions, transName, current_event_guard_index,
-                                              model, actionResponse) {
-  /** @type {Transition} */
-  const transition = transitions[transName].target_states[current_event_guard_index];
-  /** @type {Array} */
-  const actionResponseGuards = transition.transition_evaluation;
-  const reEntry = transition.re_entry;
-
-  const foundSatisfiedGuard = __WEBPACK_IMPORTED_MODULE_0_ramda__["t" /* find */](function (transEval) {
-    const { action_guard, target_state, model_update } = transEval;
-
-    if (action_guard == __WEBPACK_IMPORTED_MODULE_5__properties__["b" /* AR_GUARD_NONE */]) {
-      // if no action guard is configured, it is equivalent to a passing guard
-      return true
-    }
-    else {
-      // ActionGuard :: ActionResponse -> Boolean
-      const wrappedActionGuard = __WEBPACK_IMPORTED_MODULE_0_ramda__["R" /* tryCatch */](action_guard, __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["g" /* handleError */](__WEBPACK_IMPORTED_MODULE_5__properties__["e" /* CONTRACT_ACTION_GUARD_CANNOT_FAIL */]));
-      const guardValue = wrappedActionGuard(model, actionResponse);
-      __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["l" /* isBoolean */], [guardValue],
-        `computeTransition: ${__WEBPACK_IMPORTED_MODULE_5__properties__["f" /* CONTRACT_ACTION_GUARD_FN_RETURN_VALUE */]}`);
-
-      return guardValue;
-    }
-  }, actionResponseGuards);
-
-  return foundSatisfiedGuard
-    ? {
-      target_state: foundSatisfiedGuard.target_state,
-      model_update: foundSatisfiedGuard.model_update,
-      re_entry: reEntry
-    }
-    : { target_state: null, re_entry: null, model_update: null, noGuardSatisfied: true }
-}
-
-function performTransitionWhenNoActionRequest(reEntry, entryComponents, external_state, model,
-                                              clonedModel, eventData,
-                                              transitionEvaluation, sources, settings) {
-  // TODO : check contract : when no action requests, only ONE action_guard which MUST be Zero
-  const { target_state, model_update } = transitionEvaluation[0];
-  const wrappedModelUpdate = __WEBPACK_IMPORTED_MODULE_0_ramda__["R" /* tryCatch */](model_update,
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["g" /* handleError */](__WEBPACK_IMPORTED_MODULE_5__properties__["i" /* CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL */]));
-  const modelUpdateOperations = wrappedModelUpdate(clonedModel, eventData, null, settings);
-  const entryComponent = entryComponents[target_state];
-
-  let newSinks;
-
-  // Set values for next FSM state update
-  const newModel = applyUpdateOperations(model, modelUpdateOperations);
-  // NOTE: could also be applyUpdateOperations(clonedModel,...) dont know which
-  // is faster
-  const newClonedModel = __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* clone */](newModel);
-  // NOTE : The model to be passed to the entry component is post update
-  // NOTE2 : {} because we still want to terminate, i.e. LEAVE previous state. This would be
-  // done with the switchMap. Reminder : null means filter i.e. do nothing
-  const stateEntryComponent = entryComponent ? entryComponent(newClonedModel) : __WEBPACK_IMPORTED_MODULE_0_ramda__["e" /* always */]({});
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_0_ramda__["p" /* either */](__WEBPACK_IMPORTED_MODULE_0_ramda__["B" /* isNil */], __WEBPACK_IMPORTED_MODULE_2__types__["d" /* checkStateEntryComponentFnMustReturnComponent */]),
-    [stateEntryComponent],
-    `state entry component function ${entryComponent.name} 
-                    for state ${target_state} MUST return a component or be null`
-  );
-
-  if (reEntry && target_state === external_state || target_state !== external_state) {
-    // When reentry flag is set, and target state is the origin state, then re-enter that state by
-    // re-executing the state entry action
-    newSinks = stateEntryComponent(sources, settings);
-  }
-  else {
-    // When no reentry, dont do no action
-    newSinks = null;
-  }
-
-  return {
-    external_state: target_state,
-    model: newModel,
-    clonedModel: newClonedModel,
-    sinks: newSinks,
-    internal_state: __WEBPACK_IMPORTED_MODULE_5__properties__["c" /* AWAITING_EVENTS */],
-    current_event_guard_index: null,
-    current_event_name: null,
-    current_event_data: null,
-    current_action_request_driver: null,
-    current_action_request: null
-  }
-}
-
-function performTransitionWhenActionResponse(fsmState, transition, fsmCompiled, actionResponse,
-                                             sources, settings) {
-  const { target_state, re_entry, model_update } = transition;
-  const { external_state, model, clonedModel, current_event_data } = fsmState;
-  const { entryComponents } = fsmCompiled;
-  let newSinks;
-
-  const wrappedModelUpdate = __WEBPACK_IMPORTED_MODULE_0_ramda__["R" /* tryCatch */](model_update,
-    __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["g" /* handleError */](__WEBPACK_IMPORTED_MODULE_5__properties__["i" /* CONTRACT_MODEL_UPDATE_FN_CANNOT_FAIL */]));
-  const modelUpdateOperations = wrappedModelUpdate(model, current_event_data, actionResponse, settings);
-
-  const entryComponentFactory = entryComponents[target_state];
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["l" /* isEntryComponentFactory */], [entryComponentFactory],
-    `Error while trying to get entry component factory for state ${target_state} : 
-            component configured in fsm must be null or a function!`);
-
-  // Set new model's values for next FSM state update
-  const newModel = applyUpdateOperations(/*OUT*/model, modelUpdateOperations);
-  const newClonedModel = __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* clone */](newModel);
-  const entryComponent = entryComponentFactory ? entryComponentFactory(newClonedModel) : null;
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["k" /* isEntryComponent */], [entryComponent],
-    `Error while trying to get entry component for state ${target_state} : 
-            configured factory must return null or a component function :: sources -> settings -> Sinks!`);
-
-  if (re_entry && target_state === external_state || target_state !== external_state) {
-    // When reentry flag is set, and target state is the origin state, then re-enter that
-    // state by re-executing the state entry action
-    newSinks = entryComponent ? entryComponent(sources, settings) : {};
-  }
-  else {
-    // we re-enter the same state, but re-entry flag is not set -> dont do nothing
-    newSinks = null;
-  }
-
-  return {
-    internal_state: __WEBPACK_IMPORTED_MODULE_5__properties__["c" /* AWAITING_EVENTS */],
-    external_state: target_state,
-    // Note : The model to be passed to the entry component is post update
-    model: newModel,
-    clonedModel: newClonedModel,
-    sinks: newSinks,
-    current_event_guard_index: null,
-    current_event_name: null,
-    current_event_data: null,
-    current_action_request_driver: null,
-    current_action_request: null,
-  };
-
-}
-
-function processEventWhenAwaitingUserEvents(fsmCompiled, sources, settings, fsmState, fsmEvent) {
-  // If received DriverEvent
-  // -- Log warning, Ignore, no state modification, sinks = Null
-  // Else If received UserEvent
-  // -- If userEvent is NOT among the configured events for the FSM's external state
-  // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
-  // -- Else If no guards is passed :
-  // -- -- no state modification (could also queue??), sinks = Null
-  // -- -- Else a guard is passed, get the action request from it :
-  // -- -- -- If ActionRequest is Zero
-  // -- -- -- -- no need to wait for a response, change the fsm state directly
-  // -- -- -- -- check contract : action_guard MUST be Zero
-  // -- -- -- -- If re-entry YES && external_state == target_state:
-  // -- -- -- -- -- sinks <- execute the component defined as entry for the state transitioned to
-  // -- -- -- -- Else
-  // -- -- -- -- -- sinks <- null, i.e. do nothing
-  // -- -- -- -- internal_state <- AWAITING_EVENTS
-  // -- -- -- -- current_event_data <- Null
-  // -- -- -- -- current_action_request_driver <- Null
-  // -- -- -- -- external_state <- target_state
-  // -- -- -- -- model <- apply update operations
-  // -- -- -- Else :
-  // -- -- -- -- sinks <- Compute action request (MUST be non empty object)
-  // -- -- -- -- internal_state <- AWAITING_RESPONSE
-  // -- -- -- -- current_event_data <- event_data
-  // -- -- -- -- current_action_request_driver <- the ONE key of sinks
-  // -- -- -- -- external_state, model <- unmodified
-  const { transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
-    = fsmCompiled;
-
-  // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
-  // inadvertently modifying the model
-  let { external_state, model, clonedModel, } = fsmState;
-  let newFsmState;
-
-  // NOTE : fsmEvent only has one key by construction
-  const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
-  const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
-
-  switch (fsmEventOrigin) {
-    case __WEBPACK_IMPORTED_MODULE_5__properties__["l" /* DRIVER_PREFIX */] :
-      console.warn('Received event from driver while awaiting user events! Ignoring...');
-      newFsmState = setFsmStateSinksToNull(fsmState);
-      break;
-
-    case __WEBPACK_IMPORTED_MODULE_5__properties__["m" /* EVENT_PREFIX */] :
-      /** @type {EventName[]} */
-      const configuredEvents = stateEventsMap[external_state];
-      const eventName = eventOrDriverName;
-      /** @type {EventData} */
-      const eventData = eventDataOrActionResponse;
-
-      if (!configuredEvents || !__WEBPACK_IMPORTED_MODULE_0_ramda__["t" /* find */](__WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](eventName), configuredEvents)) {
-        console.warn('Received event for which there is no transition defined!' +
-          ' Ignoring...');
-        newFsmState = setFsmStateSinksToNull(fsmState);
-      }
-      else {
-        // Compute action request triggered by event, if any
-        const transName = stateEventToTransitionNameMap[external_state][eventName];
-
-        /** @type {ActionRequest | Null} */
-        const { actionRequest, reEntry, transitionEvaluation, satisfiedGuardIndex, noGuardSatisfied } =
-          computeTransition(transitions, transName, clonedModel, eventData);
-
-        if (!!noGuardSatisfied) {
-          // no guards is satisfied
-          console.warn('Received event for which there is a transition defined but none' +
-            ' of the defined guards were satisfied!' +
-            ' Ignoring...');
-          newFsmState = setFsmStateSinksToNull(fsmState);
-        }
-        else {
-          if (isZeroActionRequest(actionRequest)) {
-            newFsmState =
-              performTransitionWhenNoActionRequest(reEntry, entryComponents,
-                external_state, model, clonedModel, eventData, transitionEvaluation,
-                sources, settings);
-          }
-          else {
-            const { request, driver, sink } = computeSinkFromActionRequest(actionRequest, model, eventData);
-            // model and external_state are unchanged
-            newFsmState = {
-              sinks: sink,
-              internal_state: __WEBPACK_IMPORTED_MODULE_5__properties__["d" /* AWAITING_RESPONSE */],
-              current_event_guard_index: satisfiedGuardIndex,
-              current_event_name: eventName,
-              current_event_data: eventData,
-              current_action_request_driver: driver,
-              current_action_request: request,
-              model, clonedModel, external_state
-            }
-          }
-        }
-      }
-      break;
-
-    default :
-      throw 'evaluateEvent > case AWAITING_EVENTS : unknown fsmEventOrigin!'
-  }
-
-  return newFsmState
-}
-
-function processEventWhenAwaitingResponseEvent(fsmCompiled, sources, settings, fsmState, fsmEvent) {
-  // If received UserEvent
-  // -- Log warning, Ignore, no state modification, sinks = Null
-  // Else If received DriverEvent
-  // -- If driverEvent is NOT from the expected driver (as to current_action_request_driver)
-  // -- -- Log warning, Ignore, no state modification (could also queue??), sinks = Null
-  // -- Else If action response fails all action guards :
-  // -- -- Log Error, THROW, sinks = Null
-  // -- -- Else action response pass the first action guard
-  // -- -- -- external_state <- as defined by the transition for the successful action guard
-  // -- -- -- sinks <- execute the component defined as entry for the state transitioned to
-  // ?? with which sources and settings??
-  // -- -- -- update operations <- compute model update
-  // -- -- -- model <- apply update operations
-  // -- -- -- internal_state <- AWAITING_EVENTS
-  // -- -- -- current_event_data <- Null
-  // -- -- -- current_action_request_driver <- Null
-  // NOTE : We clone the model to eliminate possible bugs coming from user-defined functions
-  // inadvertently modifying the model
-  const { events, transitions, entryComponents, stateEventsMap, stateEventToTransitionNameMap }
-    = fsmCompiled;
-  const {
-    internal_state, external_state, model, clonedModel,
-    current_event_name, current_event_data, current_event_guard_index,
-    current_action_request_driver, current_action_request, sinks
-  } = fsmState;
-  let newFsmState;
-
-  // NOTE : fsmEvent only has one key by construction
-  const { fsmEventOrigin, fsmEventValue } = destructureFsmEvent(fsmEvent);
-  const { eventOrDriverName, eventDataOrActionResponse } = destructureFsmEventValue(fsmEventValue);
-
-  switch (fsmEventOrigin) {
-    case __WEBPACK_IMPORTED_MODULE_5__properties__["m" /* EVENT_PREFIX */] :
-      console.warn('Received event from user while awaiting driver\'s action response!' +
-        ' Ignoring...');
-      newFsmState = setFsmStateSinksToNull(fsmState);
-      break;
-
-    case __WEBPACK_IMPORTED_MODULE_5__properties__["l" /* DRIVER_PREFIX */] :
-      const driverName = eventOrDriverName;
-      const actionResponse = eventDataOrActionResponse;
-      const { request } = actionResponse;
-      const transName = stateEventToTransitionNameMap[external_state][current_event_name];
-
-      if (driverName !== current_action_request_driver) {
-        console.warn(`
-              Received driver ${driverName}'s event but not from the expected 
-                 ${current_action_request_driver} driver!\n
-                 Ignoring...`);
-        newFsmState = setFsmStateSinksToNull(fsmState);
-      }
-      else if (request != current_action_request || !__WEBPACK_IMPORTED_MODULE_0_ramda__["q" /* equals */](request, current_action_request)) {
-        console.warn(`
-              Received action response through driver ${driverName} and ignored it as that
-                 response does not match the request sent...`);
-        newFsmState = setFsmStateSinksToNull(fsmState);
-        // TODO : document the fact that driver must return the request in the response
-      }
-      else {
-        const evaluatedTransition =
-          evaluateTransitionWhenActionResponse(
-            transitions, transName, current_event_guard_index,
-            model, actionResponse
-          );
-
-        if (evaluatedTransition.noGuardSatisfied) {
-          console.error(`While processing action response from driver ${driverName},
-                 executed all configured guards and none were satisfied! 
-                  ' Throwing...`);
-          newFsmState = setFsmStateSinksToNull(fsmState);
-          throw __WEBPACK_IMPORTED_MODULE_5__properties__["k" /* CONTRACT_SATISFIED_GUARD_PER_ACTION_RESPONSE */]
-        }
-        else {
-          newFsmState = performTransitionWhenActionResponse(
-            fsmState, evaluatedTransition, fsmCompiled, actionResponse,
-            sources, settings
-          );
-        }
-      }
-      break;
-
-    default :
-      throw `Received unexpected/unknown ${fsmEventOrigin} event. 
-            Can only process driver responses and user events!`
-  }
-
-  return newFsmState
-}
-
-function makeFSM(_events, _transitions, _entryComponents, fsmSettings) {
-  const fsmSignature = {
-    events: __WEBPACK_IMPORTED_MODULE_2__types__["r" /* isFsmEvents */],
-    transitions: __WEBPACK_IMPORTED_MODULE_2__types__["u" /* isFsmTransitions */],
-    entryComponents: __WEBPACK_IMPORTED_MODULE_2__types__["q" /* isFsmEntryComponents */],
-    fsmSettings: __WEBPACK_IMPORTED_MODULE_2__types__["t" /* isFsmSettings */]
-  };
-  const fsmSignatureErrorMessages = {
-    events: '',
-    transitions: 'Invalid value for transitions parameter : must be non-empty object and must' +
-    ' have at least one transition defined which involves the INIT event!',
-    entryComponents: 'Invalid value for entryComponents parameter : must be non-empty object!',
-    fsmSettings: `Invalid settings : some parameters are mandatory - check documentation!`
-  };
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["e" /* checkSignature */], [
-    { events: _events, transitions: _transitions, entryComponents: _entryComponents, fsmSettings },
-    fsmSignature,
-    fsmSignatureErrorMessages
-  ], '');
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["e" /* checkTargetStatesDefinedInTransitionsMustBeMappedToComponent */], arguments,
-    'makeFSM : Any target state which is referred to in the transitions parameter must be' +
-    ' associated to a component via the entryComponents parameter!');
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["c" /* checkOriginStatesDefinedInTransitionsMustBeMappedToComponent */], arguments,
-    'makeFSM : Any origin state (except the initial state) which is referred to in the' +
-    ' transitions parameter must be associated to a component via the entryComponents parameter!');
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](__WEBPACK_IMPORTED_MODULE_2__types__["a" /* checkEventDefinedInTransitionsMustBeMappedToEventFactory */], arguments,
-    'makeFSM : Any event (except the initial event) which is referred to in the' +
-    ' transitions parameter must be associated to a event factory function via the' +
-    ' events parameter!');
-
-  const { init_event_data, initial_model, sinkNames, debug } = fsmSettings;
-
-  // If debug, wrap functions to output log messages
-  const { events, transitions, entryComponents } = wrapIfDebug({
-    debug,
-    events: _events,
-    transitions: _transitions,
-    entryComponents: _entryComponents
-  });
-
-  // 0.1 Pre-process the state machine configuration
-  const stateEventsMap = computeStateEventMap(transitions);
-  const stateEventToTransitionNameMap = computeStateEventToTransitionNameMap(transitions);
-
-  /**
-   *
-   * @param {FSM_State} fsmState
-   * @param {UserEvent | DriverEvent} fsmEvent
-   * @param events
-   * @param transitions
-   * @param entryComponents
-   * @param sources
-   * @param settings
-   * @returns {FSM_State}
-   */
-  function _evaluateEvent(events, transitions, entryComponents, sources, settings,
-                          /* OUT */fsmState, fsmEvent) {
-    let newFsmState;
-    const fsmCompiled = {
-      events,
-      transitions,
-      entryComponents,
-      stateEventsMap,
-      stateEventToTransitionNameMap
-    };
-    let { internal_state } = fsmState;
-
-    switch (internal_state) {
-      case __WEBPACK_IMPORTED_MODULE_5__properties__["c" /* AWAITING_EVENTS */] :
-        newFsmState = processEventWhenAwaitingUserEvents(fsmCompiled, sources, settings, fsmState, fsmEvent);
-        break;
-
-      case __WEBPACK_IMPORTED_MODULE_5__properties__["d" /* AWAITING_RESPONSE */] :
-        newFsmState = processEventWhenAwaitingResponseEvent(fsmCompiled, sources, settings, fsmState, fsmEvent);
-        break;
-
-      default :
-        const err = 'Unexpected internal state reached by state machine !';
-        console.error(err, __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* clone */](fsmState));
-        throw err;
-    }
-
-    return newFsmState
-  }
-
-  function _computeOutputSinks(sinks$, /* OUT */accOutputSinks, sinkName) {
-    accOutputSinks[sinkName] = sinks$
-      .map(fsmState => __WEBPACK_IMPORTED_MODULE_0_ramda__["n" /* defaultTo */]($.empty(), fsmState.sinks[sinkName]))
-      .switch()
-      .tap(x =>
-        console.warn(`FSM's ${sinkName} -> ->`, x));
-
-    return accOutputSinks
-  }
-
-  const evaluateEvent = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](_evaluateEvent);
-  const computeOutputSinks = __WEBPACK_IMPORTED_MODULE_0_ramda__["m" /* curry */](_computeOutputSinks);
-
-  return function fsmComponent(sources, settings) {
-    // 1. Create array of events dealt with by the FSM
-    // This will include :
-    // - initial event
-    // - events from `events` parameter
-    // - action responses as found in `transitions`
-    /** @type {Array.<Observable.<Object.<EventName, EventData>>>} */
-    const eventsArray = __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](__WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */](computeAndLabelEvents(sources, settings), events));
-
-    /** @type {String|ZeroDriver[][]} */
-    const driverNameArrays = __WEBPACK_IMPORTED_MODULE_0_ramda__["T" /* values */](__WEBPACK_IMPORTED_MODULE_0_ramda__["E" /* mapObjIndexed */](getDriverNames, transitions));
-
-    /** @type {String[]} */
-    const driverNameArray = removeZeroDriver(__WEBPACK_IMPORTED_MODULE_0_ramda__["S" /* uniq */](__WEBPACK_IMPORTED_MODULE_0_ramda__["v" /* flatten */](driverNameArrays)));
-    /** @type {Array.<Observable.<Object.<SinkName, ActionResponse>>>} */
-    const actionResponseObsArray = __WEBPACK_IMPORTED_MODULE_0_ramda__["D" /* map */](function getActionResponseObs(driverName) {
-      const prefixedActionResponse$ = sources[driverName].map(prefixWith(driverName));
-      return debug
-        ? prefixedActionResponse$.tap(x => console.warn('response event', x))
-        : prefixedActionResponse$
-    }, driverNameArray);
-
-    /** @type {Object.<EventName, EventData>} */
-    const initialEvent = __WEBPACK_IMPORTED_MODULE_0_ramda__["K" /* pipe */](prefixWith(__WEBPACK_IMPORTED_MODULE_5__properties__["o" /* INIT_EVENT_NAME */]), prefixWith(__WEBPACK_IMPORTED_MODULE_5__properties__["m" /* EVENT_PREFIX */]))(init_event_data);
-
-    const fsmEvents = $.merge(
-      $.merge(eventsArray).map(prefixWith(__WEBPACK_IMPORTED_MODULE_5__properties__["m" /* EVENT_PREFIX */])),
-      $.merge(actionResponseObsArray).map(prefixWith(__WEBPACK_IMPORTED_MODULE_5__properties__["l" /* DRIVER_PREFIX */])),
-    )
-      .startWith(initialEvent);
-
-    // 2. Update the state of the state machine in function of the event
-    // State machine state is represented by the following properties :
-    // - internal_state : AWAITING_EVENTS | AWAITING_ACTION_RESPONSE
-    // - external_state : State
-    // - model : *
-    // - current_event_data : EventData
-    // - current_action_request_driver : DriverName
-
-    /** @type {FSM_State}*/
-    const clonedInitialModel = __WEBPACK_IMPORTED_MODULE_0_ramda__["i" /* clone */](initial_model);
-    const initialFSM_State = {
-      internal_state: __WEBPACK_IMPORTED_MODULE_5__properties__["c" /* AWAITING_EVENTS */],
-      external_state: __WEBPACK_IMPORTED_MODULE_5__properties__["p" /* INIT_STATE */],
-      model: clonedInitialModel,
-      clonedModel: clonedInitialModel,
-      current_event_name: null,
-      current_event_data: null,
-      current_event_guard_index: null,
-      current_action_request_driver: null,
-      current_action_request: null,
-      sinks: null
-    };
-
-    /** @type {Observable.<FSM_State>}*/
-    let eventEvaluation$ = fsmEvents
-      .scan(
-        evaluateEvent(events, transitions, entryComponents, sources, settings),
-        initialFSM_State
-      );
-
-    // 3. Pass output sinks onto the driver
-    // Important! `shareReplay` is necessary here because of varying subscription timing
-    // occurring inside a `switch` (i.e. subscriptions are delayed)
-    /** @type {Observable.<Object.<SinkName, Observable.<*>>>}*/
-    let sinks$ = eventEvaluation$
-      .filter(fsmState => fsmState.sinks)
-      .tap(x => fsmSettings.debug && console.debug('new sinks to merge | ', x.sinks))
-      .shareReplay(1);
-
-    /** @type {Object.<SinkName, Observable.<*>>}*/
-    let outputSinks = __WEBPACK_IMPORTED_MODULE_0_ramda__["N" /* reduce */](computeOutputSinks(sinks$), {}, sinkNames);
-
-    return outputSinks
-  };
-}
-
-function computeSinkFromActionRequest(actionRequest, model, eventData) {
-  const request = actionRequest.request(model, eventData);
-  const driver = actionRequest.driver;
-
-  return {
-    request: request,
-    driver: driver,
-    sink: { [driver]: $.just(request) }
-  }
-}
-
-const wrapIfDebug = __WEBPACK_IMPORTED_MODULE_0_ramda__["l" /* cond */]([
-  [__WEBPACK_IMPORTED_MODULE_0_ramda__["L" /* prop */]('debug'), __WEBPACK_IMPORTED_MODULE_0_ramda__["r" /* evolve */]({
-    events: __WEBPACK_IMPORTED_MODULE_6__utils__["a" /* decorateEventsWithLog */],
-    transitions: __WEBPACK_IMPORTED_MODULE_6__utils__["c" /* decorateTransitionsWithLog */],
-    entryComponents: __WEBPACK_IMPORTED_MODULE_6__utils__["b" /* decorateStateEntryWithLog */]
-  })],
-  [__WEBPACK_IMPORTED_MODULE_0_ramda__["a" /* T */], __WEBPACK_IMPORTED_MODULE_0_ramda__["x" /* identity */]]]);
-
-// TODO : make sure that all event guards, action guards, and mdoel updates are called with a
-// clone of the model so they don't modify it inadvertently
-// TODO : parametrize DOM sink name
-// TODO : implement remaining contracts cf. doc
-// TODO : move contract for action guards and event guards (return boolean value) into debug:true
-// so that when debug is false we have better performance
-// TODO : same would be nice while saving to remote to show some message `pending...` = feature
-// i.e. some model update for when FSM in between states
-// The way to do this is to have ONE global pending internal FSM state which is associated to
-// some action (think about how, if we update the view with a spinner, how?)
-// TODO : 0. docuemnting with examples and graphs
-// TODO : 1. convert a fsm data structure to a graphml or dot or tgf format
-// TODO : define my own errors with nice contextual messages and parameters
-// 0. TODO : Merge settings somehow (precedence and merge to define) with fsmSettings
-// 0. TODO : check remaining contracts
-// TODO Doc : for init transition, set re_entry to true if one wants to have initial component
-// display : this is due to INIT state being both target and current state at start-up
-// doc that re-entry is useless if there is no transition defined with target=current state
-// we could develop a contract that re-entry MUST not be there if no reentry, and MUST be
-// defined if there is
-// TODO : some action requests have no responses! feature: configuration property, can
-// also be useful to implement pre-emptive event : no, pre-emptive are events of the same state,
-// not the next event, hence to implement non RTC semantics
-// TODO : 6. FSM re_entry should be lower, at action guard level when I put the target state
-// NTH : change cycle dom driver to use a real DOM vs. virtual DOM diff
-// -> add event in team detail to update the model and re-entry
-// ---- cf. https://github.com/patrick-steele-idem/morphdom,
-// ----- https://github.com/patrick-steele-idem/morphdom/blob/master/docs/virtual-dom.md with
-// -----   https://github.com/marko-js/marko-vdom for the matching vDom implementation
-// TODO : 7. can use https://codepen.io/davidkpiano/pen/ayWKJO/ ? YYYEESS
-// TODO : 7. write a function which take the FSM config and get a graph out of it (mermaid? yed?)
-// - cytoscape looks like the best so far
-// - cytoscape with cytoscape-cose-bilkent plugin for compund graph visualization
-//    - https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js
-//    - https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.1.4/cytoscape.min.js
-//    - can zoom in/out, move, click the graph
-// - dagre layout
-//   - mermaid uses dagre layout, : http://knsv.github.io/mermaid/flowchart.html
-//   - use specific text format (dagre-d3)
-//   - css seems to be easy to modify, but little interactivity (tooltip etc.)
-//   - dagre-d3, interactivity to do by hand, https://github.com/cpettitt/dagre-d3/wiki
-//   - use graphLib for inputting graph data :
-// https://github.com/cpettitt/graphlib/wiki/API-Reference viz.js :
-// https://github.com/mdaines/viz.js/ - - use graphviz/DOT language - - - howto :
-// http://graphs.grevian.org/example - - - formal def :
-// http://www.graphviz.org/content/dot-language vis.js : https://github.com/almende/vis, cf.
-// network - - examples to look directly in the examples folder - - rich API, but hard to fathom -
-// - uses simple format, but does not seem to be easy to have subgraphs with this format - - uses
-// GEPHI https://marketplace.gephi.org/plugin/json-exporter/ - - looks quite complex but also lots
-// of doc, not sure how to make it interactive RECOMMENDATION : 1. use viz/graphviz : graphviz is
-// pretty neat, pretty standard format, can map to others 2. use dagre-d3 : it is a library, can
-// customize anything with D3 BUT graphlib not exportable Conversion
-// http://openconnecto.me/graph-services/convert/ - for isntance graphML (yed) to DOT (viz.js) NOTE
-// - graphML is used by yed but also http://igraph.org/redirect.html
-// TODO: Investigate state chart logic for free (best are first two):
-// - https://github.com/jbeard4/SCION (similar to https://github.com/Touffy/JSSCxml)
-//   - pretty advanced
-//     - simulation step-by-step, test framework, visualization, standard spec so very documented
-//   - has concurrency and history
-// - https://github.com/FrozenCanuck/Ki/blob/master/frameworks/foundation/system/statechart.js
-//   - http://blog.sproutcore.com/statecharts-in-sproutcore/
-//   - http://guides.sproutcore.com/getting_started_2.html
-//   - http://docs.sproutcore.com/symbols/SC.StatechartManager.html
-//   - http://docs.sproutcore.com/symbols/SC.State.html
-// - https://github.com/etgryphon/stativus
-//   - documentation hard to get but seems in current development
-//     - however tests could help figure out details
-//   - shitty demo too
-//   - have concurrent state and history
-// - https://github.com/DavidDurman/statechart
-//   - only hierarchical, no parallel OR states, no history
-//   - no asynchronous handling, or life-cycle events
-//   - also model is implicitly linked to this, actions etc. are passed event
-// - https://github.com/Touffy/JSSCxml
-//   - similar to the top SCION, but doc pretty bad, BUT
-//   - visual debugger wonderful!
-//   - http://www.jsscxml.org/thesis.pdf explains difference between the two
-// TODO : feature : if action does not return output, it should return NO_OUTPUT to distinguish
-// from returning undefined...
-// terms :
-// - Finite memory finite-state machines, Finite-Memory Automata, register automata, Guarded
-// Variable Automata, data automata, variable automata,  fresh-variable automata
-// TODO : add a resume function in connection with a initial_control_state parameter. This
-// basically allows to stop and resume a state machine, but also not to start from the
-// beginning. Start as a matter of fact does send INIT event, resume does not send any events.
-
-
-/***/ }),
-/* 406 */
-/***/ (function(module, exports) {
-
-/*!
- * https://github.com/Starcounter-Jack/JSON-Patch
- * json-patch-duplex.js version: 1.2.2
- * (c) 2013 Joachim Wester
- * MIT license
- */
-var jsonpatch;
-(function (jsonpatch) {
-    var _objectKeys = function (obj) {
-        if (_isArray(obj)) {
-            var keys = new Array(obj.length);
-            for (var k = 0; k < keys.length; k++) {
-                keys[k] = "" + k;
-            }
-            return keys;
-        }
-        if (Object.keys) {
-            return Object.keys(obj);
-        }
-        var keys = [];
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                keys.push(i);
-            }
-        }
-        return keys;
-    };
-    function _equals(a, b) {
-        switch (typeof a) {
-            case 'undefined':
-            case 'boolean':
-            case 'string':
-            case 'number':
-                return a === b;
-            case 'object':
-                if (a === null)
-                    return b === null;
-                if (_isArray(a)) {
-                    if (!_isArray(b) || a.length !== b.length)
-                        return false;
-                    for (var i = 0, l = a.length; i < l; i++)
-                        if (!_equals(a[i], b[i])) {
-                            return false;
-                        }
-                    return true;
-                }
-                var aKeys = _objectKeys(a);
-                var bKeys = _objectKeys(b);
-                for (var i_1 = 0; i_1 < aKeys.length; i_1++) {
-                    var key_1 = aKeys[i_1];
-                    // check all properties of `a` to equal their `b` counterpart
-                    if (!_equals(a[key_1], b[key_1])) {
-                        return false;
-                    }
-                    // remove the key from consideration in next step since we know it's "equal"
-                    var bKeysIdx = bKeys.indexOf(key_1);
-                    if (bKeysIdx >= 0) {
-                        bKeys.splice(bKeysIdx, 1);
-                    }
-                }
-                for (var i_2 = 0; i_2 < bKeys.length; i_2++) {
-                    var key = bKeys[i_2];
-                    // lastly, test any untested properties of `b`
-                    if (!_equals(a[key], b[key])) {
-                        return false;
-                    }
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-    /* We use a Javascript hash to store each
-     function. Each hash entry (property) uses
-     the operation identifiers specified in rfc6902.
-     In this way, we can map each patch operation
-     to its dedicated function in efficient way.
-     */
-    /* The operations applicable to an object */
-    var objOps = {
-        add: function (obj, key, document) {
-            obj[key] = this.value;
-            return { newDocument: document };
-        },
-        remove: function (obj, key, document) {
-            var removed = obj[key];
-            delete obj[key];
-            return { newDocument: document, removed: removed };
-        },
-        replace: function (obj, key, document) {
-            var removed = obj[key];
-            obj[key] = this.value;
-            return { newDocument: document, removed: removed };
-        },
-        move: function (obj, key, document) {
-            /* in case move target overwrites an existing value,
-            return the removed value, this can be taxing performance-wise,
-            and is potentially unneeded */
-            var removed = getValueByPointer(document, this.path);
-            if (removed) {
-                removed = deepClone(removed);
-            }
-            var originalValue = applyOperation(document, { op: "remove", path: this.from }).removed;
-            applyOperation(document, { op: "add", path: this.path, value: originalValue });
-            return { newDocument: document, removed: removed };
-        },
-        copy: function (obj, key, document) {
-            var valueToCopy = getValueByPointer(document, this.from);
-            // enforce copy by value so further operations don't affect source (see issue #177)
-            applyOperation(document, { op: "add", path: this.path, value: deepClone(valueToCopy) });
-            return { newDocument: document };
-        },
-        test: function (obj, key, document) {
-            return { newDocument: document, test: _equals(obj[key], this.value) };
-        },
-        _get: function (obj, key, document) {
-            this.value = obj[key];
-            return { newDocument: document };
-        }
-    };
-    /* The operations applicable to an array. Many are the same as for the object */
-    var arrOps = {
-        add: function (arr, i, document) {
-            arr.splice(i, 0, this.value);
-            // this may be needed when using '-' in an array
-            return { newDocument: document, index: i };
-        },
-        remove: function (arr, i, document) {
-            var removedList = arr.splice(i, 1);
-            return { newDocument: document, removed: removedList[0] };
-        },
-        replace: function (arr, i, document) {
-            var removed = arr[i];
-            arr[i] = this.value;
-            return { newDocument: document, removed: removed };
-        },
-        move: objOps.move,
-        copy: objOps.copy,
-        test: objOps.test,
-        _get: objOps._get
-    };
-    var _isArray;
-    if (Array.isArray) {
-        _isArray = Array.isArray;
-    }
-    else {
-        _isArray = function (obj) {
-            return obj.push && typeof obj.length === 'number';
-        };
-    }
-    function _getPathRecursive(root, obj) {
-        var found;
-        for (var key in root) {
-            if (root.hasOwnProperty(key)) {
-                if (root[key] === obj) {
-                    return escapePathComponent(key) + '/';
-                }
-                else if (typeof root[key] === 'object') {
-                    found = _getPathRecursive(root[key], obj);
-                    if (found != '') {
-                        return escapePathComponent(key) + '/' + found;
-                    }
-                }
-            }
-        }
-        return '';
-    }
-    function getPath(root, obj) {
-        if (root === obj) {
-            return '/';
-        }
-        var path = _getPathRecursive(root, obj);
-        if (path === '') {
-            throw new Error("Object not found in root");
-        }
-        return '/' + path;
-    }
-    var beforeDict = [];
-    var Mirror = (function () {
-        function Mirror(obj) {
-            this.observers = [];
-            this.obj = obj;
-        }
-        return Mirror;
-    }());
-    var ObserverInfo = (function () {
-        function ObserverInfo(callback, observer) {
-            this.callback = callback;
-            this.observer = observer;
-        }
-        return ObserverInfo;
-    }());
-    function getMirror(obj) {
-        for (var i = 0, ilen = beforeDict.length; i < ilen; i++) {
-            if (beforeDict[i].obj === obj) {
-                return beforeDict[i];
-            }
-        }
-    }
-    function getObserverFromMirror(mirror, callback) {
-        for (var j = 0, jlen = mirror.observers.length; j < jlen; j++) {
-            if (mirror.observers[j].callback === callback) {
-                return mirror.observers[j].observer;
-            }
-        }
-    }
-    function removeObserverFromMirror(mirror, observer) {
-        for (var j = 0, jlen = mirror.observers.length; j < jlen; j++) {
-            if (mirror.observers[j].observer === observer) {
-                mirror.observers.splice(j, 1);
-                return;
-            }
-        }
-    }
-    /**
-     * Detach an observer from an object
-     */
-    function unobserve(root, observer) {
-        observer.unobserve();
-    }
-    jsonpatch.unobserve = unobserve;
-    /**
-     * Observes changes made to an object, which can then be retieved using generate
-     */
-    function observe(obj, callback) {
-        var patches = [];
-        var root = obj;
-        var observer;
-        var mirror = getMirror(obj);
-        if (!mirror) {
-            mirror = new Mirror(obj);
-            beforeDict.push(mirror);
-        }
-        else {
-            observer = getObserverFromMirror(mirror, callback);
-        }
-        if (observer) {
-            return observer;
-        }
-        observer = {};
-        mirror.value = deepClone(obj);
-        if (callback) {
-            observer.callback = callback;
-            observer.next = null;
-            var dirtyCheck = function () {
-                generate(observer);
-            };
-            var fastCheck = function () {
-                clearTimeout(observer.next);
-                observer.next = setTimeout(dirtyCheck);
-            };
-            if (typeof window !== 'undefined') {
-                if (window.addEventListener) {
-                    window.addEventListener('mouseup', fastCheck);
-                    window.addEventListener('keyup', fastCheck);
-                    window.addEventListener('mousedown', fastCheck);
-                    window.addEventListener('keydown', fastCheck);
-                    window.addEventListener('change', fastCheck);
-                }
-                else {
-                    document.documentElement.attachEvent('onmouseup', fastCheck);
-                    document.documentElement.attachEvent('onkeyup', fastCheck);
-                    document.documentElement.attachEvent('onmousedown', fastCheck);
-                    document.documentElement.attachEvent('onkeydown', fastCheck);
-                    document.documentElement.attachEvent('onchange', fastCheck);
-                }
-            }
-        }
-        observer.patches = patches;
-        observer.object = obj;
-        observer.unobserve = function () {
-            generate(observer);
-            clearTimeout(observer.next);
-            removeObserverFromMirror(mirror, observer);
-            if (typeof window !== 'undefined') {
-                if (window.removeEventListener) {
-                    window.removeEventListener('mouseup', fastCheck);
-                    window.removeEventListener('keyup', fastCheck);
-                    window.removeEventListener('mousedown', fastCheck);
-                    window.removeEventListener('keydown', fastCheck);
-                }
-                else {
-                    document.documentElement.detachEvent('onmouseup', fastCheck);
-                    document.documentElement.detachEvent('onkeyup', fastCheck);
-                    document.documentElement.detachEvent('onmousedown', fastCheck);
-                    document.documentElement.detachEvent('onkeydown', fastCheck);
-                }
-            }
-        };
-        mirror.observers.push(new ObserverInfo(callback, observer));
-        return observer;
-    }
-    jsonpatch.observe = observe;
-    /**
-     * Generate an array of patches from an observer
-     */
-    function generate(observer) {
-        var mirror;
-        for (var i = 0, ilen = beforeDict.length; i < ilen; i++) {
-            if (beforeDict[i].obj === observer.object) {
-                mirror = beforeDict[i];
-                break;
-            }
-        }
-        _generate(mirror.value, observer.object, observer.patches, "");
-        if (observer.patches.length) {
-            applyPatch(mirror.value, observer.patches);
-        }
-        var temp = observer.patches;
-        if (temp.length > 0) {
-            observer.patches = [];
-            if (observer.callback) {
-                observer.callback(temp);
-            }
-        }
-        return temp;
-    }
-    jsonpatch.generate = generate;
-    // Dirty check if obj is different from mirror, generate patches and update mirror
-    function _generate(mirror, obj, patches, path) {
-        if (obj === mirror) {
-            return;
-        }
-        if (typeof obj.toJSON === "function") {
-            obj = obj.toJSON();
-        }
-        var newKeys = _objectKeys(obj);
-        var oldKeys = _objectKeys(mirror);
-        var changed = false;
-        var deleted = false;
-        //if ever "move" operation is implemented here, make sure this test runs OK: "should not generate the same patch twice (move)"
-        for (var t = oldKeys.length - 1; t >= 0; t--) {
-            var key = oldKeys[t];
-            var oldVal = mirror[key];
-            if (obj.hasOwnProperty(key) && !(obj[key] === undefined && oldVal !== undefined && _isArray(obj) === false)) {
-                var newVal = obj[key];
-                if (typeof oldVal == "object" && oldVal != null && typeof newVal == "object" && newVal != null) {
-                    _generate(oldVal, newVal, patches, path + "/" + escapePathComponent(key));
-                }
-                else {
-                    if (oldVal !== newVal) {
-                        changed = true;
-                        patches.push({ op: "replace", path: path + "/" + escapePathComponent(key), value: deepClone(newVal) });
-                    }
-                }
-            }
-            else {
-                patches.push({ op: "remove", path: path + "/" + escapePathComponent(key) });
-                deleted = true; // property has been deleted
-            }
-        }
-        if (!deleted && newKeys.length == oldKeys.length) {
-            return;
-        }
-        for (var t = 0; t < newKeys.length; t++) {
-            var key = newKeys[t];
-            if (!mirror.hasOwnProperty(key) && obj[key] !== undefined) {
-                patches.push({ op: "add", path: path + "/" + escapePathComponent(key), value: deepClone(obj[key]) });
-            }
-        }
-    }
-    var _isArray;
-    if (Array.isArray) {
-        _isArray = Array.isArray;
-    }
-    else {
-        _isArray = function (obj) {
-            return obj.push && typeof obj.length === 'number';
-        };
-    }
-    //3x faster than cached /^\d+$/.test(str)
-    function isInteger(str) {
-        var i = 0;
-        var len = str.length;
-        var charCode;
-        while (i < len) {
-            charCode = str.charCodeAt(i);
-            if (charCode >= 48 && charCode <= 57) {
-                i++;
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-    /**
-     * Deeply clone the object.
-     * @param  {any} obj value to clone
-     * @return {any}       cloned obj
-     */
-    function deepClone(obj) {
-        switch (typeof obj) {
-            case "object":
-                return JSON.parse(JSON.stringify(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
-            case "undefined":
-                return null; //this is how JSON.stringify behaves for array items
-            default:
-                return obj; //no need to clone primitives
-        }
-    }
-    jsonpatch.deepClone = deepClone;
-    /**
-    * Escapes a json pointer path
-    * @param path The raw pointer
-    * @return the Escaped path
-    */
-    function escapePathComponent(path) {
-        if (path.indexOf('/') === -1 && path.indexOf('~') === -1)
-            return path;
-        return path.replace(/~/g, '~0').replace(/\//g, '~1');
-    }
-    jsonpatch.escapePathComponent = escapePathComponent;
-    /**
-     * Unescapes a json pointer path
-     * @param path The escaped pointer
-     * @return The unescaped path
-     */
-    function unescapePathComponent(path) {
-        return path.replace(/~1/g, '/').replace(/~0/g, '~');
-    }
-    jsonpatch.unescapePathComponent = unescapePathComponent;
-    /**
-     * Retrieves a value from a JSON document by a JSON pointer.
-     * Returns the value.
-     *
-     * @param document The document to get the value from
-     * @param pointer an escaped JSON pointer
-     * @return The retrieved value
-     */
-    function getValueByPointer(document, pointer) {
-        if (pointer == '') {
-            return document;
-        }
-        var getOriginalDestination = { op: "_get", path: pointer };
-        applyOperation(document, getOriginalDestination);
-        return getOriginalDestination.value;
-    }
-    jsonpatch.getValueByPointer = getValueByPointer;
-    /**
-     * Apply a single JSON Patch Operation on a JSON document.
-     * Returns the {newDocument, result} of the operation.
-     * It modifies the `document` object and `patch` - it gets the values by reference.
-     * If you would like to avoid touching your values, clone them:
-     * `jsonpatch.applyOperation(document, jsonpatch.deepClone(operation))`.
-     *
-     * @param document The document to patch
-     * @param operation The operation to apply
-     * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
-     * @param mutateDocument Whether to mutate the original document or clone it before applying
-     * @return `{newDocument, result}` after the operation
-     */
-    function applyOperation(document, operation, validateOperation, mutateDocument) {
-        if (validateOperation === void 0) { validateOperation = false; }
-        if (mutateDocument === void 0) { mutateDocument = true; }
-        if (validateOperation) {
-            if (typeof validateOperation == 'function') {
-                validateOperation(operation, 0, document, operation.path);
-            }
-            else {
-                validator(operation, 0);
-            }
-        }
-        /* ROOT OPERATIONS */
-        if (operation.path === "") {
-            var returnValue = { newDocument: document };
-            if (operation.op === 'add') {
-                returnValue.newDocument = operation.value;
-                return returnValue;
-            }
-            else if (operation.op === 'replace') {
-                returnValue.newDocument = operation.value;
-                returnValue.removed = document; //document we removed
-                return returnValue;
-            }
-            else if (operation.op === 'move' || operation.op === 'copy') {
-                returnValue.newDocument = getValueByPointer(document, operation.from); // get the value by json-pointer in `from` field
-                if (operation.op === 'move') {
-                    returnValue.removed = document;
-                }
-                return returnValue;
-            }
-            else if (operation.op === 'test') {
-                returnValue.test = _equals(document, operation.value);
-                if (returnValue.test === false) {
-                    throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-                }
-                returnValue.newDocument = document;
-                return returnValue;
-            }
-            else if (operation.op === 'remove') {
-                returnValue.removed = document;
-                returnValue.newDocument = null;
-                return returnValue;
-            }
-            else if (operation.op === '_get') {
-                operation.value = document;
-                return returnValue;
-            }
-            else {
-                if (validateOperation) {
-                    throw new JsonPatchError('Operation `op` property is not one of operations defined in RFC-6902', 'OPERATION_OP_INVALID', 0, operation, document);
-                }
-                else {
-                    return returnValue;
-                }
-            }
-        } /* END ROOT OPERATIONS */
-        else {
-            if (!mutateDocument) {
-                document = deepClone(document);
-            }
-            var path = operation.path || "";
-            var keys = path.split('/');
-            var obj = document;
-            var t = 1; //skip empty element - http://jsperf.com/to-shift-or-not-to-shift
-            var len = keys.length;
-            var existingPathFragment = undefined;
-            var key = void 0;
-            var validateFunction = void 0;
-            if (typeof validateOperation == 'function') {
-                validateFunction = validateOperation;
-            }
-            else {
-                validateFunction = validator;
-            }
-            while (true) {
-                key = keys[t];
-                if (validateOperation) {
-                    if (existingPathFragment === undefined) {
-                        if (obj[key] === undefined) {
-                            existingPathFragment = keys.slice(0, t).join('/');
-                        }
-                        else if (t == len - 1) {
-                            existingPathFragment = operation.path;
-                        }
-                        if (existingPathFragment !== undefined) {
-                            validateFunction(operation, 0, document, existingPathFragment);
-                        }
-                    }
-                }
-                t++;
-                if (_isArray(obj)) {
-                    if (key === '-') {
-                        key = obj.length;
-                    }
-                    else {
-                        if (validateOperation && !isInteger(key)) {
-                            throw new JsonPatchError("Expected an unsigned base-10 integer value, making the new referenced value the array element with the zero-based index", "OPERATION_PATH_ILLEGAL_ARRAY_INDEX", 0, operation.path, operation);
-                        }
-                        key = ~~key;
-                    }
-                    if (t >= len) {
-                        if (validateOperation && operation.op === "add" && key > obj.length) {
-                            throw new JsonPatchError("The specified index MUST NOT be greater than the number of elements in the array", "OPERATION_VALUE_OUT_OF_BOUNDS", 0, operation.path, operation);
-                        }
-                        var returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
-                        if (returnValue.test === false) {
-                            throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-                        }
-                        return returnValue;
-                    }
-                }
-                else {
-                    if (key && key.indexOf('~') != -1) {
-                        key = unescapePathComponent(key);
-                    }
-                    if (t >= len) {
-                        var returnValue = objOps[operation.op].call(operation, obj, key, document); // Apply patch
-                        if (returnValue.test === false) {
-                            throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-                        }
-                        return returnValue;
-                    }
-                }
-                obj = obj[key];
-            }
-        }
-    }
-    jsonpatch.applyOperation = applyOperation;
-    /**
-     * Apply a full JSON Patch array on a JSON document.
-     * Returns the {newDocument, result} of the patch.
-     * It modifies the `document` object and `patch` - it gets the values by reference.
-     * If you would like to avoid touching your values, clone them:
-     * `jsonpatch.applyPatch(document, jsonpatch.deepClone(patch))`.
-     *
-     * @param document The document to patch
-     * @param patch The patch to apply
-     * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
-     * @return An array of `{newDocument, result}` after the patch
-     */
-    function applyPatch(document, patch, validateOperation) {
-        var results = new Array(patch.length);
-        for (var i = 0, length_1 = patch.length; i < length_1; i++) {
-            results[i] = applyOperation(document, patch[i], validateOperation);
-            document = results[i].newDocument; // in case root was replaced
-        }
-        results.newDocument = document;
-        return results;
-    }
-    jsonpatch.applyPatch = applyPatch;
-    /**
-     * Apply a JSON Patch on a JSON document.
-     * Returns an array of results of operations.
-     * Each element can either be a boolean (if op == 'test') or
-     * the removed object (operations that remove things)
-     * or just be undefined.
-     * @deprecated
-     */
-    function apply(document, patch, validateOperation) {
-        console.warn('jsonpatch.apply is deprecated, please use `applyPatch` for applying patch sequences, or `applyOperation` to apply individual operations.');
-        var results = new Array(patch.length);
-        /* this code might be overkill, but will be removed soon, it is to prevent the breaking change of root operations */
-        var _loop_1 = function(i, length_2) {
-            if (patch[i].path == "" && patch[i].op != "remove" && patch[i].op != "test") {
-                var value_1;
-                if (patch[i].op == '_get') {
-                    patch[i].value = document;
-                    return "continue";
-                }
-                if (patch[i].op == "replace" || patch[i].op == "move") {
-                    results[i] = deepClone(document);
-                }
-                if (patch[i].op == "copy" || patch[i].op == "move") {
-                    value_1 = getValueByPointer(document, patch[i].from);
-                }
-                if (patch[i].op == "replace" || patch[i].op == "add") {
-                    value_1 = patch[i].value;
-                }
-                // empty the object
-                Object.keys(document).forEach(function (key) { return delete document[key]; });
-                //copy everything from value
-                Object.keys(value_1).forEach(function (key) { return document[key] = value_1[key]; });
-            }
-            else {
-                results[i] = applyOperation(document, patch[i], validateOperation);
-                results[i] = results[i].removed || results[i].test;
-            }
-        };
-        for (var i = 0, length_2 = patch.length; i < length_2; i++) {
-            _loop_1(i, length_2);
-        }
-        return results;
-    }
-    jsonpatch.apply = apply;
-    /**
-     * Apply a single JSON Patch Operation on a JSON document.
-     * Returns the updated document.
-     * Suitable as a reducer.
-     *
-     * @param document The document to patch
-     * @param operation The operation to apply
-     * @return The updated document
-     */
-    function applyReducer(document, operation) {
-        var operationResult = applyOperation(document, operation);
-        if (operationResult.test === false) {
-            throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-        }
-        return operationResult.newDocument;
-    }
-    jsonpatch.applyReducer = applyReducer;
-    // provide scoped __extends for TypeScript's `extend` keyword so it will not provide global one during compilation
-    function __extends(d, b) {
-        for (var p in b)
-            if (b.hasOwnProperty(p))
-                d[p] = b[p];
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-    var JsonPatchError = (function (_super) {
-        __extends(JsonPatchError, _super);
-        function JsonPatchError(message, name, index, operation, tree) {
-            _super.call(this, message);
-            this.message = message;
-            this.name = name;
-            this.index = index;
-            this.operation = operation;
-            this.tree = tree;
-        }
-        return JsonPatchError;
-    }(Error));
-    jsonpatch.JsonPatchError = JsonPatchError;
-    /**
-     * Recursively checks whether an object has any undefined values inside.
-     */
-    function hasUndefined(obj) {
-        if (obj === undefined) {
-            return true;
-        }
-        if (obj) {
-            if (_isArray(obj)) {
-                for (var i = 0, len = obj.length; i < len; i++) {
-                    if (hasUndefined(obj[i])) {
-                        return true;
-                    }
-                }
-            }
-            else if (typeof obj === "object") {
-                var objKeys = _objectKeys(obj);
-                var objKeysLength = objKeys.length;
-                for (var i = 0; i < objKeysLength; i++) {
-                    if (hasUndefined(obj[objKeys[i]])) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    /**
-     * Validates a single operation. Called from `jsonpatch.validate`. Throws `JsonPatchError` in case of an error.
-     * @param {object} operation - operation object (patch)
-     * @param {number} index - index of operation in the sequence
-     * @param {object} [document] - object where the operation is supposed to be applied
-     * @param {string} [existingPathFragment] - comes along with `document`
-     */
-    function validator(operation, index, document, existingPathFragment) {
-        if (typeof operation !== 'object' || operation === null || _isArray(operation)) {
-            throw new JsonPatchError('Operation is not an object', 'OPERATION_NOT_AN_OBJECT', index, operation, document);
-        }
-        else if (!objOps[operation.op]) {
-            throw new JsonPatchError('Operation `op` property is not one of operations defined in RFC-6902', 'OPERATION_OP_INVALID', index, operation, document);
-        }
-        else if (typeof operation.path !== 'string') {
-            throw new JsonPatchError('Operation `path` property is not a string', 'OPERATION_PATH_INVALID', index, operation, document);
-        }
-        else if (operation.path.indexOf('/') !== 0 && operation.path.length > 0) {
-            // paths that aren't empty string should start with "/"
-            throw new JsonPatchError('Operation `path` property must start with "/"', 'OPERATION_PATH_INVALID', index, operation, document);
-        }
-        else if ((operation.op === 'move' || operation.op === 'copy') && typeof operation.from !== 'string') {
-            throw new JsonPatchError('Operation `from` property is not present (applicable in `move` and `copy` operations)', 'OPERATION_FROM_REQUIRED', index, operation, document);
-        }
-        else if ((operation.op === 'add' || operation.op === 'replace' || operation.op === 'test') && operation.value === undefined) {
-            throw new JsonPatchError('Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)', 'OPERATION_VALUE_REQUIRED', index, operation, document);
-        }
-        else if ((operation.op === 'add' || operation.op === 'replace' || operation.op === 'test') && hasUndefined(operation.value)) {
-            throw new JsonPatchError('Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)', 'OPERATION_VALUE_CANNOT_CONTAIN_UNDEFINED', index, operation, document);
-        }
-        else if (document) {
-            if (operation.op == "add") {
-                var pathLen = operation.path.split("/").length;
-                var existingPathLen = existingPathFragment.split("/").length;
-                if (pathLen !== existingPathLen + 1 && pathLen !== existingPathLen) {
-                    throw new JsonPatchError('Cannot perform an `add` operation at the desired path', 'OPERATION_PATH_CANNOT_ADD', index, operation, document);
-                }
-            }
-            else if (operation.op === 'replace' || operation.op === 'remove' || operation.op === '_get') {
-                if (operation.path !== existingPathFragment) {
-                    throw new JsonPatchError('Cannot perform the operation at a path that does not exist', 'OPERATION_PATH_UNRESOLVABLE', index, operation, document);
-                }
-            }
-            else if (operation.op === 'move' || operation.op === 'copy') {
-                var existingValue = { op: "_get", path: operation.from, value: undefined };
-                var error = validate([existingValue], document);
-                if (error && error.name === 'OPERATION_PATH_UNRESOLVABLE') {
-                    throw new JsonPatchError('Cannot perform the operation from a path that does not exist', 'OPERATION_FROM_UNRESOLVABLE', index, operation, document);
-                }
-            }
-        }
-    }
-    jsonpatch.validator = validator;
-    /**
-     * Validates a sequence of operations. If `document` parameter is provided, the sequence is additionally validated against the object document.
-     * If error is encountered, returns a JsonPatchError object
-     * @param sequence
-     * @param document
-     * @returns {JsonPatchError|undefined}
-     */
-    function validate(sequence, document, externalValidator) {
-        try {
-            if (!_isArray(sequence)) {
-                throw new JsonPatchError('Patch sequence must be an array', 'SEQUENCE_NOT_AN_ARRAY');
-            }
-            if (document) {
-                //clone document and sequence so that we can safely try applying operations
-                applyPatch(deepClone(document), deepClone(sequence), externalValidator || true);
-            }
-            else {
-                externalValidator = externalValidator || validator;
-                for (var i = 0; i < sequence.length; i++) {
-                    externalValidator(sequence[i], i, document, undefined);
-                }
-            }
-        }
-        catch (e) {
-            if (e instanceof JsonPatchError) {
-                return e;
-            }
-            else {
-                throw e;
-            }
-        }
-    }
-    jsonpatch.validate = validate;
-    /**
-     * Create an array of patches from the differences in two objects
-     */
-    function compare(tree1, tree2) {
-        var patches = [];
-        _generate(tree1, tree2, patches, '');
-        return patches;
-    }
-    jsonpatch.compare = compare;
-})(jsonpatch || (jsonpatch = {}));
-if (typeof exports !== "undefined") {
-    exports.apply = jsonpatch.apply;
-    exports.applyPatch = jsonpatch.applyPatch;
-    exports.applyOperation = jsonpatch.applyOperation;
-    exports.applyReducer = jsonpatch.applyReducer;
-    exports.getValueByPointer = jsonpatch.getValueByPointer;
-    exports.deepClone = jsonpatch.deepClone;
-    exports.escapePathComponent = jsonpatch.escapePathComponent;
-    exports.unescapePathComponent = jsonpatch.unescapePathComponent;
-    exports.observe = jsonpatch.observe;
-    exports.unobserve = jsonpatch.unobserve;
-    exports.generate = jsonpatch.generate;
-    exports.compare = jsonpatch.compare;
-    exports.validate = jsonpatch.validate;
-    exports.validator = jsonpatch.validator;
-    exports.JsonPatchError = jsonpatch.JsonPatchError;
-}
-else {
-    var exports = {};
-    var isBrowser = true;
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = jsonpatch;
-/*
-When in browser, setting `exports = {}`
-fools other modules into thinking they're
-running in a node environment, which breaks
-some of them. Here is super light weight fix.
-*/
-if (isBrowser) {
-    exports = undefined;
-}
-
-
-/***/ }),
-/* 407 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = InjectSourcesAndSettings;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__ = __webpack_require__(12);
-
-
-
-function isSourcesAndSettings(obj) {
-  return Boolean(
-    'sourceFactory' in obj && __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */](obj['sourceFactory'])
-    || (!obj.sourceFactory && obj.settings)
-  )
-}
-
-function InjectSourcesAndSettings({ sourceFactory: sourcesFactory, settings },
-                                         componentTree) {
-  // NOTE : not using makeLocalSettings which is the lowest priority of all settings
-  // TODO : update documentation
-  __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["a" /* assertContract */](isSourcesAndSettings, [{
-    sourceFactory: sourcesFactory,
-    settings
-  }], `First parameter must have a sourceFactory property to compute the new sources, and may have a settings property for the extra settings!`);
-
-  const settingsObj = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["r" /* isObject */](settings) ? settings : {};
-  const settingsFn = __WEBPACK_IMPORTED_MODULE_1__contracts_src_index__["o" /* isFunction */](settings) ? settings : undefined;
-
-  return __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */]({
-    makeLocalSources: sourcesFactory,
-    makeLocalSettings: settingsFn
-  }, settingsObj, componentTree)
-}
-
-
-/***/ }),
-/* 408 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export InjectSources */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ramda__ = __webpack_require__(6);
-
-
-
-function InjectSources(sourcesHash, componentTree) {
-  return __WEBPACK_IMPORTED_MODULE_0__m_m__["a" /* m */]({
-    makeLocalSources: function makeInjectedLocalSources(sources, settings) {
-      return __WEBPACK_IMPORTED_MODULE_1_ramda__["E" /* mapObjIndexed */](sourceFactory => {
-        return sourceFactory(sources, settings)
-      }, sourcesHash)
-    }
-  }, {}, componentTree)
-}
-
-
-/***/ }),
-/* 409 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export Pipe */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__m_m__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ramda__ = __webpack_require__(6);
-
-
-
-
-function isPipeSettings(sources, settings) {
-  if ('overwrite' in settings) {
-    return __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["l" /* isBoolean */](settings.overwrite)
-  }
-  else {
-    return true
-  }
-}
-
-function isNonEmptyArrayComponent(obj) {
-  return obj && obj.length && __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["j" /* isArrayOf */](__WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["m" /* isComponent */])(obj)
-}
-
-function isColliding(sources, sinks) {
-  return Boolean(__WEBPACK_IMPORTED_MODULE_2_ramda__["y" /* intersection */](__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](sources), __WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](sinks)).length)
-}
-
-function computeSinks(parentComponent, childrenComponents, sources, settings) {
-  // NOTE : parentComponent is undefined by construction
-  const throwIfSinkSourceConflict = settings && settings.Pipe && settings.Pipe.throwIfSinkSourceConflict;
-
-  const acc = childrenComponents.reduce((acc, component) => {
-    const sinks = component(acc.sources, acc.settings);
-
-    if ((throwIfSinkSourceConflict) && isColliding(sources, sinks)) {
-      throw `Pipe : Error when merging sinks of component ${component.name} with Pipe sources! A sink may override a source, check source/sink : ${__WEBPACK_IMPORTED_MODULE_2_ramda__["y" /* intersection */](__WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](sources), __WEBPACK_IMPORTED_MODULE_2_ramda__["C" /* keys */](sinks))}`
-    }
-
-    acc.sources = __WEBPACK_IMPORTED_MODULE_2_ramda__["F" /* merge */](sources, sinks);
-    acc.sinks = sinks;
-
-    return acc
-  }, { sources, settings, sinks: {} });
-
-  return acc.sinks
-}
-
-// Spec
-const pipeSpec = {
-  computeSinks: computeSinks,
-  checkPreConditions: isPipeSettings
-};
-
-function Pipe(pipeSettings, componentArray) {
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](isPipeSettings, [null, pipeSettings], `Pipe : Pipe combinator may have 'overwrite' settings property. If that is the case, it must be a boolean!`);
-  __WEBPACK_IMPORTED_MODULE_0__contracts_src_index__["a" /* assertContract */](isNonEmptyArrayComponent, [componentArray], `Pipe : Pipe combinator must be passed an array of components!`);
-
-  return __WEBPACK_IMPORTED_MODULE_1__m_m__["a" /* m */](pipeSpec, pipeSettings, componentArray)
-}
-
-
-/***/ }),
-/* 410 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = InSlot;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_src_index__ = __webpack_require__(13);
-
-
-// NOTE ADR: we don't use `m` here, we could but choose not to. As `m` will be use for logging, we
-// have no interest in having a log for `InSlot` operations.
-function InSlot(slotName, [component]) {
-  return function InSlot(sources, settings) {
-    const sinks = component(sources, settings);
-    const vNodes$ = sinks[__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["a" /* DOM_SINK */]];
-
-    sinks[__WEBPACK_IMPORTED_MODULE_0__utils_src_index__["a" /* DOM_SINK */]] = vNodes$.do(vNode => {
-      if (vNode) vNode.data.slot = slotName;
-    });
-
-    return sinks
-  }
-}
-
-
-/***/ }),
+/* 390 */,
+/* 391 */,
+/* 392 */,
+/* 393 */,
+/* 394 */,
+/* 395 */,
+/* 396 */,
+/* 397 */,
+/* 398 */,
+/* 399 */,
+/* 400 */,
+/* 401 */,
+/* 402 */,
+/* 403 */,
+/* 404 */,
+/* 405 */,
+/* 406 */,
+/* 407 */,
+/* 408 */,
+/* 409 */,
+/* 410 */,
 /* 411 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -44687,6 +38831,7 @@ function _Feature(sources, settings) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__rxcc_components__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__rxcc_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__rxcc_components__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__rxcc_utils__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rx__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rx__);
@@ -44761,9 +38906,9 @@ function preventDefault(ev) {
 
 function HomePage(sources, settings) {
   const DOMSource = sources[__WEBPACK_IMPORTED_MODULE_0__rxcc_utils__["a" /* DOM_SINK */]];
-  const goToAspirationalIntent$ = DOMSource.select('a.aspirational').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["e" /* always */]('/aspirational'));
-  const goToGenXersIntent$ = DOMSource.select('a.genXers').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["e" /* always */]('/genXers'));
-  const goToMillenialsIntent$ = DOMSource.select('a.millenials').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["e" /* always */]('/millenials'));
+  const goToAspirationalIntent$ = DOMSource.select('a.aspirational').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["a" /* always */]('/aspirational'));
+  const goToGenXersIntent$ = DOMSource.select('a.genXers').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["a" /* always */]('/genXers'));
+  const goToMillenialsIntent$ = DOMSource.select('a.millenials').events('click').do(preventDefault).map(__WEBPACK_IMPORTED_MODULE_3_ramda__["a" /* always */]('/millenials'));
 
   const routeActions$ = $.merge([goToAspirationalIntent$, goToGenXersIntent$]);
 
@@ -44931,6 +39076,7 @@ const TYPOGRAPHICS_CARD_INFO = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rx__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_rx__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__rxcc_components__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__rxcc_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__rxcc_components__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__rxcc_utils__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_cycle_snabbdom__);
