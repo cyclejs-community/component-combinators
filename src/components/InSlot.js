@@ -10,7 +10,7 @@ export function InSlot(slotName, [component]) {
     const vNodes$ = sinks[DOM_SINK];
 
     sinks[DOM_SINK] = vNodes$.do(vNode => {
-      vNode.data.slot = slotName;
+      if (vNode) vNode.data.slot = slotName;
     });
 
     return sinks

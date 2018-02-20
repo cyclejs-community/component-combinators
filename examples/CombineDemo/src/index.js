@@ -1,7 +1,7 @@
 import { App } from "./app"
+import defaultModules from "cycle-snabbdom/lib/modules"
 import { createHistory } from "history"
 import { makeHistoryDriver } from '@cycle/history';
-import defaultModules from "cycle-snabbdom/lib/modules"
 import * as Rx from "rx";
 // drivers
 import { makeDOMDriver } from "cycle-snabbdom"
@@ -22,6 +22,7 @@ function filterNull(driver) {
   }
 }
 
+// Make drivers
 // Document driver
 function documentDriver(_) {
   void _; // unused sink, this is a read-only driver
@@ -29,22 +30,25 @@ function documentDriver(_) {
   return document
 }
 
-    const { sources, sinks } = run(init(App), {
-      [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
-      router: makeHistoryDriver(createHistory(), { capture: true }),
-      document: documentDriver
-    });
+const { sources, sinks } = run(init(App), {
+  [DOM_SINK]: filterNull(makeDOMDriver('#app', { transposition: false, modules })),
+  router: makeHistoryDriver(createHistory(), { capture: true }),
+  document: documentDriver,
+});
 
-    // Webpack specific code
-    if (module.hot) {
-      module.hot.accept();
+// Webpack specific code
+if (module.hot) {
+  module.hot.accept();
 
-      module.hot.dispose(() => {
-        sinks.dispose()
-        sources.dispose()
-      });
-    }
-    
+  module.hot.dispose(() => {
+    sinks.dispose()
+    sources.dispose()
+  });
+}
+
+// NOTE : convert html to snabbdom online to http://html-to-hyperscript.paqmind.com/
+// ~~ attributes -> attrs
+
 function init(App) {
   // NOTE : necessary in the context of the demo to put the initial route to /
   return function initApp(sources, settings) {

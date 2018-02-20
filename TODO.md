@@ -1,7 +1,6 @@
 # Combinators
-- add combine as m({}, ...) -> that changes all the graphs... shit
-  - use an example in README of combine with slot mechanism (default and named)
-- for next version, move towards a InjectSources only for sources, and settings injected through 
+- Combine example : use forEach example for Feature!
+- for next version, move towards a InjectSources only for sources, and settings injected through
 Combine (object) or InjectSettings(function, use to adapt settings). Worse case, that adds a level
  in the tree, but more readable logic
 - Use Pipe({},[WithEvents(...), WithState(...), ComputeActions(...)]) would be any leaf
@@ -14,13 +13,11 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
-- explain m with graphics?? yes, update drawings in http://localhost:1313/projects/component-combinators/mm/
-  - no more `makeOwnSinks`, but `parentComponent` instead so update all
 - investigate microbundle instead of rollup : https://github.com/developit/microbundle
 - have a sanbox dedicated playground?
-- do sth about position updates for AllInDemo - deletion and insert; also what is nr? 
+- do sth about position updates for AllInDemo - deletion and insert; also what is nr?
   - nr is an unique id
-  - cannot use position for index... would not work later with drag and drop 
+  - cannot use position for index... would not work later with drag and drop
   - so rehave a look at the logic
 - make a final v0.4 release (actually release as is 3.x before the final v.4)
 - break the FSM doc in two parts : one bla bla theoretical and one sample app
@@ -29,7 +26,7 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
 - m : write a better doc to explain settings inheritance, and put in the docs not in the code
   - write an interactive application with update of the three possible settings
 - m : design better trace information
-  - for instance outer trace could be concatenated to inner trace to trace also the component 
+  - for instance outer trace could be concatenated to inner trace to trace also the component
   hierarchy
 - all components : replace singular treatment for DOM into behaviourSinkNames, sinkNames
   - all behaviourSinkNames must give a zero value (for DOM : $.of(null)
@@ -83,8 +80,8 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
   - or wait to have one picture from a generated log
 
 # Learn
-- review git rules 
- 
+- review git rules
+
 # Documentation/Example
 - blog : investigate highlighitn with ``` how to add new syntax, or what is the list```
 - blog : add ⇡ character for back to top cf. view-source:https://sarabander.github.io/sicp/html/1_002e3.xhtml#pagetop
@@ -129,32 +126,32 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - cf. react website https://reacttraining.com/react-router/web/guides/philosophy
 
 # Testing
-Well, testing is complicated by having impure functions, so not sure what to do here. Best is to 
-have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium). 
+Well, testing is complicated by having impure functions, so not sure what to do here. Best is to
+have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium).
 
 In summary,
 
 - So what?
   - readable, i.e. understandable, the logic is immediately apparent from the use of combinators
     - A projectTaskList is a list of tasks, and a task is ...
-    - compare that with chldren(sources) with lots of $ in settings, and then sinks this merge 
+    - compare that with chldren(sources) with lots of $ in settings, and then sinks this merge
     sinks that. The combination logic is abstracted into the combinator, that is what it is for.
   - supports iterative development through refinement
     - current approach does not, if you call children comp, you then have to merge the sinks, and
-     you don't know yet what are the sinks for your child, if you don't know what you will put 
+     you don't know yet what are the sinks for your child, if you don't know what you will put
      there...
    - make explicit a syntax tree for a DSL, in which combinators are the keywords, and components
-    are the variables, i.e. in the future the DSL could be extracted and code generated through 
+    are the variables, i.e. in the future the DSL could be extracted and code generated through
     parsing
    - tracing and loggging should be easy and allow for visualization
-     - next release!! 
+     - next release!!
 
-# TODO TODO 
+# TODO TODO
 - ROLL UP AND RELEASE
 - start working on logging and visualization -> architecture note
 - start working on the new cycle event/state handling-> architecture draft article to write
 - MAKE A RELEASE!!!!
-  - rmove lodash dependency (forOwn, kebabCase, escape, etc.) that is snabbdom-to-html, which I 
+  - rmove lodash dependency (forOwn, kebabCase, escape, etc.) that is snabbdom-to-html, which I
   don't even use... except for debugging i.e. in dev
   - so add a DEV variable which will be taken out when building for prod or sth like that
 
@@ -163,22 +160,22 @@ In summary,
 
 - RELEASE a version!!
   - umd
-- AND THEN I will have to redo the demos but importing the library with package.json and the 
+- AND THEN I will have to redo the demos but importing the library with package.json and the
 release number
 - RUN PRETTIER!!
 
 
-Note that the present content will be easier to grasp for people with already some knowledge of 
-streams/rxjs/cyclejs components. The documentation assumes that prior knowledge. I do not spend too 
-much time explaining what `sources` is, and how rxjs streams can be combined (though I don't think any example has anything else than `map` 
+Note that the present content will be easier to grasp for people with already some knowledge of
+streams/rxjs/cyclejs components. The documentation assumes that prior knowledge. I do not spend too
+much time explaining what `sources` is, and how rxjs streams can be combined (though I don't think any example has anything else than `map`
 and `filter`).
 
-I will now be using this library in my future projects. I'll now also take a little break on the 
-development of the first step (see roadmap on things to improve on) to focus on the second and 
-third step (visualization -- thanks to this work, it should now be possible to visually and 
-interactively trace and debug an application). In the meanwhile, I would be grateful to have 
-feedback from the community. Any feedback is useful, but constructive feedback is even better, 
-and helps identify pain points or prioritize features. 
+I will now be using this library in my future projects. I'll now also take a little break on the
+development of the first step (see roadmap on things to improve on) to focus on the second and
+third step (visualization -- thanks to this work, it should now be possible to visually and
+interactively trace and debug an application). In the meanwhile, I would be grateful to have
+feedback from the community. Any feedback is useful, but constructive feedback is even better,
+and helps identify pain points or prioritize features.
 
 # Sample app
 - tic-tac-toe : showcases what?
