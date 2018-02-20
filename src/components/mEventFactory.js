@@ -100,7 +100,9 @@ function mergeEventFactorySinksWithChildrenSinks(eventSinks, childrenSinks, loca
   const childrenSinkNames = getSinkNamesFromSinksArray(childrenSinksArray)
   const sinkNames = getSinkNamesFromSinksArray(allSinks)
 
-  // throw error in the case of children sinks with the same sink name as event sinks
+  // We needed to make use of `combineAllSinks` strategy to enforce the following contract
+  // which applies to the container sink
+  // Throw error in the case of children sinks with the same sink name as event sinks
   assertContract(hasNoCommonValues, [eventSinkNames, childrenSinkNames],
     `mEventFactory > mergeEventFactorySinksWithChildrenSinks : found children sinks with 
            at least one sink name conflicting with an event sink : 
@@ -129,8 +131,8 @@ export function mEventFactory(eventFactorySettings, componentTree) {
   // NOTE : we could test against eventFactorySettings here, before doing it in `m` too
   // (fails fast). We will not.
   // Instead, we will wait for the settings passed to `mEventFactory` at
-  // call time to be merged with the settings passed at creation time. This opens the
-  // possibility to have a factory with some events, and adding soem additional events at call
-  // time via settings
+  // run time to be merged with the settings passed at creation time. This opens the
+  // possibility to have a factory with some default events, and adding some additional events
+  // at run time via settings
   return m(eventFactorySpec, eventFactorySettings, [makeEventFactorySinks, componentTree])
 }
