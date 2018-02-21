@@ -96,7 +96,7 @@ export const App =
         <LoginPage redirect='/component-combinators/examples/SwitchLogin/index.html?_ijt=7a193qn02ufeu5it8ofa231v7e'/>
       </Case>
       <Case when=IS_LOGGED_IN>
-        <MainPage\/>
+        <MainPage />
       </Case>
   </Switch>
 ```
