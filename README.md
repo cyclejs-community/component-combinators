@@ -304,8 +304,8 @@ and seem to cover the vast majority of the patterns which occurred in that codeb
 
 While the full syntax and semantics of the component combinators haven't been exposed, hopefully
 the examples serve to portray the merits of using a component model, under which an application
- is written as a component tree, where components are glued with convenient component combinators. 
- I certainly think it is simpler to write, and more importantly, simpler to read, maintain and 
+ is written as a component tree, where components are glued with convenient component combinators
+  covering frequently occuring patterns. I certainly think it is simpler to write, and more importantly, simpler to read, maintain and 
  debug.
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
