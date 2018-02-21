@@ -335,7 +335,7 @@ The proposed library has the following combinators :
 | [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
 | [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot ([a la web component](https://alligator.io/web-components/composing-slots-named-slots/))|
-| [Combine](http://brucou.github.io/projects/component-combinators/Combine/)      |    The simplest combinator which traverses a component tree, applying default merge functions to components' sinks along the way. Distinguishes between DOM sink and non-DOM sink, and implements a slot mechanism for merging DOM sinks |
+| [Combine](http://brucou.github.io/projects/component-combinators/Combine/)      |    The simplest combinator, which traverses a component tree, applying default merge functions to components' sinks along the way. Distinguishes between DOM sink and non-DOM sink, and implements a slot mechanism for merging DOM sinks |
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
 Documentation, demo and tests for each combinator can be found in their respective repository.
