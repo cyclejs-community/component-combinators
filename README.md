@@ -14,7 +14,7 @@ constants were lifted into streams in miscelleanous places to serve as parameter
 components, and that led to more stream arithmetic, noise, and in some occurences bugs
 - **modifying, fixing and extending that code proved to be a gamble**, with any bug fixing or
 debugging sessions counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of
-that). The absence of unit tests itself could be explained itself by, well, the **pain** that it
+that. The absence of unit tests itself could be explained by, well, the **pain** that it
 is to write them with streams in the middle, which led to resorting to sometimes
 brittle, often slow, selenium-based end-to-end tests.
 - hard to figure out **quickly, with certainty** the exact workflow that the application was
@@ -298,7 +298,7 @@ mechanism we use is the slot mechanism made popular by web components.
 
 ![slot demo with Combine combinator](examples/CombineDemo/assets/images/animated_demo.gif)
 
-Note that all component combinator use the same default for merging children components' sinks 
+Note that all component combinators use the same default for merging children components' sinks 
 (whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large oodebase 
 and seem to cover the vast majority of the patterns which occurred in that codebase.
 
@@ -338,7 +338,7 @@ The proposed library has the following combinators :
 | [Combine](http://brucou.github.io/projects/component-combinators/Combine/)      |    The simplest combinator which traverses a component tree, applying default merge functions to components' sinks along the way. Distinguishes between DOM sink and non-DOM sink, and implements a slot mechanism for merging DOM sinks |
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
-Documentation, demo and tests for each combinator can be found in its respective repository.
+Documentation, demo and tests for each combinator can be found in their respective repository.
 
 # Theoretical background
 The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou.github.io/) :
@@ -372,8 +372,8 @@ npm install @rxcc/components
 ```
 
  # Tests
- Tests are performed with `QUnit`, i.e. in the browser. This allows debugging code in the browser, and
- also the possbility in a debugging session to actually display some components' output directly in
+ Tests are performed with good old `QUnit`, i.e. in the browser. This allows debugging code in the 
+ browser, and also the possbility in a debugging session to actually display some components' output directly in
  the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in
  the root directory, type :
 
