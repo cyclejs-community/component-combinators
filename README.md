@@ -298,9 +298,68 @@ mechanism we use is the slot mechanism made popular by web components.
 
 ![slot demo with Combine combinator](examples/CombineDemo/assets/images/animated_demo.gif)
 
-Note that all component combinators use the same default for merging children components' sinks 
+Note that **all component combinators use the same default** for merging children components' sinks 
 (whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large oodebase 
 and seem to cover the vast majority of the patterns which occurred in that codebase.
+
+## Composing a app from components
+The original point of the combinator library is to compose an application by building it from 
+components. In the previous sections, we have shown some combinators handling logic, and control 
+flow. There are other combinators handling state injection and interface adaptation, so that inputs
+ can be adapted to an existing component interface (imagine web components with a predefined event (`sources`) and 
+ property interface (`settings`)), fostering **reuse**. New component combinators can be created 
+ thanks to our generic component combinator factory `m`.
+
+Taking a page from our [showcased sample application](https://i.imgur.com/NXgJV2c.png), it looks 
+like this (only tidbits, for full code see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo)):
+ 
+ ```javascript
+App = Combine({}, [
+  SidePanel,
+  MainPanel
+]);
+
+SidePanel =
+  Combine({}, [Div('.app__l-side'), [
+    Navigation({}, [
+      NavigationSection({ title: 'Main' }, [
+        NavigationItem({ project: { title: 'Dashboard', link: 'dashboard' } }, [])
+      ]),
+      NavigationSection({ title: 'Projects' }, [
+        InSlot('navigation-item', [ListOfItemsComponent])
+      ]),
+      NavigationSection({ title: 'Admin' }, [
+        NavigationItem({ project: { title: 'Manage Plugins', link: 'plugins' } }, [])
+      ]),
+    ])
+  ]]);
+
+const ListOfItemsComponent =
+  InjectSources({ projectNavigationItems$: getProjectNavigationItems$ }, [
+    ForEach({ from: 'projectNavigationItems$', as: 'projectList' }, [
+      ListOf({ list: 'projectList', as: 'project' }, [
+        EmptyComponent,
+        NavigationItem
+      ])
+    ])
+  ]);
+  
+function getProjectNavigationItems$(sources, settings) {
+   return sources.projects$
+     .map(filter(project => !project.deleted))
+     .map(map(project => ({
+       title: project.title,
+       link: ['projects', project._id].join('/')
+     })))
+     .distinctUntilChanged()
+     // NOTE : this is a behaviour
+     .shareReplay(1)
+     ;
+}
+``` 
+
+Note the use of `InjectSources` for state injection, `Navigation`, `NavigationSection` and 
+`NavigationItem` as ad-hoc component combinators.
 
 While the full syntax and semantics of the component combinators haven't been exposed, hopefully
 the examples serve to portray the merits of using a component model, under which an application
