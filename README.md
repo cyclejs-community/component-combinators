@@ -10,6 +10,7 @@
   - [Layouting](#layouting)
   - [Composing an app from components](#composing-an-app-from-components)
 - [Roadmaps](#roadmaps)
+  - [Roadmap v0.5](#roadmap-v05)
   - [Roadmap v0.4](#roadmap-v04)
 - [Demos](#demos)
   - [Example application](#example-application)
@@ -467,8 +468,9 @@ npm install @rxcc/components
 
 # Roadmaps
 
+## Roadmap v0.5
 <details>
-  <summary>Roadmap v0.5</summary>
+  <summary>Details</summary>
 
 The core target of this release will be to prepare the architecture for visual tracing, and
 specify the (visual) shape that this should take. A small proof of concept should be produced. A
