@@ -8,7 +8,7 @@
   - [Nested routing](#nested-routing)
   - [Dynamically changing list of items](#dynamically-changing-list-of-items)
   - [Layouting](#layouting)
-  - [Composing a app from components](#composing-a-app-from-components)
+  - [Composing an app from components](#composing-an-app-from-components)
 - [Roadmaps](#roadmaps)
   - [Roadmap v0.4](#roadmap-v04)
 - [Demos](#demos)
@@ -324,7 +324,7 @@ Note that **all component combinators use the same default** for merging childre
 (whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large oodebase 
 and seem to cover the vast majority of the patterns which occurred in that codebase.
 
-## Composing a app from components
+## Composing an app from components
 The original point of the combinator library is to compose an application by building it from 
 components. In the previous sections, we have shown some combinators handling logic, and control 
 flow. There are other combinators handling state injection and interface adaptation, so that inputs
