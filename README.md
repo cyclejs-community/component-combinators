@@ -2,8 +2,8 @@
 
 # Motivation
 Around 18 months ago, while working on what is the largest cyclejs codebase I know of
-(~20K lines of javascript), I realized how hard it was to actually make sense and maintain a
-large cycle-js application. Focusing on those issues derived from cyclejs usage :
+(~20K lines of javascript), I realized how **hard it was to actually make sense and maintain a
+large cycle-js application**. Focusing on those issues derived from cyclejs usage :
 
 - a large portion of the code was stream handling originating from the use of components and the
 necessity to wire them together. The domain logic, and as a result, **the application logic was
@@ -24,7 +24,7 @@ implementing (you know, multi-step processes where any step may fail and you nee
 And yet, while that application was large, it cannot really be said to be an exceptionally complex
 application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
 
-This was the motivation behind my dedicating my (quite) limited free time to add the missing
+This was the motivation behind my dedicating my (limited) free time to add the missing
 capabilities to the framework. I singled out those four areas :
  componentization, visual debugging, testing, concurrency control. I am happy that finally the
  first step is in a sufficient state of progress that it can be shared.
