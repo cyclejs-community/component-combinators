@@ -3,7 +3,8 @@
 # Motivation
 Around 18 months ago, while working on what is the largest cyclejs codebase I know of
 (~20K lines of javascript), I realized how **hard it was to actually make sense and maintain a
-large cycle-js application**. Focusing on those issues derived from cyclejs usage :
+large cycle-js application**. Focusing on those issues derived from cyclejs usage and application
+ size:
 
 - a large portion of the code was stream handling originating from the use of components and the
 necessity to wire them together. The domain logic, and as a result, **the application logic was
