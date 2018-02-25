@@ -732,7 +732,7 @@ Contribution is **welcome** in the following areas :
   - monorepos
   - whatever makes sense to make the repository more manageable
 - reducing build size
-- transpoe code to latest version of cycle
+- transpose code to latest version of cycle
 
 # Known issues
 That is a paragraph that I am sure will grow with time :-)
