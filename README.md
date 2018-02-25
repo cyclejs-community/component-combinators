@@ -308,7 +308,7 @@ Next, we have a look at complex control flow logic (branching, jumping, looping,
 The specification for a multi-step application process, as coming from designer team, are as 
 follows :
 
-![]()
+![sequence](https://camo.githubusercontent.com/d64fd08f45bd5c28e5cd237ef095f5181c89ea72/687474703a2f2f692e696d6775722e636f6d2f42466a6667575a2e706e67)
 
 We have here a sequence of screens, with conditional transitioning logic according to the state 
 of the application. That logic is later refined in parallel with the dev team to take the final 
