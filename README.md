@@ -391,7 +391,7 @@ flow. There are other combinators handling state injection and interface adaptat
  thanks to our generic component combinator factory `m`.
 
 Taking a page from our [showcased sample application](https://i.imgur.com/NXgJV2c.png), it looks 
-like this (only tidbits, for full code see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo)):
+like this (only tidbits, for full code see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo), for a step-by-step building of the application, refer to the [corresponding article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) on my blog):
  
  ```javascript
 App = Combine({}, [
