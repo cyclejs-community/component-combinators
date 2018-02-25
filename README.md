@@ -77,7 +77,7 @@ documented and tested. A sample application is available to showcase how combina
 together with components to build a non-trivial application.
 
 **A series of articles covers the theoretical underpinning** in more details (read
-chronologically, they constitute a long read, but I think they are very interesting). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the
+chronologically -- concepts are built progressively). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the
 step-by-step building of the showcased sample application. A shorter introduction can be found in the `README` for the repository.
 
 # So what is a component combinator?
@@ -612,6 +612,8 @@ The current roadmap for the v0.5 stands as :
       in the form of erroneous arguments)
     - [ ] logging and visualization (!)
     - [ ] conversion to web components
+- Component combinator library
+  - modalify looks like a good example (https://github.com/cyclejs-community/cyclejs-modal/blob/master/examples/simple/src/index.ts)
 - Component library
   - [ ] a small one with the basics - should be able to copy a lot from react?
     - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf.
