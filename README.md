@@ -175,7 +175,64 @@ and seem to cover the vast majority of the patterns which occurred in that codeb
 Two things can already be noted here : we haven't had to write **any** merging code by hand, and 
 the structure of our application is more self-evident, i.e. simpler to read.
 
-Let's move on to cases exemplifying a more complex combining logic.
+Let's now see another example, which addresses a very fundamental need of web application.
+
+## Nested routing
+The following implementation corresponds to :
+
+- Functional specifications
+    - user visits '/' -> display home page
+        - home page allows to navigate to different sections of the application
+    - when the user visit a given section of the application
+        - a breadcrumb shows the user where he stands in the sitemap
+        - a series of clickable cards is displayed
+            - when the user clicks on a given card, details about that card are displayed, and corresponding to a specific route for possible bookmarking
+- Technical specifications
+    - `HomePage` takes the concern of implementing the home page logic.
+    - `Card` is parameterized by its card content, and is in charge of implementing the card logic
+    - `CardDetail` is parameterized by its card content, and is in charge of displaying the extra details of the card
+
+```javascript
+export const App = InjectSourcesAndSettings({
+  sourceFactory: injectRouteSource,
+  settings: {
+    sinkNames: [DOM_SINK, 'router'],
+  }
+}, [
+  OnRoute({ route: '' }, [
+    HomePage
+  ]),
+  OnRoute({ route: 'aspirational' }, [
+    InjectSourcesAndSettings({ settings: { breadcrumbs: ['aspirational'] } }, [
+      AspirationalPageHeader, [
+        Card(BLACBIRD_CARD_INFO),
+        OnRoute({ route: BLACK_BIRD_DETAIL_ROUTE }, [
+          CardDetail(BLACBIRD_CARD_INFO)
+        ]),
+        Card(TECHX_CARD_INFO),
+        OnRoute({ route: TECHX_CARD_DETAIL_ROUTE }, [
+          CardDetail(TECHX_CARD_INFO)
+        ]),
+        Card(TYPOGRAPHICS_CARD_INFO),
+        OnRoute({
+          route: TYPOGRAPHICS_CARD_DETAIL_ROUTE,
+        }, [
+          CardDetail(TYPOGRAPHICS_CARD_INFO)
+        ]),
+      ]])
+  ]),
+]);
+```
+
+![animated demo](examples/NestedRoutingDemo/assets/nested_routing_demo.gif)
+
+The (gory) nested routing switching logic is hidden behind the `OnRoute` combinator. With that out
+ of the way, the routing logic can be expressed very naturally (in a very similar way to React
+router's [dynamic routing](https://reacttraining.com/react-router/core/guides/philosophy/dynamic-routing), in which the router is a component
+like any other). There is no pre-configuration of routes, outside of the application. Routes are
+directly and naturally included in their context.
+
+Let's move on to cases exemplifying simple control flow logic (branching).
 
 ## Login gateway
 For instance, specification for a login section of an application could go as such:
@@ -245,63 +302,29 @@ corresponding concern is out of the way.
 - A debugging developer can narrow down a cause of misbehaviour for example by selectively
 modifying arguments, deleting branches of the component tree, stubbing components, etc. That is, reasoning, investigating can be made at a component level first, before, if necessary, going at the lower stream level.
 
-Let's now see another example, which addresses a very fundamental need of web application.
+Next, we have a look at complex control flow logic (branching, jumping, looping, etc.).
 
-## Nested routing
-The following implementation corresponds to :
+## Multi-step workflow
+The specification for a multi-step application process, as coming from designer team, are as 
+follows :
 
-- Functional specifications
-    - user visits '/' -> display home page
-        - home page allows to navigate to different sections of the application
-    - when the user visit a given section of the application
-        - a breadcrumb shows the user where he stands in the sitemap
-        - a series of clickable cards is displayed
-            - when the user clicks on a given card, details about that card are displayed, and corresponding to a specific route for possible bookmarking
-- Technical specifications
-    - `HomePage` takes the concern of implementing the home page logic.
-    - `Card` is parameterized by its card content, and is in charge of implementing the card logic
-    - `CardDetail` is parameterized by its card content, and is in charge of displaying the extra details of the card
+![]()
 
-```javascript
-export const App = InjectSourcesAndSettings({
-  sourceFactory: injectRouteSource,
-  settings: {
-    sinkNames: [DOM_SINK, 'router'],
-  }
-}, [
-  OnRoute({ route: '' }, [
-    HomePage
-  ]),
-  OnRoute({ route: 'aspirational' }, [
-    InjectSourcesAndSettings({ settings: { breadcrumbs: ['aspirational'] } }, [
-      AspirationalPageHeader, [
-        Card(BLACBIRD_CARD_INFO),
-        OnRoute({ route: BLACK_BIRD_DETAIL_ROUTE }, [
-          CardDetail(BLACBIRD_CARD_INFO)
-        ]),
-        Card(TECHX_CARD_INFO),
-        OnRoute({ route: TECHX_CARD_DETAIL_ROUTE }, [
-          CardDetail(TECHX_CARD_INFO)
-        ]),
-        Card(TYPOGRAPHICS_CARD_INFO),
-        OnRoute({
-          route: TYPOGRAPHICS_CARD_DETAIL_ROUTE,
-        }, [
-          CardDetail(TYPOGRAPHICS_CARD_INFO)
-        ]),
-      ]])
-  ]),
-]);
-```
+We have here a sequence of screens, with conditional transitioning logic according to the state 
+of the application. That logic is later refined in parallel with the dev team to take the final 
+control flow form :
 
-![animated demo](examples/NestedRoutingDemo/assets/nested_routing_demo.gif)
+![complete control flow](https://i.imgur.com/dkbSwEw.png)
 
-The (gory) nested routing switching logic is hidden behind the `OnRoute` combinator. With that out
- of the way, the routing logic can be expressed very naturally (in a very similar way to React
-router's [dynamic routing](https://reacttraining.com/react-router/core/guides/philosophy/dynamic-routing), in which the router is a component
-like any other). There is no pre-configuration of routes, outside of the application. Routes are
-directly and naturally included in their context.
+We won't include code example here for the sake of brevity. The previous graph is specified 
+in the form of a state machine, passed to the `EFSM` component combinator. We refer however the 
+curious reader to :
 
+- [demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
+- [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/)
+- [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/)
+- [http://brucou.github.io/projects/component-combinators/efsm---example-application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
+ 
 Let's attack dynamic lists.
 
 ## Dynamically changing list of items
@@ -354,8 +377,7 @@ However, in a real application, the existing combinator list will never cover th
 combining logics (being that essentially infinite). Our library however seeks to cover most of the 
 **generic** needs arising. For those **specific** needs not covered, our library also includes a 
 component combinator **factory**, the same one from which all existing combinators are 
-actually derived. Let's see other combinators and our combinator factory at work through a ''real'' 
-app example.
+actually derived. Let's see other combinators and our combinator factory at work through an example.
 
 ## Composing an app from components
 The original point of the combinator library is to compose an application by building it from 
@@ -468,8 +490,6 @@ hopefully the examples serve to portray the merits of using a component model, u
 application is written as a component tree, where components are glued with convenient component combinators
   covering frequently occuring patterns. I certainly think it is simpler to write, and more 
   importantly, simpler to **read, maintain and debug**.
-
-[^EFSM]: We chose not to introduce here the `EFSM` state machine combinator, due to the difficulty in presenting it succintly. We will refer the curious reader to our series of article on the subject : [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/), [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/), [http://brucou.github.io/projects/component-combinators/efsm---example-application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
 20K-line cyclejs codebase.
