@@ -305,7 +305,7 @@ modifying arguments, deleting branches of the component tree, stubbing component
 Next, we have a look at complex control flow logic (branching, jumping, looping, etc.).
 
 ## Multi-step workflow
-The specification for a multi-step application process, as coming from designer team, are as 
+The specification for a multi-step application process, as coming from designer team, is as 
 follows :
 
 ![sequence](https://camo.githubusercontent.com/d64fd08f45bd5c28e5cd237ef095f5181c89ea72/687474703a2f2f692e696d6775722e636f6d2f42466a6667575a2e706e67)
@@ -316,14 +316,14 @@ control flow form :
 
 ![complete control flow](https://i.imgur.com/dkbSwEw.png)
 
-We won't include code example here for the sake of brevity. The previous graph is specified 
-in the form of a state machine, passed to the `EFSM` component combinator. We refer however the 
-curious reader to :
+We won't include code samples here for the sake of brevity. The previous control flow graph is 
+specified in the form of a state machine, and implemented with the `EFSM` component combinator.
+ We refer however the curious reader to :
 
 - [demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
 - [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/)
 - [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/)
-- [http://brucou.github.io/projects/component-combinators/efsm---example-application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
+- [EFSM combinator - example application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
  
 Let's attack dynamic lists.
 
