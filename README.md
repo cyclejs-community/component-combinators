@@ -323,10 +323,10 @@ specified in the form of a state machine, and implemented with the `EFSM` compon
 
  We refer however the curious reader to :
 
-- [demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
+- [Demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
 - [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/)
 - [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/)
-- [EFSM combinator - example application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
+- [EFSM combinator - example application](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
  
 Let's continue with the combinator covering iteration logic.
 
@@ -376,9 +376,9 @@ Same as always, there is no gory stream-merging code in the way of understanding
 logic. Furthermore, edge cases attached to the iteration logic are already conveniently taken care
  of.
 
+Our library however seeks to cover most of the **generic** needs arising. 
 However, in a real application, the existing combinator list might not cover the full spectrum of 
-combining logics (being that essentially infinite). Our library however seeks to cover most of the 
-**generic** needs arising. For those **specific** needs not covered, our library also includes a 
+combining logics (being that essentially infinite). For those **specific** needs not covered, our library also includes a 
 component combinator **factory**, the same one from which all existing combinators are 
 actually derived. Let's see other combinators and our combinator factory at work through an example.
 
@@ -482,17 +482,17 @@ function Navigation(navigationSettings, componentArray) {
 }
 ```
 
-Unless you have to implement some very specific combining logic that we haven't met in our large 
+Unless you have to implement some very specific combining logic that we have not met in our large 
 codebase, you should not have to use `m` in another form than `Combine`. If that should happen, 
 you will need to delve into the documentation where we detail the three strategies we use for 
 combining components. If you come up with a useful component combinator that is not here, feel 
 free to publish it in its own package.
 
-While the full syntax and semantics of the component combinators haven't been exposed[^EFSM], 
+While the full syntax and semantics of the component combinators have not been exposed, 
 hopefully the examples serve to portray the merits of using a component model, under which an 
 application is written as a component tree, where components are glued with convenient component combinators
   covering frequently occuring patterns. I certainly think it is simpler to write, and more 
-  importantly, simpler to **read, maintain and debug**.
+  importantly, simpler to **read, maintain and debug**, which is paramount **at scale**.
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
 20K-line cyclejs codebase.
@@ -502,6 +502,7 @@ Let's have a proper look at combinators' syntax and the available combinators ex
 In general combinators follow a common syntax :
 
 - `Combinator :: Settings -> ComponentTree -> Component`
+    - `Settings :: *`
     - `Component :: Sources -> Settings -> Sinks`
     - `ComponentTree :: ChildrenComponents | [ContainerComponent, ChildrenComponents]`
     - `ContainerComponent:: Component`
