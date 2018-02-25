@@ -5,10 +5,11 @@
 - [Motivation](#motivation)
 - [So what is a component combinator?](#so-what-is-a-component-combinator)
 - [Examples](#examples)
-  - [Login gateway](#login-gateway)
+  - [Separating layout from feature](#separating-layout-from-feature)
   - [Nested routing](#nested-routing)
+  - [Login gateway](#login-gateway)
+  - [Multi-step workflow](#multi-step-workflow)
   - [Dynamically changing list of items](#dynamically-changing-list-of-items)
-  - [Layouting](#layouting)
   - [Composing an app from components](#composing-an-app-from-components)
 - [Roadmaps](#roadmaps)
   - [Roadmap v0.5](#roadmap-v05)
@@ -90,9 +91,9 @@ A component combinator is a **parametrizable** function which... **combines** co
  The simplest of those 
  combinator is `Combine` (for instance `Combine{{...}, [C0, [C1, C2]]}`), whose DOM sink is 
  the result of merging `Cx` DOM sinks **into** `C0` DOM sink; and whose non-DOM sinks are 
- the merge of the respective `Cx` non-DOM sink.
+ the merge of the respective `Cx` non-DOM sink. Here the combining logic is a merge logic.
  
-The principle is deceptively simple. Now let's see some examples of use.
+So the general principle is fairly simple and generic. Now let's see some practical examples of use.
 
 # Examples
 ## Separating layout from feature
