@@ -318,6 +318,9 @@ control flow form :
 
 We won't include code samples here for the sake of brevity. The previous control flow graph is 
 specified in the form of a state machine, and implemented with the `EFSM` component combinator.
+
+![demo](examples/volunteerApplication/assets/images/animated_demo.gif)
+
  We refer however the curious reader to :
 
 - [demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
@@ -325,7 +328,7 @@ specified in the form of a state machine, and implemented with the `EFSM` compon
 - [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/)
 - [EFSM combinator - example application/](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
  
-Let's attack dynamic lists.
+Let's continue with the combinator covering iteration logic.
 
 ## Dynamically changing list of items
 
@@ -373,7 +376,7 @@ Same as always, there is no gory stream-merging code in the way of understanding
 logic. Furthermore, edge cases attached to the iteration logic are already conveniently taken care
  of.
 
-However, in a real application, the existing combinator list will never cover the full spectrum of 
+However, in a real application, the existing combinator list might not cover the full spectrum of 
 combining logics (being that essentially infinite). Our library however seeks to cover most of the 
 **generic** needs arising. For those **specific** needs not covered, our library also includes a 
 component combinator **factory**, the same one from which all existing combinators are 
