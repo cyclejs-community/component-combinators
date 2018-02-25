@@ -499,7 +499,7 @@ Let's have a proper look at combinators' syntax and the available combinators ex
 
 # Combinators
 ## Syntax
-In general combinators follow a common syntax :
+In general combinators follow a common syntax[^exception] :
 
 - `Combinator :: Settings -> ComponentTree -> Component`
     - `Settings :: *`
@@ -507,6 +507,8 @@ In general combinators follow a common syntax :
     - `ComponentTree :: ChildrenComponents | [ContainerComponent, ChildrenComponents]`
     - `ContainerComponent:: Component`
     - `ChildrenComponents :: Array<Component>`
+
+[^exception]: The `EFSM` combinator as of v0.4 is an exception to that rule. 
 
 ## Combinator list
 The proposed library has the following combinators :
