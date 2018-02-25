@@ -95,13 +95,13 @@ A component combinator is a **parametrizable** function which... **combines** co
 The principle is deceptively simple. Now let's see some examples of use.
 
 # Examples
-## Layout vs. feature
+## Separating layout from feature
 The following implementation corresponds to the layout specifications :
 
 - layout specifications (in order from top to bottom of appearance on screen)
     - header
-    - feature : we will reuse here the component from the routing demo (introduced in a later 
-    section)
+    - feature : we will reuse here the component from the nested routing demo (introduced in a 
+    later section)
     - footer
       - made of three groups (with miscellaneous navigation links) and a header
     - sitemap
@@ -178,7 +178,19 @@ the structure of our application is more self-evident, i.e. simpler to read.
 Let's move on to cases exemplifying a more complex combining logic.
 
 ## Login gateway
-For instance, the structure behind a login section of an application goes as such:
+For instance, specification for a login section of an application could go as such:
+
+- Functional specifications
+    - if user is logged, show the main page
+    - if user is not logged, show the login page, and redirect to `index` route when login is performed
+- Technical specifications
+    - `MainPage` takes the concern of implementing the main page logic.
+    - `LoginPage` is parameterized by a redirect route, and is in charge of logging in the user
+    - `convertAuthToIsLoggedIn` emits `IS_NOT_LOGGED_IN` or `IS_LOGGED_IN` according to whether the user is logged or not
+
+![login demo with Switch combinator](examples/SwitchLogin/assets/login_demo.gif)
+
+A tentaive code to implement those specification with our library would look like :
 
 ```javascript
 export const App = Switch({
@@ -193,18 +205,6 @@ export const App = Switch({
   ]),
 ]);
 ```
-
-and translates the simple design :
-
-- Functional specifications
-    - if user is logged, show the main page
-    - if user is not logged, show the login page, and redirect to `index` route when login is performed
-- Technical specifications
-    - `MainPage` takes the concern of implementing the main page logic.
-    - `LoginPage` is parameterized by a redirect route, and is in charge of logging in the user
-    - `convertAuthToIsLoggedIn` emits `IS_NOT_LOGGED_IN` or `IS_LOGGED_IN` according to whether the user is logged or not
-
-![login demo with Switch combinator](examples/SwitchLogin/assets/login_demo.gif)
 
 The same code could be written in a `JSX`-like dialect as :
 
@@ -418,6 +418,8 @@ function getProjectNavigationItems$(sources, settings) {
 }
 ``` 
 
+![sample app demo with miscellaneous combinators](examples/AllInDemo/assets/images/animated_demo.gif)
+
 Note the use of the ad-hoc combinators `Navigation`, `NavigationSection` and `NavigationItem`. 
 They are for instance defined as :
 
@@ -454,6 +456,12 @@ function Navigation(navigationSettings, componentArray) {
   return Combine(navigationSettings, [NavigationContainerComponent, componentArray])
 }
 ```
+
+Unless you have to implement some very specific combining logic that we haven't met in our large 
+codebase, you should not have to use `m` in another form than `Combine`. If that should happen, 
+you will need to delve into the documentation where we detail the three strategies we use for 
+combining components. If you come up with a useful component combinator that is not here, feel 
+free to publish it in its own package.
 
 While the full syntax and semantics of the component combinators haven't been exposed[^EFSM], 
 hopefully the examples serve to portray the merits of using a component model, under which an 
