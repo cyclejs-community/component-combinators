@@ -175,7 +175,7 @@ and seem to cover the vast majority of the patterns which occurred in that codeb
 Two things can already be noted here : we haven't had to write **any** merging code by hand, and 
 the structure of our application is more self-evident, i.e. simpler to read.
 
-Let's now see another example, which addresses a very fundamental need of web application.
+Let's now see another example, which addresses a very fundamental need of web applications.
 
 ## Nested routing
 The following implementation corresponds to :
@@ -305,7 +305,7 @@ modifying arguments, deleting branches of the component tree, stubbing component
 Next, we have a look at complex control flow logic (branching, jumping, looping, etc.).
 
 ## Multi-step workflow
-The specification for a multi-step application process, as coming from designer team, is as 
+The specification for a multi-step application process, as coming from the designer team, is as 
 follows :
 
 ![sequence](https://camo.githubusercontent.com/d64fd08f45bd5c28e5cd237ef095f5181c89ea72/687474703a2f2f692e696d6775722e636f6d2f42466a6667575a2e706e67)
@@ -326,7 +326,7 @@ specified in the form of a state machine, and implemented with the `EFSM` compon
 - [Demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
 - [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/)
 - [EFSM combinator - documentation](http://brucou.github.io/projects/component-combinators/efsm---documentation/)
-- [EFSM combinator - example application](http://brucou.github.io/projects/component-combinators/efsm---example-application/).
+- [EFSM combinator - example application](http://brucou.github.io/projects/component-combinators/efsm---example-application/)
  
 Let's continue with the combinator covering iteration logic.
 
