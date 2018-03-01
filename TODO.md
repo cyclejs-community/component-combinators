@@ -13,6 +13,9 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- investigate https://github.com/twitter/hogan.js
+  - writing view in mustache, and precompiling it
+  - with partials, css should be able to be included meaning we can have a component file
 - investigate microbundle instead of rollup : https://github.com/developit/microbundle
 - have a sanbox dedicated playground?
 - do sth about position updates for AllInDemo - deletion and insert; also what is nr?
@@ -185,3 +188,17 @@ and helps identify pain points or prioritize features.
 - https://www.oreilly.com/ideas/reactive-programming-vs-reactive-systems
 > We are no longer building programs—end-to-end logic to calculate something for a single operator—as much as we are building systems.
 > In order to deliver systems that users—and businesses—can depend on, they have to be responsive, for it does not matter if something provides the correct response if the response is not available when it is needed. In order to achieve this, we need to make sure that responsiveness can be maintained under failure (resilience) and under load (elasticity). To make that happen, we make these systems message-driven, and we call them reactive systems.
+
+# tips
+- [dynamic function names js](https://stackoverflow.com/questions/5905492/dynamic-function-name-in-javascript/40918734#40918734)
+
+```javascript
+"use strict";
+var name = "foo";
+var func = new Function(
+     "return function " + name + "(){ alert('sweet!')}"
+)();
+
+//call it, to test it
+func();
+```

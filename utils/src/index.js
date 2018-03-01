@@ -294,6 +294,32 @@ const getFunctionName = (r => fn => {
 
 // cf.
 // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
+/**
+ *
+ * @param name
+ * @param {Array<String>} args Names for the arguments of the function
+ * @param {String} body Body of the function (source string)
+ * @param {Object | Array} scope Extra VALUES to pass to the function, addressable by their name.
+ * Note that
+ * the values that will be seen are the ones at the moment of the call, i.e. eager eval, NOT
+ * closure, those are CONSTANT values, not variables. BUT among those values can be functions!
+ * so useful to put functions in scope. Those functions can have their own closure. That helps
+ * solving the issue (or advantage) that Function does not create closure from its environment.
+ * @param {null | Array} values if `values` is an array, so must be `scope`. In this case,
+ * `scope` must be an array of property keys, `values` being the corresponding array of values
+ * NOTE : very poorly written function in terms of readability...
+ * @returns {Function}
+ * @example
+ * --
+ * var f = NamedFunction("fancyname", ["hi"], "display(hi);", {display:display});
+ * f.toString(); // "function fancyname(hi) {
+ *               // display(hi);
+ *               // }"
+ *  f("Hi");
+ *  --
+ *  `display` can be defined anywhere and as any function can close over its context
+ * @constructor
+ */
 function NamedFunction(name, args, body, scope, values) {
   if (typeof args == "string")
     values = scope, scope = body, body = args, args = [];
@@ -320,7 +346,7 @@ function decorateWithOne(decoratorSpec, fnToDecorate) {
       const decoratingFn = makeFunctionDecorator(decoratorSpec);
       return decoratingFn(args, fnToDecorateName, fnToDecorate);
 `,
-    { makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName });
+    { makeFunctionDecorator, decoratorSpec, fnToDecorate, fnToDecorateName }, undefined);
 }
 
 const decorateWith = curry(function decorateWith(decoratingFnsSpecs, fnToDecorate) {
@@ -334,6 +360,9 @@ const decorateWith = curry(function decorateWith(decoratingFnsSpecs, fnToDecorat
  * before(fnToDecorate, fnToDecorateName, args) or nil
  * after(fnToDecorate, fnToDecorateName, result) or nil
  * but not both nil
+ * TODO : incoherent! after can modify returned value but before cannot
+ * TODO : refactor as standard advice : before, around, after - only around can modify flow/args
+ * TODO : edge case not dealt with : throwing?
  * @returns {function(fnToDecorate: Function, fnToDecorateName:String, args:Array<*>)}
  */
 function makeFunctionDecorator({ before, after, name }) {
@@ -347,6 +376,8 @@ function makeFunctionDecorator({ before, after, name }) {
   // trick to get the same name for the returned function
   // cf.
   // http://stackoverflow.com/questions/9479046/is-there-any-non-eval-way-to-create-a-function-with-a-runtime-determined-name
+  // BUG : does not seem to work in chrome actually. HAve to use Function constructor, hence eval...
+  // NOTE : NamedFunction hence works
   const obj = {
     [decoratorFnName](args, fnToDecorateName, fnToDecorate) {
       before && before(args, fnToDecorateName, fnToDecorate);
@@ -554,6 +585,86 @@ function traceFn(fn, text) {
   return pipe(fn, tap(console.warn.bind(console, text ? text + ":" : "")))
 }
 
+/**
+ * @typedef {{before:Function, after:Function, afterThrowing:Function, afterReturning:Function, around:Function}} Advice
+ */
+const decorateWithAdvices = curry(_decorateWithAdvices);
+
+/**
+ *
+ * @param {Array<Advice>} advices
+ * @param {Function} fnToAdvise
+ * @returns {Function} function decorated with the advices
+ */
+function _decorateWithAdvices(advices, fnToAdvise) {
+  return advices.reduce((acc, advice) => {
+    return decorateWithAdvice(advice, acc)
+  }, fnToAdvise)
+}
+
+function decorateWithAdvice(advice, fnToAdvise) {
+  const fnToDecorateName = getFunctionName(fnToAdvise);
+
+  return NamedFunction(fnToDecorateName, [], `
+      const args = [].slice.call(arguments);
+      const decoratingFn = makeAdvisedFunction(advice);
+      const joinpoint = {args, fnToDecorateName};
+      return decoratingFn(joinpoint, fnToAdvise);
+`,
+    { makeAdvisedFunction, advice, fnToAdvise, fnToDecorateName }, undefined);
+}
+
+function makeAdvisedFunction(advice) {
+  // Contract :
+  // if `around` is correctly set, then there MUST NOT be a `before` and `after`
+  // if `around` is not set, there MUST be EITHER `before` OR `after`
+  if ('around' in advice && typeof(advice.around)==='function') {
+    if ('before' in advice || 'after' in advice) {
+      throw `makeAdvisedFunction: if 'around' is set, then there MUST NOT be a 'before' or 'after' property`
+    }
+    else {
+      // Main case : AROUND advice
+      return function aroundAdvisedFunction(joinpoint, fnToDecorate) {
+        // NOTE : could be shorten, but left as is for readability
+        return advice.around(joinpoint, fnToDecorate)
+      }
+    }
+  }
+  else if (!('before' in advice || 'after' in advice)) {
+    throw `makeAdvisedFunction: if 'around' is not set, then there MUST be EITHER 'before' OR 'after' property`
+  }
+  else {
+    // Main case : BEFORE or/and AFTER advice
+    return function advisedFunction(joinpoint, fnToDecorate) {
+      const {args, fnToDecorateName} = joinpoint;
+      const { before, after, afterThrowing, afterReturning, around } = advice;
+
+      before && before(joinpoint, fnToDecorate);
+      let result;
+      let exception;
+
+      try {
+        result = fnToDecorate.apply(null, args);
+
+        // if advised function does not throw, then we execute `afterReturning` advice
+        // TODO : Contract : if `after` then MUST NOT have `afterThrowing` or `afterReturning`
+        afterReturning && afterReturning(assoc('returnedValue', result, joinpoint), fnToDecorate);
+        return result
+      }
+      catch (_exception) {
+        // Include the exception information in the joinpoint
+        afterThrowing && afterThrowing(assoc('exception', _exception, joinpoint), fnToDecorate);
+        exception = _exception;
+        throw _exception
+      }
+      finally {
+        // We execute `after` advice even if advised function throws
+        after && after(merge({returnedValue: result, exception}, joinpoint), fnToDecorate);
+      }
+    };
+  }
+}
+
 export {
   // Helpers
   emitNullIfEmpty,
@@ -595,5 +706,7 @@ export {
   convertVNodesToHTML,
   formatArrayObj,
   format,
-  traceFn
+  traceFn,
+  decorateWithAdvices,
+  decorateWithAdvice
 }

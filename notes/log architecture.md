@@ -202,11 +202,76 @@ Given :
 
 (id has to be with the stuff it disambiguates..., so App-1, SidePanel-3, instead of App,Sidepanel, 3)
 
-combinatorName will be set by the combinator creator
-componentName will be set by the programmer
+combinatorName will be set by the combinator creator -- at config time
+componentName will be set by the programmer -- at config time too
 - m will traceInput sources with settings.id (if none then 0 - for root)
 - then call children components with settings :
-  - id : old ID + push getID
+  - id : old id + getID, so eac child component has different id; that will be actually a path
+    - NO~~ id is set a m level i.e. higher, before callign with sources!!
+    - NO there is id from getID, and path, which will add the children index to the existing 
+    id
   - set componentName to component.name if no (outer)settings._trace.componentName (case leave 
-  compponent)
+  compponent) - make sure only that case, i.e. discard name of m combined component (remove name?)
     - as a matter tree should be only combinator till leaves (to put in contract)
+  - problem is that to call children components, I cannot have combineSinks, but mergeAllSinks, 
+  and mergePerSinks fine.
+    - so for combineSinks strategy, decorate the components?
+    - note that most combinators use combineSinks strategy so it has be solved also for it
+
+https://stackoverflow.com/questions/9153445/how-to-communicate-between-iframe-and-the-parent-site?noredirect=1&lq=1
+
+I can also emit at m level, in addition to the m-result component level. That allows to have the 
+graph prior to execution of any component
+
+- add an advice library:
+  - var advisedFunction = meld.around(functionToAdvise, aroundFunction); is fine
+  - also have after and before (can't change values - be careful about exceptions in after)
+    - also the advising function MUST NOT raise exceptions... so no contracts performed by 
+    advices! or use around advices
+  - also addAdvices(functionToAdvise, advices) same as meld, but no around possible as props
+  - DO SEPARATELY IN THIS DIRECTORY (UTILS) AND THEN WHEN DONE MOVE TO UTILS
+  - THINK ABOUT NAMING of advised functions - how to conserve names without using eval??
+
+- `m` body
+  - run around advice (componentDef, _settings, componentTree) - actually hard coded, not advice
+    - get new settings
+      - set id if not there yet 
+        - NO : I might not need an id if I have the path...
+      - path should already be there. If not initialize with default
+      - LOG : path and combinatorName and componentName which I have at config time
+        - activated with settings._config.trace = true
+    - apply around advice to componentTree
+      - for each component in componentTree
+        - apply around advice 
+          - add path in its settings
+        - if isLeaf(component)
+          - apply around advice to component
+            - transform sources
+              - add componentName in its settings 
+              - add componentName in tap to sources
+            - transform sinks
+              - add componentName in tap to sinks 
+    - after advice on mComponent(sources, settings):sinks function
+      - apply before advice to (sources, settings)
+        - tap sources, log settings
+      - apply after advices to (sinks, settings)
+        - tap sinks (settings has the tapping functions - DEFINE WHERE)
+    
+    
+    - get new componentTree
+      - take one component of componentTree
+      - before advice : 
+        - set settings : path with index, id with getID, componentName if component is not 
+        combinedComponent i.e. component.name <> mComponent
+          - NOTE: combinatorName should be passed at config time
+        - set sources : tapped with component Name, combinatorName, id, path, value, when.. all info
+      - after advice :
+        - set sinks : tapped with same as sources, but type is sink
+    - return the same function mComponent as before
+    - be careful for any edge case
+      - empty component tree
+      - when value is an error, what to do? log notifications!
+      - what else?
+
+- this algorithm in principle does not log the source and sinks of the first `m` : to solve later
+        

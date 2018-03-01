@@ -66,12 +66,18 @@
     "cyclic-router": "^1.0.0",
     "history": "^2.0.1",
     "localforage": "^1.5.0",
-    "ramda": "^0.21.0",
-    "rx": "^4.1.0",
     "@rxcc/components": "^0.3.13",
     "@rxcc/contracts": "^0.1.10",
     "@rxcc/drivers": "~0.1.8",
     "@rxcc/testing": "^0.1.2",
-    "@rxcc/utils": "^0.1.5"
+    "@rxcc/utils": "^0.1.5",
+    "fast-json-patch": "^1.1.4",
+    "pretty-format": "^22.1.0",
+    "ramda": "^0.25.0",
+    "route-matcher": "^0.1.0",
+    "rx": "^4.1.0",
+    "snabbdom": "^0.5.0",
+    "snabbdom-to-html": "^3.1.1",
+    "standard-error": "^1.1.0"
   }
 }

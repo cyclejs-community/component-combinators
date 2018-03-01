@@ -1,6 +1,6 @@
 {
   "name": "@rxcc/utils",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "description": "miscellaneous utility functions to keep an implementation DRY",
   "repository": {
     "type": "git",
