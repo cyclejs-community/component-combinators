@@ -8,8 +8,8 @@ export default {
   input: 'src/index.js',
   output:
     {
-      file: 'lib/rxcc-testing-es5-umd-rollup.js',
-      name: 'rxccTesting',
+      file: 'lib/rxcc-tracing-es5-umd-rollup.js',
+      name: 'rxccTracing',
       format: 'umd',
       sourcemap: true,
     },

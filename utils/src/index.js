@@ -1,4 +1,7 @@
-import { curry, defaultTo, isNil, keys, mapObjIndexed, pipe, reject, values, tap, uniq, flatten, map, reduce, equals } from "ramda"
+import {
+  curry, defaultTo, isNil, keys, mapObjIndexed, pipe, reject, values, tap, uniq, flatten, map, reduce, equals, assoc, T,
+  cond
+} from "ramda"
 import Rx from "rx"
 import { div, nav } from "cycle-snabbdom"
 import toHTML from "snabbdom-to-html"
@@ -588,6 +591,13 @@ function traceFn(fn, text) {
 /**
  * @typedef {{before:Function, after:Function, afterThrowing:Function, afterReturning:Function, around:Function}} Advice
  */
+/**
+ * @typedef {Object} JoinPoint
+ * @property {Array} args
+ * @property {Function} fnToDecorateName
+ * @property {*} [returnedValue]
+ * @property {Error} [exception]
+ */
 const decorateWithAdvices = curry(_decorateWithAdvices);
 
 /**
@@ -665,6 +675,52 @@ function makeAdvisedFunction(advice) {
   }
 }
 
+const ONE_COMPONENT_ONLY = 'one_component_only';
+const CONTAINER_AND_CHILDREN = 'container_and_children';
+const CHILDREN_ONLY = 'children_only';
+/** @type Array<[]>*/
+const componentTreePatternMatchingPredicates = [
+  [ONE_COMPONENT_ONLY, componentTree => isNil(componentTree[1])],
+  [CONTAINER_AND_CHILDREN, componentTree => Array.isArray(componentTree[1])],
+  [CHILDREN_ONLY, T ]
+];
+
+/**
+ * @typedef {Function} Predicate
+ */
+/**
+ * @typedef {Function} Expression
+ * Function which takes any number or no arguments and returns or not a value
+ * MUST be a pure function (otherwise we will call it Procedure)
+ */
+/**
+ * @typedef {String} CaseName
+ * Identifier for a case expression in a pattern matching section
+ * MUST be non-empty
+ */
+/**
+ *
+ * @param {Array<[CaseName, Predicate]>} patternMatchingPredicates
+ * @param {Object.<CaseName, Expression>} patternMatchingExpressions
+ */
+function makePatternMatcher(patternMatchingPredicates, patternMatchingExpressions){
+  // TODO : check inputs' type contracts
+
+  const conditions = patternMatchingPredicates.map(([caseName, predicate]) => {
+    const caseHandler = patternMatchingExpressions[caseName];
+
+    if (!caseHandler) {
+      console.error(`makePatternMatcher : case ${caseName} does not have matching expression!`, patternMatchingExpressions);
+      throw `makePatternMatcher : case ${caseName} does not have matching expression!`
+    }
+    else {
+      return [predicate, caseHandler]
+    }
+  })
+
+  return cond(conditions)
+}
+
 export {
   // Helpers
   emitNullIfEmpty,
@@ -708,5 +764,10 @@ export {
   format,
   traceFn,
   decorateWithAdvices,
-  decorateWithAdvice
+  decorateWithAdvice,
+  ONE_COMPONENT_ONLY,
+  CONTAINER_AND_CHILDREN,
+  CHILDREN_ONLY,
+  componentTreePatternMatchingPredicates,
+  makePatternMatcher
 }

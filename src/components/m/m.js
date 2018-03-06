@@ -39,17 +39,16 @@
  */
 
 import {
-  emitNullIfEmpty, getSinkNamesFromSinksArray, projectSinksOn,
+  CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, emitNullIfEmpty, format,
+  getSinkNamesFromSinksArray, makePatternMatcher, ONE_COMPONENT_ONLY, projectSinksOn, removeNullsFromArray,
+  traverseTree,
 } from "../../../utils/src/index"
 import {
-  assertContract, assertSinksContracts, assertSourcesContracts, isArray, isArrayOf, isArrayOptSinks,
-  isEmptyArray, isFunction, isMergeSinkFn, isOptSinks, isVNode
+  assertContract, assertSinksContracts, assertSourcesContracts, isArrayOf, isArrayOptSinks, isEmptyArray, isFunction,
+  isMergeSinkFn, isOptSinks, isVNode
 } from "../../../contracts/src/index"
-import { format, traceSinks } from "../../../utils/src/index"
-import { removeNullsFromArray, traverseTree } from "../../../utils/src/index"
 import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, isNil, keys, map, merge, mergeWith, path,
-  reduce
+  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, path, reduce, T
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import Rx from "rx"
@@ -320,7 +319,14 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
   )
 }
 
-/**
+function deconstructHooksFromSettings(settings) {
+  return settings && settings._hooks
+    ? settings._hooks
+    : { preprocessInput: undefined, postprocessOutput: undefined }
+}
+
+
+/** TODO update
  * # Settings
  * The output component returned by the `m` utility receives settings (at call time), termed in
  * what follows as inner settings or dynamic settings. The `m` utility also receives static
@@ -372,60 +378,52 @@ function computeChildrenSinks(children, extendedSources, localSettings) {
  * of the merge of the outer settings passed through the `m` utility, and the inner settings
  * passed to the output component.
  *
- * @param {*} componentDef
- * @param {Settings} _settings
- * @param {Array<Component> | Array<ParentAndChildren>} componentTree
+ * @param {*} _componentDef
+ * @param {Settings} __settings
+ * @param {Array<Component> | [ContainerComponent, Array<Component>]} _componentTree
  *
  * @returns {Component}
  * @throws when type- and user-specified contracts are not satisfied
  */
-function m(componentDef, _settings, componentTree) {
+function m(_componentDef, __settings, _componentTree) {
   console.groupCollapsed('m factory > Entry');
-  console.log('componentDef, _settings, children', componentDef, _settings, componentTree);
+  console.log('componentDef, _settings, children', _componentDef, __settings, _componentTree);
 
   // Check contracts
-  assertContract(hasMsignature, [componentDef, _settings, componentTree],
+  assertContract(hasMsignature, [_componentDef, __settings, _componentTree],
     `m > assertContract : error checking signature (componentDef, settings, children) = 
-   ${format({ componentDef, _settings, _children: componentTree })}!`);
+   ${format({ _componentDef, __settings, _children: _componentTree })}!`);
 
-  // TODO : remove cf. below
-  let {
-    makeLocalSources, makeLocalSettings, mergeSinks,
-    computeSinks, checkPostConditions, checkPreConditions
-  } = componentDef;
-  let parentComponent;
-  let childrenComponents;
+  // TODO : add corresponding contracts in future version, cf. hasMsignature where the contract as of now is empty
+  const { preprocessInput, postprocessOutput } = deconstructHooksFromSettings(__settings);
+
+  const { componentDef, settings: _settings, componentTree } = preprocessInput
+    ? preprocessInput(_componentDef, __settings, _componentTree)
+    : { componentDef: _componentDef, settings: __settings || {}, componentTree: _componentTree };
+
+  const makeLocalSources = componentDef.makeLocalSources || always(null);
+  const makeLocalSettings = componentDef.makeLocalSettings || always({});
+  const mergeSinks = componentDef.mergeSinks || {};
+  const computeSinks = componentDef.computeSinks;
+  const checkPostConditions = componentDef.checkPostConditions || T;
+  const checkPreConditions = componentDef.checkPreConditions || T;
 
   // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
-  // DOC : [null, [child]] is allowed
-  // TODO : refactor to const {parentComponent, childrenComponents} = parseComponentTree(componentTree)
-  if (isNil(componentTree[1])) {
-    parentComponent = always(null);
-    childrenComponents = componentTree;
-  }
-  else if (isArray(componentTree[1])) {
-    parentComponent = defaultTo(always(null), componentTree[0]);
-    childrenComponents = componentTree[1];
-  }
-  else {
-    parentComponent = always(null);
-    childrenComponents = componentTree;
-  }
-  // NOTE : there is no more branches as we already type-checked prior to here
-
-  _settings = _settings || {};
-  // TODO : refactor to const {makeL...} = parseComponentDef(...), except settings
-  // Set default values
-  makeLocalSources = defaultTo(always(null), makeLocalSources);
-  makeLocalSettings = defaultTo(always({}), makeLocalSettings);
-  mergeSinks = defaultTo({}, mergeSinks);
-  checkPostConditions = defaultTo(always(true), checkPostConditions);
-  checkPreConditions = defaultTo(always(true), checkPreConditions);
+  // DOC : [null, [child]] is allowed, but to avoid though
+  const { parentComponent, childrenComponents } =
+    makePatternMatcher(componentTreePatternMatchingPredicates, {
+      // TODO : refactor later the pattern match to only two cases (remove one component)
+      [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree }),
+      [CONTAINER_AND_CHILDREN]: componentTree => ({
+        parentComponent: defaultTo(always(null), componentTree[0]),
+        childrenComponents: componentTree[1]
+      }),
+      [CHILDREN_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree })
+    })(componentTree);
 
   console.groupEnd();
 
-  return function mComponent(sources, innerSettings) {
-    /** @type {String}*/
+  function mComponent(sources, innerSettings) {
     const traceInfo = (innerSettings && innerSettings.trace) || (_settings && _settings.trace);
     console.groupCollapsed(`${traceInfo} component > Entry`);
     console.debug('sources, innerSettings', sources, innerSettings);
@@ -457,8 +455,8 @@ function m(componentDef, _settings, componentTree) {
     let reducedSinks;
 
     // Case : computeSinks is defined
-    // TODO : refactor in three cases : computeReducedSinks(reduceStrategy, parentComponent, childrenComponents, extendedSources, localSettings)
-    // TODO : with reduceStrategy = one big shot | one per sink | one for all sinks
+    // TODO : refactor in three cases : computeReducedSinks(reduceStrategy, parentComponent, childrenComponents,
+    // extendedSources, localSettings) TODO : with reduceStrategy = one big shot | one per sink | one for all sinks
     if (computeSinks) {
       console.groupCollapsed(`${traceInfo} component > computeSinks`)
       reducedSinks = computeSinks(
@@ -530,11 +528,11 @@ function m(componentDef, _settings, componentTree) {
 
     assertSinksContracts(reducedSinks, checkPostConditions);
 
-    const tracedSinks = traceSinks(traceInfo, reducedSinks);
-
     console.groupEnd()
-    return tracedSinks
+    return reducedSinks
   }
+
+  return postprocessOutput ? postprocessOutput(mComponent) : mComponent
 }
 
 export {

@@ -39,43 +39,6 @@ in the component tree that input is being read.
 
 Unless I trace every sources in `m` before passing it ?? could be
 
-So :
-
-m(Specs, Settings, Tree) :
-
-- Specs has trace information : NO, has to go through settings? yes otherwise I have to find a 
-way to have a flatmap for log, i.e. traceInputs(tracedInputs)... merging the Specs.trace - more 
-complex. Incorporate than in `m` instead?? separate it rather is better design
-- `m` body:
-  - Tree.apply(traceInputs(Specs.trace, sources, settings)) (YES BOTH, I also need to include the 
-  settings   in  the log!)
-  - think about how the nesting would work, would not order be changed? to test
-
-- Remains the issue of tracing leaves of the component tree, i.e. Component
-  - is there a way to automate it ? Does not seem like so
-  - user should use traceInputs() himself to do so or a version of that
-  - same for traceOutputs
-
-- put trace info in settings._meta.trace etc.
-
-# case lead component
-function f (sources, settings){
-  const tracedSources = sources.traceInputs(sources, settings);
-  
-  const events = makeEvents(sources, settings);
-  // state can use events, for DRY reasons
-  const state = makeState(events, sources, settings);
-  const actions = makeActions(events, state, settings);
-  
-  // settings can be used to parameterize the trace
-  const tracedActions = sources.traceSinks(actions, settings);
-  
-  return {
-    sinkName : projectActionOnSink(sinkName, tracedActions),
-    ...
-  }
-}
-
 # Injection of traceInputs and traceSinks
 Note that in cycle, drivers are called first with subjects. Then app with drivers sinks as source
 
@@ -127,6 +90,19 @@ function traceRun (traceSpecs, run) {
   }
   
 }
+
+Actually: 
+
+- pass in settings
+  - _trace : {traceSpecs : { driverName : [traceSourceFn, traceSinkFn]}, combinatorName, 
+  componentName, postMessage, onMessage, isTraceEnabled:Y/N, }
+    - first componentName is 'App' when decorating run
+  - _helpers : {getID, } (merge fusion, no destroy)
+  - _hooks : {preprocessInput, postprocessOutput}
+    - preprocessInput : componentDef, _settings, componentTree
+    - postprocessOutput : function mComponent(sources, innerSettings)
+      - that will be written as an advice on mComponent i.e.
+      - = decorateWithAdvice(aroundAdvice, mComponent)
 
 # org
 - settings : {_trace : {combinatorName: ..., componentName: ..., id: ...}}
@@ -222,15 +198,6 @@ https://stackoverflow.com/questions/9153445/how-to-communicate-between-iframe-an
 
 I can also emit at m level, in addition to the m-result component level. That allows to have the 
 graph prior to execution of any component
-
-- add an advice library:
-  - var advisedFunction = meld.around(functionToAdvise, aroundFunction); is fine
-  - also have after and before (can't change values - be careful about exceptions in after)
-    - also the advising function MUST NOT raise exceptions... so no contracts performed by 
-    advices! or use around advices
-  - also addAdvices(functionToAdvise, advices) same as meld, but no around possible as props
-  - DO SEPARATELY IN THIS DIRECTORY (UTILS) AND THEN WHEN DONE MOVE TO UTILS
-  - THINK ABOUT NAMING of advised functions - how to conserve names without using eval??
 
 - `m` body
   - run around advice (componentDef, _settings, componentTree) - actually hard coded, not advice

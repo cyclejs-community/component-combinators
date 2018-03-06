@@ -1,5 +1,4 @@
 # Combinators
-- Combine example : use forEach example for Feature!
 - for next version, move towards a InjectSources only for sources, and settings injected through
 Combine (object) or InjectSettings(function, use to adapt settings). Worse case, that adds a level
  in the tree, but more readable logic
@@ -22,30 +21,17 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
   - nr is an unique id
   - cannot use position for index... would not work later with drag and drop
   - so rehave a look at the logic
-- make a final v0.4 release (actually release as is 3.x before the final v.4)
-- break the FSM doc in two parts : one bla bla theoretical and one sample app
 - think about work around for isolation, components need to pass their click free of concerns
-- m : call it `combine`
 - m : write a better doc to explain settings inheritance, and put in the docs not in the code
   - write an interactive application with update of the three possible settings
-- m : design better trace information
-  - for instance outer trace could be concatenated to inner trace to trace also the component
-  hierarchy
 - all components : replace singular treatment for DOM into behaviourSinkNames, sinkNames
   - all behaviourSinkNames must give a zero value (for DOM : $.of(null)
   - but really find a non-DOM example and investigate, it is not so simple
 - NTH : Router : route params property name could be configured in settings, to think about
 - NTH : Router : route params could be directly passed as settings to children components
 - TODO : FSM : a bunch of them pending
-- NOTE : run the router only with cycle history (done in AllIn demo)
 - TODO : for all components, decide if I pass the settings of the combinator downstream!!
    - for instance, sinkNames is good to pass downstream, but slot would not be!!
-- TODO : change InjectSourcesAndSettings so that factory returns both sources and settings so
- one function call factory(sources, settings) -> {sources : {sources hash}, settings: new
- settings}
-- TODO : cleanup and break up utils, too many thigns there, look for cohesion
-- TODO : add examples for :
-   - authentication : take it from firebase sparks
 - TODO : see how to translate that https://github.com/Shopify/draggable?
 - TODO : what about animations? How does that play with vDom?
 
@@ -65,7 +51,6 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 - change assertContract to use auto print arguments with %O, so I don't have to use format
 - remove format and use console.log ?? will be complicated with assertCotnract in its current form
 - also in FSM and else use console.context for logging
-- InjectStateInSinks to remove
 - size build
   - rx.all -> rx-lite
   - webpack with tree-shaking?
@@ -132,73 +117,12 @@ cf. https://css-tricks.com/react-router-4/ and investigate if our router can do 
 Well, testing is complicated by having impure functions, so not sure what to do here. Best is to
 have nice tracing/debugging, and then test with instrumenting the gui (a la flaky selenium).
 
-In summary,
-
-- So what?
-  - readable, i.e. understandable, the logic is immediately apparent from the use of combinators
-    - A projectTaskList is a list of tasks, and a task is ...
-    - compare that with chldren(sources) with lots of $ in settings, and then sinks this merge
-    sinks that. The combination logic is abstracted into the combinator, that is what it is for.
-  - supports iterative development through refinement
-    - current approach does not, if you call children comp, you then have to merge the sinks, and
-     you don't know yet what are the sinks for your child, if you don't know what you will put
-     there...
-   - make explicit a syntax tree for a DSL, in which combinators are the keywords, and components
-    are the variables, i.e. in the future the DSL could be extracted and code generated through
-    parsing
-   - tracing and loggging should be easy and allow for visualization
-     - next release!!
-
 # TODO TODO
 - ROLL UP AND RELEASE
 - start working on logging and visualization -> architecture note
 - start working on the new cycle event/state handling-> architecture draft article to write
-- MAKE A RELEASE!!!!
-  - rmove lodash dependency (forOwn, kebabCase, escape, etc.) that is snabbdom-to-html, which I
-  don't even use... except for debugging i.e. in dev
-  - so add a DEV variable which will be taken out when building for prod or sth like that
-
-- OR GO BACK TO MASTER and bundle with webpack - look at size in prod...
-- try some default files from webpack the new one
-
-- RELEASE a version!!
-  - umd
-- AND THEN I will have to redo the demos but importing the library with package.json and the
-release number
-- RUN PRETTIER!!
-
-
-Note that the present content will be easier to grasp for people with already some knowledge of
-streams/rxjs/cyclejs components. The documentation assumes that prior knowledge. I do not spend too
-much time explaining what `sources` is, and how rxjs streams can be combined (though I don't think any example has anything else than `map`
-and `filter`).
-
-I will now be using this library in my future projects. I'll now also take a little break on the
-development of the first step (see roadmap on things to improve on) to focus on the second and
-third step (visualization -- thanks to this work, it should now be possible to visually and
-interactively trace and debug an application). In the meanwhile, I would be grateful to have
-feedback from the community. Any feedback is useful, but constructive feedback is even better,
-and helps identify pain points or prioritize features.
-
-# Sample app
-- tic-tac-toe : showcases what?
-  - https://ejdraper.com/2018/01/17/tic-tac-toe-with-vuejs/
 
 # Quotes
 - https://www.oreilly.com/ideas/reactive-programming-vs-reactive-systems
 > We are no longer building programs—end-to-end logic to calculate something for a single operator—as much as we are building systems.
 > In order to deliver systems that users—and businesses—can depend on, they have to be responsive, for it does not matter if something provides the correct response if the response is not available when it is needed. In order to achieve this, we need to make sure that responsiveness can be maintained under failure (resilience) and under load (elasticity). To make that happen, we make these systems message-driven, and we call them reactive systems.
-
-# tips
-- [dynamic function names js](https://stackoverflow.com/questions/5905492/dynamic-function-name-in-javascript/40918734#40918734)
-
-```javascript
-"use strict";
-var name = "foo";
-var func = new Function(
-     "return function " + name + "(){ alert('sweet!')}"
-)();
-
-//call it, to test it
-func();
-```
