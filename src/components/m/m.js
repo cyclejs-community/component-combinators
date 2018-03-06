@@ -38,6 +38,7 @@
  *@typedef {Component | Array<Component>} ParentAndChildren
  */
 
+import {COMBINE_ALL_SINKS_SPECS, COMBINE_GENERIC_SPECS, COMBINE_PER_SINK_SPECS} from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, emitNullIfEmpty, format,
   getSinkNamesFromSinksArray, makePatternMatcher, ONE_COMPONENT_ONLY, projectSinksOn, removeNullsFromArray,
@@ -325,6 +326,68 @@ function deconstructHooksFromSettings(settings) {
     : { preprocessInput: undefined, postprocessOutput: undefined }
 }
 
+function computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings){
+  return computeSinks(        parentComponent, childrenComponents, extendedSources, localSettings      )
+}
+
+function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings){
+  console.groupCollapsed(`computeSinksWithAllSinksStrategy`);
+  console.trace(`Computing container sinks with settings : %O`, localSettings);
+
+  const containerSinks = parentComponent(extendedSources, localSettings);
+
+  console.trace(`Computed container sinks`);
+
+  console.trace(`Computing children sinks with settings : %O`, localSettings);
+
+  const childrenSinks = computeChildrenSinks(childrenComponents, extendedSources, localSettings);
+
+  console.trace(`Computed children sinks`);
+
+  assertContract(isOptSinks, [containerSinks], 'containerSinks must be a hash of observable sink');
+  assertContract(isArrayOptSinks, [childrenSinks], 'childrenSinks must be an array of sinks');
+
+  console.trace(`Computing reduced sinks`);
+
+  const reducedSinks = mergeSinks(containerSinks, childrenSinks, localSettings);
+
+  console.trace(`Computed reduced sinks`);
+  console.groupEnd()
+
+  return reducedSinks
+}
+
+function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings) {
+  console.groupCollapsed(`computeSinksWithPerSinkStrategy`);
+  console.trace(`Computing container sinks with settings : %O`, localSettings);
+
+  const containerSinks = parentComponent(extendedSources, localSettings);
+
+  console.trace(`Computed container sinks`);
+
+  console.trace(`Computing children sinks with settings : %O`, localSettings);
+
+  const childrenSinks = computeChildrenSinks(childrenComponents, extendedSources, localSettings);
+
+  console.trace(`Computed children sinks`);
+
+  assertContract(isOptSinks, [containerSinks], 'containerSinks must be a hash of observable sink');
+  assertContract(isArrayOptSinks, [childrenSinks], 'childrenSinks must be an array of sinks');
+
+  console.trace(`Computing reduced sinks with merge functions for sinks : ${keys(mergeSinks)}`);
+
+  const allSinks = flatten(removeNullsFromArray([containerSinks, childrenSinks]))
+  const sinkNames = getSinkNamesFromSinksArray(allSinks)
+
+  const reducedSinks = reduce(
+    computeReducedSink(containerSinks, childrenSinks, localSettings, mergeSinks),
+    {}, sinkNames
+  );
+  console.trace(`Computed reduced sinks`);
+  console.groupEnd()
+
+  return reducedSinks
+}
 
 /** TODO update
  * # Settings
@@ -452,80 +515,20 @@ function m(_componentDef, __settings, _componentTree) {
 
     assertSourcesContracts([extendedSources, localSettings], checkPreConditions);
 
-    let reducedSinks;
+    // Identify and apply the strategy defined
+    const componentDefPatternMatchingPredicates = [
+      [COMBINE_GENERIC_SPECS, componentDef => Boolean(componentDef.computeSinks)],
+    [COMBINE_ALL_SINKS_SPECS, componentDef => Boolean(componentDef.mergeSinks && isFunction(componentDef.mergeSinks))],
+    [COMBINE_PER_SINK_SPECS, T]
+    ];
 
-    // Case : computeSinks is defined
-    // TODO : refactor in three cases : computeReducedSinks(reduceStrategy, parentComponent, childrenComponents,
-    // extendedSources, localSettings) TODO : with reduceStrategy = one big shot | one per sink | one for all sinks
-    if (computeSinks) {
-      console.groupCollapsed(`${traceInfo} component > computeSinks`)
-      reducedSinks = computeSinks(
-        parentComponent, childrenComponents, extendedSources, localSettings
-      )
-      console.log(`${traceInfo} : m > computeSinks returns : `, reducedSinks);
-      assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
-      console.groupEnd()
-    }
-    // Case : computeSinks is not defined, merge is defined in mergeSinks
-    else {
-      console.groupCollapsed(`${traceInfo} component > makeOwnSinks`);
-      console.debug(`called with extendedSources : ${keys(extendedSources)}`);
-      console.debug(`called with localSettings`, localSettings);
+    const reducedSinks = makePatternMatcher(componentDefPatternMatchingPredicates, {
+      [COMBINE_GENERIC_SPECS] : _ => computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+      [COMBINE_ALL_SINKS_SPECS] : _ => computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+      [COMBINE_PER_SINK_SPECS] : _ => computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings)
+    })(componentDef);
 
-      const ownSinks = parentComponent(extendedSources, localSettings);
-
-      console.debug(`${traceInfo} component > makeOwnSinks returns : `, ownSinks);
-      console.groupEnd();
-
-      console.group(`${traceInfo} component > computing children sinks`);
-      console.debug(`called with extendedSources : ${keys(extendedSources)}`);
-      console.debug(`called with localSettings`, localSettings);
-
-      const childrenSinks = computeChildrenSinks(childrenComponents, extendedSources, localSettings);
-
-      console.debug(`${traceInfo} component > computing children sinks returns : `, childrenSinks);
-      console.groupEnd();
-
-      assertContract(isOptSinks, [ownSinks], 'ownSinks must be a hash of observable sink');
-      assertContract(isArrayOptSinks, [childrenSinks], 'childrenSinks must' +
-        ' be an array of sinks');
-
-      // Merge the sinks from children and one-s own...
-      // Case : mergeSinks is defined through a function
-      if (isFunction(mergeSinks)) {
-        console.groupCollapsed(`${traceInfo} component > (fn) mergeSinks`);
-        console.debug(`called with ownSinks : ${format(keys(ownSinks))}, 
-                       childrenSinks: ${format(childrenSinks.map(keys))}`);
-        console.debug(`called with localSettings`, localSettings);
-
-        reducedSinks = mergeSinks(ownSinks, childrenSinks, localSettings);
-
-        console.debug(`${traceInfo} component > (fn) mergeSinks returns :`, reducedSinks)
-        assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > mergeSinks (fn) : must return sinks!, returned ${format(reducedSinks)}`);
-        console.groupEnd()
-      }
-      // Case : mergeSinks is defined through an object
-      else {
-        const allSinks = flatten(removeNullsFromArray([ownSinks, childrenSinks]))
-        const sinkNames = getSinkNamesFromSinksArray(allSinks)
-
-        console.groupCollapsed(`${traceInfo} component > (obj) mergeSinks`)
-        console.log(`mergeSinks fn defined for sinks ${keys(mergeSinks)}`)
-        console.debug(`called with ownSinks : ${format(keys(ownSinks))}, 
-                       childrenSinks: ${format(childrenSinks.map(keys))}`)
-        console.debug(`called with localSettings`, localSettings)
-
-        reducedSinks = reduce(
-          computeReducedSink(ownSinks, childrenSinks, localSettings, mergeSinks),
-          {}, sinkNames
-        );
-
-        console.debug(`${traceInfo} component > (obj) mergeSinks returns :`, reducedSinks)
-        assertContract(isOptSinks, [reducedSinks], `${traceInfo} : m > mergeSinks (obj) : must return sinks!, returned ${format(reducedSinks)}`);
-        console.groupEnd()
-      }
-    }
-
+    assertContract(isOptSinks, [reducedSinks], `m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
     assertSinksContracts(reducedSinks, checkPostConditions);
 
     console.groupEnd()
