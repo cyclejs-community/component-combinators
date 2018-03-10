@@ -39,7 +39,7 @@ const config = {
   },
   resolve: {
     alias: {
-      main: path.resolve(__dirname, '../../')
+      // main: path.resolve(__dirname, '../../')
     },
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
     extensions: ['.json', '.js']
