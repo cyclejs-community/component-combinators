@@ -10,7 +10,6 @@ function isSourcesAndSettings(obj) {
 
 export function InjectSourcesAndSettings({ sourceFactory: sourcesFactory, settings },
                                          componentTree) {
-  // NOTE : not using makeLocalSettings which is the lowest priority of all settings
   // TODO : update documentation
   assertContract(isSourcesAndSettings, [{
     sourceFactory: sourcesFactory,

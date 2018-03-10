@@ -487,7 +487,7 @@ function m(_componentDef, __settings, _componentTree) {
   console.groupEnd();
 
   function mComponent(sources, innerSettings) {
-    const traceInfo = (innerSettings && innerSettings.trace) || (_settings && _settings.trace);
+    const traceInfo = (innerSettings && innerSettings._trace.combinatorName) || (_settings && _settings._trace);
     console.groupCollapsed(`${traceInfo} component > Entry`);
     console.debug('sources, innerSettings', sources, innerSettings);
 

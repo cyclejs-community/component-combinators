@@ -48,8 +48,7 @@ Note that in cycle, drivers are called first with subjects. Then app with driver
 
 ## Code
 const traceSpecs = {
-  DriverName : traceFn,
-  default? // will be necessary because of Pipe for instance...
+  DriverName : traceFn
 }
 const tracedRun = traceRun(traceSpecs, run);
 const {tracedSources, tracedSinks} = tracedRun(App, Drivers);
@@ -67,23 +66,7 @@ function traceRun (traceSpecs, run) {
         acc[driverName] = apply(traceSpecs[driverName].tracedInputs, topLevelTrace, sources[driverName]);
         return acc
       }, {});
-      // TO WRITE, should be about the same as previous line, so refactor later
-      tracedSources.traceInputs = ... take all sources and add before advice
-      tracedSources.traceSinks = ... take all sinks (should be easier, only observable)
-      tracedSources.getId = ... closure to give unique id (incremental number)
-      
-      const tracedSettings = settings;
-
-      return app(tracedSources, tracedSettings)
-    }
-    
-    // trace the input of the drivers i.e. the sinks
-    // basically advice on input of driver
-    const tracedDrivers = driverNames.reduce((acc, driverName) => {
-      acc[driverName] = function (sink){
-        return apply(drivers[driverName], traceSpecs[driverName](sink))
-      }
-      return acc;
+      // TO WRITE, only need to inject the traceSpecs in settings
     }, {});
 
     return run(tracedApp, tracedDrivers)

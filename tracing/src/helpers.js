@@ -8,7 +8,7 @@ export function getId() {
   return counter++
 }
 
-export function isEnabledTracing(settings) {
+export function getIsTraceEnabled(settings) {
   return !!settings._trace.isTraceEnabled
 }
 
@@ -26,15 +26,6 @@ export function getLeafComponentName(component) {
   return component.name || `LeafComponent`
 }
 
-/**
- * @typedef {Object} TraceFns
- * @property {Function} 0 `TraceSourceFn` function taking a source and returning a traced source
- * @property {Function} 1 `TraceSinkFn` function taking a sink and returning a traced sink
- */
-
-/**
- * @typedef {Object.<DriverName, TraceFns>} TraceSpecs
- */
 /**
  *
  * @param {*} settings Take the settings to deconstruct
@@ -130,8 +121,6 @@ export function mapOverComponentTree(fmap, componentTree) {
   return componentTreeMapper(componentTree);
 }
 
-// TODO : pattern matching helpers : test and put in utils!!!
-
 export function traceSources(traceSpecs, sources, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(settings);
   const defaultTraceSourceFn = defaultTraceSpecs && defaultTraceSpecs[0];
@@ -185,7 +174,7 @@ export function traceSinks(traceSpecs, sinks, settings) {
   }
 }
 
-function defaultTraceSourceFn(source, settings) {
+export function defaultTraceSourceFn(source, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const { getId } = deconstructHelpersFromSettings(settings);
 
@@ -222,7 +211,7 @@ function defaultTraceSourceFn(source, settings) {
   }
 }
 
-function defaultTraceSinkFn(sink, settings) {
+export function defaultTraceSinkFn(sink, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const { getId } = deconstructHelpersFromSettings(settings);
 
@@ -290,9 +279,3 @@ function isEventSink (sink){
   return Boolean(sink && isEventSource(sink))
 }
 
-// TODO : write the advice on run function - with the trace, default and non-default (tests to write?? YES, with
-// stubbed sendMessage it is easy)
-// TODO : test the window messaging and iframe add
-// TODO : write the iframe message reception
-// TODO : rerun m tests to check old behaviour is conserved (no trace)
-// TODO : THEN refactor m in several smaller functions (three strategies cf. TODOs in coherence with doc)

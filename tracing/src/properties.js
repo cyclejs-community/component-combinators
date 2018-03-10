@@ -1,6 +1,4 @@
-import { isNil, T } from "ramda"
-
-export const APP_DEFAULT_NAME = 'App';
+export const TRACE_BOOTSTRAP_NAME = 'App';
 export const IS_TRACE_ENABLED_DEFAULT = true;
 export const iframeSource = 'devtool.html';
 export const iframeId = 'devtool';
