@@ -38,7 +38,7 @@
  *@typedef {Component | Array<Component>} ParentAndChildren
  */
 
-import {COMBINE_ALL_SINKS_SPECS, COMBINE_GENERIC_SPECS, COMBINE_PER_SINK_SPECS} from './properties'
+import { COMBINE_ALL_SINKS_SPECS, COMBINE_GENERIC_SPECS, COMBINE_PER_SINK_SPECS } from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, emitNullIfEmpty, format,
   getSinkNamesFromSinksArray, makePatternMatcher, ONE_COMPONENT_ONLY, projectSinksOn, removeNullsFromArray,
@@ -49,7 +49,7 @@ import {
   isMergeSinkFn, isOptSinks, isVNode
 } from "../../../contracts/src/index"
 import {
-  addIndex, always, clone, concat, defaultTo, flatten, is, keys, map, merge, mergeWith, path, reduce, T
+  addIndex, always, clone, concat, defaultTo, flatten, keys, map, merge, mergeDeepRight, path, pathOr, reduce, T
 } from "ramda"
 import { div } from "cycle-snabbdom"
 import Rx from "rx"
@@ -58,10 +58,6 @@ import { hasMsignature, hasNoTwoSlotsSameName } from "./types"
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable
 const mapIndexed = addIndex(map);
-
-const deepMerge = function deepMerge(a, b) {
-  return (is(Object, a) && is(Object, b)) ? mergeWith(deepMerge, a, b) : b;
-}
 
 // Configuration
 const defaultMergeSinkConfig = {
@@ -326,11 +322,13 @@ function deconstructHooksFromSettings(settings) {
     : { preprocessInput: undefined, postprocessOutput: undefined }
 }
 
-function computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings){
-  return computeSinks(        parentComponent, childrenComponents, extendedSources, localSettings      )
+function computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources,
+                                         localSettings) {
+  return computeSinks(parentComponent, childrenComponents, extendedSources, localSettings)
 }
 
-function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings){
+function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources,
+                                          localSettings) {
   console.groupCollapsed(`computeSinksWithAllSinksStrategy`);
   console.trace(`Computing container sinks with settings : %O`, localSettings);
 
@@ -357,7 +355,8 @@ function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenC
   return reducedSinks
 }
 
-function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings) {
+function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources,
+                                         localSettings) {
   console.groupCollapsed(`computeSinksWithPerSinkStrategy`);
   console.trace(`Computing container sinks with settings : %O`, localSettings);
 
@@ -460,9 +459,10 @@ function m(_componentDef, __settings, _componentTree) {
   // TODO : add corresponding contracts in future version, cf. hasMsignature where the contract as of now is empty
   const { preprocessInput, postprocessOutput } = deconstructHooksFromSettings(__settings);
 
-  const { componentDef, settings: _settings, componentTree } = preprocessInput
-    ? preprocessInput(_componentDef, __settings, _componentTree)
-    : { componentDef: _componentDef, settings: __settings || {}, componentTree: _componentTree };
+  const { componentDef, settings: _settings, componentTree } =
+    preprocessInput
+      ? preprocessInput(_componentDef, __settings, _componentTree)
+      : { componentDef: _componentDef, settings: __settings || {}, componentTree: _componentTree };
 
   const makeLocalSources = componentDef.makeLocalSources || always(null);
   const makeLocalSettings = componentDef.makeLocalSettings || always({});
@@ -475,7 +475,7 @@ function m(_componentDef, __settings, _componentTree) {
   // DOC : [null, [child]] is allowed, but to avoid though
   const { parentComponent, childrenComponents } =
     makePatternMatcher(componentTreePatternMatchingPredicates, {
-      // TODO : refactor later the pattern match to only two cases (remove one component)
+      // TODO : refactor later the pattern match to only two cases (remove one component only case)
       [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree }),
       [CONTAINER_AND_CHILDREN]: componentTree => ({
         parentComponent: defaultTo(always(null), componentTree[0]),
@@ -487,16 +487,16 @@ function m(_componentDef, __settings, _componentTree) {
   console.groupEnd();
 
   function mComponent(sources, innerSettings) {
-    const traceInfo = (innerSettings && innerSettings._trace.combinatorName) || (_settings && _settings._trace);
+    const traceInfo = pathOr('', ['_trace', 'combinatorName'], innerSettings);
     console.groupCollapsed(`${traceInfo} component > Entry`);
     console.debug('sources, innerSettings', sources, innerSettings);
 
     innerSettings = innerSettings || {};
-    const mergedSettings = deepMerge(innerSettings, _settings);
+    const mergedSettings = mergeDeepRight(innerSettings, _settings);
 
     // Note that per `merge` ramda spec. the second object's values
     // replace those from the first in case of conflict of keys
-    const localSettings = deepMerge(
+    const localSettings = mergeDeepRight(
       makeLocalSettings(mergedSettings),
       mergedSettings
     );
@@ -518,14 +518,18 @@ function m(_componentDef, __settings, _componentTree) {
     // Identify and apply the strategy defined
     const componentDefPatternMatchingPredicates = [
       [COMBINE_GENERIC_SPECS, componentDef => Boolean(componentDef.computeSinks)],
-    [COMBINE_ALL_SINKS_SPECS, componentDef => Boolean(componentDef.mergeSinks && isFunction(componentDef.mergeSinks))],
-    [COMBINE_PER_SINK_SPECS, T]
+      [COMBINE_ALL_SINKS_SPECS,
+        componentDef => Boolean(componentDef.mergeSinks && isFunction(componentDef.mergeSinks))],
+      [COMBINE_PER_SINK_SPECS, T]
     ];
 
     const reducedSinks = makePatternMatcher(componentDefPatternMatchingPredicates, {
-      [COMBINE_GENERIC_SPECS] : _ => computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
-      [COMBINE_ALL_SINKS_SPECS] : _ => computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
-      [COMBINE_PER_SINK_SPECS] : _ => computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings)
+      [COMBINE_GENERIC_SPECS]:
+        _ => computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+      [COMBINE_ALL_SINKS_SPECS]:
+        _ => computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+      [COMBINE_PER_SINK_SPECS]:
+        _ => computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings)
     })(componentDef);
 
     assertContract(isOptSinks, [reducedSinks], `m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);

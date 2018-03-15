@@ -5,7 +5,6 @@ import { runTestScenario } from '../testing/src/runTestScenario'
 import { Case, Switch } from '../src/components/Switch/Switch'
 import { DOM_SINK } from "../utils/src/index"
 import { convertVNodesToHTML } from "../utils/src/index"
-
 import { pipe } from 'ramda'
 
 const $ = Rx.Observable;

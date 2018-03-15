@@ -54,13 +54,12 @@
  */
 
 import {
-  __, addIndex, all as allR, always, clone, curry, defaultTo, identity, isEmpty, isNil,
-  keys as keysR, map, mapObjIndexed, reduce as reduceR, tryCatch, values
+  __, addIndex, all as allR, always, clone, curry, defaultTo, identity, isEmpty, isNil, keys as keysR, map,
+  mapObjIndexed, reduce as reduceR, tryCatch, values
 } from "ramda"
 import { format, makeErrorMessage, removeNullsFromArray } from "../../utils/src/index"
 import {
-  assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks,
-  isString, isUndefined
+  assertContract, assertSignature, isArray, isArrayOf, isFunction, isNullableObject, isOptSinks, isString, isUndefined
 } from "../../contracts/src/index"
 import * as Rx from "rx"
 
@@ -519,26 +518,37 @@ function runTestScenario(inputs, expected, testFn, _settings) {
     sinksResults
   );
 
-  const allResults = removeNullsFromArray(values(resultAnalysis))
-  // This takes care of actually starting the producers
-  // which generate the execution of the test assertions
-  $.merge(allResults)
-    .subscribe(
-      x => console.warn('Test completed for sink:', x),
+  const allResults = removeNullsFromArray(values(resultAnalysis));
+
+  return new Promise((resolve, reject) => {
+    // This takes care of actually starting the producers
+    // which generate the execution of the test assertions
+    $.merge(allResults)
+      .subscribe(
+        x => console.warn('Test completed for sink:', x),
+        function (err) {
+          console.error('An error occurred while executing test!', err);
+          _errorHandler(err);
+          reject({ err, msg: `An error occurred while executing test!` });
+        },
+        _ => {
+          console.warn('Tests completed!');
+          resolve(true)
+        }
+      );
+    testInputs$.subscribe(
+      x => undefined,
       function (err) {
-        console.error('An error occurred while executing test!', err);
+        console.error('An error occurred while emitting test inputs!', err);
         _errorHandler(err);
+        reject({ err, msg: `An error occurred while emitting test inputs!` });
       },
-      x => console.warn('Tests completed!')
-    );
-  testInputs$.subscribe(
-    x => undefined,
-    function (err) {
-      console.error('An error occurred while emitting test inputs!', err);
-      _errorHandler(err);
-    },
-    x => console.warn('test inputs emitted')
-  )
+      _ => {
+        console.warn('Tests inputs emitted!');
+        resolve(true)
+      }
+    )
+  })
 }
 
 export {

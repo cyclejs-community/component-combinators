@@ -28,3 +28,7 @@ to display.
 - remove node_module, force clean the npm cache (npm clean cache --force, or sth like that)
 - update version (that worked for rollup uglyfy plugin)
 - pray
+
+# snabbdom
+- for iframe, div, etc. to work property when converted to html, the selector must be a real 
+selector, i.e. start iwht # or . for example

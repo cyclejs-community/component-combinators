@@ -1,11 +1,13 @@
 import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
-import { span } from 'cycle-snabbdom'
 import { runTestScenario } from '../testing/src/runTestScenario'
 import { convertVNodesToHTML } from "../utils/src/index"
-import { pipe } from 'ramda'
-import { Pipe } from "../src/components/Pipe/Pipe"
-import { DOM_SINK, addPrefix } from "../utils/src"
+import { identity, pipe, omit } from 'ramda'
+import { addPrefix, DOM_SINK } from "../utils/src"
+import { traceApp } from "../tracing/src"
+import { traceDOMsinkFn, traceEventSinkFn, traceEventSourceFn } from "../tracing/src/helpers"
+import { div } from 'cycle-snabbdom'
+import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
 
 const $ = Rx.Observable;
 
@@ -16,7 +18,11 @@ function analyzeTestResults(assert, done) {
   }
 }
 
-QUnit.module("Testing trace functionality", {})
+function removeWhenField(traces){
+  return traces.map(trace => omit(['when'], trace))
+}
+
+QUnit.module("Testing trace functionality", {});
 
 // Test plan
 // Main cases
@@ -35,6 +41,7 @@ QUnit.module("Testing trace functionality", {})
 // Edge cases
 // - using a combinator without passing a combinator name : how is the trace affected?
 // - App is a component, i.e. component tree depth 0
+// - container component is not an atomic component but a composite component...
 
 // Edge case
 // App is a component
@@ -56,44 +63,410 @@ function AtomicComponentApp(sources, settings) {
   const driver2 = sources[ANOTHER_DRIVER];
 
   return {
-    [DOM_SINK] : $.merge(driver1, driver2)
-      .map(addPrefix('DOM_SINK emits: ')),
-    [A_DRIVER] : driver1
+    [DOM_SINK]: $.merge(driver1, driver2)
+      .map(x => div(`DOM_SINK emits: ${x}`)),
+    [A_DRIVER]: driver1
       .map(addPrefix(`driver1 emits: `))
   }
 }
 
 // TODO : after same test but testing default trace functions
 QUnit.test("edge case - App is an atomic component (depth tree 0)", function exec_test(assert) {
-  const done = assert.async(2); // TODO
+  const done = assert.async(3);
+  const traces = [];
 
   const App = AtomicComponentApp;
-  // TODO : adjust the API ... don't trace run, trace the app!!
-  const tracedApp = trace({
-    // TODO : specs for tracing A_DRIVR, and aNOTHR_DIRVER
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      sendMessage: msg => traces.push(msg)
+    }
   }, App);
 
   const inputs = [
-    // put myIntent and click in sources to collide with sink for this test case - should throw
-    // at the fisrt collision
-    { [A_DRIVER]: { diagram: '-a--b--c--d--e--f--a' } },
-    { [ANOTHER_DRIVER]: { diagram: '-A--B--C--D--E--F--A' } },
+    { [A_DRIVER]: { diagram: '-a--b--' } },
+    { [ANOTHER_DRIVER]: { diagram: '-A--B--' } },
   ];
 
-  const expected = {
+  const expectedMessages = {
     [A_DRIVER]: {
-      outputs: [],
-      successMessage: `sink ${A_DRIVER} produces the expected values`,
-//      transform: pipe(convertVNodesToHTML)
+      outputs: inputs[0][A_DRIVER].diagram.replace(/-/g, '').split('').map(x => `driver1 emits: ${x}`),
+      successMessage: `sink ${A_DRIVER} produces the expected values`
     },
-    [ANOTHER_DRIVER]: {
-      outputs: [],
-      successMessage: `sink ${ANOTHER_DRIVER} produces the expected values`,
-//      transform: pipe(convertVNodesToHTML)
+    [DOM_SINK]: {
+      outputs: [
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style="width: 450px; height: 200px"></iframe><div><div>DOM_SINK emits: a</div></div></div>`,
+        `<div><iframe id=\"${iframeId.slice(1)}\" src=\"${iframeSource}\" style=\"width: 450px; height: 200px\"></iframe><div><div>DOM_SINK emits: A</div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div>DOM_SINK emits: b</div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div>DOM_SINK emits: B</div></div></div>`
+      ],
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      transform: pipe(convertVNodesToHTML)
     },
   };
 
-  runTestScenario(inputs, expected, pipedComponent, {
+  const expectedGraph = [
+    {
+      "combinatorName": undefined,
+      "componentName": TRACE_BOOTSTRAP_NAME,
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": AtomicComponentApp.name,
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    }
+  ];
+  const expectedTraces = [
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: a</div>"
+        },
+        "type": 1
+      },
+      "id": 2,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: a</div></div>"
+        },
+        "type": 1
+      },
+      "id": 3,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 4,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 6,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 7,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: A</div>"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: A</div></div>"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 10,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 11,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: b</div>"
+        },
+        "type": 1
+      },
+      "id": 12,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: b</div></div>"
+        },
+        "type": 1
+      },
+      "id": 13,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 14,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 15,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 16,
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 17,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: B</div>"
+        },
+        "type": 1
+      },
+      "id": 18,
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: B</div></div>"
+        },
+        "type": 1
+      },
+      "id": 19,
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
     waitForFinishDelay: 10,
     analyzeTestResults: analyzeTestResults(assert, done),
@@ -101,10 +474,15 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       done(err)
     }
   });
+  testResult
+    .then(_ => {
+      assert.deepEqual(removeWhenField(traces), expectedGraph.concat(expectedTraces), `Traces are produced as expected!`);
+      done()
+    });
 
 });
 
-QUnit.test("main case - ...", function exec_test(assert) {
+QUnit.skip("main case - ...", function exec_test(assert) {
   const done = assert.async(2); // TODO
 
   const inputs = [
@@ -142,3 +520,4 @@ QUnit.test("main case - ...", function exec_test(assert) {
   });
 
 });
+

@@ -45,7 +45,7 @@
     "clean-test": "rimraf dist-node-test && mkdirp dist-node-test",
     "build": "npm run clean && npm run build-node && npm run build-browser",
     "test-no-watch": "browserify -d dist-node-test | derequire > test/test-bundle.js",
-    "test": "watchify -d dist-node-test -o test/test-bundle.js -v",
+    "test": "watchify -d test -o dist-node-test/test-bundle.js -v",
     "wbuild": "webpack --display-error-details --progress --colors --watch --env dev",
     "wrelease": "webpack --display-error-details --progress --colors --watch --env build",
     "rollup": "./node_modules/.bin/rollup -c",

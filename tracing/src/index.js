@@ -1,15 +1,21 @@
-import { decorateWithAdvice } from "../utils/src/index"
-import { defaultTo } from 'ramda'
 import {
-  deconstructHelpersFromSettings, deconstructTraceFromSettings, getId, getIsTraceEnabled, getLeafComponentName,
-  getPathForNthChild, isLeafComponent, mapOverComponentTree, setComponentNameInSettings, setContainerFlagInSettings,
-  setLeafFlagInSettings, setPathInSettings, traceSinks, traceSources, defaultTraceSourceFn, defaultTraceSinkFn
+  containerFlagSettingsLens,
+  deconstructHelpersFromSettings, deconstructTraceFromSettings, defaultTraceSinkFn, defaultTraceSourceFn,
+  forEachInComponentTree, getId,
+  getIsTraceEnabled, getLeafComponentName, getPathForNthChild, isLeafComponent, mapOverComponentTree,
+  setComponentNameInSettings, setContainerFlagInSettings, setLeafFlagInSettings, setPathInSettings, traceSinks,
+  traceSources
 } from './helpers'
-import { iframeId, iframeSource, IS_TRACE_ENABLED_DEFAULT, PATH_ROOT, TRACE_BOOTSTRAP_NAME } from './properties'
-import { InjectSourcesAndSettings } from "../src/components/Inject/InjectSourcesAndSettings"
-import { Combine } from "../src/components/Combine"
-import { vLift } from "../../utils/src"
-import { iframe } from "cycle-snabbdom"
+import {
+  GRAPH_STRUCTURE, iframeId, iframeSource, IS_TRACE_ENABLED_DEFAULT, PATH_ROOT, TRACE_BOOTSTRAP_NAME
+} from './properties'
+import { Combine } from "../../src/components/Combine"
+import { decorateWithAdvice, getFunctionName, vLift } from "../../utils/src"
+import { iframe, div, p, a, i } from "cycle-snabbdom"
+import { merge, pathOr, view } from 'ramda'
+
+let graphCounter = 0;
+function getGraphCounter(){ return graphCounter++}
 
 /**
  * Sends a message to the devtool iframe
@@ -34,8 +40,8 @@ function onMessage(msg) {
  * @param {Array<Number>} path
  * @returns {function(Component, Boolean, Number):Component} advised component
  */
-function addTraceInfoToComponent(path){
-  return function addTraceInfoToComponent (component, isContainerComponent, index)  {
+function addTraceInfoToComponent(path) {
+  return function addTraceInfoToComponent(component, isContainerComponent, index) {
     const advisedComponent = decorateWithAdvice({
       around: function decorateComponentWithTraceInfo(joinpoint, component) {
         const { args, fnToDecorateName } = joinpoint;
@@ -43,6 +49,7 @@ function addTraceInfoToComponent(path){
         let updatedChildComponentSettings = setPathInSettings(getPathForNthChild(index, path), childComponentSettings);
         updatedChildComponentSettings = setContainerFlagInSettings(isContainerComponent, updatedChildComponentSettings);
         const isLeaf = isLeafComponent(component);
+        debugger
 
         if (isLeaf) {
           // If the component is a leaf component:
@@ -89,19 +96,42 @@ function preprocessInput(componentDef, mSettings, componentTree) {
   }
   else {
     const { path, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(mSettings);
-    const { getId } = deconstructHelpersFromSettings(mSettings);
 
     // set root path if no path is set
-    let updatedSettings = setPathInSettings(defaultTo(PATH_ROOT, path), mSettings);
+    let updatedSettings = setPathInSettings(path || PATH_ROOT, mSettings);
 
     // Inject path in every child component, misc. info and special trace treatment for leaf components
     const advisedComponentTree = mapOverComponentTree(addTraceInfoToComponent(path), componentTree);
 
     //`  - LOG : path and combinatorName and componentName which I have at config time
-    const treeDescriptionMessage = { componentName, combinatorName, when: +Date.now(), path, id: getId() };
-    sendMessage(treeDescriptionMessage);
+    // TODO : I need also to pass isContainreComponent optimally, will it be in mSettings? maybe, if not leaf
+    // case leaf is treated below
+    sendMessage({
+      logType : GRAPH_STRUCTURE,
+      componentName,
+      combinatorName,
+      isContainerComponent : view(containerFlagSettingsLens, mSettings),
+      when: +Date.now(),
+      path,
+      id: getGraphCounter()
+    });
+    // Edge case : I have to also log those component from the component tree which are leaf components as they won't
+    // log themselves
+    forEachInComponentTree((component, isContainerComponent, index) => {
+      if (isLeafComponent(component)) {
+        sendMessage({
+          logType : GRAPH_STRUCTURE,
+          componentName : getFunctionName(component),
+          combinatorName: undefined,
+          isContainerComponent : isContainerComponent,
+          when : +Date.now(),
+          path : path.concat([index]),
+          id: getGraphCounter()
+        })
+      }
+    }, componentTree);
 
-    return { componentDef, updatedSettings, advisedComponentTree }
+    return { componentDef, settings: updatedSettings, componentTree: advisedComponentTree }
   }
 }
 
@@ -117,25 +147,96 @@ function postprocessOutput(mComponent) {
       const { args, fnToDecorateName } = joinpoint;
       const [sources, childComponentSettings] = args;
 
-      if (!getIsTraceEnabled(childComponentSettings)) {
-        return mComponent(sources, childComponentSettings)
-      }
-      else {
-        const tracedSources = traceSources(sources, childComponentSettings);
-        const sinks = mComponent(tracedSources, childComponentSettings);
-        const tracedSinks = traceSinks(sinks, childComponentSettings);
+      // NOTE : childComponentSettings is the `innerSettings` from `mComponent`
+      // hence there is no way to have access to mSettings or localSettings in `componentDef`
+      // as we do not have a closure here
+      // NOTE : if we execute `postprocessOutput`, it MUST mean that we have the trace enabled
+      // if (!getIsTraceEnabled(childComponentSettings)) {
+      //   return mComponent(sources, childComponentSettings)
+      // }
+      const tracedSources = traceSources(sources, childComponentSettings);
+      const sinks = mComponent(tracedSources, childComponentSettings);
+      const tracedSinks = traceSinks(sinks, childComponentSettings);
 
-        return tracedSinks
-      }
+      return tracedSinks
     }
-  })
+  }, mComponent)
+}
+
+const TraceIframe = vLift(
+  iframe(iframeId, {
+    props: {
+      src: iframeSource,
+    },
+    style: {
+      width: '450px',
+      height: '200px'
+    }
+  }, [])
+);
+
+const adviseApp = (traceDef, App) => decorateWithAdvice({
+  around: function (joinpoint, App) {
+    const { args } = joinpoint;
+    const [sources, _settings] = args;
+    const settings = merge(_settings, traceDef);
+
+    // TODO : check which of two possibilities work (diff. is settings inheritance)
+    // In one case, the App might redefine trace info (component name etc), in another case not so check which
+    const tracedApp = Combine({}, [
+      TraceIframe,
+      Combine(traceDef, [App])
+    ]);
+
+    // That does not work, as App will receive `traceDef` settings through local settings, and we need with
+    // mSettings
+    // const tracedApp = Combine({}, [
+    //   TraceIframe,
+    //   InjectSourcesAndSettings({
+    //     settings: () => traceDef
+    //   }, [
+    //     App
+    //   ])
+    // ]);
+
+    return tracedApp(sources, settings)
+  }
+}, App);
+
+/**
+ * @param {TraceDef} traceDefSpecs
+ * @param {Component} App
+ * @return Component Component whose inputs and outputs (i.e. sources and sinks) are traced
+ */
+export function traceApp(traceDefSpecs, App) {
+  // TODO : add contract for traceDefSpecs!! important for debugging
+  // because I have default values, most of the values are optional except traceSpecs
+  debugger
+  const traceDef = {
+    _hooks: pathOr({ preprocessInput, postprocessOutput }, ['_hooks'], traceDefSpecs),
+    _helpers: pathOr({ getId }, ['_helpers'], traceDefSpecs),
+    _trace: {
+      componentName: TRACE_BOOTSTRAP_NAME,
+      isTraceEnabled: pathOr(IS_TRACE_ENABLED_DEFAULT, ['_trace', 'isTraceEnabled'], traceDefSpecs),
+      isContainerComponent: pathOr(false, ['_trace', 'isContainerComponent'], traceDefSpecs),
+      isLeaf: pathOr(false, ['_trace', 'isLeaf'], traceDefSpecs),
+      path: pathOr([0], ['_trace', 'path'], traceDefSpecs),
+      sendMessage: pathOr(sendMessage, ['_trace', 'sendMessage'], traceDefSpecs),
+      onMessage: null, // not used for now
+      traceSpecs: traceDefSpecs._trace.traceSpecs,
+      defaultTraceSpecs: pathOr([defaultTraceSourceFn, defaultTraceSinkFn], ['_trace', 'defaultTraceSpecs'], traceDefSpecs),
+    }
+  };
+
+  return adviseApp(traceDef, App)
 }
 
 /**
  * @param {TraceSpecs} traceSpecs
- * @param {function} run as in run(App, drivers) -> {sources, sinks}
+ * @param {Component} App
+ * @return Component Component whose inputs and outputs (i.e. sources and sinks) are traced
  */
-export function traceRun(traceSpecs, run) {
+export function traceAppBasic(traceSpecs, App) {
   // will inject _traceSpecs and _helpers (that should be merged without stomping) and _hooks (also merging as much
   // as possible). So for now we will do it so that traceDef actually include those helpers and so on.
   // We will think about hook overriding and composition when that problem happens
@@ -155,57 +256,19 @@ export function traceRun(traceSpecs, run) {
       defaultTraceSpecs: [defaultTraceSourceFn, defaultTraceSinkFn]
     }
   };
-  const TraceIframe = vLift(
-    iframe(iframeId, {
-      attrs: {
-        src: iframeSource,
-      },
-      style: {
-        width: '450px',
-        height: '200px'
-      }
-    }, [])
-  );
 
-  return function tracedRun(App, drivers) {
-    const advisedApp = decorateWithAdvice({
-      around: function (joinpoint, App) {
-        const { args } = joinpoint;
-        const { sources, settings } = args;
-
-        // TODO : check which of two possibilities work (diff. is settings inheritance)
-        // In one case, the App might redefine trace info (component name etc), in another case not so check which
-        // const tracedApp = Combine(traceDef, [
-        //   TraceIframe,
-        //     App
-        // ]);
-
-        const tracedApp = Combine({}, [
-          TraceIframe,
-          InjectSourcesAndSettings({
-            settings: () => traceDef
-          }, [
-            App
-          ])
-        ])
-
-        return tracedApp(sources, settings)
-      }
-    }, App);
-
-    return run(advisedApp, drivers)
-  }
+  return adviseApp(traceDef, App)
 }
 
 // TODO : test the window messaging and iframe add
 // TODO : write the iframe message reception
 
 /**
- * @typedef {function(source:Source, settings:Settings)} TraceSourceFn
+ * @typedef {function(source:Source, sourceName:String, settings:Settings):Source} TraceSourceFn
  * function taking a source and returning a traced source
  */
 /**
- * @typedef {function(sink:Sink, settings:Settings)} TraceSinkFn
+ * @typedef {function(sink:Sink, sinkName:String, settings:Settings):Sink} TraceSinkFn
  * function taking a sink and returning a traced sink
  */
 /**
@@ -220,3 +283,5 @@ export function traceRun(traceSpecs, run) {
  *   onMessage, isTraceEnabled, isContainerComponent, isLeaf, path:Array<Number>}} _trace
  * @property {{getId : function()}} _helpers
  */
+
+// TODO : how to trace the DOM source??, I have to intervene the dom OBJECT! same for document thing about it

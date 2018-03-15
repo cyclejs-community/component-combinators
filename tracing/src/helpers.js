@@ -1,6 +1,9 @@
-import { always, append, assocPath, defaultTo, isNil, lens, mapObjIndexed, set, F, T, cond, tail, head, flatten  } from 'ramda'
-import { BEHAVIOUR_TYPE, EVENT_TYPE, SINK_EMISSION, SOURCE_EMISSION} from './properties'
-import { CHILDREN_ONLY, CONTAINER_AND_CHILDREN, ONE_COMPONENT_ONLY, componentTreePatternMatchingPredicates, makePatternMatcher } from '../utils/src/index'
+import { append, assocPath, isNil, lens, mapObjIndexed, set } from 'ramda'
+import { BEHAVIOUR_TYPE, EVENT_TYPE, SINK_EMISSION, SOURCE_EMISSION } from './properties'
+import {
+  CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, makePatternMatcher, ONE_COMPONENT_ONLY
+} from '../../utils/src/index'
+import { convertVNodesToHTML, isNextNotification } from "../../utils/src"
 
 let counter = 0;
 
@@ -33,23 +36,26 @@ export function getLeafComponentName(component) {
  *   Function, isTraceEnabled: Boolean, isContainerComponent: Boolean, isLeaf: Boolean, path: *}}
  */
 export function deconstructTraceFromSettings(settings) {
-  const {
-    _trace: {
-      traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, onMessage, isTraceEnabled, isContainerComponent, isLeaf, path
-    }
-  } = settings;
+  if (!('_trace' in settings)) throw `deconstructTraceFromSettings : settings do not have a _trace property!`
+  else {
+    const {
+      _trace: {
+        traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, onMessage, isTraceEnabled, isContainerComponent, isLeaf, path
+      }
+    } = settings;
 
-  return {
-    traceSpecs,
-    defaultTraceSpecs,
-    combinatorName,
-    componentName,
-    sendMessage,
-    onMessage,
-    isTraceEnabled,
-    isContainerComponent,
-    isLeaf,
-    path
+    return {
+      traceSpecs,
+      defaultTraceSpecs,
+      combinatorName,
+      componentName,
+      sendMessage,
+      onMessage,
+      isTraceEnabled,
+      isContainerComponent,
+      isLeaf,
+      path
+    }
   }
 }
 
@@ -67,25 +73,25 @@ export function getPathForNthChild(index, path) {
   return append(index, path)
 }
 
-const pathSettingsLens = lens(
+export const pathSettingsLens = lens(
   settings => settings._trace.path,
   (path, settings) => assocPath(['_trace', 'path'], path, settings)
 );
 export const setPathInSettings = set(pathSettingsLens);
 
-const containerFlagSettingsLens = lens(
+export  const containerFlagSettingsLens = lens(
   settings => settings._trace.isContainerComponent,
   (flag, settings) => assocPath(['_trace', 'isContainerComponent'], flag, settings)
 );
 export const setContainerFlagInSettings = set(containerFlagSettingsLens);
 
-const leafFlagSettingsLens = lens(
+export const leafFlagSettingsLens = lens(
   settings => settings._trace.isLeaf,
   (flag, settings) => assocPath(['_trace', 'isLeaf'], flag, settings)
 );
 export const setLeafFlagInSettings = set(leafFlagSettingsLens);
 
-const componentNameInSettings = lens(
+export const componentNameInSettings = lens(
   settings => settings._trace.componentName,
   (flag, settings) => assocPath(['_trace', 'componentName'], flag, settings)
 );
@@ -98,14 +104,14 @@ export const setComponentNameInSettings = set(componentNameInSettings);
  * @return componentTree
  */
 export function mapOverComponentTree(fmap, componentTree) {
-  function fmapChildren(component, index){
+  function fmapChildren(component, index) {
     return fmap(component, false, index)
   }
 
   const componentTreePatternMatchingMapOverExpressions = {
-    [ONE_COMPONENT_ONLY] : componentTree => componentTree.map(fmapChildren),
+    [ONE_COMPONENT_ONLY]: componentTree => componentTree.map(fmapChildren),
     // In the following case, the first component (index 0) is the container component
-    [CONTAINER_AND_CHILDREN] : componentTree => {
+    [CONTAINER_AND_CHILDREN]: componentTree => {
       const containerComponent = componentTree[0];
       const childrenComponents = componentTree[1];
       return [
@@ -113,24 +119,48 @@ export function mapOverComponentTree(fmap, componentTree) {
         childrenComponents.map(fmapChildren)
       ]
     },
-    [CHILDREN_ONLY] : componentTree => componentTree.map(fmapChildren)
+    [CHILDREN_ONLY]: componentTree => componentTree.map(fmapChildren)
   };
   const componentTreeMapper =
-    makePatternMatcher(componentTreePatternMatchingPredicates, componentTreePatternMatchingMapOverExpressions );
+    makePatternMatcher(componentTreePatternMatchingPredicates, componentTreePatternMatchingMapOverExpressions);
 
   return componentTreeMapper(componentTree);
 }
 
-export function traceSources(traceSpecs, sources, settings) {
+export function forEachInComponentTree(fDo, componentTree) {
+  function fDoChildren(component, index) {
+    return fDo(component, false, index)
+  }
+
+  const componentTreePatternMatchingMapOverExpressions = {
+    [ONE_COMPONENT_ONLY]: componentTree => componentTree.forEach(fDoChildren),
+    // In the following case, the first component (index 0) is the container component
+    [CONTAINER_AND_CHILDREN]: componentTree => {
+      const containerComponent = componentTree[0];
+      const childrenComponents = componentTree[1];
+
+      fDo(containerComponent, true, 0);
+      childrenComponents.forEach(fDoChildren);
+    },
+    [CHILDREN_ONLY]: componentTree => componentTree.forEach(fDoChildren)
+  };
+  const componentTreeMapper =
+    makePatternMatcher(componentTreePatternMatchingPredicates, componentTreePatternMatchingMapOverExpressions);
+
+  return componentTreeMapper(componentTree);
+}
+
+export function traceSources(sources, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(settings);
   const defaultTraceSourceFn = defaultTraceSpecs && defaultTraceSpecs[0];
 
   return mapObjIndexed((source, sourceName) => {
     const traceFn = traceSpecs[sourceName];
+    const traceSourceFn = traceFn[0];
 
     if (traceFn) {
       // Case : There is a configured trace function for that source
-      return traceFn(source, settings)
+      return traceSourceFn(source, sourceName, settings)
     }
     else {
       // Case : There is no configured trace function for that source
@@ -142,12 +172,12 @@ export function traceSources(traceSpecs, sources, settings) {
       //   - sources whose sourceName is in a given way handled in the corresponding way
       // having a default way is difficult because some sources should be tapped with share, other with shareReplay
       // If we had an id, we could detect duplication...
-      return defaultTraceSourceFn(source, settings)
+      return defaultTraceSourceFn(source, sourceName, settings)
     }
   }, sources)
 }
 
-export function traceSinks(traceSpecs, sinks, settings) {
+export function traceSinks(sinks, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const defaultTraceSinkFn = defaultTraceSpecs && defaultTraceSpecs[1];
 
@@ -161,57 +191,157 @@ export function traceSinks(traceSpecs, sinks, settings) {
   else {
     return mapObjIndexed((sink, sinkName) => {
       const traceFn = traceSpecs[sinkName];
+      const traceSinkFn = traceFn[1];
 
       if (traceFn) {
         // Case : There is a configured trace function for that sink
-        return traceFn(sink, settings)
+        return traceSinkFn(sink, sinkName, settings)
       }
       else {
         // Case : There is no configured trace function for that sink
-        return defaultTraceSinkFn(sink, settings)
+        return defaultTraceSinkFn(sink, sinkName, settings)
       }
     }, sinks)
   }
 }
 
-export function defaultTraceSourceFn(source, settings) {
+export function makeDOMSourceNotificationMessage({ sourceName, settings, notification }) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const { getId } = deconstructHelpersFromSettings(settings);
+  const { kind, value, error } = notification;
 
-  if (isBehaviourSource(source)) {
-    return source
-      .materialize()
-      .tap(notification => {
-        const message = {
-          emits: { type: SOURCE_EMISSION, value: notification },
-          componentName, combinatorName, when: +Date.now(), path, id: getId()
-        };
-
-        sendMessage(message);
-      })
-      .dematerialize()
-      .shareReplay(1)
-  }
-  else if (isEventSource(source)) {
-    return source
-      .materialize()
-      .tap(notification => {
-        const message = {
-          emits: { type: SOURCE_EMISSION, value: notification },
-          componentName, combinatorName, when: +Date.now(), path, id: getId()
-        };
-
-        sendMessage(message);
-      })
-      .dematerialize()
-      .share()
-  }
-  else {
-    throw `defaultTraceSourceFn : Found source for which no trace function is available! `
+  return {
+    emits: {
+      type: SOURCE_EMISSION,
+      identifier: sourceName,
+      notification: isNextNotification(notification)
+        ? { value: convertVNodesToHTML(notification.value), kind }
+        : { kind, error }
+    },
+    componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
 
-export function defaultTraceSinkFn(sink, settings) {
+export function makeSourceNotificationMessage({ sourceName, settings, notification }) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+  const { getId } = deconstructHelpersFromSettings(settings);
+  const { kind, value, error } = notification;
+
+  return {
+    emits: {
+      type: SOURCE_EMISSION,
+      identifier: sourceName,
+      notification: isNextNotification(notification)
+        ? { value, kind }
+        : { kind, error }
+    },
+    componentName, combinatorName, when: +Date.now(), path, id: getId()
+  }
+}
+
+
+export function makeDOMSinkNotificationMessage({ sinkName, settings, notification }) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+  const { getId } = deconstructHelpersFromSettings(settings);
+  const { kind, value, error } = notification;
+
+  return {
+    emits: {
+      type: SINK_EMISSION,
+      identifier: sinkName,
+      notification: isNextNotification(notification)
+        ? { value: convertVNodesToHTML(notification.value), kind }
+        : { kind, error }
+    },
+    componentName, combinatorName, when: +Date.now(), path, id: getId()
+  }
+}
+
+
+export function makeSinkNotificationMessage({ sinkName, settings, notification }) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+  const { getId } = deconstructHelpersFromSettings(settings);
+  const { kind, value, error } = notification;
+
+  return {
+    emits: {
+      type: SINK_EMISSION,
+      identifier: sinkName,
+      notification: isNextNotification(notification)
+        ? { value, kind }
+        : { kind, error }
+    },
+    componentName, combinatorName, when: +Date.now(), path, id: getId()
+  }
+}
+
+export function traceDOMsinkFn(sink, sinkName, settings) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+
+  return sink
+    .materialize()
+    // For DOM sink, we rather pass the mirrorring html (though we loose information doing so...)
+    .tap(notification => sendMessage(makeDOMSinkNotificationMessage({ sinkName, settings, notification })))
+    .dematerialize()
+    .shareReplay(1)
+}
+
+export function traceBehaviourSourceFn(source, sourceName, settings) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+
+  return source
+    .materialize()
+    .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
+    .dematerialize()
+    .shareReplay(1)
+}
+
+export function traceEventSourceFn(source, sourceName, settings) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+
+  return source
+    .materialize()
+    .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
+    .dematerialize()
+    .share()
+}
+
+export function traceBehaviourSinkFn(sink, sinkName, settings) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+
+  return sink
+    .materialize()
+    .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
+    .dematerialize()
+    .shareReplay(1)
+}
+
+export function traceEventSinkFn(sink, sinkName, settings) {
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+
+  return sink
+    .materialize()
+    .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
+    .dematerialize()
+    .share()
+}
+
+// TODO : refactor with ramda cond
+export function defaultTraceSourceFn(source, sourceName, settings) {
+  if (isBehaviourSource(source)) {
+    return traceBehaviourSourceFn(source, sourceName, settings)
+  }
+  else if (isEventSource(source)) {
+    return traceEventSourceFn(source, sourceName, settings)
+  }
+  else {
+    // TODO!! what do I do when no defaults?? should I pass `isBehaviourSource` in settings?? think!
+    throw `defaultTraceSourceFn : Found source (${sourceName}) for which no default trace function is available!`
+  }
+}
+
+// TODO : refactor with ramda COND
+export function defaultTraceSinkFn(sink, sinkName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const { getId } = deconstructHelpersFromSettings(settings);
 
@@ -227,35 +357,13 @@ export function defaultTraceSinkFn(sink, settings) {
     return null
   }
   else if (isBehaviourSink(sink)) {
-    return sink
-      .materialize()
-      .tap(notification => {
-        const message = {
-          emits: { type: SINK_EMISSION, value: notification },
-          componentName, combinatorName, when: +Date.now(), path, id: getId()
-        };
-
-        sendMessage(message);
-      })
-      .dematerialize()
-      .shareReplay(1)
+    return traceBehaviourSinkFn(sink, sinkName, settings)
   }
   else if (isEventSink(sink)) {
-    return sink
-      .materialize()
-      .tap(notification => {
-        const message = {
-          emits: { type: SINK_EMISSION, value: notification },
-          componentName, combinatorName, when: +Date.now(), path, id: getId()
-        };
-
-        sendMessage(message);
-      })
-      .dematerialize()
-      .share()
+    return traceEventSinkFn(sink, sinkName, settings)
   }
   else {
-    throw `defaultTraceSinkFn : Found sink for which no trace function is available! `
+    throw `defaultTraceSinkFn : Found sink (${sinkName}) for which no trace function is available! `
   }
 }
 
@@ -267,7 +375,7 @@ function isBehaviourSource(source) {
   return getTypeOf(source) === BEHAVIOUR_TYPE
 }
 
-function isBehaviourSink (sink){
+function isBehaviourSink(sink) {
   return Boolean(sink && isBehaviourSource(sink))
 }
 
@@ -275,7 +383,7 @@ function isEventSource(source) {
   return getTypeOf(source) === EVENT_TYPE
 }
 
-function isEventSink (sink){
+function isEventSink(sink) {
   return Boolean(sink && isEventSource(sink))
 }
 

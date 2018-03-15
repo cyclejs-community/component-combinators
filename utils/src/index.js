@@ -721,6 +721,18 @@ function makePatternMatcher(patternMatchingPredicates, patternMatchingExpression
   return cond(conditions)
 }
 
+function isNextNotification(notification){
+  return notification.kind === 'N'
+}
+
+function isCompletedNotification(notification){
+  return notification.kind === 'C'
+}
+
+function isErrorNotification(notification){
+  return notification.kind === 'E'
+}
+
 export {
   // Helpers
   emitNullIfEmpty,
@@ -769,5 +781,8 @@ export {
   CONTAINER_AND_CHILDREN,
   CHILDREN_ONLY,
   componentTreePatternMatchingPredicates,
-  makePatternMatcher
+  makePatternMatcher,
+  isNextNotification,
+  isCompletedNotification,
+  isErrorNotification
 }
