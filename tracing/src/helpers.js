@@ -1,5 +1,5 @@
-import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath } from 'ramda'
-import { BEHAVIOUR_TYPE, EVENT_TYPE, SINK_EMISSION, SOURCE_EMISSION } from './properties'
+import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath, pickBy } from 'ramda'
+import { BEHAVIOUR_TYPE, EVENT_TYPE, RUNTIME, SINK_EMISSION, SOURCE_EMISSION } from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, makePatternMatcher, ONE_COMPONENT_ONLY
 } from '../../utils/src/index'
@@ -63,6 +63,12 @@ export function deconstructHelpersFromSettings(settings) {
   return { getId: settings._helpers.getId }
 }
 
+
+export function deconstructSettingsFromSettings(settings){
+  // Will only keep those keys from settings which do not start with an underscore (i.e. private keys)
+  return pickBy((val, key) => key[0] !== '_', settings)
+}
+
 /**
  * Computes the path in the tree for the child at index `index`, whose parent is at location `path`
  * @param {Number} index
@@ -73,27 +79,13 @@ export function getPathForNthChild(index, path) {
   return append(index, path)
 }
 
-export const pathInSettings = lens(
-  settings => settings._trace.path,
-  (path, settings) => assocPath(['_trace', 'path'], path, settings)
-);
-export const setPathInSettings = set(pathInSettings);
+export const pathInSettings = lensPath(['_trace', 'path']);
 
-export  const containerFlagInSettings = lens(
-  settings => settings._trace.isContainerComponent,
-  (flag, settings) => assocPath(['_trace', 'isContainerComponent'], flag, settings)
-);
+export  const containerFlagInSettings = lensPath(['_trace', 'isContainerComponent']);
 
-export const leafFlagInSettings = lens(
-  settings => settings._trace.isLeaf,
-  (flag, settings) => assocPath(['_trace', 'isLeaf'], flag, settings)
-);
+export const leafFlagInSettings = lensPath(['_trace', 'isLeaf']);
 
-export const componentNameInSettings = lens(
-  settings => settings._trace.componentName,
-  (flag, settings) => assocPath(['_trace', 'componentName'], flag, settings)
-);
-export const setComponentNameInSettings = set(componentNameInSettings);
+export const componentNameInSettings = lensPath(['_trace', 'componentName']);
 
 export const combinatorNameInSettings = lensPath(['_trace', 'combinatorName']);
 
@@ -107,6 +99,9 @@ export function mapOverComponentTree(fmap, componentTree) {
   function fmapChildren(component, index) {
     return fmap(component, false, index)
   }
+  function fmapChildrenWithContainer(component, index) {
+    return fmap(component, false, index + 1)
+  }
 
   const componentTreePatternMatchingMapOverExpressions = {
     [ONE_COMPONENT_ONLY]: componentTree => componentTree.map(fmapChildren),
@@ -116,7 +111,7 @@ export function mapOverComponentTree(fmap, componentTree) {
       const childrenComponents = componentTree[1];
       return [
         fmap(containerComponent, true, 0),
-        childrenComponents.map(fmapChildren)
+        childrenComponents.map(fmapChildrenWithContainer)
       ]
     },
     [CHILDREN_ONLY]: componentTree => componentTree.map(fmapChildren)
@@ -131,6 +126,9 @@ export function forEachInComponentTree(fDo, componentTree) {
   function fDoChildren(component, index) {
     return fDo(component, false, index)
   }
+  function fDoChildrenWithContainer(component, index) {
+    return fDo(component, false, index + 1)
+  }
 
   const componentTreePatternMatchingMapOverExpressions = {
     [ONE_COMPONENT_ONLY]: componentTree => componentTree.forEach(fDoChildren),
@@ -140,7 +138,7 @@ export function forEachInComponentTree(fDo, componentTree) {
       const childrenComponents = componentTree[1];
 
       fDo(containerComponent, true, 0);
-      childrenComponents.forEach(fDoChildren);
+      childrenComponents.forEach(fDoChildrenWithContainer);
     },
     [CHILDREN_ONLY]: componentTree => componentTree.forEach(fDoChildren)
   };
@@ -218,6 +216,7 @@ export function makeDOMSourceNotificationMessage({ sourceName, settings, notific
         ? { value: convertVNodesToHTML(notification.value), kind }
         : { kind, error }
     },
+    logType : RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
@@ -235,7 +234,9 @@ export function makeSourceNotificationMessage({ sourceName, settings, notificati
         ? { value, kind }
         : { kind, error }
     },
-    componentName, combinatorName, when: +Date.now(), path, id: getId()
+    settings : deconstructSettingsFromSettings(settings),
+    logType : RUNTIME,
+    componentName, combinatorName, when: +Date.now(), path, id: getId(),
   }
 }
 
@@ -253,6 +254,7 @@ export function makeDOMSinkNotificationMessage({ sinkName, settings, notificatio
         ? { value: convertVNodesToHTML(notification.value), kind }
         : { kind, error }
     },
+    logType : RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
@@ -271,6 +273,7 @@ export function makeSinkNotificationMessage({ sinkName, settings, notification }
         ? { value, kind }
         : { kind, error }
     },
+    logType : RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }

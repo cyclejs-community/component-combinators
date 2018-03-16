@@ -8,11 +8,10 @@ import {
 } from "../../../contracts/src/index"
 
 import { INIT_EVENT_NAME, INIT_STATE } from "./properties"
-import { isArrayUpdateOperations, isNotEmpty, isSettings } from "../types"
+import { isArrayUpdateOperations, isEventName, isNotEmpty, isSettings } from "../types"
 
 ////////
 // Types FSM
-export const isEventName = both(isString, isNotEmpty);
 export const isTransitionName = both(isString, isNotEmpty);
 export const isSinkName = both(isString, isNotEmpty);
 export const isState = both(isString, isNotEmpty);

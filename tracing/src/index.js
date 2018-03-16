@@ -2,7 +2,7 @@ import {
   componentNameInSettings,
   containerFlagInSettings, deconstructTraceFromSettings, defaultTraceSinkFn, defaultTraceSourceFn,
   forEachInComponentTree, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild, isLeafComponent,
-  leafFlagInSettings, mapOverComponentTree,  pathInSettings, setPathInSettings, traceSinks, traceSources
+  leafFlagInSettings, mapOverComponentTree,  pathInSettings,  traceSinks, traceSources
 } from './helpers'
 import {
   GRAPH_STRUCTURE, iframeId, iframeSource, IS_TRACE_ENABLED_DEFAULT, PATH_ROOT, TRACE_BOOTSTRAP_NAME
@@ -15,6 +15,8 @@ import { merge, pathOr, view, set } from 'ramda'
 let graphCounter = 0;
 
 function getGraphCounter() { return graphCounter++}
+
+export function resetGraphCounter() { graphCounter = 0}
 
 /**
  * Sends a message to the devtool iframe
@@ -64,7 +66,7 @@ function addTraceInfoToComponent(path) {
         else {
           // If the component is a `m` component, i.e. obtained from m(...), let it be
           // It will be traced at the `m` level
-          return component(sources, childComponentSettings);
+          return component(sources, updatedChildComponentSettings);
         }
       }
     }, component);

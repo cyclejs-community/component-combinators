@@ -459,8 +459,6 @@ function m(_componentDef, __settings, _componentTree) {
   const mSettings = __settings || {};
   const makeLocalSources = _componentDef.makeLocalSources || always(null);
   const makeLocalSettings = _componentDef.makeLocalSettings || always({});
-  const mergeSinks = _componentDef.mergeSinks || {};
-  const computeSinks = _componentDef.computeSinks;
   const checkPostConditions = _componentDef.checkPostConditions || T;
   const checkPreConditions = _componentDef.checkPreConditions || T;
 
@@ -497,6 +495,8 @@ function m(_componentDef, __settings, _componentTree) {
       preprocessInput
         ? preprocessInput(_componentDef, _extendedSources, _localSettings, _componentTree)
         : { componentDef: _componentDef, sources: _extendedSources, settings: _localSettings, componentTree : _componentTree };
+    const computeSinks = componentDef.computeSinks;
+    const mergeSinks = componentDef.mergeSinks || {};
 
     // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
     // DOC : [null, [child]] is allowed, but to avoid though
