@@ -1,4 +1,4 @@
-import { append, assocPath, isNil, lens, mapObjIndexed, set } from 'ramda'
+import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath } from 'ramda'
 import { BEHAVIOUR_TYPE, EVENT_TYPE, SINK_EMISSION, SOURCE_EMISSION } from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, makePatternMatcher, ONE_COMPONENT_ONLY
@@ -73,29 +73,29 @@ export function getPathForNthChild(index, path) {
   return append(index, path)
 }
 
-export const pathSettingsLens = lens(
+export const pathInSettings = lens(
   settings => settings._trace.path,
   (path, settings) => assocPath(['_trace', 'path'], path, settings)
 );
-export const setPathInSettings = set(pathSettingsLens);
+export const setPathInSettings = set(pathInSettings);
 
-export  const containerFlagSettingsLens = lens(
+export  const containerFlagInSettings = lens(
   settings => settings._trace.isContainerComponent,
   (flag, settings) => assocPath(['_trace', 'isContainerComponent'], flag, settings)
 );
-export const setContainerFlagInSettings = set(containerFlagSettingsLens);
 
-export const leafFlagSettingsLens = lens(
+export const leafFlagInSettings = lens(
   settings => settings._trace.isLeaf,
   (flag, settings) => assocPath(['_trace', 'isLeaf'], flag, settings)
 );
-export const setLeafFlagInSettings = set(leafFlagSettingsLens);
 
 export const componentNameInSettings = lens(
   settings => settings._trace.componentName,
   (flag, settings) => assocPath(['_trace', 'componentName'], flag, settings)
 );
 export const setComponentNameInSettings = set(componentNameInSettings);
+
+export const combinatorNameInSettings = lensPath(['_trace', 'combinatorName']);
 
 /**
  * Applies a `fmap` function to the component tree, keeping the component tree data structure

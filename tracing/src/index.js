@@ -1,21 +1,20 @@
 import {
-  containerFlagSettingsLens,
-  deconstructHelpersFromSettings, deconstructTraceFromSettings, defaultTraceSinkFn, defaultTraceSourceFn,
-  forEachInComponentTree, getId,
-  getIsTraceEnabled, getLeafComponentName, getPathForNthChild, isLeafComponent, mapOverComponentTree,
-  setComponentNameInSettings, setContainerFlagInSettings, setLeafFlagInSettings, setPathInSettings, traceSinks,
-  traceSources
+  componentNameInSettings,
+  containerFlagInSettings, deconstructTraceFromSettings, defaultTraceSinkFn, defaultTraceSourceFn,
+  forEachInComponentTree, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild, isLeafComponent,
+  leafFlagInSettings, mapOverComponentTree,  pathInSettings, setPathInSettings, traceSinks, traceSources
 } from './helpers'
 import {
   GRAPH_STRUCTURE, iframeId, iframeSource, IS_TRACE_ENABLED_DEFAULT, PATH_ROOT, TRACE_BOOTSTRAP_NAME
 } from './properties'
 import { Combine } from "../../src/components/Combine"
 import { decorateWithAdvice, getFunctionName, vLift } from "../../utils/src"
-import { iframe, div, p, a, i } from "cycle-snabbdom"
-import { merge, pathOr, view } from 'ramda'
+import { iframe } from "cycle-snabbdom"
+import { merge, pathOr, view, set } from 'ramda'
 
 let graphCounter = 0;
-function getGraphCounter(){ return graphCounter++}
+
+function getGraphCounter() { return graphCounter++}
 
 /**
  * Sends a message to the devtool iframe
@@ -46,17 +45,16 @@ function addTraceInfoToComponent(path) {
       around: function decorateComponentWithTraceInfo(joinpoint, component) {
         const { args, fnToDecorateName } = joinpoint;
         const [sources, childComponentSettings] = args;
-        let updatedChildComponentSettings = setPathInSettings(getPathForNthChild(index, path), childComponentSettings);
-        updatedChildComponentSettings = setContainerFlagInSettings(isContainerComponent, updatedChildComponentSettings);
+        let updatedChildComponentSettings = set(pathInSettings, getPathForNthChild(index, path), childComponentSettings);
+        updatedChildComponentSettings = set(containerFlagInSettings, isContainerComponent, updatedChildComponentSettings);
         const isLeaf = isLeafComponent(component);
-        debugger
 
         if (isLeaf) {
           // If the component is a leaf component:
           // - add its name to settings for tracing purposes
           // - tap its sources and sinks here and now
-          updatedChildComponentSettings = setComponentNameInSettings(getLeafComponentName(component), updatedChildComponentSettings);
-          updatedChildComponentSettings = setLeafFlagInSettings(isLeaf, updatedChildComponentSettings);
+          updatedChildComponentSettings = set(componentNameInSettings,getLeafComponentName(component), updatedChildComponentSettings);
+          updatedChildComponentSettings = set(leafFlagInSettings, isLeaf, updatedChildComponentSettings);
           const tracedSources = traceSources(sources, updatedChildComponentSettings);
           const sinks = component(tracedSources, updatedChildComponentSettings);
           const tracedSinks = traceSinks(sinks, updatedChildComponentSettings);
@@ -86,31 +84,35 @@ function addTraceInfoToComponent(path) {
  * - Adds path also to CHILDREN components settings, together with miscellaneous info (isLeaf, etc.)
  * - Adds the trace aspect to leaf COMPONENTS if any
  * @param componentDef
- * @param {Settings} mSettings
+ * @param {Sources} sources
+ * @param {Settings} settings
  * @param {ComponentTree} componentTree
  * @returns {Settings}
  */
-function preprocessInput(componentDef, mSettings, componentTree) {
-  if (!getIsTraceEnabled(mSettings)) {
-    return { componentDef, mSettings, componentTree }
+function preprocessInput(componentDef, sources, settings, componentTree) {
+  if (!getIsTraceEnabled(settings)) {
+    return { componentDef, settings, componentTree }
   }
   else {
-    const { path, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(mSettings);
+    const { path, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(settings);
 
     // set root path if no path is set
-    let updatedSettings = setPathInSettings(path || PATH_ROOT, mSettings);
+    let updatedSettings = set(pathInSettings, path || PATH_ROOT, settings);
+
+    // Trace the sources
+    const tracedSources = traceSources(sources, settings);
 
     // Inject path in every child component, misc. info and special trace treatment for leaf components
     const advisedComponentTree = mapOverComponentTree(addTraceInfoToComponent(path), componentTree);
 
     //`  - LOG : path and combinatorName and componentName which I have at config time
-    // TODO : I need also to pass isContainreComponent optimally, will it be in mSettings? maybe, if not leaf
+    // TODO : I need also to pass isContainreComponent optimally, will it be in settings? maybe, if not leaf
     // case leaf is treated below
     sendMessage({
-      logType : GRAPH_STRUCTURE,
+      logType: GRAPH_STRUCTURE,
       componentName,
       combinatorName,
-      isContainerComponent : view(containerFlagSettingsLens, mSettings),
+      isContainerComponent: view(containerFlagInSettings, settings),
       when: +Date.now(),
       path,
       id: getGraphCounter()
@@ -120,47 +122,32 @@ function preprocessInput(componentDef, mSettings, componentTree) {
     forEachInComponentTree((component, isContainerComponent, index) => {
       if (isLeafComponent(component)) {
         sendMessage({
-          logType : GRAPH_STRUCTURE,
-          componentName : getFunctionName(component),
+          logType: GRAPH_STRUCTURE,
+          componentName: getFunctionName(component),
           combinatorName: undefined,
-          isContainerComponent : isContainerComponent,
-          when : +Date.now(),
-          path : path.concat([index]),
+          isContainerComponent: isContainerComponent,
+          when: +Date.now(),
+          path: path.concat([index]),
           id: getGraphCounter()
         })
       }
     }, componentTree);
 
-    return { componentDef, settings: updatedSettings, componentTree: advisedComponentTree }
+    return { componentDef, sources: tracedSources, settings: updatedSettings, componentTree: advisedComponentTree }
   }
 }
 
 /**
- * Traces sourcs and sinks of mComponent (around advice on returned mComponent)
+ * Traces sinks
  * NOTE : this really is only a m-generated component. Leaf component are traced in preprocessOutput
- * @param  {Component} mComponent
- * @returns {Component}
+ * @param  {Sinks} sinks
+ * @param  {Settings} settings
+ * @returns {Sinks}
  */
-function postprocessOutput(mComponent) {
-  return decorateWithAdvice({
-    around: function traceSourcesAndSinks(joinpoint, mComponent) {
-      const { args, fnToDecorateName } = joinpoint;
-      const [sources, childComponentSettings] = args;
-
-      // NOTE : childComponentSettings is the `innerSettings` from `mComponent`
-      // hence there is no way to have access to mSettings or localSettings in `componentDef`
-      // as we do not have a closure here
-      // NOTE : if we execute `postprocessOutput`, it MUST mean that we have the trace enabled
-      // if (!getIsTraceEnabled(childComponentSettings)) {
-      //   return mComponent(sources, childComponentSettings)
-      // }
-      const tracedSources = traceSources(sources, childComponentSettings);
-      const sinks = mComponent(tracedSources, childComponentSettings);
-      const tracedSinks = traceSinks(sinks, childComponentSettings);
-
-      return tracedSinks
-    }
-  }, mComponent)
+function postprocessOutput(sinks, settings) {
+  // NOTE : settings are passed here as all the trace specifications in included there, and I need it for tracing
+  const tracedSinks = traceSinks(sinks, settings);
+  return tracedSinks
 }
 
 const TraceIframe = vLift(
@@ -178,8 +165,7 @@ const TraceIframe = vLift(
 const adviseApp = (traceDef, App) => decorateWithAdvice({
   around: function (joinpoint, App) {
     const { args } = joinpoint;
-    const [sources, _settings] = args;
-    const settings = merge(_settings, traceDef);
+    const [sources, settings] = args;
 
     // TODO : check which of two possibilities work (diff. is settings inheritance)
     // In one case, the App might redefine trace info (component name etc), in another case not so check which

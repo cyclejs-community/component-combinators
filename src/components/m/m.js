@@ -35,7 +35,7 @@
  * @typedef {function(Sources, Settings):Sinks} Component
  */
 /**
- *@typedef {Component | Array<Component>} ParentAndChildren
+ *@typedef {Component} ContainerComponent
  */
 
 import { COMBINE_ALL_SINKS_SPECS, COMBINE_GENERIC_SPECS, COMBINE_PER_SINK_SPECS } from './properties'
@@ -440,7 +440,7 @@ function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenCo
  * of the merge of the outer settings passed through the `m` utility, and the inner settings
  * passed to the output component.
  *
- * @param {*} _componentDef
+ * @param {ComponentDef} _componentDef
  * @param {Settings} __settings
  * @param {Array<Component> | [ContainerComponent, Array<Component>]} _componentTree
  *
@@ -449,71 +449,68 @@ function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenCo
  */
 function m(_componentDef, __settings, _componentTree) {
   console.groupCollapsed('m factory > Entry');
-  console.log('componentDef, _settings, children', _componentDef, __settings, _componentTree);
+  console.log('componentDef, mSettings, children', _componentDef, __settings, _componentTree);
 
   // Check contracts
   assertContract(hasMsignature, [_componentDef, __settings, _componentTree],
-    `m > assertContract : error checking signature (componentDef, settings, children) = 
+    `m > assertContract : fails checking signature (componentDef, settings, children) = 
    ${format({ _componentDef, __settings, _children: _componentTree })}!`);
 
-  // TODO : add corresponding contracts in future version, cf. hasMsignature where the contract as of now is empty
-  const { preprocessInput, postprocessOutput } = deconstructHooksFromSettings(__settings);
-
-  const { componentDef, settings: _settings, componentTree } =
-    preprocessInput
-      ? preprocessInput(_componentDef, __settings, _componentTree)
-      : { componentDef: _componentDef, settings: __settings || {}, componentTree: _componentTree };
-
-  const makeLocalSources = componentDef.makeLocalSources || always(null);
-  const makeLocalSettings = componentDef.makeLocalSettings || always({});
-  const mergeSinks = componentDef.mergeSinks || {};
-  const computeSinks = componentDef.computeSinks;
-  const checkPostConditions = componentDef.checkPostConditions || T;
-  const checkPreConditions = componentDef.checkPreConditions || T;
-
-  // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
-  // DOC : [null, [child]] is allowed, but to avoid though
-  const { parentComponent, childrenComponents } =
-    makePatternMatcher(componentTreePatternMatchingPredicates, {
-      // TODO : refactor later the pattern match to only two cases (remove one component only case)
-      [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree }),
-      [CONTAINER_AND_CHILDREN]: componentTree => ({
-        parentComponent: defaultTo(always(null), componentTree[0]),
-        childrenComponents: componentTree[1]
-      }),
-      [CHILDREN_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree })
-    })(componentTree);
+  const mSettings = __settings || {};
+  const makeLocalSources = _componentDef.makeLocalSources || always(null);
+  const makeLocalSettings = _componentDef.makeLocalSettings || always({});
+  const mergeSinks = _componentDef.mergeSinks || {};
+  const computeSinks = _componentDef.computeSinks;
+  const checkPostConditions = _componentDef.checkPostConditions || T;
+  const checkPreConditions = _componentDef.checkPreConditions || T;
 
   console.groupEnd();
 
-  function mComponent(sources, innerSettings) {
-    const traceInfo = pathOr('', ['_trace', 'combinatorName'], innerSettings);
-    console.groupCollapsed(`${traceInfo} component > Entry`);
-    console.debug('sources, innerSettings', sources, innerSettings);
-
-    innerSettings = innerSettings || {};
-    const mergedSettings = mergeDeepRight(innerSettings, _settings);
-
-    // Note that per `merge` ramda spec. the second object's values
-    // replace those from the first in case of conflict of keys
-    const localSettings = mergeDeepRight(
+  function mComponent(sources, _innerSettings) {
+    // Computes settings to pass down the component tree
+    const innerSettings = _innerSettings || {};
+    const mergedSettings = mergeDeepRight(innerSettings, mSettings);
+    const _localSettings = mergeDeepRight(
       makeLocalSettings(mergedSettings),
       mergedSettings
     );
 
-    console.debug('inner and outer settings merge', mergedSettings);
-    console.debug(`${traceInfo} component : final settings`, localSettings);
-
-    // Computes and MERGES the extra sources which will be passed
-    // to the children and this component
+    // Computes and MERGES the extra sources to be passed down the component tree
     // Extra sources are derived from the `sources`
-    // received as input, which remain untouched
-    const extendedSources = merge(
+    // received as input, and added to those
+    const _extendedSources = merge(
       sources,
-      makeLocalSources(sources, localSettings)
+      makeLocalSources(sources, _localSettings)
     );
 
-    assertSourcesContracts([extendedSources, localSettings], checkPreConditions);
+    assertSourcesContracts([_extendedSources, _localSettings], checkPreConditions);
+
+    const traceInfo = pathOr('', ['_trace', 'combinatorName'], _innerSettings);
+    console.groupCollapsed(`${traceInfo} component > Entry`);
+    console.debug('sources, innerSettings', sources, _innerSettings);
+    console.debug('inner and outer settings merge', mergedSettings);
+    console.debug(`${traceInfo} component : final settings`, _localSettings);
+
+    // TODO : add corresponding contracts in future version, cf. hasMsignature where the contract as of now is empty
+    const { preprocessInput, postprocessOutput } = deconstructHooksFromSettings(_localSettings);
+    const { componentDef, sources: extendedSources, settings: localSettings, componentTree } =
+      preprocessInput
+        ? preprocessInput(_componentDef, _extendedSources, _localSettings, _componentTree)
+        : { componentDef: _componentDef, sources: _extendedSources, settings: _localSettings, componentTree : _componentTree };
+
+    // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
+    // DOC : [null, [child]] is allowed, but to avoid though
+    const { parentComponent, childrenComponents } =
+      makePatternMatcher(componentTreePatternMatchingPredicates, {
+        // TODO : refactor later the pattern match to only two cases (remove one component only case)
+        [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree }),
+        [CONTAINER_AND_CHILDREN]: componentTree => ({
+          parentComponent: defaultTo(always(null), componentTree[0]),
+          childrenComponents: componentTree[1]
+        }),
+        [CHILDREN_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree })
+      })(componentTree);
+
 
     // Identify and apply the strategy defined
     const componentDefPatternMatchingPredicates = [
@@ -535,11 +532,12 @@ function m(_componentDef, __settings, _componentTree) {
     assertContract(isOptSinks, [reducedSinks], `m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
     assertSinksContracts(reducedSinks, checkPostConditions);
 
+    const postprocessedSinks = postprocessOutput ? postprocessOutput(reducedSinks, localSettings) : reducedSinks;
     console.groupEnd()
-    return reducedSinks
+    return postprocessedSinks
   }
 
-  return postprocessOutput ? postprocessOutput(mComponent) : mComponent
+  return mComponent
 }
 
 export {

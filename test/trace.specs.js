@@ -8,6 +8,7 @@ import { traceApp } from "../tracing/src"
 import { traceDOMsinkFn, traceEventSinkFn, traceEventSourceFn } from "../tracing/src/helpers"
 import { div } from 'cycle-snabbdom'
 import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
+import { Combine } from "../src/components/Combine"
 
 const $ = Rx.Observable;
 
@@ -39,8 +40,8 @@ QUnit.module("Testing trace functionality", {});
 // - output is correctly traced (id, order, materialized messages, termination of components, path remains correct
 // even with dynamic creation/completion of components, etc.)
 // Edge cases
-// - using a combinator without passing a combinator name : how is the trace affected?
 // - App is a component, i.e. component tree depth 0
+// - using a combinator without passing a combinator name : how is the trace affected?
 // - container component is not an atomic component but a composite component...
 
 // Edge case
@@ -57,6 +58,8 @@ QUnit.module("Testing trace functionality", {});
 
 const A_DRIVER = 'a_driver';
 const ANOTHER_DRIVER = 'another_driver';
+const A_SETTING_PROP_VALUE = 'a_setting_prop_value';
+const SOME_SETTINGS = {a_setting_prop : A_SETTING_PROP_VALUE} ;
 
 function AtomicComponentApp(sources, settings) {
   const driver1 = sources[A_DRIVER];
@@ -69,6 +72,10 @@ function AtomicComponentApp(sources, settings) {
       .map(addPrefix(`driver1 emits: `))
   }
 }
+
+const SimpleCompositeComponentWithDepth1AndCombine = Combine(SOME_SETTINGS, [
+  AtomicComponentApp
+]);
 
 // TODO : after same test but testing default trace functions
 QUnit.test("edge case - App is an atomic component (depth tree 0)", function exec_test(assert) {
@@ -112,7 +119,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
 
   const expectedGraph = [
     {
-      "combinatorName": undefined,
+      "combinatorName": 'Combine',
       "componentName": TRACE_BOOTSTRAP_NAME,
       "id": 0,
       "isContainerComponent": false,
@@ -135,7 +142,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
   ];
   const expectedTraces = [
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "a_driver",
@@ -151,7 +158,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "a_driver",
@@ -168,7 +175,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "DOM",
@@ -185,7 +192,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "DOM",
@@ -201,7 +208,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "a_driver",
@@ -218,7 +225,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "a_driver",
@@ -234,7 +241,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "another_driver",
@@ -250,7 +257,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "another_driver",
@@ -267,7 +274,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "DOM",
@@ -284,7 +291,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "DOM",
@@ -300,7 +307,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "a_driver",
@@ -316,7 +323,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "a_driver",
@@ -333,7 +340,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "DOM",
@@ -350,7 +357,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "DOM",
@@ -366,7 +373,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "a_driver",
@@ -383,7 +390,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "a_driver",
@@ -399,7 +406,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "another_driver",
@@ -415,7 +422,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "another_driver",
@@ -432,7 +439,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "AtomicComponentApp",
       "emits": {
         "identifier": "DOM",
@@ -449,7 +456,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       ]
     },
     {
-      "combinatorName": undefined,
+      "combinatorName": "Combine",
       "componentName": "ROOT",
       "emits": {
         "identifier": "DOM",
@@ -463,8 +470,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       "path": [
         0
       ]
-    }
-  ];
+    }  ];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -482,35 +488,49 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
 
 });
 
-QUnit.skip("main case - ...", function exec_test(assert) {
-  const done = assert.async(2); // TODO
+QUnit.test("main case - component tree depth 1 - no container - 1 component", function exec_test(assert) {
+  const done = assert.async(3);
+  const traces = [];
+
+  const App = SimpleCompositeComponentWithDepth1AndCombine;
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      sendMessage: msg => traces.push(msg)
+    }
+  }, App);
 
   const inputs = [
-    // put myIntent and click in sources to collide with sink for this test case - should throw
-    // at the fisrt collision
-    { myIntent: { diagram: '-a--b--c--d--e--f--a' } },
-    { click: { diagram: '-a--b--c--d--e--f--a' } },
-    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
-    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
-    {
-      userAction$: {
-        diagram: 'abc-b-ac--ab---c',
-        values: { a: 'click', b: 'select', c: 'hover', }
-      }
-    },
+    { [A_DRIVER]: { diagram: '-a--b--' } },
+    { [ANOTHER_DRIVER]: { diagram: '-A--B--' } },
   ];
 
-  const expected = {
-    DOM: {
-      outputs: [],
-      successMessage: 'sink DOM produces the expected values',
-      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+  const expectedMessages = {
+    [A_DRIVER]: {
+      outputs: inputs[0][A_DRIVER].diagram.replace(/-/g, '').split('').map(x => `driver1 emits: ${x}`),
+      successMessage: `sink ${A_DRIVER} produces the expected values`
+    },
+    [DOM_SINK]: {
+      outputs: [
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style="width: 450px; height: 200px"></iframe><div><div><div>DOM_SINK emits: a</div></div></div></div>`,
+        `<div><iframe id=\"${iframeId.slice(1)}\" src=\"${iframeSource}\" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: A</div></div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: b</div></div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: B</div></div></div></div>`
+      ],
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
       transform: pipe(convertVNodesToHTML)
     },
-    // TODO
-  }
+  };
 
-  runTestScenario(inputs, expected, pipedComponent, {
+  const expectedGraph = [];
+  const expectedTraces = [];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
     waitForFinishDelay: 10,
     analyzeTestResults: analyzeTestResults(assert, done),
@@ -518,6 +538,10 @@ QUnit.skip("main case - ...", function exec_test(assert) {
       done(err)
     }
   });
-
+  testResult
+    .then(_ => {
+      assert.deepEqual(removeWhenField(traces), expectedGraph.concat(expectedTraces), `Traces are produced as expected!`);
+      done()
+    });
 });
 
