@@ -9,3 +9,4 @@ export const BEHAVIOUR_TYPE = 'B';
 export const EVENT_TYPE = 'E';
 export const GRAPH_STRUCTURE = 'graph_structure'
 export const RUNTIME = 'runtime'
+``

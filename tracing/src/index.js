@@ -62,6 +62,8 @@ function addTraceInfoToComponent(path) {
           updatedChildComponentSettings = set(containerFlagInSettings, isContainerComponent, updatedChildComponentSettings);
           const isLeaf = isLeafComponent(component);
 
+          // Edge case : I have to also log those component from the component tree which are leaf components as they won't
+          // log themselves
           if (isLeaf) {
             // If the component is a leaf component :
             // - logs the corresponding portion of the tree structure
@@ -76,8 +78,7 @@ function addTraceInfoToComponent(path) {
               path: path.concat([index]),
               id: getGraphCounter()
             });
-            // TODO : I should also do the graph structure send message here instead of later, so it is done at
-            // calling time
+
             updatedChildComponentSettings = set(componentNameInSettings, getLeafComponentName(component), updatedChildComponentSettings);
             updatedChildComponentSettings = set(leafFlagInSettings, isLeaf, updatedChildComponentSettings);
             updatedChildComponentSettings = set(combinatorNameInSettings, undefined, updatedChildComponentSettings);
@@ -130,9 +131,6 @@ function preprocessInput(componentDef, sources, settings, componentTree) {
     // Inject path in every child component, misc. info and special trace treatment for leaf components
     const advisedComponentTree = mapOverComponentTree(addTraceInfoToComponent(path), componentTree);
 
-    //`  - LOG : path and combinatorName and componentName which I have at config time
-    // TODO : I need also to pass isContainreComponent optimally, will it be in settings? maybe, if not leaf
-    // case leaf is treated below
     sendMessage({
       logType: GRAPH_STRUCTURE,
       componentName,
@@ -142,23 +140,6 @@ function preprocessInput(componentDef, sources, settings, componentTree) {
       path,
       id: getGraphCounter()
     });
-    // Edge case : I have to also log those component from the component tree which are leaf components as they won't
-    // log themselves
-/*
-        forEachInComponentTree((component, isContainerComponent, index) => {
-          if (isLeafComponent(component)) {
-            sendMessage({
-              logType: GRAPH_STRUCTURE,
-              componentName: getFunctionName(component),
-              combinatorName: undefined,
-              isContainerComponent: isContainerComponent,
-              when: +Date.now(),
-              path: path.concat([index]),
-              id: getGraphCounter()
-            })
-          }
-        }, componentTree);
-    */
 
     return { componentDef, sources: tracedSources, settings: updatedSettings, componentTree: advisedComponentTree }
   }

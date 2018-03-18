@@ -9,11 +9,13 @@ import {
   componentNameInSettings, defaultTraceSinkFn, defaultTraceSourceFn, traceDOMsinkFn, traceEventSinkFn,
   traceEventSourceFn
 } from "../tracing/src/helpers"
-import { div } from 'cycle-snabbdom'
+import { div, h } from 'cycle-snabbdom'
 import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
 import { Combine } from "../src/components/Combine"
 import { InjectSourcesAndSettings } from "../src"
 import { ForEach } from "../src/components/ForEach"
+import { Switch } from "../src/components/Switch"
+import { Case } from "../src/components/Switch/Switch"
 
 const $ = Rx.Observable;
 
@@ -8768,7 +8770,7 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
     });
 });
 
-QUnit.test("main case - Combine, ForEach - component tree depth 2 - 0 container - 1 component", function exec_test(assert) {
+QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 component", function exec_test(assert) {
   resetGraphCounter();
   const done = assert.async(3);
   const traces = [];
@@ -8813,6 +8815,12 @@ QUnit.test("main case - Combine, ForEach - component tree depth 2 - 0 container 
     },
   };
 
+  // NOTE : there is no "C" notification appearing here, as the ForEach combinator sinks do not complete. Its
+  // children components are called on-demand, and their sinks do complete. However, there is no trace instruction
+  // at that level to observe it
+  // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
+  // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
+  // before 'instantiation'.
   const expectedGraph1 =[
     {
       "combinatorName": "Combine",
@@ -9483,6 +9491,850 @@ QUnit.test("main case - Combine, ForEach - component tree depth 2 - 0 container 
     });
 });
 
+QUnit.test("main cases - Switch - component tree depth 2 - 0 match, 3 cases", function exec_test(assert) {
+  resetGraphCounter();
+  const done = assert.async(4);
+  const traces = [];
+
+  const childComponent1 = function childComponent1(sources, settings) {
+    return {
+      DOM: sources.DOM1.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 1: '))
+        .map(x => h('span', {}, `Component 1 : ${x}`)),
+      a: sources.userAction$.map(x => `Component1 - user action : ${x}`)
+    }
+  };
+  const childComponent2 = function childComponent2(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 2: '))
+        .map(x => h('span', {}, `Component 2 : ${x}`)),
+      b: sources.userAction$.map(x => `Component2 - user action : ${x}`)
+    }
+  };
+  const childComponent3 = function childComponent3(sources, settings) {
+    return {
+      DOM: sources.DOM2.take(4)
+        .tap(console.warn.bind(console, 'DOM : component 3: '))
+        .map(x => h('span', {}, `Component 3 : ${x}`)),
+      b: sources.userAction$.map(x => `Component3 - user action : ${x}`)
+    }
+  };
+  const childComponent4 = function childComponent4(sources, settings) {
+    return {
+      c: sources.userAction$.map(x => `Component4 - user action : ${x}`)
+    }
+  };
+  const SWITCH_SOURCE = 'sweatch$';
+const SWITCH_AS = 'switchedOn';
+
+  const App = Switch({
+    on: SWITCH_SOURCE,
+    as: SWITCH_AS,
+    sinkNames: [DOM_SINK, 'a', 'b', 'c']
+  }, [
+    Case({ when: '' }, [childComponent3]),
+    Case({ when: 'Y' }, [childComponent4]),
+    Case({ when: 2 }, [childComponent1, childComponent2]),
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [a]: [traceEventSourceFn, traceEventSinkFn],
+        [b]: [traceEventSourceFn, traceEventSinkFn],
+        [c]: [traceEventSourceFn, traceEventSinkFn],
+        DOM1: [traceEventSourceFn, traceEventSinkFn],
+        DOM2: [traceEventSourceFn, traceEventSinkFn],
+        userAction$ : [traceEventSourceFn, traceEventSinkFn],
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+
+      defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers : {getId : getId(0)}
+  }, App);
+
+  const inputs = [
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
+    {
+      userAction$: {
+        diagram: 'abc-b-ac--ab---c',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+    {
+      [SWITCH_SOURCE]: {
+        //diagr: '-a--b--c--d--e--f--a',
+        //diagr: '-a-b-c-d-e-f-abb-c-d',
+        //userA: 'abc-b-ac--ab---c',
+        diagram: '-t-f-tttttff-t', values: {
+          t: true,
+          f: false,
+        }
+      }
+    }
+  ];
+
+  /** @type TestResults */
+  const expected = {
+    DOM: {
+      outputs: ["<div></div>"],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [],
+      successMessage: 'sink a produces the expected values',
+    },
+    b: {
+      outputs: [],
+      successMessage: 'sink b produces the expected values',
+    },
+    c: {
+      outputs: [],
+      successMessage: 'sink c produces the expected values',
+    },
+  }
+
+  runTestScenario(inputs, expected, App, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  })
+
+});
+
+QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 component", function exec_test(assert) {
+  // TODO
+  resetGraphCounter();
+  const done = assert.async(3);
+  const traces = [];
+  const switchSettings = {
+    on: SWITCH_SOURCE,
+    as: SWITCH_AS,
+    sinkNames: ['DOM', A_DRIVER, ANOTHER_DRIVER]
+  };
+
+  // TODO : I need a case actually so have a look at switch specs for inspiration and fields to test
+  const App = Switch(set(componentNameInSettings, APP_NAME, ), [
+    Case({ when: true }, [AtomicComponentApp]),
+    Case({ when: false }, [AnotherAtomicComponentApp]),
+    Case({ when: true }, [AtomicComponentMonoDriverApp]),
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      // TODO : make a contract to chech that defaultSpecs is not null when expected
+      defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers : {getId : getId(0)}
+  }, App);
+
+  const inputs = [
+    { [A_DRIVER]: { diagram: 'a-b--' } },
+    { [ANOTHER_DRIVER]: { diagram: '-A--B--' } },
+  ];
+
+  const expectedMessages = {
+    [ANOTHER_DRIVER]: {
+      outputs: inputs[1][ANOTHER_DRIVER].diagram.replace(/-/g, '').split('').map(x => `another driver emits: ${x}`),
+      successMessage: `sink ${ANOTHER_DRIVER} produces the expected values`
+    },
+    [DOM_SINK]: {
+      outputs: [],
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      transform: pipe(convertVNodesToHTML)
+    },
+  };
+
+  // NOTE : there is no "C" notification appearing here, as the ForEach combinator sinks do not complete. Its
+  // children components are called on-demand, and their sinks do complete. However, there is no trace instruction
+  // at that level to observe it
+  // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
+  // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
+  // before 'instantiation'.
+  const expectedGraph1 =[
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedGraph2 = [
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedGraph3 = [
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "id": 5,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "id": 6,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedTraces1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+  ];
+  const expectedTraces2 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "foreach_as": "a",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "foreach_as": "a",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: A"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: A"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: A"
+        },
+        "type": 1
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: A"
+        },
+        "type": 1
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: A"
+        },
+        "type": 1
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+  ];
+  const expectedTraces3 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "foreach_as": "b",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "foreach_as",
+        "foreach_as": "b",
+        "from": "a_driver",
+        "sinkNames": [
+          "another_driver",
+          "DOM"
+        ]
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: B"
+        },
+        "type": 1
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: B"
+        },
+        "type": 1
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ForEach",
+      "componentName": "a_component_name",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: B"
+        },
+        "type": 1
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "App",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: B"
+        },
+        "type": 1
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "another driver emits: B"
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(
+        removeWhenField(traces),
+        flatten([expectedGraph1, expectedTraces1,expectedGraph2,expectedTraces2,expectedGraph3,expectedTraces3]  ),
+        `Traces are produced as expected!`);
+      done()
+    });
+});
+
 // TODO : inject sources, try to use default function for unknown sources
 // use defaultTraceSpecs : [source, sink] for this one, so I test it
 // then think about how to declare behaviour and event in a more friendly way
@@ -9493,7 +10345,9 @@ QUnit.test("main case - Combine, ForEach - component tree depth 2 - 0 container 
 // TODO : document that mergeSinks in this version can have null as parentSinks
 // TODO : in the log analysis, be careful that path is duplicated (which is good) but messages also are
 // so Foreach content -> Foreach|Inner same content but new id
-// TODO : in the draw of graph, I can desambiguate in and out tracs with the path
+// TODO : in the draw of graph, I can desambiguate in and out trace with the path
 // ForEach graph structure several times will ahve the same lines..
 // we know about recreation of branchs of the tree when a graph structure appears after a runtime portion, path
 // gives the location of the branch
+// TODO : also test for error occuring in the component tree
+// component do not complete per se, so hard to test

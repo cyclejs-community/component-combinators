@@ -8,11 +8,11 @@ import {
 import { removeNullsFromArray, unfoldObjOverload } from "../../../utils/src/index"
 import { DOM_SINK, emitNullIfEmpty, removeEmptyVNodes } from "../../../utils/src/index"
 
-import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } from 'ramda'
+import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll, set } from 'ramda'
 import * as Rx from 'rx'
 import { SWITCH_SOURCE } from "./properties"
 import { div } from "cycle-snabbdom"
-import { reconstructComponentTree } from "../../../tracing/src/helpers"
+import { combinatorNameInSettings, reconstructComponentTree } from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -95,13 +95,13 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
 
   if (overload._index === 1) {
     // Case : overload `settings.on :: SourceName`
-    switchSource = sources[sourceName]
+    switchSource = sources[sourceName];
   }
   if (overload._index === 0) {
     // Case : overload `settings.on :: SourceName`
-    switchSource = guard$(sources, settings)
+    switchSource = guard$(sources, settings);
     assertContract(isSource, [switchSource],
-      `Case > computeSinks > The function used for conditional switching did not return an observable!`)
+      `Case > computeSinks > The function used for conditional switching did not return an observable!`);
   }
 
   // set default values for optional properties
@@ -111,13 +111,14 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
     .map(x => ({ isMatching: eqFn(x, when), incoming: x }))
     .do(function ({ isMatching, incoming }) {
       if (isMatching) {
-        console.info(`Found a match (${when}) for Case branch ${settings.trace}`)
-        console.info(`Computing the corresponding sinks`)
+        console.info(`Found a match (${when}) for Case branch ${settings.trace}`);
+        console.info(`Computing the corresponding sinks`);
         const mergedChildrenComponentsSinks = m(
           {},
-          // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well.
-          { [as]: incoming, trace: 'executing case children' },
-          reconstructComponentTree(parentComponent, childrenComponents))
+          // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well...
+          set(combinatorNameInSettings, 'Case|Inner', { [as]: incoming , trace: 'executing case children'}),
+          reconstructComponentTree(parentComponent, childrenComponents)
+        );
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
       }
@@ -381,9 +382,9 @@ export function Switch(switchSettings, componentTree) {
     _switchSettings = assoc('on', SWITCH_SOURCE, switchSettings);
   }
 
-  return m(_SwitchSpec, _switchSettings, componentTree)
+  return m(_SwitchSpec, set(combinatorNameInSettings, 'Switch', _switchSettings), componentTree)
 }
 
 export function Case(CaseSettings, componentTree) {
-  return m(CaseSpec, CaseSettings, componentTree)
+  return m(CaseSpec, set(combinatorNameInSettings, 'Case', CaseSettings), componentTree)
 }
