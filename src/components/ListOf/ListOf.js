@@ -6,11 +6,16 @@ import {
 import { m } from '../m/m'
 import { either, isNil, keys, merge, path, reduce, uniq } from 'ramda'
 import * as Rx from "rx"
+import { isArrayOf } from "../../../contracts/src"
 
 const $ = Rx.Observable;
 
 function getPathFromString(list) {
   return list.split('.');
+}
+
+function isNonEmptyArrayComponent(obj) {
+  return obj && obj.length && isArrayOf(isComponent)(obj)
 }
 
 function isListOfSettings(settings) {
@@ -31,7 +36,7 @@ function hasValidActionsMap(sources, settings) {
   return (!('actionsMap' in settings) || isObject(settings.actionsMap))
 }
 
-function hasExactlyTwoChildrenComponent(arrayOfComponents) {
+function hasExactlyTwoChildrenComponents(arrayOfComponents) {
   // NOTE : we exclude [parent, [child, child]]. We want [child, child]
   return arrayOfComponents && isArray(arrayOfComponents) && arrayOfComponents.length === 2
     && isComponent(arrayOfComponents[0]) && isComponent(arrayOfComponents[1])
@@ -47,7 +52,8 @@ const isValidListOfSettings =
     [hasValidActionsMap, `hasValidActionsMap parameter is optional. When present it must be a hashmap mapping children sinks to action sinks!`],
   ], `isValidListOfSettings : fails!`);
 
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+function computeSinks(parentComponent, childrenComponents, sources, settings) {
+  // NOTE : parentComponent is supposed to be null for `ListOf`
   const { list, buildActionsFromChildrenSinks, actionsMap } = settings;
   const items = path(getPathFromString(list), settings);
   const childComponent = items.length ? childrenComponents[1] : childrenComponents[0];
@@ -123,7 +129,8 @@ const listOfSpec = {
 };
 
 export function ListOf(listOfSettings, childrenComponents) {
-  assertContract(hasExactlyTwoChildrenComponent, [childrenComponents], `ListOf : ListOf combinator must have exactly two children component to list from!`);
+  assertContract(hasExactlyTwoChildrenComponents, [childrenComponents], `ListOf : ListOf combinator must have exactly two children component to list from!`);
+  // NOTE : Do check it at that level and not with checkPreConditions
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
   return m(listOfSpec, listOfSettings, childrenComponents)
@@ -136,3 +143,4 @@ export function ListOf(listOfSettings, childrenComponents) {
 // It is always possible to specify the unique child component as a the sum of other components
 // and define the merge at that level. For instance :
 // ListOf(..., [UniqueComponent]); UniqueComponent = m({mergeSpecs}, {settings}, [Components])
+// NOTE : ADR2 in second evolution, we added another component for the edge case when the list is empty

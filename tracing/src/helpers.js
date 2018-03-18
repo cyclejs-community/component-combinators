@@ -1,4 +1,4 @@
-import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath, pickBy } from 'ramda'
+import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath, pickBy, defaultTo, always } from 'ramda'
 import { BEHAVIOUR_TYPE, EVENT_TYPE, RUNTIME, SINK_EMISSION, SOURCE_EMISSION } from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, makePatternMatcher, ONE_COMPONENT_ONLY
@@ -148,16 +148,25 @@ export function forEachInComponentTree(fDo, componentTree) {
   return componentTreeMapper(componentTree);
 }
 
+export function makeNullSinkMessage(settings, warningMessage){
+  const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
+  const { getId } = deconstructHelpersFromSettings(settings);
+
+  return {
+    componentName, combinatorName, when: +Date.now(), path, id: getId(), warning : warningMessage
+  }
+}
+
 export function traceSources(sources, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage } = deconstructTraceFromSettings(settings);
   const defaultTraceSourceFn = defaultTraceSpecs && defaultTraceSpecs[0];
 
   return mapObjIndexed((source, sourceName) => {
     const traceFn = traceSpecs[sourceName];
-    const traceSourceFn = traceFn[0];
 
     if (traceFn) {
       // Case : There is a configured trace function for that source
+      const traceSourceFn = traceFn[0];
       return traceSourceFn(source, sourceName, settings)
     }
     else {
@@ -180,10 +189,8 @@ export function traceSinks(sinks, settings) {
   const defaultTraceSinkFn = defaultTraceSpecs && defaultTraceSpecs[1];
 
   if (isNil(sinks)) {
-    sendMessage({
-      componentName, combinatorName, when: +Date.now(), path, id: getId(),
-      warning: 'encountered component which returns null as sinks!!'
-    });
+      makeNullSinkMessage(settings, 'encountered component which returns null as sinks!!');
+
     return null
   }
   else {
@@ -258,7 +265,6 @@ export function makeDOMSinkNotificationMessage({ sinkName, settings, notificatio
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
-
 
 export function makeSinkNotificationMessage({ sinkName, settings, notification }) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
@@ -349,14 +355,8 @@ export function defaultTraceSinkFn(sink, sinkName, settings) {
   const { getId } = deconstructHelpersFromSettings(settings);
 
   if (isNil(sink)) {
-    sendMessage({
-      componentName,
-      combinatorName,
-      when: +Date.now(),
-      path,
-      id: getId(),
-      warning: 'encountered sink which is not an observable but null'
-    });
+    sendMessage(makeNullSinkMessage(settings, 'encountered sink which is not an observable but null!'));
+
     return null
   }
   else if (isBehaviourSink(sink)) {
@@ -390,3 +390,21 @@ function isEventSink(sink) {
   return Boolean(sink && isEventSource(sink))
 }
 
+export function deconstructComponentTree(componentTree){
+  const { parentComponent, childrenComponents } =
+    makePatternMatcher(componentTreePatternMatchingPredicates, {
+      // TODO : refactor later the pattern match to only two cases (remove one component only case)
+      [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: null, childrenComponents: componentTree }),
+      [CONTAINER_AND_CHILDREN]: componentTree => ({
+        parentComponent: componentTree[0],
+        childrenComponents: componentTree[1]
+      }),
+      [CHILDREN_ONLY]: componentTree => ({ parentComponent: null, childrenComponents: componentTree })
+    })(componentTree);
+
+  return { parentComponent, childrenComponents }
+}
+
+export function reconstructComponentTree(parentComponent, childrenComponents){
+  return parentComponent ? [parentComponent, childrenComponents] : childrenComponents
+}

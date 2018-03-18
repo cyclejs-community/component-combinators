@@ -3,8 +3,11 @@ import {
 } from "../../../contracts/src/index"
 import { format } from "../../../utils/src/index"
 import { m } from '../m/m'
-import { map, mergeAll } from 'ramda'
+import { map, mergeAll, set } from 'ramda'
 import * as Rx from "rx";
+import {
+  combinatorNameInSettings, componentNameInSettings, reconstructComponentTree
+} from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable;
 
@@ -30,12 +33,16 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
     .do(function (incomingValue) {
       console.info(`${settings.trace} > ForEach > New value from source ${from}`, format(incomingValue));
       console.info(`${settings.trace} > ForEach > Computing the associated sinks`);
-      const mergedChildrenComponentsSinks = m(
-        {},
-        { [as]: incomingValue, trace: 'executing ForEach children' },
-        [parentComponent, childrenComponents]);
 
-      cachedSinks = mergedChildrenComponentsSinks(sources, settings);
+      const switchedComponent = m(
+        {},
+        set(combinatorNameInSettings, 'ForEach|Inner', { [as]: incomingValue }),
+        // Keep the shape of the component tree, this avoids edge case of container component == null which causes
+        // exttra logs and wrong indices
+        reconstructComponentTree(parentComponent, childrenComponents));
+
+      // TODO : think about how to pass trace...
+      cachedSinks = switchedComponent(sources, settings);
     })
     // NOTE: apparently necessary because every sink name wires at a different moment?? maybe
     // because the wire happens at switch time? and that is a different time every time??
@@ -54,6 +61,7 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
             .finally(_ => {
               console.log(`sink ${sinkName} terminating due to applicable case change`)
             })
+            .share()
         }
         else {
           // Case : the component does not have any sinks with the corresponding sinkName
@@ -69,7 +77,7 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
     }
   }
 
-  return mergeAll(map(makeSwitchedSink, sinkNames)) // ramda mergeAll, not Rx
+  return mergeAll(map(makeSwitchedSink, sinkNames))
 }
 
 // Spec
@@ -82,5 +90,7 @@ export function ForEach(forEachSettings, componentTree) {
   assertContract(hasAtLeastOneChildComponent, [componentTree], `ForEach : ForEach combinator must at least have one child component to switch to!`);
   assertContract(isForEachSettings, [null, forEachSettings], `ForEach : ForEach combinator must have 'from' and 'as' property which are strings!`);
 
-  return m(forEachSpec, forEachSettings, componentTree)
+  // TODO : have a look at specs maybe add combinator name to the second m, or remove the trace in that m? but then
+  // that m does not have the trace/?
+  return m(forEachSpec, set(combinatorNameInSettings, 'ForEach', forEachSettings), componentTree)
 }

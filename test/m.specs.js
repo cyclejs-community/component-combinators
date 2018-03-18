@@ -12,7 +12,6 @@ import { runTestScenario } from '../testing/src/runTestScenario';
 
 let $ = Rx.Observable;
 
-
 // Fixtures
 const PROVIDERS = {
   google: 'google',
@@ -933,7 +932,6 @@ function getVNodeWithOnlyText(text) {
     text: text
   }
 }
-
 
 function getVNodeWithUndefinedSlot(selector) {
   return {

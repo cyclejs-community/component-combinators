@@ -9,6 +9,7 @@ import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
 import { ROUTE_CONFIG, ROUTE_PARAMS } from "./properties"
+import { reconstructComponentTree } from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable
 
@@ -185,7 +186,7 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
             [ROUTE_PARAMS]: omit(['routeRemainder'], match),
             trace: `${trace} > componentFromChildren`
           },
-          [parentComponent, childrenComponents]);
+          reconstructComponentTree(parentComponent, childrenComponents));
         cachedSinks = componentFromChildren(sources, settings);
       }
       else {

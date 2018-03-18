@@ -1,16 +1,18 @@
 import {
-  componentNameInSettings,
-  containerFlagInSettings, deconstructTraceFromSettings, defaultTraceSinkFn, defaultTraceSourceFn,
-  forEachInComponentTree, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild, isLeafComponent,
-  leafFlagInSettings, mapOverComponentTree,  pathInSettings,  traceSinks, traceSources
+  combinatorNameInSettings,
+  componentNameInSettings, containerFlagInSettings, deconstructTraceFromSettings, defaultTraceSinkFn,
+  defaultTraceSourceFn, forEachInComponentTree, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild,
+  isLeafComponent, leafFlagInSettings, mapOverComponentTree, pathInSettings, traceSinks, traceSources
 } from './helpers'
 import {
   GRAPH_STRUCTURE, iframeId, iframeSource, IS_TRACE_ENABLED_DEFAULT, PATH_ROOT, TRACE_BOOTSTRAP_NAME
 } from './properties'
 import { Combine } from "../../src/components/Combine"
-import { decorateWithAdvice, getFunctionName, vLift } from "../../utils/src"
+import { decorateWithAdvice, getFunctionName, isAdvised, vLift } from "../../utils/src"
 import { iframe } from "cycle-snabbdom"
-import { merge, pathOr, view, set } from 'ramda'
+import { pathOr, set, view } from 'ramda'
+import { assertContract } from "../../contracts/src"
+import { isTraceDefSpecs } from "./contracts"
 
 let graphCounter = 0;
 
@@ -43,37 +45,58 @@ function onMessage(msg) {
  */
 function addTraceInfoToComponent(path) {
   return function addTraceInfoToComponent(component, isContainerComponent, index) {
-    const advisedComponent = decorateWithAdvice({
-      around: function decorateComponentWithTraceInfo(joinpoint, component) {
-        const { args, fnToDecorateName } = joinpoint;
-        const [sources, childComponentSettings] = args;
-        let updatedChildComponentSettings = set(pathInSettings, getPathForNthChild(index, path), childComponentSettings);
-        updatedChildComponentSettings = set(containerFlagInSettings, isContainerComponent, updatedChildComponentSettings);
-        const isLeaf = isLeafComponent(component);
+    // Note that we trace the leaf component ahead of its execution. This can generate double logging with
+    // combinators like ForEach which may execute the leaf components wrapped into a m() call
+    // We hence add a guard against advising twice leaf components.
+    // This duplication may also affects non leaf components
+    if (isAdvised(component)) {
+      return component
+    }
+    else {
+      const advisedComponent = decorateWithAdvice({
+        around: function decorateComponentWithTraceInfo(joinpoint, component) {
+          const { args, fnToDecorateName } = joinpoint;
+          const [sources, childComponentSettings] = args;
+          const { sendMessage } = deconstructTraceFromSettings(childComponentSettings);
+          let updatedChildComponentSettings = set(pathInSettings, getPathForNthChild(index, path), childComponentSettings);
+          updatedChildComponentSettings = set(containerFlagInSettings, isContainerComponent, updatedChildComponentSettings);
+          const isLeaf = isLeafComponent(component);
 
-        if (isLeaf) {
-          // If the component is a leaf component:
-          // - add its name to settings for tracing purposes
-          // - tap its sources and sinks here and now
-          updatedChildComponentSettings = set(componentNameInSettings,getLeafComponentName(component), updatedChildComponentSettings);
-          updatedChildComponentSettings = set(leafFlagInSettings, isLeaf, updatedChildComponentSettings);
-          const tracedSources = traceSources(sources, updatedChildComponentSettings);
-          const sinks = component(tracedSources, updatedChildComponentSettings);
-          const tracedSinks = traceSinks(sinks, updatedChildComponentSettings);
+          if (isLeaf) {
+            // If the component is a leaf component :
+            // - logs the corresponding portion of the tree structure
+            // - add its name to settings for tracing purposes
+            // - tap its sources and sinks here and now
+            sendMessage({
+              logType: GRAPH_STRUCTURE,
+              componentName: getFunctionName(component),
+              combinatorName: undefined,
+              isContainerComponent: isContainerComponent,
+              when: +Date.now(),
+              path: path.concat([index]),
+              id: getGraphCounter()
+            });
+            // TODO : I should also do the graph structure send message here instead of later, so it is done at
+            // calling time
+            updatedChildComponentSettings = set(componentNameInSettings, getLeafComponentName(component), updatedChildComponentSettings);
+            updatedChildComponentSettings = set(leafFlagInSettings, isLeaf, updatedChildComponentSettings);
+            updatedChildComponentSettings = set(combinatorNameInSettings, undefined, updatedChildComponentSettings);
+            const tracedSources = traceSources(sources, updatedChildComponentSettings);
+            const sinks = component(tracedSources, updatedChildComponentSettings);
+            const tracedSinks = traceSinks(sinks, updatedChildComponentSettings);
 
-          return tracedSinks
+            return tracedSinks
+          }
+          else {
+            // If the component is a `m` component, i.e. obtained from m(...), let it be
+            // It will be traced at the `m` level
+            return component(sources, updatedChildComponentSettings);
+          }
         }
-        else {
-          // If the component is a `m` component, i.e. obtained from m(...), let it be
-          // It will be traced at the `m` level
-          return component(sources, updatedChildComponentSettings);
-        }
-      }
-    }, component);
-
-    return advisedComponent
+      }, component);
+      return advisedComponent
+    }
   }
-
 }
 
 /**
@@ -121,19 +144,21 @@ function preprocessInput(componentDef, sources, settings, componentTree) {
     });
     // Edge case : I have to also log those component from the component tree which are leaf components as they won't
     // log themselves
-    forEachInComponentTree((component, isContainerComponent, index) => {
-      if (isLeafComponent(component)) {
-        sendMessage({
-          logType: GRAPH_STRUCTURE,
-          componentName: getFunctionName(component),
-          combinatorName: undefined,
-          isContainerComponent: isContainerComponent,
-          when: +Date.now(),
-          path: path.concat([index]),
-          id: getGraphCounter()
-        })
-      }
-    }, componentTree);
+/*
+        forEachInComponentTree((component, isContainerComponent, index) => {
+          if (isLeafComponent(component)) {
+            sendMessage({
+              logType: GRAPH_STRUCTURE,
+              componentName: getFunctionName(component),
+              combinatorName: undefined,
+              isContainerComponent: isContainerComponent,
+              when: +Date.now(),
+              path: path.concat([index]),
+              id: getGraphCounter()
+            })
+          }
+        }, componentTree);
+    */
 
     return { componentDef, sources: tracedSources, settings: updatedSettings, componentTree: advisedComponentTree }
   }
@@ -197,9 +222,11 @@ const adviseApp = (traceDef, App) => decorateWithAdvice({
  * @return Component Component whose inputs and outputs (i.e. sources and sinks) are traced
  */
 export function traceApp(traceDefSpecs, App) {
-  // TODO : add contract for traceDefSpecs!! important for debugging
-  // because I have default values, most of the values are optional except traceSpecs
-  debugger
+  // TODO : document on blog the contracts functions...
+  // NTH : review the specs for the error logging, it is still hard to read for instance for isRecordE
+  // it shows args for the isRecordE not for the predicate failing
+  assertContract(isTraceDefSpecs, [traceDefSpecs], `traceApp : Fails contract isTraceDefSpecs!`);
+
   const traceDef = {
     _hooks: pathOr({ preprocessInput, postprocessOutput }, ['_hooks'], traceDefSpecs),
     _helpers: pathOr({ getId }, ['_helpers'], traceDefSpecs),
@@ -273,3 +300,6 @@ export function traceAppBasic(traceSpecs, App) {
  */
 
 // TODO : how to trace the DOM source??, I have to intervene the dom OBJECT! same for document thing about it
+// TODO : add in GRAOH_STRUCTURE alos sources and sinks for each component
+// This will allow to detect when a component is terminated (i.e. when all its sinks are terminated), and also trace the
+// sources available for // each // component

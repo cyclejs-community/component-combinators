@@ -12,6 +12,7 @@ import { addIndex, assoc, clone, defaultTo, equals, flatten, map, mergeAll } fro
 import * as Rx from 'rx'
 import { SWITCH_SOURCE } from "./properties"
 import { div } from "cycle-snabbdom"
+import { reconstructComponentTree } from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -81,7 +82,7 @@ const isSwitchSettings = checkAndGatherErrors([
 ], `Switch : Invalid switch component settings!`);
 
 //////////////
-function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
+function computeSinks(parentComponent, childrenComponents, sources, settings) {
   let { eqFn, when, sinkNames, on, as } = settings;
   let cachedSinks = null;
 
@@ -116,7 +117,7 @@ function computeSinks(makeOwnSinks, childrenComponents, sources, settings) {
           {},
           // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well.
           { [as]: incoming, trace: 'executing case children' },
-          [makeOwnSinks, childrenComponents])
+          reconstructComponentTree(parentComponent, childrenComponents))
 
         cachedSinks = mergedChildrenComponentsSinks(sources, settings)
       }

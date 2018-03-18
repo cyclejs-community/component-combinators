@@ -612,16 +612,23 @@ function _decorateWithAdvices(advices, fnToAdvise) {
   }, fnToAdvise)
 }
 
+function isAdvised(fn){
+  return Boolean(fn && fn.isAdvised)
+}
+
 function decorateWithAdvice(advice, fnToAdvise) {
   const fnToDecorateName = getFunctionName(fnToAdvise);
 
-  return NamedFunction(fnToDecorateName, [], `
+  const advisedFn =  NamedFunction(fnToDecorateName, [], `
       const args = [].slice.call(arguments);
       const decoratingFn = makeAdvisedFunction(advice);
       const joinpoint = {args, fnToDecorateName};
       return decoratingFn(joinpoint, fnToAdvise);
 `,
     { makeAdvisedFunction, advice, fnToAdvise, fnToDecorateName }, undefined);
+  advisedFn.isAdvised = true;
+
+  return advisedFn
 }
 
 function makeAdvisedFunction(advice) {
@@ -775,6 +782,7 @@ export {
   formatArrayObj,
   format,
   traceFn,
+  isAdvised,
   decorateWithAdvices,
   decorateWithAdvice,
   ONE_COMPONENT_ONLY,

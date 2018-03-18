@@ -5,6 +5,7 @@ import {
 // NOTE ADR: we don't use `m` here, we could but choose not to. As `m` will be use for logging, we
 // have no interest in having a log for `InSlot` operations.
 export function InSlot(slotName, [component]) {
+  // TODO : add a contract checking array of one component
   return function InSlot(sources, settings) {
     const sinks = component(sources, settings);
     const vNodes$ = sinks[DOM_SINK];

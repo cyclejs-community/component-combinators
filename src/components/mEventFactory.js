@@ -124,9 +124,10 @@ const eventFactorySpec = {
   mergeSinks: mergeEventFactorySinksWithChildrenSinks
 }
 
-export function mEventFactory(eventFactorySettings, componentTree) {
+export function mEventFactory(eventFactorySettings, childrenComponents) {
   // returns a component which default-merges sinks coming from the children
-  // and adds its events sinks to it
+  // and adds its events sinks to it. Note that it is not possible to have a container component
+  // TODO : check it by contract
 
   // NOTE : we could test against eventFactorySettings here, before doing it in `m` too
   // (fails fast). We will not.
@@ -134,5 +135,5 @@ export function mEventFactory(eventFactorySettings, componentTree) {
   // run time to be merged with the settings passed at creation time. This opens the
   // possibility to have a factory with some default events, and adding some additional events
   // at run time via settings
-  return m(eventFactorySpec, eventFactorySettings, [makeEventFactorySinks, componentTree])
+  return m(eventFactorySpec, eventFactorySettings, [makeEventFactorySinks, childrenComponents])
 }

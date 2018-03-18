@@ -54,6 +54,7 @@ import {
 import { div } from "cycle-snabbdom"
 import Rx from "rx"
 import { hasMsignature, hasNoTwoSlotsSameName } from "./types"
+import { deconstructComponentTree } from "../../../tracing/src/helpers"
 
 Rx.config.longStackSupport = true;
 let $ = Rx.Observable
@@ -322,17 +323,20 @@ function deconstructHooksFromSettings(settings) {
     : { preprocessInput: undefined, postprocessOutput: undefined }
 }
 
-function computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources,
+function computeSinksWithGenericStrategy(computeSinks, componentTree, extendedSources,
                                          localSettings) {
+  const { parentComponent, childrenComponents } =  deconstructComponentTree(componentTree);
+
   return computeSinks(parentComponent, childrenComponents, extendedSources, localSettings)
 }
 
-function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources,
+function computeSinksWithAllSinksStrategy(mergeSinks, componentTree, extendedSources,
                                           localSettings) {
   console.groupCollapsed(`computeSinksWithAllSinksStrategy`);
   console.trace(`Computing container sinks with settings : %O`, localSettings);
 
-  const containerSinks = parentComponent(extendedSources, localSettings);
+  const { parentComponent, childrenComponents } =  deconstructComponentTree(componentTree);
+  const containerSinks = parentComponent ? parentComponent(extendedSources, localSettings) : null;
 
   console.trace(`Computed container sinks`);
 
@@ -355,12 +359,13 @@ function computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenC
   return reducedSinks
 }
 
-function computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources,
+function computeSinksWithPerSinkStrategy(mergeSinks, componentTree, extendedSources,
                                          localSettings) {
   console.groupCollapsed(`computeSinksWithPerSinkStrategy`);
   console.trace(`Computing container sinks with settings : %O`, localSettings);
 
-  const containerSinks = parentComponent(extendedSources, localSettings);
+  const { parentComponent, childrenComponents } =  deconstructComponentTree(componentTree);
+  const containerSinks = parentComponent ? parentComponent(extendedSources, localSettings) : null;
 
   console.trace(`Computed container sinks`);
 
@@ -498,20 +503,6 @@ function m(_componentDef, __settings, _componentTree) {
     const computeSinks = componentDef.computeSinks;
     const mergeSinks = componentDef.mergeSinks || {};
 
-    // Basically distinguish between [Parent, [child]], and [child], and get the Parent, and [child]
-    // DOC : [null, [child]] is allowed, but to avoid though
-    const { parentComponent, childrenComponents } =
-      makePatternMatcher(componentTreePatternMatchingPredicates, {
-        // TODO : refactor later the pattern match to only two cases (remove one component only case)
-        [ONE_COMPONENT_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree }),
-        [CONTAINER_AND_CHILDREN]: componentTree => ({
-          parentComponent: defaultTo(always(null), componentTree[0]),
-          childrenComponents: componentTree[1]
-        }),
-        [CHILDREN_ONLY]: componentTree => ({ parentComponent: always(null), childrenComponents: componentTree })
-      })(componentTree);
-
-
     // Identify and apply the strategy defined
     const componentDefPatternMatchingPredicates = [
       [COMBINE_GENERIC_SPECS, componentDef => Boolean(componentDef.computeSinks)],
@@ -522,11 +513,11 @@ function m(_componentDef, __settings, _componentTree) {
 
     const reducedSinks = makePatternMatcher(componentDefPatternMatchingPredicates, {
       [COMBINE_GENERIC_SPECS]:
-        _ => computeSinksWithGenericStrategy(computeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+        _ => computeSinksWithGenericStrategy(computeSinks, componentTree, extendedSources, localSettings),
       [COMBINE_ALL_SINKS_SPECS]:
-        _ => computeSinksWithAllSinksStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings),
+        _ => computeSinksWithAllSinksStrategy(mergeSinks, componentTree, extendedSources, localSettings),
       [COMBINE_PER_SINK_SPECS]:
-        _ => computeSinksWithPerSinkStrategy(mergeSinks, parentComponent, childrenComponents, extendedSources, localSettings)
+        _ => computeSinksWithPerSinkStrategy(mergeSinks, componentTree, extendedSources, localSettings)
     })(componentDef);
 
     assertContract(isOptSinks, [reducedSinks], `m > computeSinks : must return sinks!, returned ${format(reducedSinks)}`);
