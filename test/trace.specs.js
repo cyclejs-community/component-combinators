@@ -2,13 +2,10 @@ import * as QUnit from "qunitjs"
 import * as Rx from 'rx'
 import { runTestScenario } from '../testing/src/runTestScenario'
 import { convertVNodesToHTML } from "../utils/src/index"
-import { identity, pipe, omit, set, flatten } from 'ramda'
+import { flatten, identity, omit, pipe, set } from 'ramda'
 import { addPrefix, DOM_SINK, vLift } from "../utils/src"
 import { resetGraphCounter, traceApp } from "../tracing/src"
-import {
-  componentNameInSettings, defaultTraceSinkFn, defaultTraceSourceFn, traceDOMsinkFn, traceEventSinkFn,
-  traceEventSourceFn
-} from "../tracing/src/helpers"
+import { componentNameInSettings, traceDOMsinkFn, traceEventSinkFn, traceEventSourceFn } from "../tracing/src/helpers"
 import { div, h } from 'cycle-snabbdom'
 import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
 import { Combine } from "../src/components/Combine"
@@ -26,11 +23,11 @@ function analyzeTestResults(assert, done) {
   }
 }
 
-function removeWhenField(traces){
+function removeWhenField(traces) {
   return traces.map(trace => omit(['when'], trace))
 }
 
-function getId(start){
+function getId(start) {
   let counter = start;
   return function () {
     return counter++
@@ -75,8 +72,8 @@ const A_DRIVER = 'a_driver';
 const ANOTHER_DRIVER = 'another_driver';
 const A_SETTING_PROP_VALUE = 'a_setting_prop_value';
 const ANOTHER_SETTING_PROP_VALUE = 'another_setting_prop_value';
-const SOME_SETTINGS = {a_setting_prop : A_SETTING_PROP_VALUE} ;
-const SOME_MORE_SETTINGS = {another_setting_prop : ANOTHER_SETTING_PROP_VALUE} ;
+const SOME_SETTINGS = { a_setting_prop: A_SETTING_PROP_VALUE };
+const SOME_MORE_SETTINGS = { another_setting_prop: ANOTHER_SETTING_PROP_VALUE };
 const ContainerComponent = vLift(div('.container'));
 const FOREACH_AS = 'foreach_as';
 
@@ -113,7 +110,7 @@ function AtomicComponentAppWithExtraSource(sources, settings) {
   }
 }
 
-function AtomicComponentMonoDriverApp(sources, settings){
+function AtomicComponentMonoDriverApp(sources, settings) {
   return {
     [ANOTHER_DRIVER]: sources[ANOTHER_DRIVER]
       .map(addPrefix(`another driver emits: `))
@@ -139,7 +136,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -546,7 +543,7 @@ QUnit.test("edge case - App is an atomic component (depth tree 0)", function exe
         0
       ]
     }
-    ];
+  ];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -582,7 +579,7 @@ QUnit.test("main case - Combine - component tree depth 1 - no container - 1 comp
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -1247,7 +1244,7 @@ QUnit.test("main case - Combine - component tree depth 1 - no container - 2 comp
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -2294,7 +2291,7 @@ QUnit.test("main case - Combine - component tree depth 1 - 1 container - 1 compo
   const done = assert.async(3);
   const traces = [];
 
-  const App = Combine(set(componentNameInSettings, APP_NAME, SOME_SETTINGS), [ ContainerComponent, [
+  const App = Combine(set(componentNameInSettings, APP_NAME, SOME_SETTINGS), [ContainerComponent, [
     AtomicComponentApp
   ]]);
   const tracedApp = traceApp({
@@ -2307,7 +2304,7 @@ QUnit.test("main case - Combine - component tree depth 1 - 1 container - 1 compo
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -2985,7 +2982,7 @@ QUnit.test("main case - Combine - component tree depth 1 - 1 container - 1 compo
       "path": [
         0
       ]
-    }  ];
+    }];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -3021,7 +3018,7 @@ QUnit.test("main case - Combine - component tree depth 2 - 0 container - 2 compo
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -4503,7 +4500,7 @@ QUnit.test("main case - Combine - component tree depth 2 - 0 container - 2 compo
       "path": [
         0
       ]
-    }  ];
+    }];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -4539,7 +4536,7 @@ QUnit.test("main case - Combine - component tree depth 2 - 1 container - 2 compo
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -6074,7 +6071,7 @@ QUnit.test("main case - Combine - component tree depth 2 - 1 container - 2 compo
       "path": [
         0
       ]
-    }  ];
+    }];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -6098,7 +6095,7 @@ QUnit.test("main case - Combine, InjectSettings - component tree depth 2 - 0 con
 
   const App = Combine(set(componentNameInSettings, APP_NAME, SOME_SETTINGS), [
     Combine(set(componentNameInSettings, A_COMPONENT_NAME, {}), [AtomicComponentApp]),
-    InjectSourcesAndSettings({settings : SOME_MORE_SETTINGS}, [AnotherAtomicComponentApp])
+    InjectSourcesAndSettings({ settings: SOME_MORE_SETTINGS }, [AnotherAtomicComponentApp])
   ]);
   const tracedApp = traceApp({
     _trace: {
@@ -6110,7 +6107,7 @@ QUnit.test("main case - Combine, InjectSettings - component tree depth 2 - 0 con
       },
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -7592,7 +7589,7 @@ QUnit.test("main case - Combine, InjectSettings - component tree depth 2 - 0 con
       "path": [
         0
       ]
-    }  ];
+    }];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -7617,7 +7614,7 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
   const App = Combine(set(componentNameInSettings, APP_NAME, SOME_SETTINGS), [
     Combine(set(componentNameInSettings, A_COMPONENT_NAME, {}), [AtomicComponentApp]),
     InjectSourcesAndSettings({
-      sourceFactory : sources => ({[EXTRA_SOURCE] : sources[ANOTHER_DRIVER].map(addPrefix('-extra-'))})
+      sourceFactory: sources => ({ [EXTRA_SOURCE]: sources[ANOTHER_DRIVER].map(addPrefix('-extra-')) })
     }, [AtomicComponentAppWithExtraSource])
   ]);
   const tracedApp = traceApp({
@@ -7632,7 +7629,7 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -7646,7 +7643,8 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
       successMessage: `sink ${A_DRIVER} produces the expected values`
     },
     [ANOTHER_DRIVER]: {
-      outputs: inputs[1][ANOTHER_DRIVER].diagram.replace(/-/g, '').split('').map(x => `extra source emits: -extra-${x}`),
+      outputs: inputs[1][ANOTHER_DRIVER].diagram.replace(/-/g, '').split('').map(
+        x => `extra source emits: -extra-${x}`),
       successMessage: `sink ${ANOTHER_DRIVER} produces the expected values`
     },
     [DOM_SINK]: {
@@ -8753,7 +8751,7 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
         0
       ]
     }
-    ];
+  ];
 
   const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
@@ -8775,9 +8773,9 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
   const done = assert.async(3);
   const traces = [];
   const forEachSettings = {
-    from : A_DRIVER,
-    as : FOREACH_AS,
-    sinkNames : [ ANOTHER_DRIVER, DOM_SINK]
+    from: A_DRIVER,
+    as: FOREACH_AS,
+    sinkNames: [ANOTHER_DRIVER, DOM_SINK]
   };
 
   const App = Combine(set(componentNameInSettings, APP_NAME, {}), [
@@ -8795,7 +8793,7 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -8821,7 +8819,7 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
   // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
   // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
   // before 'instantiation'.
-  const expectedGraph1 =[
+  const expectedGraph1 = [
     {
       "combinatorName": "Combine",
       "componentName": "ROOT",
@@ -8857,32 +8855,32 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
     },
   ];
   const expectedGraph2 = [
-  {
-    "combinatorName": "ForEach|Inner",
-    "componentName": "a_component_name",
-    "id": 3,
-    "isContainerComponent": false,
-    "logType": "graph_structure",
-    "path": [
-      0,
-      0,
-      0
-    ]
-  },
-  {
-    "combinatorName": undefined,
-    "componentName": "AtomicComponentMonoDriverApp",
-    "id": 4,
-    "isContainerComponent": false,
-    "logType": "graph_structure",
-    "path": [
-      0,
-      0,
-      0,
-      0
-    ]
-  },
-];
+    {
+      "combinatorName": "ForEach|Inner",
+      "componentName": "a_component_name",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentMonoDriverApp",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+  ];
   const expectedGraph3 = [
     {
       "combinatorName": "ForEach|Inner",
@@ -9485,7 +9483,7 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
     .then(_ => {
       assert.deepEqual(
         removeWhenField(traces),
-        flatten([expectedGraph1, expectedTraces1,expectedGraph2,expectedTraces2,expectedGraph3,expectedTraces3]  ),
+        flatten([expectedGraph1, expectedTraces1, expectedGraph2, expectedTraces2, expectedGraph3, expectedTraces3]),
         `Traces are produced as expected!`);
       done()
     });
@@ -9493,7 +9491,7 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
 
 QUnit.test("main cases - Switch - component tree depth 2 - 0 match, 3 cases", function exec_test(assert) {
   resetGraphCounter();
-  const done = assert.async(4);
+  const done = assert.async(5);
   const traces = [];
 
   const childComponent1 = function childComponent1(sources, settings) {
@@ -9526,13 +9524,14 @@ QUnit.test("main cases - Switch - component tree depth 2 - 0 match, 3 cases", fu
     }
   };
   const SWITCH_SOURCE = 'sweatch$';
-const SWITCH_AS = 'switchedOn';
-
-  const App = Switch({
+  const SWITCH_AS = 'switchedOn';
+  const switchSettings = {
     on: SWITCH_SOURCE,
     as: SWITCH_AS,
     sinkNames: [DOM_SINK, 'a', 'b', 'c']
-  }, [
+  };
+
+  const App = Switch(set(componentNameInSettings, APP_NAME, switchSettings), [
     Case({ when: '' }, [childComponent3]),
     Case({ when: 'Y' }, [childComponent4]),
     Case({ when: 2 }, [childComponent1, childComponent2]),
@@ -9540,20 +9539,22 @@ const SWITCH_AS = 'switchedOn';
   const tracedApp = traceApp({
     _trace: {
       traceSpecs: {
-        [a]: [traceEventSourceFn, traceEventSinkFn],
-        [b]: [traceEventSourceFn, traceEventSinkFn],
-        [c]: [traceEventSourceFn, traceEventSinkFn],
+        a: [traceEventSourceFn, traceEventSinkFn],
+        b: [traceEventSourceFn, traceEventSinkFn],
+        c: [traceEventSourceFn, traceEventSinkFn],
         DOM1: [traceEventSourceFn, traceEventSinkFn],
         DOM2: [traceEventSourceFn, traceEventSinkFn],
-        userAction$ : [traceEventSourceFn, traceEventSinkFn],
+        userAction$: [traceEventSourceFn, traceEventSinkFn],
         [DOM_SINK]: [identity, traceDOMsinkFn]
       },
 
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
+
+  // TODO : check that non existing source do not error (for instance, only in sinkm not in source)
 
   const inputs = [
     { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
@@ -9578,9 +9579,9 @@ const SWITCH_AS = 'switchedOn';
   ];
 
   /** @type TestResults */
-  const expected = {
+  const expectedMessages = {
     DOM: {
-      outputs: ["<div></div>"],
+      outputs: ["<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div></div></div></div>"],
       successMessage: 'sink DOM produces the expected values',
       // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
       transform: pipe(convertVNodesToHTML)
@@ -9599,15 +9600,2049 @@ const SWITCH_AS = 'switchedOn';
     },
   }
 
-  runTestScenario(inputs, expected, App, {
+  const expectedTraces = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div></div>"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 30,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 31,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 32,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 33,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 34,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 35,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 36,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 37,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 38,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 39,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 40,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 41,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 42,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 43,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 44,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 45,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 46,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 47,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 48,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 49,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 50,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 51,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 52,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 53,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 54,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 55,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 56,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 57,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 58,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 59,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 60,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 61,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 62,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 63,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 64,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 65,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 66,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 67,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 68,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 69,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": false
+        },
+        "type": 0
+      },
+      "id": 70,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 71,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 72,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 73,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 74,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 75,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 76,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": ""
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 77,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": "Y"
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "sweatch$",
+        "notification": {
+          "kind": "N",
+          "value": true
+        },
+        "type": 0
+      },
+      "id": 78,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "as": "switchedOn",
+        "on": "sweatch$",
+        "sinkNames": [
+          "DOM",
+          "a",
+          "b",
+          "c"
+        ],
+        "when": 2
+      }
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 79,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 80,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": null
+        },
+        "type": 1
+      },
+      "id": 81,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    }
+  ];
+  const expectedGraph = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Switch",
+      "componentName": "App",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "Case",
+      "componentName": "App",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
     tickDuration: 3,
     waitForFinishDelay: 10,
     analyzeTestResults: analyzeTestResults(assert, done),
     errorHandler: function (err) {
       done(err)
     }
-  })
-
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(
+        removeWhenField(traces),
+        expectedGraph.concat(expectedTraces),
+        `Traces are produced as expected!`);
+      done()
+    });
 });
 
 QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 component", function exec_test(assert) {
@@ -9622,7 +11657,7 @@ QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 compon
   };
 
   // TODO : I need a case actually so have a look at switch specs for inspiration and fields to test
-  const App = Switch(set(componentNameInSettings, APP_NAME, ), [
+  const App = Switch(set(componentNameInSettings, APP_NAME,), [
     Case({ when: true }, [AtomicComponentApp]),
     Case({ when: false }, [AnotherAtomicComponentApp]),
     Case({ when: true }, [AtomicComponentMonoDriverApp]),
@@ -9639,7 +11674,7 @@ QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 compon
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
-    _helpers : {getId : getId(0)}
+    _helpers: { getId: getId(0) }
   }, App);
 
   const inputs = [
@@ -9665,7 +11700,7 @@ QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 compon
   // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
   // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
   // before 'instantiation'.
-  const expectedGraph1 =[
+  const expectedGraph1 = [
     {
       "combinatorName": "Combine",
       "componentName": "ROOT",
@@ -10329,7 +12364,7 @@ QUnit.skip("main case - Switch - component tree depth 2 - 0 container - 1 compon
     .then(_ => {
       assert.deepEqual(
         removeWhenField(traces),
-        flatten([expectedGraph1, expectedTraces1,expectedGraph2,expectedTraces2,expectedGraph3,expectedTraces3]  ),
+        flatten([expectedGraph1, expectedTraces1, expectedGraph2, expectedTraces2, expectedGraph3, expectedTraces3]),
         `Traces are produced as expected!`);
       done()
     });
