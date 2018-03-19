@@ -116,7 +116,7 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
         const mergedChildrenComponentsSinks = m(
           {},
           // NOTE : `matched` is actually duplicating `when` (gets in through settings). oh well...
-          set(combinatorNameInSettings, 'Case|Inner', { [as]: incoming , trace: 'executing case children'}),
+          set(combinatorNameInSettings, 'Case|Inner', { [as]: incoming }),
           reconstructComponentTree(parentComponent, childrenComponents)
         );
 
