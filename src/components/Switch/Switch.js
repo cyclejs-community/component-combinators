@@ -13,6 +13,7 @@ import * as Rx from 'rx'
 import { SWITCH_SOURCE } from "./properties"
 import { div } from "cycle-snabbdom"
 import { combinatorNameInSettings, reconstructComponentTree } from "../../../tracing/src/helpers"
+import { mergeChildrenIntoParentDOM } from "../m"
 
 const $ = Rx.Observable;
 const mapIndexed = addIndex(map)
@@ -188,65 +189,21 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
 }
 
 function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
-  return function mergeChildrenIntoParentDOM(arrayVNode) {
+  return function mergeCaseChildrenIntoParentDOM(arrayVNode) {
     // We remove null elements from the array of vNode
     // We can have a null vNode emitted by a sink if that sink is empty
     let _arrayVNode = removeEmptyVNodes(removeNullsFromArray(arrayVNode));
     assertContract(isArrayOf(isVNode), [_arrayVNode], 'DOM sources must' +
       ' stream VNode objects! Got ' + _arrayVNode)
 
-    if (parentDOMSink) {
-      // Case : the parent sinks have a DOM sink
-      // We want to put the children's DOM **inside** the parent's DOM
-      // cf. m.js computeDOMSinkDefault
-      let parentVNode = clone(_arrayVNode.shift())
-      let childrenVNode = _arrayVNode
-      /*
-            // For Case component, null does not mean empty vnode
-            // We want to avoid having the parent enclosing an empty content, which would not be
-            // semantically accurate (though eventually accurate - the next DOM values should be the
-            // right DOM to display, so this would be only temporally wrong, but still we remove it to
-            // avoid confusion)
-            if (childrenVNode.length === 0) {
-              return null
-            }
-      */
+    debugger
 
-      parentVNode.children = clone(parentVNode.children) || []
-
-      // childrenVNode could be null if all children sinks are empty
-      // observables, in which case we just return the parentVNode
-      if (childrenVNode) {
-        if (parentVNode.text) {
-          // NOTE : if parentVNode has text, then children = [], so splice is too defensive here
-          parentVNode.children.splice(0, 0, {
-            children: [],
-            "data": {},
-            "elm": undefined,
-            "key": undefined,
-            "sel": undefined,
-            "text": parentVNode.text
-          })
-          parentVNode.text = undefined
-        }
-        Array.prototype.push.apply(parentVNode.children, childrenVNode)
-      }
-
-      return parentVNode
-    }
-    else {
-      // Case : the parent sinks does not have a DOM sink
-      /*
-            // Cf. above : For Case component, null does not mean empty vnode, it is an intermediate
-            // value, so don't add an empty div for nothing, add a null which will be filtered down
-            // the road
-            if (_arrayVNode.length === 0) {
-              return null
-            }
-      */
-
-      return div(_arrayVNode)
-    }
+    return _arrayVNode.length === 0
+      // NOTE : We differ from standard DOM merging by issueing an empty div when there is no content to display.
+      // This allows to 'flush' the DOM, and override adversersarial `combineLatest` initial blockign behaviour
+      // (emits its first value only when all its sources have emitted their first value)
+    ? div(_arrayVNode)
+      : mergeChildrenIntoParentDOM(parentDOMSink)(arrayVNode)
   }
 }
 

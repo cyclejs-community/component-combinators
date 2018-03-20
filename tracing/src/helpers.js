@@ -287,6 +287,7 @@ export function makeSinkNotificationMessage({ sinkName, settings, notification }
 export function traceDOMsinkFn(sink, sinkName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
 
+  // TODO : in all trace function, handle the sink = null case (edge case)
   return sink
     .materialize()
     // For DOM sink, we rather pass the mirrorring html (though we loose information doing so...)

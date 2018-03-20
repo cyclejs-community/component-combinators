@@ -1,12 +1,13 @@
 // ListOf({list : 'items', as : 'cardInfo', buildActionsFromChildrenSinks:...,
 // actionsMap:{'clickIntent$':'router'}},}, [Component],
 import {
-  assertContract, checkAndGatherErrors, isArray, isFunction, isObject, isString, isComponent
+  assertContract, checkAndGatherErrors, isArray, isComponent, isFunction, isObject, isString
 } from "../../../contracts/src/index"
 import { m } from '../m/m'
-import { either, isNil, keys, merge, path, reduce, uniq } from 'ramda'
+import { either, isNil, keys, merge, path, reduce, uniq, set } from 'ramda'
 import * as Rx from "rx"
 import { isArrayOf } from "../../../contracts/src"
+import { combinatorNameInSettings } from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable;
 
@@ -54,7 +55,7 @@ const isValidListOfSettings =
 
 function computeSinks(parentComponent, childrenComponents, sources, settings) {
   // NOTE : parentComponent is supposed to be null for `ListOf`
-  const { list, buildActionsFromChildrenSinks, actionsMap } = settings;
+  const { list } = settings;
   const items = path(getPathFromString(list), settings);
   const childComponent = items.length ? childrenComponents[1] : childrenComponents[0];
 
@@ -69,57 +70,11 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
     })
     // Case when the `items` array is empty, we branch to the first child component
     : [childComponent]
+  ;
 
-  const reducedSinks = m({
-    mergeSinks: buildActionsFromChildrenSinks || {}
-  }, { trace: 'ListOf > computing indexed children' }, indexedChildrenComponents)(sources, settings);
+  const reducedSinks = m({}, set(combinatorNameInSettings, 'ListOf|Inner', {}), indexedChildrenComponents)(sources, settings);
 
-  const sinkNames = keys(reducedSinks);
-
-  const collectedReducedSinks = reduce(
-    function collectReducedSinks(acc, sinkName) {
-      const mappedSinkName = (actionsMap || {})[sinkName];
-      if (mappedSinkName) {
-        acc[mappedSinkName] = acc[mappedSinkName] || [];
-        acc[mappedSinkName].push(reducedSinks[sinkName]);
-      }
-      else {
-        acc[sinkName] = acc[sinkName] || [];
-        acc[sinkName].push(reducedSinks[sinkName]);
-      }
-
-      return acc
-    },
-    {},
-    sinkNames
-  );
-
-  const mappedSinkNames = uniq(sinkNames.map(sinkName => {
-    const mappedSinkName = (actionsMap || {})[sinkName];
-
-    return mappedSinkName
-      ? mappedSinkName
-      : sinkName
-  }));
-
-  const finalSinks = reduce(function mergeReducedSinks(acc, sinkName) {
-    // This is an array by previous construction
-    const sinks = collectedReducedSinks[sinkName];
-    if (sinks.length === 1) {
-      // Case standard when there is only one reduced sink for a given sink name
-      acc[sinkName] = sinks[0];
-    }
-    else {
-      // Case advanced when there are several reduced sinks for a given sink name
-      // This can happen because of mapping several sinks into another given sink name,
-      // as a result of the mapping
-      acc[sinkName] = $.merge(sinks)
-    }
-
-    return acc
-  }, {}, mappedSinkNames);
-
-  return finalSinks
+  return reducedSinks
 }
 
 // Spec
@@ -133,7 +88,7 @@ export function ListOf(listOfSettings, childrenComponents) {
   // NOTE : Do check it at that level and not with checkPreConditions
   assertContract(isListOfSettings, [listOfSettings], `ListOf : ListOf combinator must have 'list' and 'as' property which are strings!`);
 
-  return m(listOfSpec, listOfSettings, childrenComponents)
+  return m(listOfSpec, set(combinatorNameInSettings, 'ListOf', listOfSettings), childrenComponents)
 }
 
 // NOTE ADR: it is better to have only one child component. If several, we have to allow
