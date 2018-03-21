@@ -5,11 +5,11 @@ import {
 import { format, } from "../../../utils/src/index"
 import { DOM_SINK } from "../../../utils/src/index"
 import { m } from "../m/m"
-import { isNil, keys, map as mapR, mergeAll, omit, path as pathR } from "ramda"
+import { isNil, keys, map as mapR, mergeAll, omit, path as pathR, set } from "ramda"
 import { routeMatcher } from "../../vendor/routematcher"
 import Rx from "rx"
 import { ROUTE_CONFIG, ROUTE_PARAMS } from "./properties"
-import { reconstructComponentTree } from "../../../tracing/src/helpers"
+import { combinatorNameInSettings, reconstructComponentTree } from "../../../tracing/src/helpers"
 
 const $ = Rx.Observable
 
@@ -182,11 +182,12 @@ function computeSinks(parentComponent, childrenComponents, sources, settings) {
                   .share(),
               }
             },
-          }, {
+          }, set(combinatorNameInSettings, 'OnRoute|Inner', {
             [ROUTE_PARAMS]: omit(['routeRemainder'], match),
-            trace: `${trace} > componentFromChildren`
-          },
+//            trace: `${trace} > componentFromChildren`
+          }),
           reconstructComponentTree(parentComponent, childrenComponents));
+
         cachedSinks = componentFromChildren(sources, settings);
       }
       else {
@@ -282,7 +283,7 @@ export function OnRoute(routeSettings, componentTree) {
   // check that components is an array
   assertContract(hasAtLeastOneChildComponent, [componentTree], `Router : router combinator must at least have one child component to route to!`);
 
-  return m(RouterSpec, routeSettings, componentTree)
+  return m(RouterSpec, set(combinatorNameInSettings, 'OnRoute', routeSettings), componentTree)
 }
 
 // NOTE ADR: 'routeSource' and not 'from' to avoid telescoping with other combinators which use

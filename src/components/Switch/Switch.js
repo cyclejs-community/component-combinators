@@ -196,8 +196,6 @@ function mergeCaseChildrenIntoParentDOM(parentDOMSink) {
     assertContract(isArrayOf(isVNode), [_arrayVNode], 'DOM sources must' +
       ' stream VNode objects! Got ' + _arrayVNode)
 
-    debugger
-
     return _arrayVNode.length === 0
       // NOTE : We differ from standard DOM merging by issueing an empty div when there is no content to display.
       // This allows to 'flush' the DOM, and override adversersarial `combineLatest` initial blockign behaviour

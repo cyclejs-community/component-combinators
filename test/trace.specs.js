@@ -120,7 +120,6 @@ function AtomicComponentMonoDriverApp(sources, settings) {
 
 // NOTE : an equation that always hold is that `App` output is always the same as `traceApp(App)`, but we do not
 // test that directly here
-// TODO : after same test but testing default trace functions
 QUnit.test("edge case - App is an atomic component (depth tree 0)", function exec_test(assert) {
   resetGraphCounter();
   const done = assert.async(3);
@@ -7626,7 +7625,6 @@ QUnit.test("main case - Combine, InjectSources - component tree depth 2 - 0 cont
         // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
         [DOM_SINK]: [identity, traceDOMsinkFn]
       },
-      // TODO : make a contract to chech that defaultSpecs is not null when expected
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
@@ -8790,7 +8788,6 @@ QUnit.test("main case - ForEach - component tree depth 2 - 0 container - 1 compo
         // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
         [DOM_SINK]: [identity, traceDOMsinkFn]
       },
-      // TODO : make a contract to chech that defaultSpecs is not null when expected
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
@@ -9500,7 +9497,6 @@ QUnit.test("main case - ListOf - component tree depth 1 - no items", function ex
     items: [],
   };
 
-  // TODO
   const childComponent = function childComponent1(sources, settings) {
     return {
       [DOM_SINK]: sources.DOM1
@@ -9522,7 +9518,6 @@ QUnit.test("main case - ListOf - component tree depth 1 - no items", function ex
         // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
         [DOM_SINK]: [identity, traceDOMsinkFn]
       },
-      // TODO : make a contract to chech that defaultSpecs is not null when expected
       defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
       sendMessage: msg => traces.push(msg)
     },
@@ -9769,30 +9764,2650 @@ QUnit.test("main case - ListOf - component tree depth 1 - no items", function ex
       done()
     });
 });
-// TODO : also do wiht i item and with 2 items
-// TODO : filter those empty divs... and then repass all component combinator test
-// TODO : test also Switch with container having slot!!! I do a special merge there, maybe to change!! It is tested
-// already with no slots. cf. mergeCaseChildrenIntoParentDOM
-// TODO : in general address the edge case of container components with DOM sinks emitting null (i.e. write them
-// also with combinators so that it could emit null (unless there is no combinator emitting null?))
 
-// TODO ListOf in its own file
-// NOTE : for ListOf there is a path issue to resolve... it would be nice to have the componnt index `i` have its
-// path accordingly set. For now, it is same path for all, only distinguished by their listIndex settings
+QUnit.test("main case - ListOf - component tree depth 1 - 1 items", function exec_test(assert) {
+  resetGraphCounter();
+  const done = assert.async(3);
+  const traces = [];
+  const item1 = 'ITEM1';
+  const listOfSettings = {
+    list: 'items',
+    as: 'item',
+    items: [item1],
+  };
 
-// TODO : inject sources, try to use default function for unknown sources
-// use defaultTraceSpecs : [source, sink] for this one, so I test it
-// then think about how to declare behaviour and event in a more friendly way
+  const childComponent = function childComponent1(sources, settings) {
+    return {
+      [DOM_SINK]: sources.DOM1
+        .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+      a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
+    }
+  };
+  const listOfComponent = ListOf(set(componentNameInSettings, APP_NAME, listOfSettings), [
+    EmptyComponent,
+    childComponent,
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers: { getId: getId(0) }
+  }, listOfComponent);
 
-// TODO : change computeSinks signature to directly pass componentTree, then adjust examples... and doc... so have
-// versioned doc too...
-// TODO : ListOf remove listActionsFromChildrenSinks : signature has changd, and anyways it is obslete deprecated
-// TODO : document that mergeSinks in this version can have null as parentSinks
-// TODO : in the log analysis, be careful that path is duplicated (which is good) but messages also are
-// so Foreach content -> Foreach|Inner same content but new id
-// TODO : in the draw of graph, I can desambiguate in and out trace with the path
-// ForEach graph structure several times will ahve the same lines..
-// we know about recreation of branchs of the tree when a graph structure appears after a runtime portion, path
-// gives the location of the branch
+  const inputs = [
+    { DOM1: { diagram: '-a--b--------------' } },
+    {
+      userAction$: {
+        diagram: 'ab--------------',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+  ];
+
+  /** @type TestResults */
+  const expectedMessages = {
+    DOM: {
+      // NOTE : one can see here the `combineLatest` in action : a-a-a ; b-a-a; b-b-a; b-b-b
+      outputs: [
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><span>List Component 0 : ITEM1 - a</span></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><span>List Component 0 : ITEM1 - b</span></div></div></div>"
+      ],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [
+        "Component 0 - user action : click",
+        "Component 0 - user action : select"      ],
+      successMessage: 'sink a produces the expected values',
+    },
+  }
+
+  // NOTE : there is no "C" notification appearing here, as the ForEach combinator sinks do not complete. Its
+  // children components are called on-demand, and their sinks do complete. However, there is no trace instruction
+  // at that level to observe it
+  // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
+  // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
+  // before 'instantiation'.
+  const expectedGraph1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedTraces1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - a</span>"
+        },
+        "type": 1
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - a</span>"
+        },
+        "type": 1
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><span>List Component 0 : ITEM1 - a</span></div></div>"
+        },
+        "type": 1
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 30,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 31,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 32,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 33,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 34,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - b</span>"
+        },
+        "type": 1
+      },
+      "id": 35,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - b</span>"
+        },
+        "type": 1
+      },
+      "id": 36,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span></div>"
+        },
+        "type": 1
+      },
+      "id": 37,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span></div>"
+        },
+        "type": 1
+      },
+      "id": 38,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><span>List Component 0 : ITEM1 - b</span></div></div>"
+        },
+        "type": 1
+      },
+      "id": 39,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(
+        removeWhenField(traces),
+//         flatten([expectedGraph1, expectedTraces1, expectedGraph2, expectedTraces2, expectedGraph3, expectedTraces3]),
+        flatten([expectedGraph1, expectedTraces1]),
+        `Traces are produced as expected!`);
+      done()
+    });
+});
+
+QUnit.test("main case - ListOf - component tree depth 1 - 2 items", function exec_test(assert) {
+  resetGraphCounter();
+  const done = assert.async(3);
+  const traces = [];
+  const item1 = 'ITEM1';
+  const listOfSettings = {
+    list: 'items',
+    as: 'item',
+    items: [item1, 'kk'],
+  };
+
+  const childComponent = function childComponent1(sources, settings) {
+    return {
+      [DOM_SINK]: sources.DOM1
+        .tap(console.warn.bind(console, `DOM for list component ${settings.listIndex}: `))
+        .map(
+          x => h('span', {}, `List Component ${settings.listIndex} : ${format(settings.item)} - ${x}`)),
+      a: sources.userAction$.map(x => `Component ${settings.listIndex} - user action : ${x}`)
+    }
+  };
+  const listOfComponent = ListOf(set(componentNameInSettings, APP_NAME, listOfSettings), [
+    EmptyComponent,
+    childComponent,
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers: { getId: getId(0) }
+  }, listOfComponent);
+
+  const inputs = [
+    { DOM1: { diagram: '-a--b--------------' } },
+    {
+      userAction$: {
+        diagram: 'ab--------------',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+  ];
+
+  /** @type TestResults */
+  const expectedMessages = {
+    DOM: {
+      // NOTE : one can see here the `combineLatest` in action : a-a-a ; b-a-a; b-b-a; b-b-b
+      outputs: [
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><span>List Component 0 : ITEM1 - a</span><span>List Component 1 : kk - a</span></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - a</span></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - b</span></div></div></div>"
+      ],
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    a: {
+      outputs: [
+        "Component 0 - user action : click",
+        "Component 1 - user action : click",
+        "Component 0 - user action : select",
+        "Component 1 - user action : select"      ],
+      successMessage: 'sink a produces the expected values',
+    },
+  }
+
+  // NOTE : there is no "C" notification appearing here, as the ForEach combinator sinks do not complete. Its
+  // children components are called on-demand, and their sinks do complete. However, there is no trace instruction
+  // at that level to observe it
+  // NOTE : Hence the only way to observe component 'instantiation' is through the graph structure tracing.
+  // NOTE : For ForEach we cannot observe component 'destruction'. However, we know that component destruction is right
+  // before 'instantiation'.
+  const expectedGraph1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "id": 5,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "id": 6,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+  ];
+  const expectedTraces1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : click"
+        },
+        "type": 1
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - a</span>"
+        },
+        "type": 1
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 1 : kk - a</span>"
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - a</span>"
+        },
+        "type": 1
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 1 : kk - a</span>"
+        },
+        "type": 1
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - a</span><span>List Component 1 : kk - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - a</span><span>List Component 1 : kk - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><span>List Component 0 : ITEM1 - a</span><span>List Component 1 : kk - a</span></div></div>"
+        },
+        "type": 1
+      },
+      "id": 30,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 31,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 32,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 33,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 34,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 35,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 36,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 37,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 38,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 39,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 0 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 40,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 41,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 42,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 43,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 44,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 45,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 46,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a",
+        "notification": {
+          "kind": "N",
+          "value": "Component 1 - user action : select"
+        },
+        "type": 1
+      },
+      "id": 47,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 48,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 49,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 50,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items"
+      }
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 51,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 52,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "ITEM1",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 0
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - b</span>"
+        },
+        "type": 1
+      },
+      "id": 53,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 54,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 55,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "settings": {
+        "as": "item",
+        "item": "kk",
+        "items": [
+          "ITEM1",
+          "kk"
+        ],
+        "list": "items",
+        "listIndex": 1
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "childComponent1",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 1 : kk - b</span>"
+        },
+        "type": 1
+      },
+      "id": 56,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 0 : ITEM1 - b</span>"
+        },
+        "type": 1
+      },
+      "id": 57,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 58,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 59,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - a</span></div></div>"
+        },
+        "type": 1
+      },
+      "id": 60,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner|Indexed",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>List Component 1 : kk - b</span>"
+        },
+        "type": 1
+      },
+      "id": 61,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": "ListOf|Inner",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - b</span></div>"
+        },
+        "type": 1
+      },
+      "id": 62,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "ListOf",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - b</span></div>"
+        },
+        "type": 1
+      },
+      "id": 63,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><span>List Component 0 : ITEM1 - b</span><span>List Component 1 : kk - b</span></div></div>"
+        },
+        "type": 1
+      },
+      "id": 64,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(
+        removeWhenField(traces),
+//         flatten([expectedGraph1, expectedTraces1, expectedGraph2, expectedTraces2, expectedGraph3, expectedTraces3]),
+        flatten([expectedGraph1, expectedTraces1]),
+        `Traces are produced as expected!`);
+      done()
+    });
+});
+
+// TODO : test also Switch with container having slot!!!
+// TODO :edge case traceSinks... if sink is null
+// TODO : test InSlot, Pipe
 // TODO : also test for error occuring in the component tree
 // component do not complete per se, so hard to test

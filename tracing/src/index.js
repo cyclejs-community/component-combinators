@@ -1,7 +1,7 @@
 import {
   combinatorNameInSettings,
   componentNameInSettings, containerFlagInSettings, deconstructTraceFromSettings, defaultTraceSinkFn,
-  defaultTraceSourceFn, forEachInComponentTree, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild,
+  defaultTraceSourceFn, getId, getIsTraceEnabled, getLeafComponentName, getPathForNthChild,
   isLeafComponent, leafFlagInSettings, mapOverComponentTree, pathInSettings, traceSinks, traceSources
 } from './helpers'
 import {
@@ -203,9 +203,6 @@ const adviseApp = (traceDef, App) => decorateWithAdvice({
  * @return Component Component whose inputs and outputs (i.e. sources and sinks) are traced
  */
 export function traceApp(traceDefSpecs, App) {
-  // TODO : document on blog the contracts functions...
-  // NTH : review the specs for the error logging, it is still hard to read for instance for isRecordE
-  // it shows args for the isRecordE not for the predicate failing
   assertContract(isTraceDefSpecs, [traceDefSpecs], `traceApp : Fails contract isTraceDefSpecs!`);
 
   const traceDef = {

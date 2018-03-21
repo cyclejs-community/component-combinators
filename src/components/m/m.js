@@ -211,7 +211,6 @@ function mergeChildrenIntoParentDOM(parentDOMSink) {
     }
     else {
       // TODO:need! why?? where is that ever modified? deep cloning stuff kills performance
-      // TODO : edge case parentDOMSink exists and is null (instead of vNode) not addressed
       let parentVNode = clone(_arrayVNode.shift());
       let childrenVNode = _arrayVNode;
       parentVNode.children = parentVNode.children || [];

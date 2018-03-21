@@ -12,6 +12,19 @@ Combine (object) or InjectSettings(function, use to adapt settings). Worse case,
 - // TODO : a DIV combinator (instead of a Div component - or both??)
 
 # Core
+- // TODO : have versioned doc too...
+// TODO : document that mergeSinks in this version can have null as parentSinks
+// TODO : in the log analysis, be careful that path is duplicated (which is good) but messages also are
+// so Foreach content -> Foreach|Inner same content but new id
+// TODO : in the draw of graph, I can desambiguate in and out trace with the path
+// ForEach graph structure several times will ahve the same lines..
+// we know about recreation of branchs of the tree when a graph structure appears after a runtime portion, path
+// gives the location of the branch
+-   // TODO : document on blog the contracts functions...
+    // NTH : review the specs for the error logging, it is still hard to read for instance for isRecordE
+    // it shows args for the isRecordE not for the predicate failing
+- create a function with same name, or update function name -> add a displayName property!
+  - this should allow to remove the eval in the decorateWithAdvice function
 - investigate https://github.com/twitter/hogan.js
   - writing view in mustache, and precompiling it
   - with partials, css should be able to be included meaning we can have a component file

@@ -627,6 +627,8 @@ function decorateWithAdvice(advice, fnToAdvise) {
 `,
     { makeAdvisedFunction, advice, fnToAdvise, fnToDecorateName }, undefined);
   advisedFn.isAdvised = true;
+  // keep track of the original function, to be able to remove advice down the road
+  advisedFn.fn = fnToAdvise;
 
   return advisedFn
 }
@@ -679,6 +681,15 @@ function makeAdvisedFunction(advice) {
         after && after(merge({returnedValue: result, exception}, joinpoint), fnToDecorate);
       }
     };
+  }
+}
+
+function removeAdvice(advisedFn){
+  if (!isAdvised(advisedFn)){
+    throw `removeAdvice : cannot remove advice on function : it is not advised in the first place!`
+  }
+  else {
+    return advisedFn.fn
   }
 }
 
@@ -785,6 +796,7 @@ export {
   isAdvised,
   decorateWithAdvices,
   decorateWithAdvice,
+  removeAdvice,
   ONE_COMPONENT_ONLY,
   CONTAINER_AND_CHILDREN,
   CHILDREN_ONLY,

@@ -21,8 +21,9 @@ export function isLeafComponent(component) {
   //   - named `mComponent`
   //   - named `??` if advised around ; same name ``mComponent` for now
   // TODO : check that works with InSlot because that combinator is not using `m`...
+  // TODO : this is wrong, nothing to do with InSlot... use isLeaf prop somehow ... test
 
-  return !(component.name === `mComponent` || component.name === `mComponent` || component.name === `InSlot`)
+  return !(component.name === `mComponent` || component.isLeaf === false || component.name === `InSlot`)
 }
 
 export function getLeafComponentName(component) {
@@ -196,7 +197,7 @@ export function traceSinks(sinks, settings) {
   else {
     return mapObjIndexed((sink, sinkName) => {
       const traceFn = traceSpecs[sinkName];
-      const traceSinkFn = traceFn[1];
+      const traceSinkFn = traceFn && traceFn[1];
 
       if (traceFn) {
         // Case : There is a configured trace function for that sink

@@ -56,7 +56,7 @@ const ROUTE_LOG_SINK = 'ROUTE_LOG';
 const ROUTE_SOURCE = 'route$';
 
 function makeTestHelperComponent(header, sourceName, routeCfg) {
-  return function (sources, settings) {
+  return function makeTestHelperComponent(sources, settings) {
     return {
       // NOTE : that DOM example is a bit fictitious as DOM should ALWAYS have a starting value...
       // We keep it like this though for testing purposes
