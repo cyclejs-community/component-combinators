@@ -14,6 +14,6 @@ window.$ = window.jQuery = require('jquery');
 // import './ListOf.specs'
 // import './Pipe.specs'
 // import './mockDomainQuery.specs'
-// import './trace.specs'
+import './trace.specs'
 // import './trace.switch.specs' // BIG file
-import './trace.router.specs'
+// import './trace.router.specs'

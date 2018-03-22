@@ -6,14 +6,13 @@ import { flatten, identity, omit, pipe, set } from 'ramda'
 import { addPrefix, DOM_SINK, EmptyComponent, format, vLift } from "../utils/src"
 import { resetGraphCounter, traceApp } from "../tracing/src"
 import { componentNameInSettings, traceDOMsinkFn, traceEventSinkFn, traceEventSourceFn } from "../tracing/src/helpers"
-import { div, h } from 'cycle-snabbdom'
+import { div, h, span } from 'cycle-snabbdom'
 import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
 import { Combine } from "../src/components/Combine"
 import { InjectSourcesAndSettings } from "../src"
 import { ForEach } from "../src/components/ForEach"
-import { Switch } from "../src/components/Switch"
-import { Case } from "../src/components/Switch/Switch"
 import { ListOf } from "../src/components/ListOf/ListOf"
+import { Pipe } from "../src/components/Pipe/Pipe"
 
 const $ = Rx.Observable;
 
@@ -77,6 +76,42 @@ const SOME_SETTINGS = { a_setting_prop: A_SETTING_PROP_VALUE };
 const SOME_MORE_SETTINGS = { another_setting_prop: ANOTHER_SETTING_PROP_VALUE };
 const ContainerComponent = vLift(div('.container'));
 const FOREACH_AS = 'foreach_as';
+
+const Events = function events(sources, settings) {
+  return {
+    click: sources.DOM1.take(4)
+      .tap(console.warn.bind(console, 'Events - click : '))
+      .map(x => `Events - click : ${x}`),
+    unused: sources.userAction$.map(x => `Events - user action : ${x}`)
+  }
+};
+const Intents = function intents(sources, settings) {
+  return {
+    myIntent: sources.click
+      .tap(console.warn.bind(console, 'Intents : '))
+      .map(x => `Intents : I-${x}`),
+    unused: sources.userAction$.map(x => `Intents - user action : ${x}`)
+  }
+};
+const Actions = function actions(sources, settings) {
+  return {
+    DOM: sources.myIntent
+      .tap(console.warn.bind(console, 'Action : '))
+      .map(x => span(`A-${x}`)),
+    used: sources.userAction$.map(x => `Actions - user action : ${x}`)
+  }
+};
+
+function wrapInTraceIframe(arrHtml) {
+  return arrHtml.map(html => ([
+    `<div>`,
+    `<iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe>`,
+    `<div>`,
+    html,
+    `</div>`,
+    `</div>`
+  ].join('')))
+}
 
 function AtomicComponentApp(sources, settings) {
   const driver1 = sources[A_DRIVER];
@@ -9828,7 +9863,7 @@ QUnit.test("main case - ListOf - component tree depth 1 - 1 items", function exe
     a: {
       outputs: [
         "Component 0 - user action : click",
-        "Component 0 - user action : select"      ],
+        "Component 0 - user action : select"],
       successMessage: 'sink a produces the expected values',
     },
   }
@@ -10854,7 +10889,7 @@ QUnit.test("main case - ListOf - component tree depth 1 - 2 items", function exe
         "Component 0 - user action : click",
         "Component 1 - user action : click",
         "Component 0 - user action : select",
-        "Component 1 - user action : select"      ],
+        "Component 1 - user action : select"],
       successMessage: 'sink a produces the expected values',
     },
   }
@@ -12380,6 +12415,2180 @@ QUnit.test("main case - ListOf - component tree depth 1 - 2 items", function exe
         "type": 1
       },
       "id": 64,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(
+        removeWhenField(traces),
+//         flatten([expectedGraph1, expectedTraces1, expectedGraph2, expectedTraces2, expectedGraph3, expectedTraces3]),
+        flatten([expectedGraph1, expectedTraces1]),
+        `Traces are produced as expected!`);
+      done()
+    });
+});
+
+QUnit.test("main case - Pipe - sources not colliding with sinks, with throwIfSinkSourceConflict false", function exec_test(assert) {
+  resetGraphCounter();
+  const traces = [];
+  const pipeSettings = { Pipe: { throwIfSinkSourceConflict: false, } };
+  const done = assert.async(3);
+  const pipedComponent = Pipe(set(componentNameInSettings, APP_NAME, pipeSettings), [Events, Intents, Actions,]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      defaultTraceSpecs: [traceEventSourceFn, traceEventSinkFn],
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers: { getId: getId(0) }
+  }, pipedComponent);
+
+  const inputs = [
+    // put myIntent and click in sources to collide with sink for this test case - should throw
+    // at the fisrt collision
+    { DOM1: { diagram: '-a--b--c--d--e--f--a' } },
+    { DOM2: { diagram: '-a-b-c-d-e-f-abb-c-d' } },
+    {
+      userAction$: {
+        diagram: 'abc-b-ac--ab---c',
+        values: { a: 'click', b: 'select', c: 'hover', }
+      }
+    },
+  ];
+
+  /** @type TestResults */
+  const expectedMessages = {
+    DOM: {
+      outputs: wrapInTraceIframe([
+        "<span>A-Intents : I-Events - click : a</span>",
+        "<span>A-Intents : I-Events - click : b</span>",
+        "<span>A-Intents : I-Events - click : c</span>",
+        "<span>A-Intents : I-Events - click : d</span>"
+      ]),
+      successMessage: 'sink DOM produces the expected values',
+      // NOTE : I need to keep an eye on the html to check the good behaviour, cannot strip the tags
+      transform: pipe(convertVNodesToHTML)
+    },
+    used: {
+      outputs: [
+        "Actions - user action : click",
+        "Actions - user action : select",
+        "Actions - user action : hover",
+        "Actions - user action : select",
+        "Actions - user action : click",
+        "Actions - user action : hover",
+        "Actions - user action : click",
+        "Actions - user action : select",
+        "Actions - user action : hover"
+      ],
+      successMessage: 'sink `used` produces the expected values',
+    },
+  }
+
+  const expectedGraph1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "id": 4,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+  ];
+  const expectedTraces1 = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : a"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : a"
+        },
+        "type": 0
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : a"
+        },
+        "type": 1
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : a"
+        },
+        "type": 0
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : a</span>"
+        },
+        "type": 1
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : a</span>"
+        },
+        "type": 1
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>A-Intents : I-Events - click : a</span></div>"
+        },
+        "type": 1
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 30,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : b"
+        },
+        "type": 1
+      },
+      "id": 31,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : b"
+        },
+        "type": 0
+      },
+      "id": 32,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : b"
+        },
+        "type": 1
+      },
+      "id": 33,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : b"
+        },
+        "type": 0
+      },
+      "id": 34,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : b</span>"
+        },
+        "type": 1
+      },
+      "id": 35,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : b</span>"
+        },
+        "type": 1
+      },
+      "id": 36,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>A-Intents : I-Events - click : b</span></div>"
+        },
+        "type": 1
+      },
+      "id": 37,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 38,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 39,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 40,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 41,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 42,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 43,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 44,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 45,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 46,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 47,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 48,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 49,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "c"
+        },
+        "type": 0
+      },
+      "id": 50,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "c"
+        },
+        "type": 0
+      },
+      "id": 51,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "c"
+        },
+        "type": 0
+      },
+      "id": 52,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : c"
+        },
+        "type": 1
+      },
+      "id": 53,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : c"
+        },
+        "type": 0
+      },
+      "id": 54,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : c"
+        },
+        "type": 1
+      },
+      "id": 55,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : c"
+        },
+        "type": 0
+      },
+      "id": 56,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : c</span>"
+        },
+        "type": 1
+      },
+      "id": 57,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : c</span>"
+        },
+        "type": 1
+      },
+      "id": 58,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>A-Intents : I-Events - click : c</span></div>"
+        },
+        "type": 1
+      },
+      "id": 59,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 60,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 61,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 62,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 63,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 64,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 65,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "d"
+        },
+        "type": 0
+      },
+      "id": 66,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "d"
+        },
+        "type": 0
+      },
+      "id": 67,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "DOM1",
+        "notification": {
+          "kind": "N",
+          "value": "d"
+        },
+        "type": 0
+      },
+      "id": 68,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : d"
+        },
+        "type": 1
+      },
+      "id": 69,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "kind": "N",
+          "value": "Events - click : d"
+        },
+        "type": 0
+      },
+      "id": 70,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : d"
+        },
+        "type": 1
+      },
+      "id": 71,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "kind": "N",
+          "value": "Intents : I-Events - click : d"
+        },
+        "type": 0
+      },
+      "id": 72,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : d</span>"
+        },
+        "type": 1
+      },
+      "id": 73,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "events",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 1
+      },
+      "id": 74,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "click",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 0
+      },
+      "id": 75,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "intents",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 1
+      },
+      "id": 76,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "myIntent",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 0
+      },
+      "id": 77,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 1
+      },
+      "id": 78,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<span>A-Intents : I-Events - click : d</span>"
+        },
+        "type": 1
+      },
+      "id": 79,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><span>A-Intents : I-Events - click : d</span></div>"
+        },
+        "type": 1
+      },
+      "id": 80,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 1
+      },
+      "id": 81,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 82,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 83,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "click"
+        },
+        "type": 0
+      },
+      "id": 84,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 85,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 86,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : click"
+        },
+        "type": 1
+      },
+      "id": 87,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "error": undefined,
+          "kind": "C"
+        },
+        "type": 1
+      },
+      "id": 88,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 89,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 90,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "select"
+        },
+        "type": 0
+      },
+      "id": 91,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 92,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 93,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : select"
+        },
+        "type": 1
+      },
+      "id": 94,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 95,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 96,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "userAction$",
+        "notification": {
+          "kind": "N",
+          "value": "hover"
+        },
+        "type": 0
+      },
+      "id": 97,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ],
+      "settings": {
+        "Pipe": {
+          "throwIfSinkSourceConflict": false
+        }
+      }
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "actions",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 98,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "combinatorName": "Pipe",
+      "componentName": "App",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 99,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "used",
+        "notification": {
+          "kind": "N",
+          "value": "Actions - user action : hover"
+        },
+        "type": 1
+      },
+      "id": 100,
       "logType": "runtime",
       "path": [
         0

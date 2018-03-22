@@ -2,7 +2,8 @@ import {
   assertContract, isArrayOf, isBoolean, isComponent
 } from "../../../contracts/src/index"
 import { m } from '../m/m'
-import { intersection, keys, merge } from 'ramda'
+import { intersection, keys, merge, set } from 'ramda'
+import { combinatorNameInSettings } from "../../../tracing/src/helpers"
 
 function isPipeSettings(sources, settings) {
   if ('overwrite' in settings) {
@@ -51,5 +52,5 @@ export function Pipe(pipeSettings, componentArray) {
   assertContract(isPipeSettings, [null, pipeSettings], `Pipe : Pipe combinator may have 'overwrite' settings property. If that is the case, it must be a boolean!`);
   assertContract(isNonEmptyArrayComponent, [componentArray], `Pipe : Pipe combinator must be passed an array of components!`);
 
-  return m(pipeSpec, pipeSettings, componentArray)
+  return m(pipeSpec, set(combinatorNameInSettings, 'Pipe', pipeSettings), componentArray)
 }
