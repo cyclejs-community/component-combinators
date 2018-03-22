@@ -1046,8 +1046,6 @@ QUnit.test("main cases - parent slot hole at root level", function exec_test(ass
   assert.deepEqual(getSlotHoles(parentVNodeSlotAtRoot),
     [parentVNodeSlotAtRoot], `error`);
 });
-// TODO : rethink the whole logic to have slot with default content for if the slot is not
-// found, that expands the test space...
 
 QUnit.test(`main cases - holes at parent and children levels - 3 different slots - 1x1 + 1x2 + 1 content`,
   function exec_test(assert) {

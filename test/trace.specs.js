@@ -7,9 +7,9 @@ import { addPrefix, DOM_SINK, EmptyComponent, format, vLift } from "../utils/src
 import { resetGraphCounter, traceApp } from "../tracing/src"
 import { componentNameInSettings, traceDOMsinkFn, traceEventSinkFn, traceEventSourceFn } from "../tracing/src/helpers"
 import { div, h, span } from 'cycle-snabbdom'
-import { iframeId, iframeSource, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
+import { iframeId, iframeSource, PATH_ROOT, TRACE_BOOTSTRAP_NAME } from "../tracing/src/properties"
 import { Combine } from "../src/components/Combine"
-import { InjectSourcesAndSettings } from "../src"
+import { InjectSourcesAndSettings, InSlot } from "../src"
 import { ForEach } from "../src/components/ForEach"
 import { ListOf } from "../src/components/ListOf/ListOf"
 import { Pipe } from "../src/components/Pipe/Pipe"
@@ -76,6 +76,7 @@ const SOME_SETTINGS = { a_setting_prop: A_SETTING_PROP_VALUE };
 const SOME_MORE_SETTINGS = { another_setting_prop: ANOTHER_SETTING_PROP_VALUE };
 const ContainerComponent = vLift(div('.container'));
 const FOREACH_AS = 'foreach_as';
+const A_SLOT = 'a_slot';
 
 const Events = function events(sources, settings) {
   return {
@@ -14615,8 +14616,1522 @@ QUnit.test("main case - Pipe - sources not colliding with sinks, with throwIfSin
     });
 });
 
+QUnit.test("main case - InSlot - component tree depth 1 - no container - 1 component", function exec_test(assert) {
+  resetGraphCounter();
+  const done = assert.async(3);
+  const traces = [];
+
+  const App = InSlot(A_SLOT, [
+    AtomicComponentApp
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers: { getId: getId(0) }
+  }, App);
+
+  const inputs = [
+    { [A_DRIVER]: { diagram: '-a--b--' } },
+    { [ANOTHER_DRIVER]: { diagram: '-A--B--' } },
+  ];
+
+  const expectedMessages = {
+    [A_DRIVER]: {
+      outputs: inputs[0][A_DRIVER].diagram.replace(/-/g, '').split('').map(x => `driver1 emits: ${x}`),
+      successMessage: `sink ${A_DRIVER} produces the expected values`
+    },
+    [DOM_SINK]: {
+      outputs: [
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style="width: 450px; height: 200px"></iframe><div><div><div>DOM_SINK emits: a</div></div></div></div>`,
+        `<div><iframe id=\"${iframeId.slice(1)}\" src=\"${iframeSource}\" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: A</div></div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: b</div></div></div></div>`,
+        `<div><iframe id="${iframeId.slice(1)}" src="${iframeSource}" style=\"width: 450px; height: 200px\"></iframe><div><div><div>DOM_SINK emits: B</div></div></div></div>`
+      ],
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      transform: pipe(convertVNodesToHTML)
+    },
+  };
+
+  const expectedGraph = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedTraces = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: a</div>"
+        },
+        "type": 1
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: a</div></div>"
+        },
+        "type": 1
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: a</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: A</div>"
+        },
+        "type": 1
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: A</div></div>"
+        },
+        "type": 1
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: A</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: b</div>"
+        },
+        "type": 1
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: b</div></div>"
+        },
+        "type": 1
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: b</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: B</div>"
+        },
+        "type": 1
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: B</div></div>"
+        },
+        "type": 1
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: B</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(removeWhenField(traces), expectedGraph.concat(expectedTraces), `Traces are produced as expected!`);
+      done()
+    });
+});
+
+QUnit.test("main case - InSlot - component tree depth 2 - no container - 1 component", function exec_test(assert) {
+  resetGraphCounter();
+  const done = assert.async(3);
+  const traces = [];
+
+  const App = InSlot(A_SLOT, [
+    Combine(set(componentNameInSettings, 'Extra', {}), [
+    AtomicComponentApp
+  ])
+  ]);
+  const tracedApp = traceApp({
+    _trace: {
+      traceSpecs: {
+        [A_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        [ANOTHER_DRIVER]: [traceEventSourceFn, traceEventSinkFn],
+        // NOTE : no need to trace the DOM source here as `AtomicComponentApp` does not use DOM source
+        [DOM_SINK]: [identity, traceDOMsinkFn]
+      },
+      sendMessage: msg => traces.push(msg)
+    },
+    _helpers: { getId: getId(0) }
+  }, App);
+
+  const inputs = [
+    { [A_DRIVER]: { diagram: '-a--b--' } },
+    { [ANOTHER_DRIVER]: { diagram: '-A--B--' } },
+  ];
+
+  const expectedMessages = {
+    [A_DRIVER]: {
+      outputs: inputs[0][A_DRIVER].diagram.replace(/-/g, '').split('').map(x => `driver1 emits: ${x}`),
+      successMessage: `sink ${A_DRIVER} produces the expected values`
+    },
+    [DOM_SINK]: {
+      outputs: [
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><div><div>DOM_SINK emits: a</div></div></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><div><div>DOM_SINK emits: A</div></div></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><div><div>DOM_SINK emits: b</div></div></div></div></div>",
+        "<div><iframe id=\"devtool\" src=\"devtool.html\" style=\"width: 450px; height: 200px\"></iframe><div><div><div><div>DOM_SINK emits: B</div></div></div></div></div>"
+      ],
+      successMessage: `sink ${DOM_SINK} produces the expected values`,
+      transform: pipe(convertVNodesToHTML)
+    },
+  };
+
+  const expectedGraph = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "id": 0,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "id": 1,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "id": 2,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "id": 3,
+      "isContainerComponent": false,
+      "logType": "graph_structure",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+  ];
+  const expectedTraces = [
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 0,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 1,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 2,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "a"
+        },
+        "type": 0
+      },
+      "id": 3,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: a</div>"
+        },
+        "type": 1
+      },
+      "id": 4,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: a</div></div>"
+        },
+        "type": 1
+      },
+      "id": 5,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: a</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 6,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div><div>DOM_SINK emits: a</div></div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 7,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 8,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 9,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 10,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: a"
+        },
+        "type": 1
+      },
+      "id": 11,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 12,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 13,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 14,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "A"
+        },
+        "type": 0
+      },
+      "id": 15,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: A</div>"
+        },
+        "type": 1
+      },
+      "id": 16,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: A</div></div>"
+        },
+        "type": 1
+      },
+      "id": 17,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: A</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 18,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div><div>DOM_SINK emits: A</div></div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 19,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 20,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 21,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 22,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "b"
+        },
+        "type": 0
+      },
+      "id": 23,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: b</div>"
+        },
+        "type": 1
+      },
+      "id": 24,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: b</div></div>"
+        },
+        "type": 1
+      },
+      "id": 25,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: b</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 26,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div><div>DOM_SINK emits: b</div></div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 27,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 28,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 29,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 30,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "a_driver",
+        "notification": {
+          "kind": "N",
+          "value": "driver1 emits: b"
+        },
+        "type": 1
+      },
+      "id": 31,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 32,
+      "logType": "runtime",
+      "path": [
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 33,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 34,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "another_driver",
+        "notification": {
+          "kind": "N",
+          "value": "B"
+        },
+        "type": 0
+      },
+      "id": 35,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "settings": {}
+    },
+    {
+      "combinatorName": undefined,
+      "componentName": "AtomicComponentApp",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div>DOM_SINK emits: B</div>"
+        },
+        "type": 1
+      },
+      "id": 36,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "Extra",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div>DOM_SINK emits: B</div></div>"
+        },
+        "type": 1
+      },
+      "id": 37,
+      "logType": "runtime",
+      "path": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "InSlot",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div>DOM_SINK emits: B</div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 38,
+      "logType": "runtime",
+      "path": [
+        0,
+        0
+      ]
+    },
+    {
+      "combinatorName": "Combine",
+      "componentName": "ROOT",
+      "emits": {
+        "identifier": "DOM",
+        "notification": {
+          "kind": "N",
+          "value": "<div><div><div><div>DOM_SINK emits: B</div></div></div></div>"
+        },
+        "type": 1
+      },
+      "id": 39,
+      "logType": "runtime",
+      "path": [
+        0
+      ]
+    }
+  ];
+
+  const testResult = runTestScenario(inputs, expectedMessages, tracedApp, {
+    tickDuration: 3,
+    waitForFinishDelay: 10,
+    analyzeTestResults: analyzeTestResults(assert, done),
+    errorHandler: function (err) {
+      done(err)
+    }
+  });
+  testResult
+    .then(_ => {
+      assert.deepEqual(removeWhenField(traces), expectedGraph.concat(expectedTraces), `Traces are produced as expected!`);
+      done()
+    });
+});
+
 // TODO : test also Switch with container having slot!!!
-// TODO :edge case traceSinks... if sink is null
-// TODO : test InSlot, Pipe
+// TODO : edge case traceSinks... if sink is null
 // TODO : also test for error occuring in the component tree
 // component do not complete per se, so hard to test
