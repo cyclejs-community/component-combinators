@@ -16131,7 +16131,7 @@ QUnit.test("main case - InSlot - component tree depth 2 - no container - 1 compo
     });
 });
 
+// TODO : also test for errors occuring in the component tree
+// component do not complete per se, so hard to test
 // TODO : test also Switch with container having slot!!!
 // TODO : edge case traceSinks... if sink is null
-// TODO : also test for error occuring in the component tree
-// component do not complete per se, so hard to test

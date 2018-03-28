@@ -48,7 +48,9 @@ components, and that led to more stream arithmetic, noise, and in some occurence
 debugging sessions counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of
 that. The absence of unit tests itself could be explained by, well, the **pain** that it
 is to write them with streams in the middle, which led to resorting to sometimes
-brittle, often slow, selenium-based end-to-end tests.
+brittle, often slow, selenium-based end-to-end tests. In addition to that, typical step-by-step 
+debugging sessions are rendered difficult by the inherent asynchronous nature of such sessions, further 
+complicated by the lack of introspection tools for streams.
 - hard to figure out **quickly, with certainty** the exact workflow that the application was
 implementing (you know, multi-step processes where any step may fail and you need to backtrack), let
  alone add new logical branches (error recovery...)

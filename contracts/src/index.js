@@ -511,7 +511,7 @@ function isRecordE(recordSpec) {
       // pipe(obj => mapR(key => recordSpec[key](obj[key]), keys(recordSpec)), all(identity)),
       [
         whereE(recordSpec, `isRecordE > allPassE > whereE : fails!`),
-        `isStrictRecordE : At least one property of object failed its predicate!`
+        `isRecordE : At least one property of object failed its predicate!`
       ]
     ]
     , `isRecordE > allPassE : fails!`)
