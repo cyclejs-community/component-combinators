@@ -1,67 +1,45 @@
 import { m } from "../m/m"
-import { mapObjIndexed, map, set, view, omit, keys, pick, values, forEachObjIndexed } from 'ramda'
+import { tryCatch, map, set, omit, pick, complement, isNil, clone } from 'ramda'
 import {
   assertContract, isArray, isFunction, isHashMapE, isOptional, isRecordE, isString
 } from "../../../contracts/src"
-import { BEHAVIOUR_TYPE } from "../../../tracing/src/properties"
+import * as jsonpatch from "fast-json-patch"
+import { BEHAVIOUR_TYPE, EVENT_TYPE } from "../../../tracing/src/properties"
 import Rx from "rx"
 import { combinatorNameInSettings, reconstructComponentTree } from "../../../tracing/src/helpers"
+import { isArrayUpdateOperations } from "../types"
 
-const injectLocalStateSettingsError = `InjectLocalState : Invalid settings !`
 const $ = Rx.Observable
-
+const injectLocalStateSettingsError = `InjectLocalState : Invalid settings !`
 const isInjectLocalStateSettings = isRecordE({
-    behaviour : isOptional(isString),
-    event : isOptional(isString)
+    behaviour : isOptional(isRecordE({0:isString, 1:complement(isNil)})),
+    event : isOptional(isRecordE([isString, isFunction]))
   });
 
 /**
- * @typedef {{behaviour : string, event : string}} InjectLocalStateSettings
+ * @typedef {{behaviour : [string, *], event : [string, Function]}} InjectLocalStateSettings
  */
 /**
  * Similar to drivers for the whole app. This allows to have an inner loop delimiting a scope
- * within which state sources are visible, and outside of which they can no longer be seen nor manipulated.
- * Note that this is limited to behaviours as of now, hence the name `injectLocalSTATE`.
+ * within which sources are visible, and outside of which they can no longer be seen nor manipulated.
+ * For behaviour sources, note that it is recommended to SAMPLE them rather than combineLatest them
  * @param {InjectLocalStateSettings} injectLocalStateSettings
  * @param {ComponentTree} componentTree
- * @constructor
  */
 export function InjectCircularSources(injectLocalStateSettings, componentTree) {
   assertContract(isInjectLocalStateSettings, [injectLocalStateSettings], injectLocalStateSettingsError);
 
-  /**
-   * Algorithm :
-   * 1. Create as many source subjects as state source configured in injectLocalStateSettings
-   *    Those sources are initialized with the configured initial value
-   * 2. Create the component with injected local state
-   *    That component will output commands on the eponym state sink.
-   * 3. Run that component, and get its sinks
-   *    The eponym state sink MUST not be relayed upwards (visibility rules), so have to be erased from the sinks
-   *    dictionary.
-   *    Run the eponym state processing function and inject the result in the source subject
-   *    ADR : We choose a default of asynchronous propagation of state changes. Synchronous propagations would favour
-   *    glitch : supposing two behaviours change in the same tick (a0->a1, b0->b1) and `a` goes first, then the system
-   *    will see `(a0,b0) -> (a1,b0) -> (a1,b1)` which we want to avoid. We want `(a0, b0) -> (a1, b1)`.
-   *    To achieve this, we keep the `(a ,b)` in cache. We update them synchronously, but propagate the change
-   *    (through the subject) asynchronously.
-   *    TODO : write a test against that
-   */
+  const behaviourSourceName = injectLocalStateSettings.behaviour[0];
+  const initialState = injectLocalStateSettings.behaviour[1];
+  const behaviourSource = new Rx.BehaviorSubject(initialState);
+  const behaviourCache = clone(initialState);
 
-  // Create sources
-  // Indices for state of sources
-  const CURRENT_STATE_INDEX = 0;
-  const IS_UPDATED_INDEX = 1;
-  const SUBJECT_INDEX = 2;
-  // Indices for sources settings
-  const PROCESSING_FN_INDEX = 1;
-
-  // TODO : if that works, refactor we don't need an array anymore, only subject index is used
-  let sourcesState = map(initStateAndProcessingFn => {
-    const [initialState, processingFn] = initStateAndProcessingFn;
-    const isUpdated = false;
-
-    return [initialState, isUpdated, new Rx.BehaviorSubject(initialState)]
-    }, injectLocalStateSettings);
+  const eventSourceName = injectLocalStateSettings.event[0];
+  // @type function(Command) : Rx.Observable*/
+  const processingFn = injectLocalStateSettings.event[1];
+  const eventSource = new Rx.Subject();
+  eventSource.type = EVENT_TYPE;
+  behaviourSource.type = BEHAVIOUR_TYPE;
 
   function computeSinks(parentComponent, childrenComponents, sources, settings){
     const reducedSinks = m(
@@ -70,50 +48,80 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
       reconstructComponentTree(parentComponent, childrenComponents)
     )(sources, settings);
 
-    const reducedSinksWithoutStateSinks = omit(keys(sourcesState), reducedSinks);
-    const reducedSinksWithOnlyStateSinks = pick(keys(sourcesState), reducedSinks);
+    const reducedSinksWithoutCircularSinks = omit([behaviourSourceName, eventSourceName], reducedSinks);
+    const reducedSinksWithOnlyCircularSinks = pick([behaviourSourceName, eventSourceName], reducedSinks);
 
-    // Update source state
-    // NOTE : we immediately sent the new value for the behaviour. We still ensure a glitch free behaviour as we
-    // have forced the `Rx.Scheduler.async` on the subject. By the time the data change is propagated for one
-    // subject, all injected subjects will have been updated.
-    // TODO: to check with tests
-    // NOTE : we do nothing for now with the disposables
-    // TODO : merge all non state sinks so that when they complete, we run all the disposables, and complete all
-    // subjects (with try catch for subject early disposal errors?). Or maybe no need? automatic GC?
-    const reducedSinksWithStateUpdateDisposables = mapObjIndexed((sink, sinkName) => {
-        return sink
-          .do(sinkValue => {
-            const processingFn = injectLocalStateSettings[sinkName][PROCESSING_FN_INDEX];
-            const processedValue = processingFn(sinkValue);
-            // TODO : add json patch here - but decide first and put it up if yes, if we force output to json patch
-            sourcesState[sinkName][SUBJECT_INDEX].onNext(processedValue);
-          })
-          .subscribe(
-            sinkValue => console.debug(`InjectLocalState : sinkValue!`, sinkValue),
-            // This happens if an error is produced while computing state sinks. What to do?? For now, just logging
-            // The idea is to not interrupt the program with an exception
-            error => console.error(`InjectLocalState : error!`, error),
-            completed => console.debug(`InjectLocalState : completed!`)
-          )
-    }, reducedSinksWithOnlyStateSinks);
+    // Process behaviour source commands (JSON Patch)
+    const behaviourSink = reducedSinks[behaviourSourceName];
+    behaviourSink.subscribe(
+      patchCommands => {
+        // NOTE : IN-PLACE update!!
+        assertContract(isArrayUpdateOperations, [patchCommands], `InjectCircularSources > computeSinks > behaviourSink : must emit an array of json patch commands!`);
+        jsonpatch.apply(behaviourCache, patchCommands);
+        behaviourSource.onNext(behaviourCache)
+      },
+      // This happens if an error is produced while computing state sinks. What to do?? For now, just logging
+      // The idea is to not interrupt the program with an exception, so we don't pass the error on the subject
+      // TODO : think over strategies for error handling
+      error => console.error(`InjectCircularSources/behaviour : error!`, error),
+      completed => {
+        console.debug(`InjectCircularSources/behaviour : completed!`);
+        behaviourSource.onCompleted();
+      }
+    );
 
-    return reducedSinksWithoutStateSinks
+    const eventSink = reducedSinks[eventSourceName];
+    eventSink.subscribe(
+      command => {
+        // NOTE : there are three possibilities for error :
+        // 1. processingFn throws : that is handled by processingFnErrorHandler which throws back the error
+        // 2. processingFn passes an error **notification** on its output stream : that is passed to the event source,
+        // which will not admit any further notification, i.e. the error notification is final
+        // 3. processingFn passes an error **code** through its output stream : the actual format for this error
+        // code will be specific to the function at hand. For instance, if processingFn is an HTTP request handler,
+        // it can choose to pass HTTP errors through a specific channel, emitting {error : httpCode}. The format of
+        // the response is also left unspecified. We however think it is a good idea to include the request with the
+        // response for matching purposes.
+        const labelledEventResponse$ = tryCatch(processingFn, processingFnErrorHandler)(command);
+        labelledEventResponse$.subscribe(eventSource);
+      },
+      // This happens if an error is produced while computing the command to execute.
+      // What to do?? For now, just logging. The idea is to not interrupt the program with an exception
+      // Passing an error through onError on the subject will stop the subject and no more messages will be sent by it!
+      // TODO : think over strategies for error handling
+      error => console.error(`InjectCircularSources/event : error!`, error),
+      completed => {
+        console.debug(`InjectCircularSources/event : completed!`);
+        eventSource.onCompleted();
+      }
+    );
+
+    return reducedSinksWithoutCircularSinks
   }
 
 // Spec
   const injectlocalStateSpec = {
     // Propagate data changes on the next tick, after all configured local state sources have been updated
     // This means using the async scheduler from RXjs v4. Rx.Scheduler.currentThread might work too, but less clear how.
-    makeLocalSources : _ => map(sourceInfo => sourceInfo[SUBJECT_INDEX].observeOn(Rx.Scheduler.async), sourcesState),
+    makeLocalSources : _ => ({[eventSourceName] : eventSource, [behaviourSourceName] : behaviourSource}),
     computeSinks : computeSinks,
   };
 
   return m(injectlocalStateSpec, set(combinatorNameInSettings, 'InjectLocalState', {}), componentTree)
-
 }
 
-// TODO : change everything
+/**
+ * An error while processing the command to execute is considered a fatal error. It is the onus of the processing
+ * function to handle any recoverable error at its level.
+ * @param {Error} err
+ * @param {Command} command
+ */
+function processingFnErrorHandler(err, command){
+  console.error(`InjectCircularSources > computeSinks > behaviourSink > processingFn : error (${err}) raised while processing command`, command);
+  throw err
+}
+
+// TODO : DOC
 // InjectCircularSources({behaviour : nameString, event : nameString})
 // - inject sources[nameString] in the component tree
 // - behaviour will issue json patch commands on eponym sinks

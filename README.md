@@ -225,9 +225,7 @@ export const App = InjectSourcesAndSettings({
           CardDetail(TECHX_CARD_INFO)
         ]),
         Card(TYPOGRAPHICS_CARD_INFO),
-        OnRoute({
-          route: TYPOGRAPHICS_CARD_DETAIL_ROUTE,
-        }, [
+        OnRoute({ route: TYPOGRAPHICS_CARD_DETAIL_ROUTE }, [
           CardDetail(TYPOGRAPHICS_CARD_INFO)
         ]),
       ]])
@@ -395,11 +393,10 @@ actually derived. Let's see other combinators and our combinator factory at work
 
 ## Composing an app from components
 The original point of the combinator library is to compose an application by building it from 
-components. In the previous sections, we have shown some combinators handling logic, and control 
-flow. There are other combinators handling state injection and interface adaptation, so that inputs
- can be adapted to an existing component interface (imagine web components with a predefined event (`sources`) and 
- property interface (`settings`)), fostering **reuse**. New component combinators can be created 
- thanks to our generic component combinator factory `m`.
+components. In the previous sections, we have shown some combinators handling miscellaneous 
+combining logic, and control flow. There are other combinators handling state injection and 
+interface adaptation, so that inputs can be adapted to an existing component interface, fostering 
+**reuse**. New component combinators can be created thanks to our generic component combinator factory `m`.
 
 Taking a page from our [showcased sample application](https://i.imgur.com/NXgJV2c.png), it looks 
 like this (only tidbits, for full code see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo), for a step-by-step building of the application, refer to the [corresponding article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) on my blog):

@@ -17,3 +17,4 @@ import './mockDomainQuery.specs'
 import './trace.specs'
 import './trace.switch.specs' // BIG file
 import './trace.router.specs'
+import './trace.inject.cycle.specs'
