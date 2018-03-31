@@ -80,7 +80,7 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
     eventSink.subscribe(
       command => {
         // NOTE : there are three possibilities for error :
-        // 1. processingFn throws : that is handled by processingFnErrorHandler which throws back the error
+        // 1. processingFn throws : that is handled by processingFnErrorHandler which processes it as in 2.
         // 2. processingFn passes an error **notification** on its output stream : that is passed to the event source,
         // which will not admit any further notification, i.e. the error notification is final
         // 3. processingFn passes an error **code** through its output stream : the actual format for this error
@@ -131,7 +131,7 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
  */
 function processingFnErrorHandler(err, command) {
   console.error(`InjectCircularSources > computeSinks > behaviourSink > processingFn : error (${err}) raised while processing command`, command);
-  throw err
+  return $.throw(err)
 }
 
 // TODO : DOC
