@@ -133,6 +133,7 @@ Pipe improvement
   - so we can have [WithCheckBox({UI_tree settings to which check box is added}, [UI_Tree])]
 
 # Core
+- Think if/for which operator to remove passing settings down the tree (cf. InjectLocalState.js)
 - // TODO : have versioned doc too...
 // TODO : document that mergeSinks in this version can have null as parentSinks
 // TODO : in the log analysis, be careful that path is duplicated (which is good) but messages also are

@@ -281,3 +281,8 @@ export function traceAppBasic(traceSpecs, App) {
 // TODO : add in GRAOH_STRUCTURE alos sources and sinks for each component
 // This will allow to detect when a component is terminated (i.e. when all its sinks are terminated), and also trace the
 // sources available for // each // component
+// DOC : mandatory for every source, sink to explicity pass a traceSpecs :/
+// Not good idea to guess from rxjs type (coupled to rxjs v4, and britle)
+// Naive type implementation does not propagate easily to derived source/sinks
+// Not practical to ask the programmr to, all the time, explicitly indicate behaviour or event...
+// Because he will forget, and there will be nasty bugs there. Or else, we put severe type controls in place.

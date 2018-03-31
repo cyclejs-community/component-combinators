@@ -1,9 +1,10 @@
-import { append, assocPath, isNil, lens, mapObjIndexed, set, lensPath, pickBy, defaultTo, always } from 'ramda'
-import { BEHAVIOUR_TYPE, EVENT_TYPE, RUNTIME, SINK_EMISSION, SOURCE_EMISSION } from './properties'
+import { append, isNil, lensPath, mapObjIndexed, pickBy } from 'ramda'
+import { RUNTIME, SINK_EMISSION, SOURCE_EMISSION } from './properties'
 import {
   CHILDREN_ONLY, componentTreePatternMatchingPredicates, CONTAINER_AND_CHILDREN, makePatternMatcher, ONE_COMPONENT_ONLY
 } from '../../utils/src/index'
 import { convertVNodesToHTML, isNextNotification } from "../../utils/src"
+import { isBehaviourSink, isBehaviourSource, isEventSink, isEventSource, markAsBehavior, markAsEvent } from "../../src"
 
 let counter = 0;
 
@@ -65,7 +66,7 @@ export function deconstructHelpersFromSettings(settings) {
 }
 
 
-export function deconstructSettingsFromSettings(settings){
+export function deconstructSettingsFromSettings(settings) {
   // Will only keep those keys from settings which do not start with an underscore (i.e. private keys)
   return pickBy((val, key) => key[0] !== '_', settings)
 }
@@ -82,7 +83,7 @@ export function getPathForNthChild(index, path) {
 
 export const pathInSettings = lensPath(['_trace', 'path']);
 
-export  const containerFlagInSettings = lensPath(['_trace', 'isContainerComponent']);
+export const containerFlagInSettings = lensPath(['_trace', 'isContainerComponent']);
 
 export const leafFlagInSettings = lensPath(['_trace', 'isLeaf']);
 
@@ -100,6 +101,7 @@ export function mapOverComponentTree(fmap, componentTree) {
   function fmapChildren(component, index) {
     return fmap(component, false, index)
   }
+
   function fmapChildrenWithContainer(component, index) {
     return fmap(component, false, index + 1)
   }
@@ -127,6 +129,7 @@ export function forEachInComponentTree(fDo, componentTree) {
   function fDoChildren(component, index) {
     return fDo(component, false, index)
   }
+
   function fDoChildrenWithContainer(component, index) {
     return fDo(component, false, index + 1)
   }
@@ -149,12 +152,12 @@ export function forEachInComponentTree(fDo, componentTree) {
   return componentTreeMapper(componentTree);
 }
 
-export function makeNullSinkMessage(settings, warningMessage){
+export function makeNullSinkMessage(settings, warningMessage) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
   const { getId } = deconstructHelpersFromSettings(settings);
 
   return {
-    componentName, combinatorName, when: +Date.now(), path, id: getId(), warning : warningMessage
+    componentName, combinatorName, when: +Date.now(), path, id: getId(), warning: warningMessage
   }
 }
 
@@ -190,7 +193,7 @@ export function traceSinks(sinks, settings) {
   const defaultTraceSinkFn = defaultTraceSpecs && defaultTraceSpecs[1];
 
   if (isNil(sinks)) {
-      makeNullSinkMessage(settings, 'encountered component which returns null as sinks!!');
+    makeNullSinkMessage(settings, 'encountered component which returns null as sinks!!');
 
     return null
   }
@@ -224,7 +227,7 @@ export function makeDOMSourceNotificationMessage({ sourceName, settings, notific
         ? { value: convertVNodesToHTML(notification.value), kind }
         : { kind, error }
     },
-    logType : RUNTIME,
+    logType: RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
@@ -242,8 +245,8 @@ export function makeSourceNotificationMessage({ sourceName, settings, notificati
         ? { value, kind }
         : { kind, error }
     },
-    settings : deconstructSettingsFromSettings(settings),
-    logType : RUNTIME,
+    settings: deconstructSettingsFromSettings(settings),
+    logType: RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId(),
   }
 }
@@ -262,7 +265,7 @@ export function makeDOMSinkNotificationMessage({ sinkName, settings, notificatio
         ? { value: convertVNodesToHTML(notification.value), kind }
         : { kind, error }
     },
-    logType : RUNTIME,
+    logType: RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
@@ -280,7 +283,7 @@ export function makeSinkNotificationMessage({ sinkName, settings, notification }
         ? { value, kind }
         : { kind, error }
     },
-    logType : RUNTIME,
+    logType: RUNTIME,
     componentName, combinatorName, when: +Date.now(), path, id: getId()
   }
 }
@@ -300,41 +303,49 @@ export function traceDOMsinkFn(sink, sinkName, settings) {
 export function traceBehaviourSourceFn(source, sourceName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
 
-  return source
-    .materialize()
-    .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
-    .dematerialize()
-    .shareReplay(1)
+  return markAsBehavior(
+    source
+      .materialize()
+      .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
+      .dematerialize()
+      .shareReplay(1)
+  )
 }
 
 export function traceEventSourceFn(source, sourceName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
 
-  return source
-    .materialize()
-    .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
-    .dematerialize()
-    .share()
+  return markAsEvent(
+    source
+      .materialize()
+      .tap(notification => sendMessage(makeSourceNotificationMessage({ sourceName, settings, notification })))
+      .dematerialize()
+      .share()
+  )
 }
 
 export function traceBehaviourSinkFn(sink, sinkName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
 
-  return sink
-    .materialize()
-    .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
-    .dematerialize()
-    .shareReplay(1)
+  return markAsBehavior(
+    sink
+      .materialize()
+      .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
+      .dematerialize()
+      .shareReplay(1)
+  )
 }
 
 export function traceEventSinkFn(sink, sinkName, settings) {
   const { traceSpecs, defaultTraceSpecs, combinatorName, componentName, sendMessage, path } = deconstructTraceFromSettings(settings);
 
-  return sink
-    .materialize()
-    .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
-    .dematerialize()
-    .share()
+  return markAsEvent(
+    sink
+      .materialize()
+      .tap(notification => sendMessage(makeSinkNotificationMessage({ sinkName, settings, notification })))
+      .dematerialize()
+      .share()
+  )
 }
 
 // TODO : refactor with ramda cond
@@ -368,31 +379,12 @@ export function defaultTraceSinkFn(sink, sinkName, settings) {
     return traceEventSinkFn(sink, sinkName, settings)
   }
   else {
+    debugger
     throw `defaultTraceSinkFn : Found sink (${sinkName}) for which no trace function is available! `
   }
 }
 
-function getTypeOf(obj) {
-  return obj && obj.type
-}
-
-function isBehaviourSource(source) {
-  return getTypeOf(source) === BEHAVIOUR_TYPE
-}
-
-function isBehaviourSink(sink) {
-  return Boolean(sink && isBehaviourSource(sink))
-}
-
-function isEventSource(source) {
-  return getTypeOf(source) === EVENT_TYPE
-}
-
-function isEventSink(sink) {
-  return Boolean(sink && isEventSource(sink))
-}
-
-export function deconstructComponentTree(componentTree){
+export function deconstructComponentTree(componentTree) {
   const { parentComponent, childrenComponents } =
     makePatternMatcher(componentTreePatternMatchingPredicates, {
       // TODO : refactor later the pattern match to only two cases (remove one component only case)
@@ -407,6 +399,6 @@ export function deconstructComponentTree(componentTree){
   return { parentComponent, childrenComponents }
 }
 
-export function reconstructComponentTree(parentComponent, childrenComponents){
+export function reconstructComponentTree(parentComponent, childrenComponents) {
   return parentComponent ? [parentComponent, childrenComponents] : childrenComponents
 }

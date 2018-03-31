@@ -1,7 +1,5 @@
-import { both, complement, cond, either, equals, isEmpty, T } from "ramda"
-import {
-  isArrayOf, isEmptyArray, isObject, isStrictRecord, isString
-} from "../../contracts/src/index"
+import { both, complement, cond, either, equals, isEmpty, T, lens, set, view, prop, assoc } from "ramda"
+import { isArrayOf, isEmptyArray, isObject, isStrictRecord, isString } from "../../contracts/src/index"
 
 export const isNotEmpty = complement(isEmpty);
 export const isSettings = T;
@@ -54,3 +52,43 @@ export const isUpdateOperation = cond([
   [isOpTest, T],
 ]);
 export const isArrayUpdateOperations = either(isEmptyArray, isArrayOf(isUpdateOperation));
+
+export function markAsEvent(obs) {
+  set(observableTypeLens, EVENT_TYPE, obs);
+
+  return obs
+}
+
+export const BEHAVIOUR_TYPE = 'B';
+export const EVENT_TYPE = 'E';
+export const observableTypeLens = lens(
+  x => x.type,
+  (val, x) => (x.type = val, x)
+);
+
+export function markAsBehavior(obs) {
+  set(observableTypeLens, BEHAVIOUR_TYPE, obs);
+
+  return obs
+}
+
+export function getTypeOfObs(obs) {
+  return obs && view(observableTypeLens, obs)
+}
+
+export function isBehaviourSource(source) {
+  return getTypeOfObs(source) === BEHAVIOUR_TYPE
+}
+
+export function isBehaviourSink(sink) {
+  return Boolean(sink && isBehaviourSource(sink))
+}
+
+export function isEventSource(source) {
+  return getTypeOfObs(source) === EVENT_TYPE
+}
+
+export function isEventSink(sink) {
+  return Boolean(sink && isEventSource(sink))
+}
+

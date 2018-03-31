@@ -1,20 +1,18 @@
 import { m } from "../m/m"
-import { tryCatch, map, set, omit, pick, complement, isNil, clone } from 'ramda'
-import {
-  assertContract, isArray, isFunction, isHashMapE, isOptional, isRecordE, isString
-} from "../../../contracts/src"
+import { clone, complement, isNil, omit, pick, set, tryCatch } from 'ramda'
+import { assertContract, isFunction, isOptional, isRecordE, isString } from "../../../contracts/src"
 import * as jsonpatch from "fast-json-patch"
-import { BEHAVIOUR_TYPE, EVENT_TYPE } from "../../../tracing/src/properties"
+import { EVENT_TYPE } from "../../../tracing/src/properties"
 import Rx from "rx"
 import { combinatorNameInSettings, reconstructComponentTree } from "../../../tracing/src/helpers"
-import { isArrayUpdateOperations } from "../types"
+import { BEHAVIOUR_TYPE, isArrayUpdateOperations, markAsBehavior, markAsEvent } from "../types"
 
 const $ = Rx.Observable
 const injectLocalStateSettingsError = `InjectLocalState : Invalid settings !`
 const isInjectLocalStateSettings = isRecordE({
-    behaviour : isOptional(isRecordE({0:isString, 1:complement(isNil)})),
-    event : isOptional(isRecordE([isString, isFunction]))
-  });
+  behaviour: isOptional(isRecordE({ 0: isString, 1: complement(isNil) })),
+  event: isOptional(isRecordE([isString, isFunction]))
+});
 
 /**
  * @typedef {{behaviour : [string, *], event : [string, Function]}} InjectLocalStateSettings
@@ -23,6 +21,12 @@ const isInjectLocalStateSettings = isRecordE({
  * Similar to drivers for the whole app. This allows to have an inner loop delimiting a scope
  * within which sources are visible, and outside of which they can no longer be seen nor manipulated.
  * For behaviour sources, note that it is recommended to SAMPLE them rather than combineLatest them
+ * DOC : subscribing to circular sources occur **before** subscribing to upstream sources, so one has to be careful
+ * about possible initialization issues.
+ * DOC : State update commands are executed and **propagated synchronously**. It is recommended to sample that
+ * state, so no (synchronous) actions is taken on change propagation (it would if `combineLatest` was used). But
+ * then again, for DOM which is a behaviour, it will be next to impossible not to use combineLatest...
+ * TODO : add an option to run on a specific scheduler??
  * @param {InjectLocalStateSettings} injectLocalStateSettings
  * @param {ComponentTree} componentTree
  */
@@ -38,13 +42,13 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
   // @type function(Command) : Rx.Observable*/
   const processingFn = injectLocalStateSettings.event[1];
   const eventSource = new Rx.Subject();
-  eventSource.type = EVENT_TYPE;
-  behaviourSource.type = BEHAVIOUR_TYPE;
+  markAsEvent(eventSource);
+  markAsBehavior(behaviourSource);
 
-  function computeSinks(parentComponent, childrenComponents, sources, settings){
+  function computeSinks(parentComponent, childrenComponents, sources, settings) {
     const reducedSinks = m(
       {},
-      set(combinatorNameInSettings, 'InjectLocalState|Inner', settings),
+      set(combinatorNameInSettings, 'InjectLocalState|Inner', {}),
       reconstructComponentTree(parentComponent, childrenComponents)
     )(sources, settings);
 
@@ -63,6 +67,8 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
       // This happens if an error is produced while computing state sinks. What to do?? For now, just logging
       // The idea is to not interrupt the program with an exception, so we don't pass the error on the subject
       // TODO : think over strategies for error handling
+      // NOTE : on error, the behaviourSink ends, but not the behaviour source, which means other branches of the
+      // component tree should continue to work
       error => console.error(`InjectCircularSources/behaviour : error!`, error),
       completed => {
         console.debug(`InjectCircularSources/behaviour : completed!`);
@@ -82,6 +88,8 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
         // it can choose to pass HTTP errors through a specific channel, emitting {error : httpCode}. The format of
         // the response is also left unspecified. We however think it is a good idea to include the request with the
         // response for matching purposes.
+        // NOTE : as of now (31.3.2018), on error, the event source ends, so all branches of the component tree are
+        // interrupted!
         const labelledEventResponse$ = tryCatch(processingFn, processingFnErrorHandler)(command);
         labelledEventResponse$.subscribe(eventSource);
       },
@@ -89,6 +97,8 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
       // What to do?? For now, just logging. The idea is to not interrupt the program with an exception
       // Passing an error through onError on the subject will stop the subject and no more messages will be sent by it!
       // TODO : think over strategies for error handling
+      // NOTE : on error, the eventSink for that branch ends, but not the event source, which means other branches
+      // of the component tree should continue to work
       error => console.error(`InjectCircularSources/event : error!`, error),
       completed => {
         console.debug(`InjectCircularSources/event : completed!`);
@@ -103,11 +113,14 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
   const injectlocalStateSpec = {
     // Propagate data changes on the next tick, after all configured local state sources have been updated
     // This means using the async scheduler from RXjs v4. Rx.Scheduler.currentThread might work too, but less clear how.
-    makeLocalSources : _ => ({[eventSourceName] : eventSource, [behaviourSourceName] : behaviourSource}),
-    computeSinks : computeSinks,
+    makeLocalSources: _ => ({ [eventSourceName]: eventSource, [behaviourSourceName]: behaviourSource }),
+    computeSinks: computeSinks,
   };
 
-  return m(injectlocalStateSpec, set(combinatorNameInSettings, 'InjectLocalState', {}), componentTree)
+  // Here we chose to not have the settings inherited down the component tree, as this information is of exclusive
+  // usage at this level
+  const cleanedSettings = omit(['behaviour', 'event'], injectLocalStateSettings);
+  return m(injectlocalStateSpec, set(combinatorNameInSettings, 'InjectLocalState', cleanedSettings), componentTree)
 }
 
 /**
@@ -116,7 +129,7 @@ export function InjectCircularSources(injectLocalStateSettings, componentTree) {
  * @param {Error} err
  * @param {Command} command
  */
-function processingFnErrorHandler(err, command){
+function processingFnErrorHandler(err, command) {
   console.error(`InjectCircularSources > computeSinks > behaviourSink > processingFn : error (${err}) raised while processing command`, command);
   throw err
 }
