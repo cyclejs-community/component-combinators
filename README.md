@@ -95,7 +95,7 @@ So the general principle is fairly simple and generic. Now let's see some practi
 
 # Examples
 ## Separating layout from feature
-The following implementation corresponds to the layout specifications :
+The following implementation corresponds to the layout specifications:
 
 - layout specifications (in order from top to bottom of appearance on screen)
     - header
@@ -105,7 +105,7 @@ The following implementation corresponds to the layout specifications :
       - made of three groups (with miscellaneous navigation links) and a header
     - sitemap
 
-The application would be correspondingly broken down as follows :
+The application would be correspondingly broken down as follows:
 
 ```javascript
 function LayoutContainer(sources, settings) {
@@ -125,7 +125,7 @@ export const App = Combine({}, [LayoutContainer, [
 ]]);
 ```
 
-The `Footer` component itself is broken down as follows :
+The `Footer` component itself is broken down as follows:
 
 ```javascript
 function FooterContainer(sources, settings) {
@@ -246,7 +246,7 @@ For instance, the specification for a login section of an application could go a
 
 ![login demo with Switch combinator](examples/SwitchLogin/assets/login_demo.gif)
 
-A tentaive code to implement those specification with our library would look like :
+A tentaive code to implement those specification with our library would look like:
 
 ```javascript
 export const App = Switch({
@@ -262,7 +262,7 @@ export const App = Switch({
 ]);
 ```
 
-The same code could be written in a `JSX`-like dialect as :
+The same code could be written in a `JSX`-like dialect as:
 
 ```javascript
 export const App =
@@ -276,7 +276,7 @@ export const App =
   </Switch>
 ```
 
-The same code could also be written in a dedicated DSL :
+The same code could also be written in a dedicated DSL:
 
 ```javascript
 export const App = dsl`
@@ -289,7 +289,7 @@ export const App = dsl`
 ```
 
 Syntax, whichever chosen (we will work only with the first one) is but a detail.
-What is important here is that :
+What is important here is that:
 
 - the stream wiring concern has disappeared within the `Switch` combinator (i.e. has been
 abstracted out), while the user interface logic can be written in a way that is very close to its specification, hence easier to
@@ -415,7 +415,7 @@ SidePanel =
 ```
 
 Displaying the list of items requires to get the item from a source. That source is passed 
-through `InjectSources` :
+through `InjectSources`:
 
 ```javascript
 const ListOfItemsComponent =
@@ -445,7 +445,7 @@ function getProjectNavigationItems$(sources, settings) {
 ![sample app demo with miscellaneous combinators](examples/AllInDemo/assets/images/animated_demo.gif)
 
 Note the use of the ad-hoc combinators `Navigation`, `NavigationSection` and `NavigationItem`. 
-They are for instance defined as :
+They are for instance defined as:
 
 ```javascript
 // Components
@@ -473,7 +473,7 @@ function Navigation(navigationSettings, componentArray) {
 This is the first introduction of the `m` component combinator factory. We will not expand here 
 on the specifications for `m` --- that is done in the corresponding [documentation](http://brucou.github.io/projects/component-combinators/mm/).  It suffices to know that the first argument of `m` specifies the combining logic and that `Combine` is actually 
 the partial application of `m` with an empty object (i.e. default combining logic is used). The 
-`Navigation` component could for instance also be written as :
+`Navigation` component could for instance also be written as:
 
 ```javascript
 function Navigation(navigationSettings, componentArray) {
