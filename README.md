@@ -24,19 +24,19 @@
 - [Known issues](#known-issues)
 
 # Motivation
-Around 18 months ago, while working on what is the largest cyclejs codebase I know of
+Around 18 months ago, while working on what is the largest Cycle.js codebase I know of
 (~20K lines of javascript), I realized how hard it was to actually make sense and maintain a
-**large** cyclejs application. Focusing on those issues derived from cyclejs usage and 
-compunded by application size:
+**large** Cycle.js application. Focusing on those issues derived from Cycle.js usage and 
+compounded by application size:
 
 - a large portion of the code was stream handling originating from the use of components and the
 necessity to wire them together. The domain logic, and as a result, **the application logic was
 lost** into a sea of streams' sometimes-cryptic operations.
 - extra confusion about inputs (sources), their meanings and usage, due to **inputs addressing two
-separate concerns** : component parameterization and interfacing with external systems. A bunch of
-constants were lifted into streams in miscelleanous places to serve as parameters for generic
-components, and that led to more stream arithmetic, noise, and in some occurences bugs
-- **modifying, fixing and extending that code proved to be a gamble**, with any bug fixing or
+separate concerns**: component parameterization and interfacing with external systems. A bunch of
+constants was lifted into streams in miscellaneous places to serve as parameters for generic
+components, and that led to more stream arithmetic, noise, and in some occurrences bugs
+- **modifying, fixing, and extending that code proved to be a gamble**, with any bug fixing or
 debugging sessions counted in hours. To be fair, the complete absence of documentation (and tests) explained a lot of
 that. The absence of unit tests itself could be explained by, well, the **pain** that it
 is to write them with streams in the middle, which led to resorting to sometimes
@@ -46,39 +46,38 @@ implementing (you know, multi-step processes where any step may fail and you nee
  alone add new logical branches (error recovery...)
 
 And yet, while that application was large, it cannot really be said to be an exceptionally complex
-application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive ui as the only ux trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
+application. Rather it was the standard CRUD application which is 90% of business applications today. No fancy animations, adaptive UI as the only UX trick, otherwise mostly fields and forms, a remote database, and miscellaneous domain-driven workflows.
 
 This was the motivation behind my dedicating my (limited) free time to add the missing
-capabilities to the framework. I singled out those four areas :
- componentization, visual debugging, testing, concurrency control. I am happy that finally the
+capabilities to the framework. I singled out those four areas:
+ componentization, visual debugging, testing, concurrency control. I am happy that, finally, the
  first step is in a sufficient state of progress that it can be shared.
 
- **That first step is a componentization model for cyclejs**, that builds upon the original idea
+ **That first step is a componentization model for Cycle.js**, that builds upon the original idea
  of a component as a function and extends it further. Components are (mostly) what they used to
- be. Components can however now be parameterized through a dedicated argument `settings`,
+ be. Components can however now be parameterized through a dedicated `settings` argument,
  capturing the **component's parameterization concern**, and which is inherited down the component
- tree. Components, importantly, can be built through a series of **component combinators** which eliminate a lot of stream noisy, repetitive code. Those
+ tree. Components, importantly, can be built through a series of **component combinators** that eliminate a lot of stream noisy, repetitive code. Those
   component combinators have been extracted and  abstracted from the 20K lines of code, so they should cover a large number of cases that one
   encounters. The proposed component model could be seen in many ways as a **generalization of that
    of `React`**, extending it to handle concerns other than the view, which opens the door to using a `JSX`-like syntax if you so fancy. The component model also sets up the work for tracing and visualization tools for the second step, **without any
-  modification of cyclejs internals.**
+  modification of Cycle.js internals.**
 
 This is really a working draft, akin to a proof of concept. Performance was not at all looked upon,
-combinators only work with rxjs, the version of cycle used brings us back to the time
-when cyclejs could still be considered a library (vs. a framework), build is not optimized,
+combinators only work with RxJS, the version of Cycle used brings us back to the time
+when Cycle.js could still be considered a library (vs. a framework), build is not optimized,
 `console.log`s are all over the place, **only tested on chrome evergreen**, etc.
 
 It works nicely though. It succeeds in providing a **higher-level abstraction** so you can focus on
 the **interdependence** of components that defines the user interface **logic**, rather than having
- to constantly fiddle with a large amount of **implementation details**.
+ to constantly fiddle with a large number of **implementation details**.
 
 Each combinator features (and if not, will feature) a dedicated non-trivial example of use, and is
 documented and tested. A sample application is available to showcase how combinators work
 together with components to build a non-trivial application.
 
-**A series of articles covers the theoretical underpinning** in more details (read
-chronologically -- concepts are built progressively). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the
-step-by-step building of the showcased sample application. A shorter introduction can be found in the `README` for the repository.
+**A series of articles covers the theoretical underpinning** in more detail (read
+chronologically -- concepts are built progressively). A [specific article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) shows the step-by-step building of the showcased sample application. A shorter introduction can be found in the `README` for the repository.
 
 # So what is a component combinator?
 A component combinator is a **parametrizable** function which... **combines** components. To each
@@ -88,8 +87,7 @@ A component combinator is a **parametrizable** function which... **combines** co
  `C1`  component whenever the source emits an empty array, and a combined list of `C2` components 
  otherwise. So here the combining logic follows an iteration logic. 
  
- The simplest of those 
- combinator is `Combine` (for instance `Combine{{...}, [C0, [C1, C2]]}`), whose DOM sink is 
+ The simplest of those combinators is `Combine` (for instance `Combine{{...}, [C0, [C1, C2]]}`), whose DOM sink is 
  the result of merging `Cx` DOM sinks **into** `C0` DOM sink; and whose non-DOM sinks are 
  the merge of the respective `Cx` non-DOM sink. Here the combining logic is a merge logic.
  
@@ -101,7 +99,7 @@ The following implementation corresponds to the layout specifications :
 
 - layout specifications (in order from top to bottom of appearance on screen)
     - header
-    - feature : we will reuse here the component from the nested routing demo (introduced in a 
+    - feature: we will reuse here the component from the nested routing demo (introduced in a 
     later section)
     - footer
       - made of three groups (with miscellaneous navigation links) and a header
@@ -159,8 +157,8 @@ export const Footer = Combine({}, [FooterContainer, [
 
 By using a 
 container component which specifies where to distribute the DOM content of children components, it
- is possible to : separate layout concerns from feature concerns ; break down layout 
-concern into smaller concerns in a organized, readable and maintainable way. The breakdown can be
+ is possible to separate layout concerns from feature concerns; and break down layout 
+concern into smaller concerns in an organized, readable, and maintainable way. The breakdown can be
  realized so that future layout changes mostly impact the `LayoutContainer` component.
 
 The content distribution mechanism we use is the **slot mechanism** made popular by web 
@@ -170,28 +168,28 @@ content (the `InSlot` combinator is one way to associate a slot to a component).
 ![slot demo with Combine combinator](examples/CombineDemo/assets/images/animated_demo.gif)
 
 Note that **all component combinators use the same default** for merging children components' sinks 
-(whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large oodebase 
+(whether DOM sinks or non-DOM sinks). Those defaults have been extracted for our large codebase 
 and seem to cover the vast majority of the patterns which occurred in that codebase.
 
-Two things can already be noted here : we haven't had to write **any** merging code by hand, and 
+Two things can already be noted here: we haven't had to write **any** merging code by hand, and 
 the structure of our application is more self-evident, i.e. simpler to read.
 
-Let's now see another example, which addresses a very fundamental need of web applications.
+Let's now see another example, which addresses a very fundamental need for web applications.
 
 ## Nested routing
-The following implementation corresponds to :
+The following implementation corresponds to:
 
 - Functional specifications
     - user visits '/' -> display home page
-        - home page allows to navigate to different sections of the application
-    - when the user visit a given section of the application
+        - the home page allows navigating to different sections of the application
+    - when the user visits a given section of the application
         - a breadcrumb shows the user where he stands in the sitemap
-        - a series of clickable cards is displayed
+        - a series of clickable cards are displayed
             - when the user clicks on a given card, details about that card are displayed, and corresponding to a specific route for possible bookmarking
 - Technical specifications
     - `HomePage` takes the concern of implementing the home page logic.
-    - `Card` is parameterized by its card content, and is in charge of implementing the card logic
-    - `CardDetail` is parameterized by its card content, and is in charge of displaying the extra details of the card
+    - `Card` is parameterized by its card content and is in charge of implementing the card logic
+    - `CardDetail` is parameterized by its card content and is in charge of displaying the extra details of the card
 
 ```javascript
 export const App = InjectSourcesAndSettings({
@@ -236,14 +234,14 @@ directly and naturally included in their context.
 Let's move on to cases exemplifying simple control flow logic (branching).
 
 ## Login gateway
-For instance, specification for a login section of an application could go as such:
+For instance, the specification for a login section of an application could go as such:
 
 - Functional specifications
     - if user is logged, show the main page
     - if user is not logged, show the login page, and redirect to `index` route when login is performed
 - Technical specifications
     - `MainPage` takes the concern of implementing the main page logic.
-    - `LoginPage` is parameterized by a redirect route, and is in charge of logging in the user
+    - `LoginPage` is parameterized by a redirect route and is in charge of logging in the user
     - `convertAuthToIsLoggedIn` emits `IS_NOT_LOGGED_IN` or `IS_LOGGED_IN` according to whether the user is logged or not
 
 ![login demo with Switch combinator](examples/SwitchLogin/assets/login_demo.gif)
@@ -294,35 +292,35 @@ Syntax, whichever chosen (we will work only with the first one) is but a detail.
 What is important here is that :
 
 - the stream wiring concern has disappeared within the `Switch` combinator (i.e. has been
-abstracted out), while the user interface logic can be written in a way which is very close to its specification, hence easier to
+abstracted out), while the user interface logic can be written in a way that is very close to its specification, hence easier to
 understand and check for correctness
 - The developer cannot make any mistake in the stream switching logic, nor
 does he have to check while debugging that the error does not come from an erroneous switch
 handling. Provided that the `Switch` combinator has been properly implemented and tested, the
 corresponding concern is out of the way.
-- A debugging developer can narrow down a cause of misbehaviour for example by selectively
+- A debugging developer can narrow down a cause of misbehavior for example by selectively
 modifying arguments, deleting branches of the component tree, stubbing components, etc. That is, reasoning, investigating can be made at a component level first, before, if necessary, going at the lower stream level.
 
 Next, we have a look at complex control flow logic (branching, jumping, looping, etc.).
 
 ## Multi-step workflow
 The specification for a multi-step application process, as coming from the designer team, is as 
-follows :
+follows:
 
 ![sequence](https://camo.githubusercontent.com/d64fd08f45bd5c28e5cd237ef095f5181c89ea72/687474703a2f2f692e696d6775722e636f6d2f42466a6667575a2e706e67)
 
 We have here a sequence of screens, with conditional transitioning logic according to the state 
 of the application. That logic is later refined in parallel with the dev team to take the final 
-control flow form :
+control flow form:
 
 ![complete control flow](https://i.imgur.com/dkbSwEw.png)
 
 We won't include code samples here for the sake of brevity. The previous control flow graph is 
-specified in the form of a state machine, and implemented with the `EFSM` component combinator.
+specified in the form of a state machine and implemented with the `EFSM` component combinator.
 
 ![demo](examples/volunteerApplication/assets/images/animated_demo.gif)
 
- We refer however the curious reader to :
+ We refer however the curious reader to:
 
 - [Demo repo](https://github.com/brucou/component-combinators/tree/master/examples/volunteerApplication)
 - [The case for state machines in UI programming](http://brucou.github.io/projects/component-combinators/efsm---the-case-for-ui-programming/)
@@ -333,13 +331,13 @@ Let's continue with the combinator covering iteration logic.
 
 ## Dynamically changing list of items
 
-The following implementation corresponds to :
+The following implementation corresponds to:
 
 - Functional specifications
     - display a list of cards reflecting input information from a card database
-    - a pagination section allows to display X cards at a time
+    - a pagination section allows displaying X cards at a time
 - Technical specifications
-    - `Card` is parameterized by its card content, and is in charge of implementing the card logic
+    - `Card` is parameterized by its card content and is in charge of implementing the card logic
     - `Pagination` is in charge of the page number change logic
 
 ```javascript
@@ -392,7 +390,7 @@ flow. There are other combinators handling state injection and interface adaptat
  thanks to our generic component combinator factory `m`.
 
 Taking a page from our [showcased sample application](https://i.imgur.com/NXgJV2c.png), it looks 
-like this (only tidbits, for full code see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo), for a step-by-step building of the application, refer to the [corresponding article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) on my blog):
+like this (only tidbits, for the full code, see the [example repo](https://github.com/cyclejs-community/component-combinators/tree/master/examples/AllInDemo), for a step-by-step building of the application, refer to the [corresponding article](http://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/) on my blog):
  
  ```javascript
 App = Combine({}, [
@@ -473,7 +471,7 @@ function Navigation(navigationSettings, componentArray) {
 ```
 
 This is the first introduction of the `m` component combinator factory. We will not expand here 
-on the specifications for `m`, that is done in the corresponding [documentation](http://brucou.github.io/projects/component-combinators/mm/).  It suffices to know that the first argument of `m` specifies the combining logic and that `Combine` is actually 
+on the specifications for `m` --- that is done in the corresponding [documentation](http://brucou.github.io/projects/component-combinators/mm/).  It suffices to know that the first argument of `m` specifies the combining logic and that `Combine` is actually 
 the partial application of `m` with an empty object (i.e. default combining logic is used). The 
 `Navigation` component could for instance also be written as :
 
@@ -490,18 +488,18 @@ combining components. If you come up with a useful component combinator that is 
 free to publish it in its own package.
 
 While the full syntax and semantics of the component combinators have not been exposed, 
-hopefully the examples serve to portray the merits of using a component model, under which an 
+hopefully, the examples serve to portray the merits of using a component model, under which an 
 application is written as a component tree, where components are glued with convenient component combinators
-  covering frequently occuring patterns. I certainly think it is simpler to write, and more 
+  covering frequently occurring patterns. I certainly think it is simpler to write, and more 
   importantly, simpler to **read, maintain and debug**, which is paramount **at scale**.
 
 Let's have a proper look at combinators' syntax and the available combinators extracted from the
-20K-line cyclejs codebase.
+20K-line Cycle.js codebase.
 
 # Combinators
 ## Syntax
 
-In general combinators follow a common syntax[^exception] :
+In general combinators follow a common syntax[^exception]:
 
 - `Combinator :: Settings -> ComponentTree -> Component`
     - `Settings :: *`
@@ -513,7 +511,7 @@ In general combinators follow a common syntax[^exception] :
 [^exception]: The `EFSM` combinator as of v0.4 is an exception to that rule. 
 
 ## Combinator list
-The proposed library has the following combinators :
+The proposed library has the following combinators:
 
 | Combinator      | Description |
 | --------- | :-----|
@@ -521,23 +519,23 @@ The proposed library has the following combinators :
 | [InSlot](https://brucou.github.io/projects/component-combinators/inslot/) | Assign DOM content to a slot ([a la web component](https://alligator.io/web-components/composing-slots-named-slots/))|
 | [OnRoute](http://brucou.github.io/projects/component-combinators/router/)      |    Activate a component based on the route changes. Allows nested routing. |
 | [Switch](http://brucou.github.io/projects/component-combinators/switch/)  | Activate component(s) depending on the incoming value of a source|
-| [FSM](http://brucou.github.io/projects/component-combinators/efsm---example-application/)      |    Activate components based on inputs, and current state of a state machine. Allows to implement a flow of screens and actions according to complex control flow rules.  |
+| [FSM](http://brucou.github.io/projects/component-combinators/efsm---example-application/)      |    Activate components based on inputs and current state of a state machine. Allows implementing a flow of screens and actions according to complex control flow rules.  |
 | [ForEach](http://brucou.github.io/projects/component-combinators/foreach/)     |   Activate component for each incoming value of a source|
 | [ListOf](http://brucou.github.io/projects/component-combinators/listof/)      |    Activate a list of a given component based on an array of items |
 | [Pipe](https://brucou.github.io/projects/component-combinators/pipe/)      |    Sequentially compose components |
-| [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component which will be injected extra sources |
-| [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component which will receive extra sources and extra settings |
+| [InjectSources](http://brucou.github.io/projects/component-combinators/injectsources/)      |    Activate a component that will be injected extra sources |
+| [InjectSourcesAndSettings](http://brucou.github.io/projects/component-combinators/injectsourcesandsettings/)      |    Activate a component that will receive extra sources and extra settings |
 | [m](http://brucou.github.io/projects/component-combinators/mm/)      |    The core combinator from which all other combinators are derived. `m` (for *merge*) basically traverses a component tree, applying default or provided reducing functions along the way.  |
 
-Documentation, demo and tests for each combinator can be found in their respective repository.
+Documentation, demo, and tests for each combinator can be found in their respective repository.
 
 # Theoretical background
-The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou.github.io/) :
+The theoretical underpinnings can be found as a series of articles on my [blog](https://brucou.github.io/):
 
 - [user interfaces as reactive systems](https://brucou.github.io/posts/user-interfaces-as-reactive-systems/)
 - [componentization against complexity](https://brucou.github.io/posts/componentization-against-complexity/)
 - [a componentization framework for cyclejs](https://brucou.github.io/posts/a-componentization-framework-for-cyclejs/)
-- [applying componentization to reactive systems : sample application](https://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/)
+- [applying componentization to reactive systems: sample application](https://brucou.github.io/posts/applying-componentization-to-reactive-systems---sample-application/)
 - [Component models for user interfaces implementation - a comparison](http://brucou.github.io/posts/component-models-for-user-interfaces-implementation---a-comparison/)
 
 # Documentation
@@ -545,18 +543,18 @@ Documentation for component combinators and drivers can be found in the [project
 
 # Installation
 ## Packages
-The following packages are available :
+The following packages are available:
 
 | Package          | Description                                                                                                                          |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | @rxcc/components | Contains the core component combinators                                                                                              |
-| @rxcc/drivers    | Exposes a few useful drivers, in particular drivers to handle command and queries on a domain, and read the DOM state                |
+| @rxcc/drivers    | Exposes a few useful drivers, in particular, drivers to handle command and queries on a domain, and read the DOM state                |
 | @rxcc/testing    | Mocks for the provided drivers, and the testing library used for testing the components combinators                                  |
 | @rxcc/contracts  | A bunch of predicates and utility functions to handle contract checking and assertions                                               |
 | @rxcc/utils      | Miscellaneous utility functions (debugging, component helpers, etc.) |
 |                  |                                                                                                                                      |
 
-Any of those can be installed with `npm`. For instance :
+Any of those can be installed with `npm`. For instance:
 
 ```javascript
 npm install @rxcc/components
@@ -564,7 +562,7 @@ npm install @rxcc/components
 
  # Tests
  Tests are performed with good old `QUnit`, i.e. in the browser. This allows debugging code in the 
- browser, and also the possbility in a debugging session to actually display some components' output directly in
+ browser, and also the possibility in a debugging session to actually display some components' output directly in
  the DOM (vs. looking at some virtual representation of the DOM). To run the available tests, in
  the root directory, type :
 
@@ -573,7 +571,7 @@ npm install @rxcc/components
  - have a look at `/test/index.js` to pick up which test you want to run (400+ tests available in
   total)
  - `npm run test`
- - then open with a local webserver the `index.html` in `test` directory
+ - then open with a local web server the `index.html` in `test` directory
 
 # Roadmaps
 
@@ -586,13 +584,13 @@ specify the (visual) shape that this should take. A small proof of concept shoul
 secondary target is to start a very basic UI component library, not going over the proof of
 concept level.
 
-The current roadmap for the v0.5 stands as :
+The current roadmap for the v0.5 stands as:
 
 - Core
-    - robustness of settings :
+    - robustness of settings:
       - in some cases, should be inherited down the tree, in other cases should be private (find
       a nice syntax). That creates complexity but reduces bug surface so worth it.
-      - very important bug possibility which is facilitated as of now : a settings could be set at 
+      - very important bug possibility which is facilitated as of now: a settings could be set at 
       some location in the tree, and then read wrongly at another location of the tree because they
       have the same name. that prevents from using default values for settings, the default value
        could be wrongly overridden by settings inherited from up the tree.
@@ -600,12 +598,12 @@ The current roadmap for the v0.5 stands as :
          collisions
     - external system's state reading
       - [ ] `document` driver reads synchronously a **value** from the DOM. That is possible
-      because DOM database is **local**. Value whether to uniformize read mechanism by having them
+      because the DOM is **locally available**. Value whether to uniformize read mechanism by having them
       all returning `Observable`. That should enable **simpler** tracing!!
     - see what can be done to have a better concurrency model (i.e. beyond FSM)
     - [ ] type contracts error handling for component's settings (which types of component
     combinator expects, types of settings, etc.)
-    - error management :
+    - error management:
       - [ ] [error boundaries?](https://reactjs.org/docs/error-boundaries.html)
       - [ ] error logging (use chrome's console.context? replace string formatting for console?)
       - [ ] improve error reporting (human-readable message, add guards, include blame information
@@ -615,14 +613,14 @@ The current roadmap for the v0.5 stands as :
 - Component combinator library
   - modalify looks like a good example (https://github.com/cyclejs-community/cyclejs-modal/blob/master/examples/simple/src/index.ts)
 - Component library
-  - [ ] a small one with the basics - should be able to copy a lot from react?
+  - [ ] a small one with the basics - should be able to copy a lot from React?
     - so many of them, https://bosonic.github.io/elements/dialogs-modals.html, cf.
     materializecss, etc.
 - Drivers library
   - analyze benefits of immutability for store drivers
   - rename Action driver to Command driver, to make it obvious this is Command and Query separation
 - Demo
-  - [ ] continue to complete demo from Angular2 book on github site
+  - [ ] continue to complete demo from Angular2 book on GitHub site
   - [ ] [Real world app?](https://github.com/gothinkster/realworld)
 - Testing
     - [ ] Model-based testing for FSM, i.e. automatic test cases generation
@@ -652,13 +650,13 @@ The current roadmap for the v0.5 stands as :
 
 
 ## Roadmap v0.4
-Please note that library is still wildly under development :
+Please note that the library is still wildly under development:
 
 - APIs ~~might~~ will go through breaking changes
 - you might encounter problems in production
 - performance has not been investigated as of yet
 
-The current roadmap for the v0.4 stands as :
+The current roadmap for the v0.4 stands as:
 
 - Core
     - [x] component model
@@ -667,7 +665,7 @@ The current roadmap for the v0.4 stands as :
       - [non-technical](https://css-tricks.com/intro-to-vue-2-components-props-slots/), or
      https://skyronic-Demo.com/blog/vue-slots-example
     - [x] documentation combinators
-    - [x] nice blog site : github pages?
+    - [x] nice blog site: GitHub pages?
       - [x] select static site generator (Jekyll, Hexo, Hugo)
       - [x] blog site architecture
       - [x] theoretical underpinnings
@@ -701,40 +699,40 @@ The example application is taken from the book [Mastering Angular2 components](h
 - sits in `examples/AllInDemo` directory
 - `npm install`
 - `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/AllInDemo` directory
+- then open with a local web server the `index.html` in `$HOMEDIR/examples/AllInDemo` directory
 
 ## State Machine
 - go to `$HOMEDIR/examples/volunteerApplication`
 - `npm install`
 - `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory
+- then open with a local web server the `index.html` in `$HOMEDIR/examples/volunteerApplication` directory
 
 ## Switch
 - go to `$HOMEDIR/examples/SwitchLogin`
 - `npm install`
 - `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/SwitchLogin` directory
+- then open with a local web server the `index.html` in `$HOMEDIR/examples/SwitchLogin` directory
 
 ## OnRoute
 - go to `$HOMEDIR/examples/NestedRoutingDemo`
 - `npm install`
 - `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/NestedRoutingDemo` directory
+- then open with a local web server the `index.html` in `$HOMEDIR/examples/NestedRoutingDemo` directory
 
 ## ForEach and List
 - go to `$HOMEDIR/examples/ForEachListDemo`
 - `npm install`
 - `npm run wbuild`
-- then open with a local webserver the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
+- then open with a local web server the `index.html` in `$HOMEDIR/examples/ForEachListDemo` directory
 
 # Contribute
-Contribution is **welcome** in the following areas :
+Contributions are **welcome** in the following areas:
 
-- devops
+- DevOps
   - monorepos
   - whatever makes sense to make the repository more manageable
 - reducing build size
-- transpose code to latest version of cycle
+- transpose code to latest version of Cycle
 
 # Known issues
 That is a paragraph that I am sure will grow with time :-)
